@@ -29,7 +29,7 @@ endif()
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
-target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC external/gl3w)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -39,7 +39,7 @@ if (OPENGL_FOUND)
    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_gl_LIBRARY})
 endif()
 
-set(glm_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/glm/cmake/glm) # if necessary
+set(glm_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glm/cmake/glm) # if necessary
 find_package(glm REQUIRED)
 
 # GLFW  could be precompiled (on windows) or installed by a package manager (on OSX and Linux)
@@ -60,16 +60,16 @@ if (IS_OS_LINUX OR IS_OS_MAC)
     elseif (IS_OS_WINDOWS)
         set(GLFW_FOUND TRUE)
 
-        set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
+        set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include")
 
         if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
-            set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x64.lib")
+            set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3dll-x64.lib")
 
-            set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3-x64.dll")
+            set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3-x64.dll")
         else()
-            set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x86.lib")
+            set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3dll-x86.lib")
 
-            set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3-x86.dll")
+            set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3-x86.dll")
      endif()
 
     # Copy and rename dlls
@@ -86,8 +86,8 @@ endif()
 
 # Add Gainput submodule
 
-include_directories(${CMAKE_SOURCE_DIR}/ext/gainput/lib/include)
-add_subdirectory(ext/gainput)
+include_directories(${CMAKE_SOURCE_DIR}/external/gainput/lib/include)
+add_subdirectory(external/gainput)
 # Find GLEW
 find_package(GLEW REQUIRED)
 
