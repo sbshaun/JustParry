@@ -1,0 +1,3 @@
+[submodule "external/gainput"]
+	path = external/gainput
+	url = https://github.com/jkuhlmann/gainput.git
