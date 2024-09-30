@@ -51,6 +51,8 @@ if (IS_OS_LINUX OR IS_OS_MAC)
     find_package(PkgConfig REQUIRED)
 
     pkg_search_module(GLFW REQUIRED glfw3)
+    pkg_search_module(SDL2 REQUIRED sdl2)
+    pkg_search_module(SDL2MIXER REQUIRED SDL2_mixer)
 
     # Link Frameworks on OSX
     if (IS_OS_MAC)
@@ -119,14 +121,3 @@ if(IS_OS_LINUX)
 endif()
 
 #END SimpleGL adaptation
-
-
-# Add Gainput submodule
-
-# include_directories(${CMAKE_SOURCE_DIR}/external/gainput/lib/include)
-# add_subdirectory(external/gainput)
-# Find GLEW
-# find_package(GLEW REQUIRED)
-
-# Link the Gainput, GLFW, and GLEW libraries
-# target_link_libraries(JustParry PUBLIC gainput glfw GLEW::GLEW)
