@@ -1,7 +1,0 @@
-# ninja log v5
-2	10	0	clean	8c45b54705a541e8
-11	488	7493582727088911	CMakeFiles/JustParry.dir/src/main.cpp.obj	240ddb1bbeea6f69
-489	893	7493582729340128	JustParry.exe	6295007859f5ba65
-7	16	0	clean	8c45b54705a541e8
-8	495	7493583915859060	CMakeFiles/JustParry.dir/src/main.cpp.obj	240ddb1bbeea6f69
-496	724	7493583916829116	JustParry.exe	6295007859f5ba65
