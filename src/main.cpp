@@ -1,9 +1,8 @@
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 int main() {
-    // Initialize GLFW
+    // Initialize GLFWX
     if (!glfwInit()) {
         //glfw down
     }
