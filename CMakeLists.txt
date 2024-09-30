@@ -9,6 +9,7 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 # adapted from SimpleGL
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Find OS
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(IS_OS_MAC 1)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -27,8 +28,9 @@ if (IS_OS_MAC)
   link_directories(/opt/homebrew/lib)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} "external/gl3w/gl3w.h" "external/gl3w/glcorearb.h")
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
+
 target_include_directories(${PROJECT_NAME} PUBLIC external/gl3w)
 
 # Find OpenGL
@@ -57,39 +59,74 @@ if (IS_OS_LINUX OR IS_OS_MAC)
        target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY})
     endif()
 
-    elseif (IS_OS_WINDOWS)
-        set(GLFW_FOUND TRUE)
+elseif (IS_OS_WINDOWS)
+    set(GLFW_FOUND TRUE)
+    set(SDL2_FOUND TRUE)
 
-        set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include")
+    set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include")
+    set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/include/SDL")
 
-        if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
-            set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3dll-x64.lib")
+    if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
+        set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3dll-x64.lib")
+        set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2-x64.lib")
+	    set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2_mixer-x64.lib")
 
-            set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3-x64.dll")
-        else()
-            set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3dll-x86.lib")
+        set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3-x64.dll")
+        set(SDL2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2-x64.dll")
+	    set(SDL2MIXER_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2_mixer-x64.dll")
+    else()
+        set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3dll-x86.lib")
+        set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2-x86.lib")
+        set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2_mixer-x86.lib")
 
-            set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3-x86.dll")
-     endif()
+        set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/lib/glfw3-x86.dll")
+        set(SDL2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2-x86.dll")
+	    set(SDL2MIXER_DLL "${CMAKE_CURRENT_SOURCE_DIR}/external/sdl/lib/SDL2_mixer-x86.dll")
+    endif()
 
     # Copy and rename dlls
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${GLFW_DLL}"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/glfw3.dll")
-       
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDL2_DLL}"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDL2MIXER_DLL}"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2_mixer.dll")
+
 endif()
 
+if (NOT GLFW_FOUND OR NOT SDL2_FOUND)
+   if (NOT GLFW_FOUND)
+      message(FATAL_ERROR "Can't find GLFW." )
+   else ()
+      message(FATAL_ERROR "Can't find SDL2." )
+   endif()
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} glm::glm)
+
+# Needed to add this
+if(IS_OS_LINUX)
+  target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${CMAKE_DL_LIBS})
+endif()
 
 #END SimpleGL adaptation
 
 
 # Add Gainput submodule
 
-include_directories(${CMAKE_SOURCE_DIR}/external/gainput/lib/include)
-add_subdirectory(external/gainput)
+# include_directories(${CMAKE_SOURCE_DIR}/external/gainput/lib/include)
+# add_subdirectory(external/gainput)
 # Find GLEW
-find_package(GLEW REQUIRED)
+# find_package(GLEW REQUIRED)
 
 # Link the Gainput, GLFW, and GLEW libraries
-target_link_libraries(JustParry PUBLIC gainput glfw GLEW::GLEW)
+# target_link_libraries(JustParry PUBLIC gainput glfw GLEW::GLEW)

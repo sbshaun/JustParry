@@ -1,0 +1,3 @@
+C:/Users/siddh/source/repos/Team25/out/build/x64-Debug/CMakeFiles/JustParry.dir
+C:/Users/siddh/source/repos/Team25/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/siddh/source/repos/Team25/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
