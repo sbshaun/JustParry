@@ -38,7 +38,8 @@ Both the requestee and the reviewer should review this checklist
 - [ ] feature has no/minimal interference for other functions
 - [ ] Code is well documented with comments
 - [ ] Code is readable
-
+- [ ] Tests (if included) pass
+- [ ] Branch is rebased over main
 
 ## Additional Notes
 ```
