@@ -1,34 +1,28 @@
-#include <GLFW/glfw3.h>
-#include <iostream>
+#define GL3W_IMPLEMENTATION
+#include <gl3w.h>
+
+#include "window.hpp"
+#include "renderer.hpp"
 
 int main() {
-    // Initialize GLFWX
-    if (!glfwInit()) {
-        //glfw down
-    }
+    GLWindow glWindow(1024, 768);
 
-    // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window) {
-        //window not open
-        glfwTerminate();
-        return -1;
-    }
+    // Enable vsync to avoid tearing. Whether synchronisation is enabled depends on the platform.
+    // Siddh: Not sure if this is actually required for us, but it's here to prevent potential tearing.
+    glfwSwapInterval(1);
 
-    // adapted from simpleGL
-    glfwMakeContextCurrent(window);
+	GlRender renderer;
+    renderer.initialize();
 
-
-    
     // Main loop
-    while (!glfwWindowShouldClose(window)){ 
-        // Poll for and process events
-        glfwPollEvents(); //glfw needs to poll or else it crashes (steals resources off gainput D:)
-        glfwSwapBuffers(window);
+    while (!glWindow.shouldClose()) {
+        renderer.render();
+        glWindow.windowSwapBuffers();
     }
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    // clean up
+    renderer.shutdown();
+    glWindow.windowShutdown();
 
-    return 0;
+    exit(0);
 }
