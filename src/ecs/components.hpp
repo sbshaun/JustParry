@@ -65,6 +65,7 @@ struct PlayerInput {
     bool parry = false;
 };
 
+// TODO: how do we move the box along the player? 
 struct HitBox {
     float x, y; 
     float width, height; 
@@ -94,3 +95,7 @@ struct Sprite {
 
 
 // TODO: add render related components 
+
+// How do we implement boundries, i.e. player can't move beyond boundriess 
+// 1. what components are needed 
+// 2. how does system logic work on these components 
