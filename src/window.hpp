@@ -1,3 +1,4 @@
+#pragma once
 #define NOMINMAX
 #include <GLFW/glfw3.h>
 
