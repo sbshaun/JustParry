@@ -58,6 +58,8 @@ GLFWwindow* GLWindow::create_window() {
     auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GLWindow*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
     glfwSetKeyCallback(window, key_redirect);
 
+    glViewport(0, 0, window_width_px(), window_width_px());
+
     glfwMakeContextCurrent(window);
 
     return window;
