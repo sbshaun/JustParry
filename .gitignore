@@ -3,3 +3,4 @@
 .vscode/
 out/
 CMakePresets.json
+external/project_path.hpp

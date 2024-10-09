@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set the project name
 project(JustParry)
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp src/*.hpp)
 
 # adapted from SimpleGL
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -20,6 +20,9 @@ else()
   message(FATAL_ERROR "OS ${CMAKE_SYSTEM_NAME} was not recognized")
 endif()
 
+# Generate the shader folder location to the header
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/external/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/external/project_path.hpp")
+
 if (IS_OS_MAC)
   include_directories(/usr/local/include)
   link_directories(/usr/local/lib)
@@ -28,9 +31,9 @@ if (IS_OS_MAC)
   link_directories(/opt/homebrew/lib)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} "external/gl3w/gl3w.h" "external/gl3w/glcorearb.h")
-target_include_directories(${PROJECT_NAME} PUBLIC src/)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+target_include_directories(${PROJECT_NAME} PUBLIC src/)
 target_include_directories(${PROJECT_NAME} PUBLIC external/gl3w)
 
 # Find OpenGL
@@ -88,17 +91,20 @@ elseif (IS_OS_WINDOWS)
 
     # Copy and rename dlls
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${GLFW_DLL}"
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/glfw3.dll")
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/glfw3.dll"
+    )
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SDL2_DLL}"
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2.dll")
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2.dll"
+    )
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SDL2MIXER_DLL}"
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2_mixer.dll")
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2_mixer.dll"
+    )
 
 endif()
 
