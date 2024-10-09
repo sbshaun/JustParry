@@ -4,6 +4,8 @@
 #include "window.hpp"
 #include "renderer.hpp"
 #include <assert.h>
+#include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
+#include "world/world_init.hpp" // TEMP: test it compiles.
 
 int main() {
     GLWindow glWindow(1024, 768);
