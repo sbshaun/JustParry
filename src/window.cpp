@@ -1,4 +1,4 @@
-#include "window.hpp";
+#include "window.hpp"
 
 GLWindow::GLWindow() {
     m_window_width_px = 1024;
