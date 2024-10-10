@@ -1,9 +1,10 @@
 #define GL_SILENCE_DEPRECATION // supress warning on mac: " 'glViewport' is deprecated: first deprecated in macOS 10.14 - OpenGL API deprecated."
 #include "window.hpp"
+#include "constants.hpp"
 
 GLWindow::GLWindow() {
-    m_window_width_px = 1024;
-    m_window_height_px = 768;
+    m_window_width_px = M_WINDOW_WIDTH_PX;
+    m_window_height_px = M_WINDOW_HEIGHT_PX;
     window = create_window();
 }
 

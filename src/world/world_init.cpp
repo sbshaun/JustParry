@@ -1,5 +1,6 @@
 #include "world_init.hpp"
 #include "../ecs/ecs_registry.hpp"
+#include "constants.hpp"
 
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
@@ -50,13 +51,19 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
 }; 
 
 Entity createPlayer2(GlRender* renderer, vec2 pos) {
-    //
+    Entity entity = Entity();
+    return entity;
+    // TODO 
 };
 
 Entity createOpponent1(GlRender* renderer, vec2 pos) {
-    // 
+    Entity entity = Entity();
+    return entity;
+    // TODO 
 };
 
 Entity createBoundary(vec2 pos, vec2 size) {
-    // 
+    Entity entity = Entity();
+    return entity;
+    // TODO 
 };

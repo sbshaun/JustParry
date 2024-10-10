@@ -77,7 +77,7 @@ struct HurtBox {
 };
 
 struct ParryBox {
-    // thinking maybe when parrying, we can add a ParryBox for 2 frames, if hitbox hits ParryBox, the attack is parried. 
+    // if hitbox collides ParryBox, the attack is parried. 
     float x, y; 
     float width, height; 
     bool active = false; // active for 12 frames 
@@ -86,11 +86,15 @@ struct ParryBox {
 struct PerfectParryBox {
     float x, y;
     float width, height;
-    bool active = false; // active for 3 frames 
+    bool active = false; // active for 3 frames, check if an attack collides with PerfectParryBox 
 };
 
 struct Sprite {
     // the sprite file to use for the entity. 
+};
+
+struct Boundary {
+    bool isBoundary = true; 
 };
 
 
