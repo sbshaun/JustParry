@@ -4,9 +4,12 @@
 #include "window.hpp"
 #include "renderer.hpp"
 #include <assert.h>
+#include "constants.hpp"
+#include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
+#include "world/world_init.hpp" // TEMP: test it compiles.
 
 int main() {
-    GLWindow glWindow(1024, 768);
+    GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
     const int is_fine = gl3w_init();
     assert(is_fine == 0);
 
@@ -26,6 +29,8 @@ int main() {
     // clean up
     renderer.shutdown();
     glWindow.windowShutdown();
+
+    createPlayer1(&renderer, {0, 0}); // TEMP: tests itcompiles
 
     exit(0);
 }

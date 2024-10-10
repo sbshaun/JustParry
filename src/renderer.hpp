@@ -1,3 +1,4 @@
+#pragma once
 #include "../external/project_path.hpp"
 #include "shader.hpp"
 #include "mesh.hpp"

@@ -27,8 +27,10 @@ if (IS_OS_MAC)
   include_directories(/usr/local/include)
   link_directories(/usr/local/lib)
   # 2024-09-24 - added for M-series Mac's
-  include_directories(/opt/homebrew/include)
-  link_directories(/opt/homebrew/lib)
+  if(EXISTS "/opt/homebrew")
+    include_directories(/opt/homebrew/include)
+    link_directories(/opt/homebrew/lib)
+  endif()
 endif()
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
@@ -119,7 +121,15 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} glm::glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} glm::glm)
+
+if (NOT SDL2_FOUND)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${SDL2_LIBRARIES})
+endif()
+
+if (NOT SDL2MIXER_FOUND)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${SDL2MIXER_LIBRARIES})
+endif()
 
 # Needed to add this
 if(IS_OS_LINUX)

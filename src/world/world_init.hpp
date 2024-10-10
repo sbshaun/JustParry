@@ -1,0 +1,14 @@
+#pragma once
+
+#include <glm/vec2.hpp>
+#include "../ecs/ecs.hpp"
+#include "../renderer.hpp"
+
+using namespace glm; 
+
+// Functions to create entities and init components 
+Entity createPlayer1(GlRender* renderer, vec2 pos);
+Entity createPlayer2(GlRender* renderer, vec2 pos);
+Entity createOpponent1(GlRender* renderer, vec2 pos);
+
+Entity createBoundary(vec2 pos, vec2 size);
