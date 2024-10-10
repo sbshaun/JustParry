@@ -3,6 +3,7 @@
 
 #include "ecs.hpp"
 #include "components.hpp"
+#include <typeinfo>
 
 // adapted from A1 
 class ECSRegistry

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 // adapted from tiny_ecs 
 // Unique identifyer for all entities
