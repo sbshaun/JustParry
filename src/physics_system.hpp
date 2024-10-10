@@ -1,3 +1,5 @@
+#pragma once
+#include <common.hpp>
 /*
 	Physics System:
 	- Handle Collision Check

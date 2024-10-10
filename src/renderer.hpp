@@ -2,7 +2,7 @@
 #include "../external/project_path.hpp"
 #include "shader.hpp"
 #include "mesh.hpp"
-#include <vector>
+#include <common.hpp>
 
 class GlRender {
 public:

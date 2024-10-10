@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-#include <gl3w.h>
+#include <common.hpp>
 
 class Shader {
 public:

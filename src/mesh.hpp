@@ -1,7 +1,5 @@
 #pragma once
-#include <vector>
-#include <gl3w.h>
-#include <iostream>
+#include <common.hpp>
 
 class Mesh {
 protected:
