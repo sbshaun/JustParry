@@ -20,50 +20,45 @@ std::string Shader::readShaderFile(const std::string& filePath) {
     return oss.str();
 }
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
-    std::string vertexCode = readShaderFile(vertexPath);
-	std::string fragmentCode = readShaderFile(fragmentPath);
-
+Shader::Shader(const std::string& folderPath) {
+    std::string vertexCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/shaders/") + folderPath + std::string("/vs.glsl"));
+	std::string fragmentCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/shaders/") + folderPath + std::string("/fs.glsl"));
+    gl_has_errors();
     const char* vertexShaderSource = vertexCode.c_str();
     const char* fragmentShaderSource = fragmentCode.c_str();
+    gl_has_errors();
 
-    // Vertex Shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
     checkCompileErrors(vertexShader, "VERTEX");
-
-    // Fragment Shader
+	
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
     checkCompileErrors(fragmentShader, "FRAGMENT");
 
+    gl_has_errors();
     // Shader Program
     m_shaderProgram = glCreateProgram();
     glAttachShader(m_shaderProgram, vertexShader);
     glAttachShader(m_shaderProgram, fragmentShader);
     glLinkProgram(m_shaderProgram);
     checkCompileErrors(m_shaderProgram, "PROGRAM");
-
+    gl_has_errors();
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        std::cerr << "OpenGL error during Shader creation: " << error << std::endl;
-    }
-    else {
-        std::cout << "Shader program linked successfully." << std::endl;
-    }
+    gl_has_errors();
 }
 
 void Shader::use() {
     glUseProgram(m_shaderProgram);
 }
 
-unsigned int Shader::getProgram() const {
-    return m_shaderProgram;
+void Shader::setMat4(const std::string& name, const float* value) {
+    GLuint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+    glUniformMatrix4fv(location, 1, GL_FALSE, value);
 }
 
 Shader::~Shader() {

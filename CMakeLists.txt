@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set the project name
 project(JustParry)
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp src/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp)
 
 # adapted from SimpleGL
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -33,9 +33,12 @@ if (IS_OS_MAC)
   endif()
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC src/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${SOURCE_DIR})
+
+# External header-only libs
+target_include_directories(${PROJECT_NAME} PUBLIC external/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC external/gl3w)
 
 # Find OpenGL

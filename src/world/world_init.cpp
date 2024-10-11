@@ -1,6 +1,6 @@
 #include "world_init.hpp"
 #include "../ecs/ecs_registry.hpp"
-#include "constants.hpp"
+#include "../constants.hpp"
 
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();

@@ -1,6 +1,7 @@
 #define GL_SILENCE_DEPRECATION // supress warning on mac: " 'glViewport' is deprecated: first deprecated in macOS 10.14 - OpenGL API deprecated."
 #include "window.hpp"
 #include "constants.hpp"
+#include "common.hpp"
 
 GLWindow::GLWindow() {
     m_window_width_px = M_WINDOW_WIDTH_PX;
@@ -59,8 +60,6 @@ GLFWwindow* GLWindow::create_window() {
     glfwSetWindowUserPointer(window, this);
     auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GLWindow*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
     glfwSetKeyCallback(window, key_redirect);
-
-    glViewport(0, 0, window_width_px(), window_height_px());
 
     glfwMakeContextCurrent(window);
 
