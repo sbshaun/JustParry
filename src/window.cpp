@@ -59,6 +59,7 @@ GLFWwindow* GLWindow::create_window() {
     // http://www.glfw.org/docs/latest/input_guide.html
     glfwSetWindowUserPointer(window, this);
     auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GLWindow*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
+    
     glfwSetKeyCallback(window, key_redirect);
 
     glfwMakeContextCurrent(window);
