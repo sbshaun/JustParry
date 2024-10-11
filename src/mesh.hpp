@@ -1,13 +1,16 @@
 #pragma once
-#include <vector>
-#include <gl3w.h>
-#include <iostream>
+#include "common.hpp"
 
 class Mesh {
 protected:
     GLuint VAO, VBO;
+    std::vector<float> vertices;
+    glm::mat4 modelMatrix;
 public:
     Mesh(const std::vector<float>& vertices);
     void draw();
+    void setPosition(const glm::vec3& pos);
+    void setRotation(float angle, const glm::vec3& axis);
+    void setScale(const glm::vec3& scale);
     ~Mesh();
 };

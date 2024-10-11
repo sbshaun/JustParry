@@ -1,8 +1,11 @@
 #include "mesh.hpp"
 
 Mesh::Mesh(const std::vector<float>& vertices) {
+    this->vertices = vertices;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+
+    gl_has_errors();
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -10,28 +13,32 @@ Mesh::Mesh(const std::vector<float>& vertices) {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        std::cerr << "OpenGL error during mesh creation: " << error << std::endl;
-    }
-    else {
-		std::cout << "Mesh created successfully" << std::endl;
-    }
+    
+    gl_has_errors();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+    gl_has_errors();
 }
 
 void Mesh::draw() {
     glBindVertexArray(VAO);
-    /*GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        std::cerr << "OpenGL error bind vertex array: " << error << std::endl;
-    }
-    else {
-        std::cout << "OpenGL bind vertex array successful" << std::endl;
-    }*/
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    gl_has_errors();
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    glBindVertexArray(0);
+}
+
+void Mesh::setPosition(const glm::vec3& pos) {
+    modelMatrix = glm::translate(glm::mat4(1.0f), pos);
+}
+
+void Mesh::setRotation(float angle, const glm::vec3& axis) {
+    modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
+}
+
+void Mesh::setScale(const glm::vec3& scale) {
+    modelMatrix = glm::scale(glm::mat4(1.0f), scale);
 }
 
 Mesh::~Mesh() {}

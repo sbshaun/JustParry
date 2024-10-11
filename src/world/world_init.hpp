@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 #include "../ecs/ecs.hpp"
 #include "../renderer.hpp"
+#include "../ecs/ecs.hpp"
 
 using namespace glm; 
 

@@ -1,9 +1,5 @@
 #pragma once
-#define NOMINMAX
-#include <GLFW/glfw3.h>
-
-#include <cstdlib>
-#include <iostream>
+#include "common.hpp"
 
 
 class GLWindow {
