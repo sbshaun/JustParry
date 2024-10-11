@@ -1,6 +1,7 @@
 #include "mesh.hpp"
 
 Mesh::Mesh(const std::vector<float>& vertices) {
+    this->vertices = vertices;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -24,7 +25,7 @@ Mesh::Mesh(const std::vector<float>& vertices) {
 void Mesh::draw() {
     glBindVertexArray(VAO);
     gl_has_errors();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
     glBindVertexArray(0);
 }
 
