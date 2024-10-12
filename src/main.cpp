@@ -7,7 +7,7 @@
 #include "constants.hpp"
 #include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
 #include "world/world_system.hpp" // TEMP: test it compiles.
-#include <chrono>
+
 
 // Global timer variables
 int timer = 100;

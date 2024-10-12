@@ -35,7 +35,7 @@ if (IS_OS_MAC)
   endif()
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES} "external/GLText.h")
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${SOURCE_DIR})
 

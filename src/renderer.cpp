@@ -1,12 +1,5 @@
 #include "renderer.hpp"
 #include "ecs/ecs_registry.hpp"
-#include <iostream>
-#include <string>
-#include <sstream>
-
-#define GLT_IMPLEMENTATION
-#include <GLText.h>
-
 
 GlRender::GlRender() {}
 
