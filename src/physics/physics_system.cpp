@@ -27,8 +27,6 @@ void PhysicsSystem::step() {
 			// Case: Right Wall 
 			if (boundary.dir == RIGHT) {
 				float playerPos = playerMotion.position.x; //changed from [0] to x for readability
-				//std::cout << "Player X Position" << playerMotion.position[0] << std::endl;
-				//std::cout << "Boundary Val" << boundary.val << std::endl;
 				if (playerPos > boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
 						std::cout << "COLLIDED 1 (RIGHT)" << std::endl;

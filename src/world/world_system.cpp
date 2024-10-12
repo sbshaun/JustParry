@@ -93,11 +93,11 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
 
     if (player2Input.left) {
         player2Motion.velocity.x = -MOVE_SPEED;
-        std::cout << "Player 1 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
+        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if (player2Input.right) {
         player2Motion.velocity.x = MOVE_SPEED;
-        std::cout << "Player 1 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
+        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if(player2Input.right && player2Input.left){ //SOCD CLEANING
         player2Motion.velocity.x = 0;

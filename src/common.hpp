@@ -18,8 +18,9 @@
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
 
-// sdl
-// #include <SDL.h>
+// sdl - Need the SDL_MAIN_HANDLED macro to prevent LNK error
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
 
 // The glm library provides vector and matrix operations as in GLSL
 #include <glm/vec2.hpp>				// vec2
