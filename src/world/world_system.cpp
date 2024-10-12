@@ -86,22 +86,22 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
     // TODO: handle up, down, punch, kick
 
     if (player2Input.left) {
-        player1Motion.velocity.x = -MOVE_SPEED;
-        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
+        player2Motion.velocity.x = -MOVE_SPEED;
+        std::cout << "Player 1 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if (player2Input.right) {
-        player1Motion.velocity.x = MOVE_SPEED;
-        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
+        player2Motion.velocity.x = MOVE_SPEED;
+        std::cout << "Player 1 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if(player2Input.right && player2Input.left){ //SOCD CLEANING
-        player1Motion.velocity.x = 0;
+        player2Motion.velocity.x = 0;
     }
-    if (player1Motion.velocity.x != 0 && !player1IsJumping){ //check if left or right is still pressed and if not sets velocity back to 0 --- I wonder if we should have acceleration system? --probably overcomplicates it...
-        if(player1Motion.velocity.x > 0 && !player2Input.right){
-            player1Motion.velocity.x = 0;
+    if (player2Motion.velocity.x != 0 && !player2IsJumping){ //check if left or right is still pressed and if not sets velocity back to 0 --- I wonder if we should have acceleration system? --probably overcomplicates it...
+        if(player2Motion.velocity.x > 0 && !player2Input.right){
+            player2Motion.velocity.x = 0;
         }
-        if(player1Motion.velocity.x < 0 && !player2Input.left){
-            player1Motion.velocity.x = 0;
+        if(player2Motion.velocity.x < 0 && !player2Input.left){
+            player2Motion.velocity.x = 0;
         }
     }
 
