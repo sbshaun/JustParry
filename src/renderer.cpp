@@ -45,6 +45,9 @@ void GlRender::initializeUI() {
 void GlRender::render() {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Black background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // debugging wireframe
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     for (Entity& entity : registry.renderable.entities) {
         Renderable& mesh_shader = registry.renderable.get(entity);

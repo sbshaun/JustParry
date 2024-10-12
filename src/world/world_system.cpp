@@ -71,11 +71,11 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
 
     if (player1Input.left) {
         player1Motion.velocity.x = -MOVE_SPEED;
-        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
+        // std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
     if (player1Input.right) {
         player1Motion.velocity.x = MOVE_SPEED;
-        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
+        // std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
     if(player1Input.right && player1Input.left){ //SOCD CLEANING
         player1Motion.velocity.x = 0;
@@ -93,11 +93,11 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
 
     if (player2Input.left) {
         player2Motion.velocity.x = -MOVE_SPEED;
-        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
+        // std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if (player2Input.right) {
         player2Motion.velocity.x = MOVE_SPEED;
-        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
+        // std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if(player2Input.right && player2Input.left){ //SOCD CLEANING
         player2Motion.velocity.x = 0;
@@ -135,12 +135,12 @@ void WorldSystem::handle_collisions() {
 
         if (boundary.dir == RIGHT) {
             std::cout << "RESOLVE COL 1 (RIGHT)" << std::endl;
-            playerMotion.position = vec2(boundary.val, playerMotion.position.y); //[1] -> for readability
+            playerMotion.position = vec2(boundary.val - NDC_WIDTH / 2.0f, playerMotion.position.y); //[1] -> for readability
             registry.boundaryCollisions.remove(playerEntity); //remove the specific player rather than all collisions (as not all collisions were resolved yet)
         }
         if (boundary.dir == LEFT) { //removed else to cover wild edge case of both boundaries being touched simulttaneously
             std::cout << "RESOLVE COL 2 (LEFT)" << std::endl;
-            playerMotion.position = vec2(boundary.val, playerMotion.position.y); //refer to above comments
+            playerMotion.position = vec2(boundary.val + NDC_WIDTH / 2.0f, playerMotion.position.y); //refer to above comments
             registry.boundaryCollisions.remove(playerEntity);
         }
 
