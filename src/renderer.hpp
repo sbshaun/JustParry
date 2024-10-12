@@ -3,6 +3,7 @@
 #include "shader.hpp"
 #include "mesh.hpp"
 #include "common.hpp"
+#include "ecs/ecs.hpp"
 
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
@@ -19,6 +20,8 @@ public:
     void addMesh(const Mesh& mesh, Shader* shader);
 
     ~GlRender();
+    Entity m_player1;
+    Entity m_player2;
 
 private:
     std::vector<std::pair<Mesh, Shader*>> m_entityMeshes;

@@ -54,8 +54,11 @@ void GlRender::renderUI(int timer) {
     // currently hard coded for two initial entities, 
     // to be updated once everything is added
     const auto& playerhealths = registry.healths;
-    const int p1Health = playerhealths.components.at(0).currentHealth;
-    const int p2Health = playerhealths.components.at(1).currentHealth;
+    // const int p1Health = playerhealths.components.at(0).currentHealth;
+    // const int p2Health = playerhealths.components.at(1).currentHealth;
+
+    const int p1Health = registry.healths.get(m_player1).currentHealth;
+    const int p2Health = registry.healths.get(m_player2).currentHealth;
 
     // Render timer and health text
     if (m_timerText && m_leftText && m_rightText) {
