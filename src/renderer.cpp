@@ -36,6 +36,10 @@ void GlRender::initializeUI() {
     time = gltCreateText();
     assert(time);
     gltSetText(time, "100");
+
+    m_roundOver = gltCreateText();
+    assert(m_roundOver);  
+    gltSetText(m_roundOver, "ROUND OVER");
 }
 
 void GlRender::render() {
@@ -64,6 +68,10 @@ void GlRender::renderUI(int timer) {
 
     const int p1Health = registry.healths.get(m_player1).currentHealth;
     const int p2Health = registry.healths.get(m_player2).currentHealth;
+    
+    // if(timer == 0){
+    //     gltDrawText2D(m_roundOver, 512, 400, 1.f);
+    // }
 
     // Render timer and health text
     if (m_timerText && m_leftText && m_rightText) {
@@ -118,6 +126,9 @@ void GlRender::shutdown() {
     }
     if (time) {
         gltDeleteText(time);
+    }
+    if (m_roundOver) {
+        gltDeleteText(m_roundOver);
     }
     gltTerminate();
 

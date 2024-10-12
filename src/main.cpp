@@ -25,7 +25,7 @@ int generateUI(GlRender& renderer) {
         std::cout << timer << std::endl;
     }
 
-    if (timer == 0) { //handle when the timer hits 0
+    if (timer == 0) {
         return 1;
     }
 

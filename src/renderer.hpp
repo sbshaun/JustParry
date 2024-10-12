@@ -27,6 +27,7 @@ private:
     GLTtext* m_timerText;
     GLTtext* m_leftText;
     GLTtext* m_rightText;
+    GLTtext* m_roundOver;
 
     // actual values
     GLTtext* h1;
