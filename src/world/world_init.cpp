@@ -142,8 +142,12 @@ Entity createOpponent1(GlRender* renderer, vec2 pos) {
     // TODO 
 };
 
-Entity createBoundary(vec2 pos, vec2 size) {
+Entity createBoundary(float val, int type) {
     Entity entity = Entity();
+
+    Boundary& boundary = registry.boundaries.emplace(entity);
+    boundary.val = val;
+    boundary.dir = type;
     return entity;
-    // TODO 
 };
+

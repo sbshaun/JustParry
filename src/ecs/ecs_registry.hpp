@@ -26,6 +26,8 @@ public:
 	ComponentContainer<ParryBox> parryBoxes; 
 	ComponentContainer<PerfectParryBox> perfectParryBoxes; 
 	ComponentContainer<Sprite> sprites; 
+	ComponentContainer<Boundary> boundaries;
+	ComponentContainer<BoundaryCollision> boundaryCollisions;
 
     // TODO: add render related components 
 
@@ -46,6 +48,8 @@ public:
         registry_list.push_back(&parryBoxes);
         registry_list.push_back(&perfectParryBoxes);
         registry_list.push_back(&sprites);
+		registry_list.push_back(&boundaries);
+		registry_list.push_back(&boundaryCollisions);
 	}
 
 	void clear_all_components() {

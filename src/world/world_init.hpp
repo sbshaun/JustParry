@@ -11,5 +11,4 @@ using namespace glm;
 Entity createPlayer1(GlRender* renderer, vec2 pos);
 Entity createPlayer2(GlRender* renderer, vec2 pos);
 Entity createOpponent1(GlRender* renderer, vec2 pos);
-
-Entity createBoundary(vec2 pos, vec2 size);
+Entity createBoundary(float val, int type);
