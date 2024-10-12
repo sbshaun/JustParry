@@ -51,7 +51,7 @@ void WorldSystem::handleInput() {
     if (isKeyPressed(GLFW_KEY_PERIOD)) player2Input.kick = true;
 }
 
-void WorldSystem::updateMovement() {
+void WorldSystem::inputProcessing() { //renamed as it will proccess the input -> ingame logic, not just movement
     Motion& player1Motion = registry.motions.get(renderer->m_player1);
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
 
@@ -64,24 +64,53 @@ void WorldSystem::updateMovement() {
     static float player2JumpStartY = 0.0f;
 
     if (player1Input.left) {
-        player1Motion.position.x -= MOVE_SPEED;
+        player1Motion.velocity.x = -MOVE_SPEED;
         std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
     if (player1Input.right) {
-        player1Motion.position.x += MOVE_SPEED;
+        player1Motion.velocity.x = MOVE_SPEED;
         std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
+    }
+    if(player1Input.right && player1Input.left){ //SOCD CLEANING
+        player1Motion.velocity.x = 0;
+    }
+    if (player1Motion.velocity.x != 0 && !player1IsJumping){ //check if left or right is still pressed and if not sets velocity back to 0 --- I wonder if we should have acceleration system? --probably overcomplicates it...
+        if(player1Motion.velocity.x > 0 && !player1Input.right){
+            player1Motion.velocity.x = 0;
+        }
+        if(player1Motion.velocity.x < 0 && !player1Input.left){
+            player1Motion.velocity.x = 0;
+        }
     }
     
     // TODO: handle up, down, punch, kick
 
     if (player2Input.left) {
-        player2Motion.position.x -= MOVE_SPEED;
-        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
+        player1Motion.velocity.x = -MOVE_SPEED;
+        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
     if (player2Input.right) {
-        player2Motion.position.x += MOVE_SPEED;
-        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
+        player1Motion.velocity.x = MOVE_SPEED;
+        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
+    }
+    if(player2Input.right && player2Input.left){ //SOCD CLEANING
+        player1Motion.velocity.x = 0;
+    }
+    if (player1Motion.velocity.x != 0 && !player1IsJumping){ //check if left or right is still pressed and if not sets velocity back to 0 --- I wonder if we should have acceleration system? --probably overcomplicates it...
+        if(player1Motion.velocity.x > 0 && !player2Input.right){
+            player1Motion.velocity.x = 0;
+        }
+        if(player1Motion.velocity.x < 0 && !player2Input.left){
+            player1Motion.velocity.x = 0;
+        }
     }
 
     // TODO: handle up, down, punch, kick
+}
+
+void WorldSystem::movementProcessing() {
+    Motion& player1Motion = registry.motions.get(renderer->m_player1);
+    Motion& player2Motion = registry.motions.get(renderer->m_player2);
+    player1Motion.position += player1Motion.velocity;
+    player2Motion.position += player2Motion.velocity;    
 }

@@ -39,7 +39,7 @@ void GlRender::initializeUI() {
 
     m_roundOver = gltCreateText();
     assert(m_roundOver);  
-    gltSetText(m_roundOver, "ROUND OVER");
+    gltSetText(m_roundOver, "ROUND OVER (please press esc and reset)");
 }
 
 void GlRender::render() {
