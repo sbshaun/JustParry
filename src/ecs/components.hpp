@@ -1,5 +1,7 @@
 #pragma once
 #include "../common.hpp"
+#include "../mesh.hpp"
+#include "../shader.hpp"
 
 enum class PlayerState { 
     IDLE,
@@ -95,7 +97,10 @@ struct Boundary {
 
 
 // TODO: add render related components 
-
+struct Renderable {
+    Mesh mesh;
+    Shader* shader;
+};
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
 struct ColoredVertex

@@ -28,6 +28,7 @@ public:
 	ComponentContainer<Sprite> sprites; 
 
     // TODO: add render related components 
+	ComponentContainer<Renderable> renderable;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -46,6 +47,8 @@ public:
         registry_list.push_back(&parryBoxes);
         registry_list.push_back(&perfectParryBoxes);
         registry_list.push_back(&sprites);
+
+		registry_list.push_back(&renderable);
 	}
 
 	void clear_all_components() {

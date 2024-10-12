@@ -13,7 +13,8 @@ public:
 
 	// TODO: Handle the movement and collision
 	void handleInput();
-	void updateMovement();
+	void inputProcessing();
+	void movementProcessing();
 	// bool step(float elapsed_ms);
 	// void handle_collisions();
 
