@@ -15,3 +15,9 @@ const float PLAYER_2_BB_HEIGHT = 3.0f * 50.f;
 // AI opponent 
 const float OPPONENT_1_BB_WIDTH   = 1.0f * 100.f;
 const float OPPONENT_1_BB_HEIGHT  = 1.0f * 50.f;
+
+// movement
+const float JUMP_HEIGHT = 0.5f;
+const float JUMP_DURATION = 1.0f;
+const float GRAVITY = 0.1f;
+const float MOVE_SPEED = 1.0f;
