@@ -18,6 +18,9 @@
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
 
+// sdl
+#include <SDL.h>
+
 // The glm library provides vector and matrix operations as in GLSL
 #include <glm/vec2.hpp>				// vec2
 #include <glm/ext/vector_int2.hpp>  // ivec2
