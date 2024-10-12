@@ -19,7 +19,7 @@
 #include <GLText.h>
 
 // sdl
-#include <SDL.h>
+// #include <SDL.h>
 
 // The glm library provides vector and matrix operations as in GLSL
 #include <glm/vec2.hpp>				// vec2

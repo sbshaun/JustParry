@@ -19,6 +19,9 @@ void WorldSystem::init(GlRender *renderer) {
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
+
+    Entity boundaryRight = createBoundary(2.0, 1);
+    Entity boundaryLeft = createBoundary(-2.0, 2);
 }
 
 bool isKeyPressed(int key) {
@@ -113,4 +116,34 @@ void WorldSystem::movementProcessing() {
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
     player1Motion.position += player1Motion.velocity;
     player2Motion.position += player2Motion.velocity;    
+}
+
+void WorldSystem::handle_collisions() {
+    auto& collisionsRegistry = registry.boundaryCollisions;
+    for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
+        // the two entities involved in the collision
+        Entity playerEntity = collisionsRegistry.entities[i];
+        Entity boundaryEntity = collisionsRegistry.components[i].boundary;
+
+        // get the motion of the player to place the player next to the boundary 
+        Motion& playerMotion = registry.motions.get(playerEntity);
+        HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
+        Boundary& boundary = registry.boundaries.get(boundaryEntity);
+
+        //
+        if (boundary.dir == 1) {
+            playerMotion.position = vec2(-2, playerMotion.position[1]);
+            registry.boundaryCollisions.clear();
+        }
+        else if (boundary.dir == 2) {
+            playerMotion.position = vec2(2, playerMotion.position[1]);
+            registry.boundaryCollisions.clear();
+        }
+
+
+        // implement when jumps are implemented
+        /*else if (boundary.dir == 3) {
+
+        }*/
+    }
 }
