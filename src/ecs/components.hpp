@@ -57,11 +57,8 @@ struct PlayerInput {
     bool down = false;
     bool left = false;
     bool right = false;
-    bool jump = false;
-    bool crouch = false;
     bool punch = false;
     bool kick = false;
-    bool parry = false;
 };
 
 // TODO: how do we move the box along the player? 

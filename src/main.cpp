@@ -52,6 +52,8 @@ int main() {
 
     // Main loop
     while (!glWindow.shouldClose()) {
+        worldSystem.handleInput();
+        worldSystem.updateMovement();
         renderer.render();
 
         // render the UI.
