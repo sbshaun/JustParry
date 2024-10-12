@@ -12,8 +12,8 @@ public:
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
-	void WorldSystem::handleInput();
-	void WorldSystem::updateMovement();
+	void handleInput();
+	void updateMovement();
 	// bool step(float elapsed_ms);
 	// void handle_collisions();
 
