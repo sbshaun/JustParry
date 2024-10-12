@@ -48,17 +48,19 @@ void GlRender::render() {
 
     // debugging wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
     for (Entity& entity : registry.renderable.entities) {
         Renderable& mesh_shader = registry.renderable.get(entity);
         Shader* shader = mesh_shader.shader;
         Mesh &mesh = mesh_shader.mesh;
         shader->use();
-
+        
         Motion& motion = registry.motions.get(entity);
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
+
         shader->setMat4("model", modelMatrix);
+
         mesh.draw();
     }
 }

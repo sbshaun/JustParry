@@ -9,14 +9,14 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        pos.x - NDC_WIDTH / 2, pos.y + NDC_HEIGHT / 2, 0.0f,  // Top-left
-        pos.x - NDC_WIDTH / 2, pos.y - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
-        pos.x + NDC_WIDTH / 2, pos.y - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        pos.x + NDC_WIDTH / 2, pos.y - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
-        pos.x + NDC_WIDTH / 2, pos.y + NDC_HEIGHT / 2, 0.0f,  // Top-right
-        pos.x - NDC_WIDTH / 2, pos.y + NDC_HEIGHT / 2, 0.0f   // Top-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f   // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
@@ -77,14 +77,14 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        pos.x - NDC_WIDTH / 2, pos.y + NDC_HEIGHT / 2, 0.0f,  // Top-left
-        pos.x - NDC_WIDTH / 2, pos.y - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
-        pos.x + NDC_WIDTH / 2, pos.y - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        pos.x + NDC_WIDTH / 2, pos.y - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
-        pos.x + NDC_WIDTH / 2, pos.y + NDC_HEIGHT / 2, 0.0f,  // Top-right
-        pos.x - NDC_WIDTH / 2, pos.y + NDC_HEIGHT / 2, 0.0f   // Top-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f   // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
