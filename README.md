@@ -12,6 +12,9 @@ build or debug
 <h3>Gainput</h3>
 Packaged into the project
 
+<h3>GLText</h3>
+Packaged into the project
+
 <h3>GLM</h3>
 Packaged into the project
 

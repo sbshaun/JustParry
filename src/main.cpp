@@ -8,6 +8,34 @@
 #include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
 #include "world/world_system.hpp" // TEMP: test it compiles.
 
+
+// Global timer variables
+int timer = 100;
+auto last_time = std::chrono::high_resolution_clock::now();
+
+
+int generateUI(GlRender& renderer) {
+    auto current_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = current_time - last_time;
+
+    // update timer each second, game stops at 0.
+    if (elapsed.count() >= 1.0 && timer > 0) {
+        last_time = current_time;
+        timer--;
+        std::cout << timer << std::endl;
+    }
+
+    if (timer == 0) {
+        return 1;
+    }
+
+    // Render the timer and additional text on the screen
+    renderer.renderUI(timer);
+    return 0;
+
+
+}
+
 int main() {
     GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
     const int is_fine = gl3w_init();
@@ -25,6 +53,12 @@ int main() {
     // Main loop
     while (!glWindow.shouldClose()) {
         renderer.render();
+
+        // render the UI.
+        int exit = generateUI(renderer);
+        if (exit == 1) {
+            break;
+        }
         
         // TODO: Handle the movement and collision once implemented
         // worldSystem.step()

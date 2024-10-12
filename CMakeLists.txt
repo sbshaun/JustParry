@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.6)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+include_directories(${CMAKE_SOURCE_DIR}/external/)
+
 # Set the project name
 project(JustParry)
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp)

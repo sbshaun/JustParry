@@ -68,10 +68,72 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     return entity;
 }; 
 
+// the code below is the same as the above function
+// to be modified later.
 Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
+
+    // Convert 'player' width and height to normalized device coordinates
+    float ndcWidth = PLAYER_1_BB_WIDTH / 512.0f;
+    float ndcHeight = PLAYER_1_BB_HEIGHT / 384.0f;
+
+    std::vector<float> rectangleVertices = {
+        // First triangle (Top-left, Bottom-left, Bottom-right)
+        pos.x - ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f,  // Top-left
+        pos.x - ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-left
+        pos.x + ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-right
+
+        // Second triangle (Bottom-right, Top-right, Top-left)
+        pos.x + ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-right
+        pos.x + ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f,  // Top-right
+        pos.x - ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f   // Top-left
+    };
+
+    // TODO: Should have the registry map the entity to its mesh
+    Mesh playerMesh(rectangleVertices);
+    Shader* rectShader = new Shader(std::string("rectangle"));
+    renderer->addMesh(playerMesh, rectShader);
+
+    Health& health = registry.healths.emplace(entity);
+    health.currentHealth = 100.f;
+    health.maxHealth = 100.f;
+
+    Motion& motion = registry.motions.emplace(entity);
+    motion.position = pos;
+    motion.velocity = { 0.f, 0.f };
+    motion.direction = true; // facing right 
+
+    PostureBar& postureBar = registry.postureBars.emplace(entity);
+    postureBar.currentBar = 10;
+    postureBar.maxBar = 10;
+    postureBar.recoverRate = 3; // 3 seconds per bar 
+
+    HitBox& hitBox = registry.hitBoxes.emplace(entity);
+    hitBox.width = PLAYER_1_BB_WIDTH - 10;
+    hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
+    hitBox.x = pos.x + hitBox.width / 2;
+    hitBox.y = pos.y * 0.6;
+
+    ParryBox& parryBox = registry.parryBoxes.emplace(entity);
+    parryBox.x = pos.x;
+    parryBox.y = pos.y;
+    parryBox.width = PLAYER_1_BB_WIDTH;
+    parryBox.height = PLAYER_1_BB_HEIGHT;
+    parryBox.active = false;
+
+    PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
+    perfectParryBox.x = pos.x;
+    perfectParryBox.y = pos.y;
+    perfectParryBox.width = PLAYER_1_BB_WIDTH;
+    perfectParryBox.height = PLAYER_1_BB_HEIGHT;
+    perfectParryBox.active = false;
+
+    PlayerInput playerInput = registry.playerInputs.emplace(entity);
+
+    // register player1 
+    registry.players.emplace(entity);
+
     return entity;
-    // TODO 
 };
 
 Entity createOpponent1(GlRender* renderer, vec2 pos) {
