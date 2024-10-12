@@ -14,18 +14,26 @@ int timer = 100;
 auto last_time = std::chrono::high_resolution_clock::now();
 
 
-void generateUI(GlRender& renderer) {
+int generateUI(GlRender& renderer) {
     auto current_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = current_time - last_time;
 
-    if (elapsed.count() >= 1.0 && timer >= 0) {
+    // update timer each second, game stops at 0.
+    if (elapsed.count() >= 1.0 && timer > 0) {
         last_time = current_time;
-        std::cout << timer << std::endl;
         timer--;
+        std::cout << timer << std::endl;
+    }
+
+    if (timer == 0) {
+        return 1;
     }
 
     // Render the timer and additional text on the screen
     renderer.renderUI(timer);
+    return 0;
+
+
 }
 
 int main() {
@@ -47,7 +55,10 @@ int main() {
         renderer.render();
 
         // render the UI.
-        generateUI(renderer);
+        int exit = generateUI(renderer);
+        if (exit == 1) {
+            break;
+        }
         
         // TODO: Handle the movement and collision once implemented
         // worldSystem.step()
