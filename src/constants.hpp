@@ -21,3 +21,8 @@ const float JUMP_HEIGHT = 0.5f;
 const float JUMP_DURATION = 1.0f;
 const float GRAVITY = 0.1f;
 const float MOVE_SPEED = 0.005f;
+
+//BOUNDING
+const float BOUND_SIZE = 0.5;
+const int LEFT = 2;
+const int RIGHT = 1;

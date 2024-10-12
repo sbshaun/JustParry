@@ -20,9 +20,12 @@ void WorldSystem::init(GlRender *renderer) {
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
 
-    Entity boundaryRight = createBoundary(2.0, 1);
-    Entity boundaryLeft = createBoundary(-2.0, 2);
+    //defined BOUND_SIZE in constants
+    Entity boundaryRight = createBoundary(BOUND_SIZE, 1);
+    Entity boundaryLeft = createBoundary(-BOUND_SIZE, 2);
 }
+
+//IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
 bool isKeyPressed(int key) {
     GLFWwindow* window = glfwGetCurrentContext();
@@ -119,7 +122,7 @@ void WorldSystem::movementProcessing() {
 }
 
 void WorldSystem::handle_collisions() {
-    auto& collisionsRegistry = registry.boundaryCollisions;
+    auto& collisionsRegistry = registry.boundaryCollisions; //checks for everything with the colliding component
     for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
         // the two entities involved in the collision
         Entity playerEntity = collisionsRegistry.entities[i];
@@ -131,13 +134,15 @@ void WorldSystem::handle_collisions() {
         Boundary& boundary = registry.boundaries.get(boundaryEntity);
 
         //
-        if (boundary.dir == 1) {
-            playerMotion.position = vec2(-2, playerMotion.position[1]);
-            registry.boundaryCollisions.clear();
+        if (boundary.dir == RIGHT) {
+            std::cout << "RESOLVE COL 1 (RIGHT)" << std::endl;
+            playerMotion.position = vec2(BOUND_SIZE, playerMotion.position.y); //[1] -> for readability
+            registry.boundaryCollisions.remove(playerEntity); //remove the specific player rather than all collisions (as not all collisions were resolved yet)
         }
-        else if (boundary.dir == 2) {
-            playerMotion.position = vec2(2, playerMotion.position[1]);
-            registry.boundaryCollisions.clear();
+        if (boundary.dir == LEFT) { //removed else to cover wild edge case of both boundaries being touched simulttaneously
+            std::cout << "RESOLVE COL 2 (LEFT)" << std::endl;
+            playerMotion.position = vec2(-BOUND_SIZE, playerMotion.position.y); //refer to above comments
+            registry.boundaryCollisions.remove(playerEntity);
         }
 
 
@@ -147,3 +152,4 @@ void WorldSystem::handle_collisions() {
         }*/
     }
 }
+

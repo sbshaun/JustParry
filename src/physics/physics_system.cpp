@@ -1,6 +1,7 @@
 #include "../physics/physics_system.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../world/world_init.hpp"
+#include "../constants.hpp"
 
 
 
@@ -24,23 +25,23 @@ void PhysicsSystem::step() {
 		for (uint j = 0; j < boundaryContainer.components.size(); j++) {
 			Boundary& boundary = boundaryContainer.components[j];
 			// Case: Right Wall 
-			if (boundary.dir == 1) {
-				float playerXRightPosition = playerMotion.position[0];
+			if (boundary.dir == RIGHT) {
+				float playerPos = playerMotion.position.x; //changed from [0] to x for readability
 				//std::cout << "Player X Position" << playerMotion.position[0] << std::endl;
 				//std::cout << "Boundary Val" << boundary.val << std::endl;
-				if (playerXRightPosition > boundary.val) {
+				if (playerPos > boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						std::cout << "noo" << std::endl;
+						std::cout << "COLLIDED 1 (RIGHT)" << std::endl;
 						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[i]);
 					}
 				}
 			}
 			// Case: Left Wall
-			else if (boundary.dir == 2) {
-				float playerXLeftPosition = playerMotion.position[0];
-				if (playerXLeftPosition < boundary.val) {
+			else if (boundary.dir = LEFT) {
+				float playerPos = playerMotion.position.x;
+				if (playerPos < boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						std::cout << "hi" << std::endl;
+						std::cout << "COLLIDED 2 (LEFT)" << std::endl;
 						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[i]);
 					}
 				}
