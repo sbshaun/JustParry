@@ -25,6 +25,23 @@ void WorldSystem::init(GlRender *renderer) {
 void WorldSystem::handle_collisions() {
 	auto& collisionsRegistry = registry.boundaryCollisions;
 	for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
-		Entity player = collisionsRegistry.entities[i];
+		// the two entities involved in the collision
+		Entity playerEntity = collisionsRegistry.entities[i];
+		Entity boundaryEntity = collisionsRegistry.components[i].boundary;
+
+		// get the motion of the player to place the player next to the boundary 
+		Motion& playerMotion = registry.motions.get(playerEntity);
+		HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
+		Boundary& boundary = registry.boundaries.get(boundaryEntity);
+		if (boundary.dir == 1) {
+			playerMotion.position = vec2(boundary.val, playerMotion.position[2]);
+		}
+		else if (boundary.dir == 2) {
+			playerMotion.position = vec2(boundary.val - playerHitBox.width , playerMotion.position[2]);
+		}
+		// implement when jumps are implemented
+		/*else if (boundary.dir == 3) {
+
+		}*/
 	}
 }

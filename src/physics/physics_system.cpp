@@ -1,32 +1,51 @@
-#include "physics_system.hpp"
+#include "../physics/physics_system.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../world/world_init.hpp"
 
-bool edgeCollides(const HitBox& player, const Boundary& boundary) {
-	float playerXLeftPosition = player.x;
-	float playerXRightPosition = player.x + player.width;
-	float playerYPosition = player.y + player.height;
-	// Case: Right Wall 
-	if (boundary.dir == 1) {
-		if (boundary.val > playerXRightPosition) {
-			registry.boundaryCollisions.emplace_with_duplicates();
+
+
+void PhysicsSystem::step(float elapsed_ms) {
+	
+	// Handling the collions
+	ComponentContainer<Boundary>& boundaryContainer = registry.boundaries;
+	ComponentContainer<Player>& playerContainer = registry.players;
+
+	// Compare each player to each boundary 
+	for (uint i = 0; i < playerContainer.components.size(); i++) {
+
+		// get the Motion and HitBox associated to each player
+		Entity& playerEntity = playerContainer.entities[i];
+		Motion& playerMotion = registry.motions.get(playerEntity);
+		HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
+
+		for (uint j = 0; j < boundaryContainer.components.size(); j++) {
+			Boundary& boundary = boundaryContainer.get(playerEntity);
+
+			// Case: Right Wall 
+			if (boundary.dir == 1) {
+				float playerXRightPosition = playerHitBox.x;
+				if (boundary.val > playerXRightPosition) {
+					registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[i]);
+				}
+
+			}
+			// Case: Left Wall
+			else if (boundary.dir == 2) {
+				float playerXLeftPosition = playerHitBox.x + playerHitBox.width;
+				if (boundary.val < playerXLeftPosition) {
+					registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[i]);
+				}
+
+			}
 		}
-		else false;
-	} 
-	// Case: Left Wall
-	else if (boundary.dir == 2) {
-		if (boundary.val < playerXLeftPosition) {
-			return true;
-		}
-		else false;
 	}
 	// Case: Floor
-	else if (boundary.dir == 3) {
+	/*else if (boundary.dir == 3) {
 		if (boundary.val > playerYPosition) {
-			return true;
+			
 		}
-		else false;
-	}
+		
+	}*/
 }
 /*
 	Physics System:

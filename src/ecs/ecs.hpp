@@ -68,6 +68,7 @@ public:
 	Component& emplace(Entity e, Args &&... args) {
         // notes: emplace constructs a component in place inside the container. 
         // This avoids us to 1. create temporary component objects outside and 2. then pass it to container. 
+
 		return insert(e, Component(std::forward<Args>(args)...));
 	};
 	template<typename... Args>

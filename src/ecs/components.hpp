@@ -98,8 +98,8 @@ struct Boundary {
 };
 
 struct BoundaryCollision {
-    Player player;
-    Boundary boundary;
+    Entity boundary;
+    BoundaryCollision(Entity& boundary) { this->boundary = boundary; };
 };
 
 
