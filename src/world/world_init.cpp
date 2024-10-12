@@ -6,24 +6,22 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
 
     // Convert 'player' width and height to normalized device coordinates
-    float ndcWidth = PLAYER_1_BB_WIDTH / 512.0f;
-	float ndcHeight = PLAYER_1_BB_HEIGHT / 384.0f;
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        pos.x - ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f,  // Top-left
-        pos.x - ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-left
-        pos.x + ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        pos.x + ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-right
-        pos.x + ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f,  // Top-right
-        pos.x - ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f   // Top-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f   // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
-    Shader* rectShader = new Shader(std::string("rectangle"));
+    Shader* rectShader = new Shader(std::string("player1"));
     // renderer->addMesh(playerMesh, rectShader);
 
     registry.renderable.insert(entity, Renderable{playerMesh, rectShader});
@@ -76,24 +74,22 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
 
     // Convert 'player' width and height to normalized device coordinates
-    float ndcWidth = PLAYER_1_BB_WIDTH / 512.0f;
-    float ndcHeight = PLAYER_1_BB_HEIGHT / 384.0f;
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        pos.x - ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f,  // Top-left
-        pos.x - ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-left
-        pos.x + ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        pos.x + ndcWidth / 2, pos.y - ndcHeight / 2, 0.0f,  // Bottom-right
-        pos.x + ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f,  // Top-right
-        pos.x - ndcWidth / 2, pos.y + ndcHeight / 2, 0.0f   // Top-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f   // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
-    Shader* rectShader = new Shader(std::string("rectangle"));
+    Shader* rectShader = new Shader(std::string("player2"));
     // renderer->addMesh(playerMesh, rectShader);
 
     registry.renderable.insert(entity, Renderable{ playerMesh, rectShader });
@@ -146,8 +142,12 @@ Entity createOpponent1(GlRender* renderer, vec2 pos) {
     // TODO 
 };
 
-Entity createBoundary(vec2 pos, vec2 size) {
+Entity createBoundary(float val, int type) {
     Entity entity = Entity();
+
+    Boundary& boundary = registry.boundaries.emplace(entity);
+    boundary.val = val;
+    boundary.dir = type;
     return entity;
-    // TODO 
 };
+

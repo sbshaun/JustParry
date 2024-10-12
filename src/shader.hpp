@@ -7,9 +7,9 @@ public:
     void use();
     void setMat4(const std::string& name, const glm::mat4& trans);
     ~Shader();
+    GLuint m_shaderProgram;
 
 private:
-    GLuint m_shaderProgram;
     void checkCompileErrors(unsigned int shader, const std::string& type);
     std::string readShaderFile(const std::string& filePath);
 };

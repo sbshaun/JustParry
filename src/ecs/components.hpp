@@ -92,7 +92,13 @@ struct Sprite {
 };
 
 struct Boundary {
-    bool isBoundary = true; 
+    float val; // integer to check when comparing the position, x for walls and y for floors
+    int dir; // 1: right side wall, 2: left side wall, 3: ground
+};
+
+struct BoundaryCollision {
+    Entity boundary;
+    BoundaryCollision(Entity& boundary) { this->boundary = boundary; };
 };
 
 

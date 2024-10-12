@@ -5,6 +5,7 @@
 #include "renderer.hpp"
 #include <assert.h>
 #include "constants.hpp"
+#include "physics/physics_system.hpp"
 #include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
 #include "world/world_system.hpp" // TEMP: test it compiles.
 
@@ -50,11 +51,16 @@ int main() {
     WorldSystem worldSystem;
 	worldSystem.init(&renderer);
 
+    // Initialize the physics system that will handle collisions
+    PhysicsSystem physics;
+
     // Main loop
     while (!glWindow.shouldClose()) {
-        worldSystem.handleInput();
-        worldSystem.inputProcessing();
-        worldSystem.movementProcessing();
+        physics.step(); //check for collisions
+        worldSystem.handleInput(); //check if any devices keys are pressed
+        worldSystem.inputProcessing(); //do the appropriate actions for key signals recieved
+        worldSystem.movementProcessing(); //apply velocity for movement
+        worldSystem.handle_collisions(); //if there are collisions work through them accordingly
         renderer.render();
 
         // render the UI.

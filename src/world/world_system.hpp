@@ -9,6 +9,7 @@ class WorldSystem {
 public:
 	WorldSystem();
 	void init(GlRender* renderer);
+	void handle_collisions();
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
@@ -16,7 +17,6 @@ public:
 	void inputProcessing();
 	void movementProcessing();
 	// bool step(float elapsed_ms);
-	// void handle_collisions();
 
 private:
 	GlRender* renderer;
