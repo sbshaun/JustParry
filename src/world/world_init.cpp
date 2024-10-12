@@ -24,7 +24,9 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
     Shader* rectShader = new Shader(std::string("rectangle"));
-    renderer->addMesh(playerMesh, rectShader);
+    // renderer->addMesh(playerMesh, rectShader);
+
+    registry.renderable.insert(entity, Renderable{playerMesh, rectShader});
 
     Health& health = registry.healths.emplace(entity);
     health.currentHealth = 100.f; 
@@ -92,7 +94,9 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
     Shader* rectShader = new Shader(std::string("rectangle"));
-    renderer->addMesh(playerMesh, rectShader);
+    // renderer->addMesh(playerMesh, rectShader);
+
+    registry.renderable.insert(entity, Renderable{ playerMesh, rectShader });
 
     Health& health = registry.healths.emplace(entity);
     health.currentHealth = 100.f;

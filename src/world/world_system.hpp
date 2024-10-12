@@ -13,6 +13,9 @@ public:
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
+	void handleInput();
+	void inputProcessing();
+	void movementProcessing();
 	// bool step(float elapsed_ms);
 
 private:

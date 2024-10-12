@@ -5,7 +5,7 @@ class Shader {
 public:
     Shader(const std::string& folderPath);
     void use();
-    void setMat4(const std::string& name, const float* value);
+    void setMat4(const std::string& name, const glm::mat4& trans);
     ~Shader();
 
 private:

@@ -30,6 +30,7 @@ public:
 	ComponentContainer<BoundaryCollision> boundaryCollisions;
 
     // TODO: add render related components 
+	ComponentContainer<Renderable> renderable;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -50,6 +51,7 @@ public:
         registry_list.push_back(&sprites);
 		registry_list.push_back(&boundaries);
 		registry_list.push_back(&boundaryCollisions);
+		registry_list.push_back(&renderable);
 	}
 
 	void clear_all_components() {

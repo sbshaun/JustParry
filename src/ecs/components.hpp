@@ -1,5 +1,7 @@
 #pragma once
 #include "../common.hpp"
+#include "../mesh.hpp"
+#include "../shader.hpp"
 
 enum class PlayerState { 
     IDLE,
@@ -57,11 +59,8 @@ struct PlayerInput {
     bool down = false;
     bool left = false;
     bool right = false;
-    bool jump = false;
-    bool crouch = false;
     bool punch = false;
     bool kick = false;
-    bool parry = false;
 };
 
 // TODO: how do we move the box along the player? 
@@ -104,7 +103,10 @@ struct BoundaryCollision {
 
 
 // TODO: add render related components 
-
+struct Renderable {
+    Mesh mesh;
+    Shader* shader;
+};
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
 struct ColoredVertex
