@@ -1,5 +1,5 @@
 #include "renderer.hpp"
-#include "ecs/ecs_registry.hpp"
+
 
 GlRender::GlRender() {}
 
@@ -42,10 +42,17 @@ void GlRender::render() {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Black background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    for (auto& entity : m_entityMeshes) {
-        Shader* shader = entity.second;
+    for (Entity& entity : registry.renderable.entities) {
+        Renderable& mesh_shader = registry.renderable.get(entity);
+        Shader* shader = mesh_shader.shader;
+        Mesh &mesh = mesh_shader.mesh;
         shader->use();
-        entity.first.draw();
+
+        Motion& motion = registry.motions.get(entity);
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
+        shader->setMat4("model", modelMatrix);
+        mesh.draw();
     }
 }
 
@@ -54,8 +61,6 @@ void GlRender::renderUI(int timer) {
     // currently hard coded for two initial entities, 
     // to be updated once everything is added
     const auto& playerhealths = registry.healths;
-    // const int p1Health = playerhealths.components.at(0).currentHealth;
-    // const int p2Health = playerhealths.components.at(1).currentHealth;
 
     const int p1Health = registry.healths.get(m_player1).currentHealth;
     const int p2Health = registry.healths.get(m_player2).currentHealth;
@@ -95,13 +100,7 @@ void GlRender::renderUI(int timer) {
 
 }
 
-void GlRender::addMesh(const Mesh& mesh, Shader* shader) {
-    m_entityMeshes.push_back({ mesh, shader });
-}
-
 void GlRender::shutdown() {
-    m_entityMeshes.clear();
-
     if (m_timerText) {
         gltDeleteText(m_timerText);
     }

@@ -1,7 +1,5 @@
 #include "shader.hpp"
 #include <fstream>
-#include <iostream>
-#include <sstream>
 
 std::string Shader::readShaderFile(const std::string& filePath) {
     std::cout << "Loading shader filename: " << filePath << std::endl;
@@ -56,9 +54,9 @@ void Shader::use() {
     glUseProgram(m_shaderProgram);
 }
 
-void Shader::setMat4(const std::string& name, const float* value) {
+void Shader::setMat4(const std::string& name, const glm::mat4& trans) {
     GLuint location = glGetUniformLocation(m_shaderProgram, name.c_str());
-    glUniformMatrix4fv(location, 1, GL_FALSE, value);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(trans));
 }
 
 Shader::~Shader() {

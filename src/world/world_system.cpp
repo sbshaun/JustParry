@@ -14,8 +14,8 @@ void WorldSystem::init(GlRender *renderer) {
 	this->renderer = renderer;
 
 	// Create entities
-	Entity player1 = createPlayer1(renderer, { -0.4, -0.5 });
-	Entity player2 = createPlayer2(renderer, { 0.4, -0.5 });
+	Entity player1 = createPlayer1(renderer, { -0.3, -0.2 });
+	Entity player2 = createPlayer2(renderer, { 0.3, -0.2 });
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
@@ -65,22 +65,23 @@ void WorldSystem::updateMovement() {
 
     if (player1Input.left) {
         player1Motion.position.x -= MOVE_SPEED;
+        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
     if (player1Input.right) {
         player1Motion.position.x += MOVE_SPEED;
+        std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
     
     // TODO: handle up, down, punch, kick
 
     if (player2Input.left) {
         player2Motion.position.x -= MOVE_SPEED;
+        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if (player2Input.right) {
         player2Motion.position.x += MOVE_SPEED;
+        std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
 
     // TODO: handle up, down, punch, kick
-
-    std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
-    std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
 }

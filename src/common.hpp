@@ -24,6 +24,7 @@
 #include <glm/vec3.hpp>             // vec3
 #include <glm/mat3x3.hpp>           // mat3
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "../external/project_path.hpp"
 using namespace glm;
