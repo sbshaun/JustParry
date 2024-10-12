@@ -21,8 +21,8 @@ void WorldSystem::init(GlRender *renderer) {
 	renderer->m_player2 = player2;
 
     //defined BOUND_SIZE in constants
-    Entity boundaryRight = createBoundary(BOUND_SIZE, 1);
-    Entity boundaryLeft = createBoundary(-BOUND_SIZE, 2);
+    Entity boundaryRight = createBoundary(BOUND_SIZE_R, RIGHT);
+    Entity boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
 }
 
 //IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
@@ -133,15 +133,14 @@ void WorldSystem::handle_collisions() {
         HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
         Boundary& boundary = registry.boundaries.get(boundaryEntity);
 
-        //
         if (boundary.dir == RIGHT) {
             std::cout << "RESOLVE COL 1 (RIGHT)" << std::endl;
-            playerMotion.position = vec2(BOUND_SIZE, playerMotion.position.y); //[1] -> for readability
+            playerMotion.position = vec2(boundary.val, playerMotion.position.y); //[1] -> for readability
             registry.boundaryCollisions.remove(playerEntity); //remove the specific player rather than all collisions (as not all collisions were resolved yet)
         }
         if (boundary.dir == LEFT) { //removed else to cover wild edge case of both boundaries being touched simulttaneously
             std::cout << "RESOLVE COL 2 (LEFT)" << std::endl;
-            playerMotion.position = vec2(-BOUND_SIZE, playerMotion.position.y); //refer to above comments
+            playerMotion.position = vec2(boundary.val, playerMotion.position.y); //refer to above comments
             registry.boundaryCollisions.remove(playerEntity);
         }
 

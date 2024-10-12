@@ -32,7 +32,7 @@ void PhysicsSystem::step() {
 				if (playerPos > boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
 						std::cout << "COLLIDED 1 (RIGHT)" << std::endl;
-						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[i]);
+						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[j]);
 					}
 				}
 			}
@@ -42,7 +42,7 @@ void PhysicsSystem::step() {
 				if (playerPos < boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
 						std::cout << "COLLIDED 2 (LEFT)" << std::endl;
-						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[i]);
+						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[j]);
 					}
 				}
 

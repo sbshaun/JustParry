@@ -23,6 +23,7 @@ const float GRAVITY = 0.1f;
 const float MOVE_SPEED = 0.005f;
 
 //BOUNDING
-const float BOUND_SIZE = 0.5;
+const float BOUND_SIZE_L = -0.5;
+const float BOUND_SIZE_R = 0.75;
 const int LEFT = 2;
 const int RIGHT = 1;
