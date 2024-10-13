@@ -93,6 +93,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
     player2Motion.lastPos = player2Motion.position;
 
     // std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
+    // std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
 
     if (player1State.currentState != PlayerState::ATTACKING
         && player1State.currentState != PlayerState::STUNNED

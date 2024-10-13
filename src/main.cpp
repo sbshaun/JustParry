@@ -61,7 +61,7 @@ int main() {
         
         worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
         worldSystem.movementProcessing(); //apply velocity for movement
-        worldSystem.UpdateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 
+        worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 
         
         physics.step(); //check for collisions
         //worldSystem.handle_collisions(); //if there are collisions work through them accordingly
