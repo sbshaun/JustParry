@@ -94,26 +94,6 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
         player1JumpStartY = player1Motion.position.y; // Save starting position
     }
 
-    // TODO: move the jump handling into physics.step
-
-    // Process jump
-    //if (player1IsJumping) {
-    //    // Limit player jump height
-    //    if (player1Motion.position.y >= 0.06) {
-    //        player1Motion.velocity.y = -2.75 * MOVE_SPEED; // Start going down
-    //        player1IsJumping = false; // Reset jumping flag
-    //        player1Input.up = false; // Reset key
-    //    }
-    //}
-    // Handle landing
-    //if (!player1IsJumping) {
-    //    // check if the player has reached the ground
-    //    if (player1Motion.position.y <= -0.20) {
-    //        std::cout << "Player has landed." << std::endl;
-    //        player1Motion.velocity.y = 0; // Stop downward movement
-    //    }
-    //}
-
     if(player1Input.right && player1Input.left){ //SOCD CLEANING
         player1Motion.velocity.x = 0;
     }
@@ -142,24 +122,6 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
         player2Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
         player2JumpStartY = player2Motion.position.y; // Save starting position
     }
-
-    //// Process jump
-    //if (player2IsJumping) {
-    //    // Limit player jump height
-    //    if (player2Motion.position.y >= 0.06) {
-    //        player2Motion.velocity.y = -2.75 * MOVE_SPEED; // Stop upward movement
-    //        player2IsJumping = false; // Reset jumping flag
-    //        player2Input.up = false;
-    //    }
-    //}
-    //// Handle landing
-    //if (!player2IsJumping) {
-    //    // check if the player has reached the ground
-    //    if (player2Motion.position.y <= -0.20) {
-    //        std::cout << "Player has landed." << std::endl;
-    //        player2Motion.velocity.y = 0; // Stop downward movement
-    //    }
-    //}
 
     if(player2Input.right && player2Input.left){ //SOCD CLEANING
         player2Motion.velocity.x = 0;

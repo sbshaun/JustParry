@@ -17,7 +17,6 @@ public:
 	void inputProcessing(int timer);
 	void movementProcessing();
 	// bool step(float elapsed_ms);
-
 private:
 	GlRender* renderer;
 };

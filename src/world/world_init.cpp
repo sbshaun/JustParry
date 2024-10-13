@@ -1,6 +1,7 @@
 #include "world_init.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../constants.hpp"
+#include "../bot.hpp"
 #include <stb_image.h>
 
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
@@ -68,7 +69,7 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     
     // register player1 
     registry.players.emplace(entity);
-    
+
     return entity;
 }; 
 
