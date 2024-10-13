@@ -40,7 +40,6 @@ void WorldSystem::handleInput() {
 
     // Reset inputs
     player1Input = PlayerInput();
-    // player2Input = PlayerInput();
 
     // Player 1 Input
     if (isKeyPressed(GLFW_KEY_W)) player1Input.up = true;
@@ -51,6 +50,8 @@ void WorldSystem::handleInput() {
     if (isKeyPressed(GLFW_KEY_T)) player1Input.kick = true;
 
     // Player 2 Input
+    // disabled for now to handle random bot movements
+    // player2Input = PlayerInput();
     /*if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
     if (isKeyPressed(GLFW_KEY_DOWN)) player2Input.down = true;
     if (isKeyPressed(GLFW_KEY_LEFT)) player2Input.left = true;
