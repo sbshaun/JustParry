@@ -23,6 +23,8 @@ void WorldSystem::init(GlRender *renderer) {
     //defined BOUND_SIZE in constants
     Entity boundaryRight = createBoundary(BOUND_SIZE_R, RIGHT);
     Entity boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
+
+    Entity boundaryFloor = createFloor(renderer);
 }
 
 //IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
@@ -119,9 +121,9 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
         }
         if(player1Motion.velocity.x < 0 && !player1Input.left){
             player1Motion.velocity.x = 0;
-        }
     }
-    
+    }
+
     // TODO: handle up, down, punch, kick
 
     if (player2Input.left) {

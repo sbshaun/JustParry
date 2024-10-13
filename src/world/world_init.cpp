@@ -152,3 +152,29 @@ Entity createBoundary(float val, int type) {
     return entity;
 };
 
+Entity createFloor(GlRender* renderer) {
+    Entity floor = Entity();
+
+    std::vector<float> floorVertices = {
+        -2.0f, -0.5f, 0.0f,
+        -2.0f, -1.0f, 0.0f,
+         2.0f, -1.0f, 0.0f,
+
+         -2.0f, -0.5f, 0.0f,
+         2.0f, -0.5f, 0.0f,
+         2.0f, -1.0f, 0.0f
+    };
+
+    Mesh floorMesh(floorVertices);
+    Shader* floorShader = new Shader(std::string("floor"));
+
+    registry.renderable.insert(floor, Renderable{ floorMesh, floorShader });
+
+    Boundary& boundary = registry.boundaries.emplace(floor);
+
+    boundary.val = -0.5f;
+    boundary.dir = 3; // floor
+
+    return floor;
+}
+
