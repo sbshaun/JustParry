@@ -145,32 +145,3 @@ void WorldSystem::movementProcessing() {
     player2Motion.position += player2Motion.velocity;    
 }
 
-//void WorldSystem::handle_collisions() {
-//    auto& collisionsRegistry = registry.boundaryCollisions; //checks for everything with the colliding component
-//    for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
-//        // the two entities involved in the collision
-//        Entity playerEntity = collisionsRegistry.entities[i];
-//        Entity boundaryEntity = collisionsRegistry.components[i].boundary;
-//
-//        // get the motion of the player to place the player next to the boundary 
-//        Motion& playerMotion = registry.motions.get(playerEntity);
-//        HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
-//        Boundary& boundary = registry.boundaries.get(boundaryEntity);
-//
-//        if (boundary.dir == FLOOR) {
-//            playerMotion.position = playerMotion.lastPos;
-//            playerMotion.velocity.y = 0.0f;
-//            playerMotion.inAir = false;
-//        }
-//        else {
-//            playerMotion.position = playerMotion.lastPos;
-//        }
-//
-//        // implement when jumps are implemented
-//        /*else if (boundary.dir == 3) {
-//
-//        }*/
-//    }
-//    registry.boundaryCollisions.clear();
-//}
-
