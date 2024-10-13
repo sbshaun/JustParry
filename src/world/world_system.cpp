@@ -72,8 +72,6 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
     player1Motion.lastPos = player1Motion.position;
     player2Motion.lastPos = player2Motion.position;
 
-    std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
-
     if (player1Input.left) {
         player1Motion.velocity.x = -MOVE_SPEED;
         // std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;

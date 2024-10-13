@@ -49,11 +49,18 @@ void GlRender::initializeUI() {
 }
 
 void GlRender::render() {
-    glClearColor(0.0f, 0.0f, 0.1f, 0.0f); // Black background
+    glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // Black background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    float p1_x = registry.motions.get(m_player1).position.x;
+    float p2_x = registry.motions.get(m_player2).position.x;
+
+    bool flipP1 = (p1_x > p2_x);
+    bool flipP2 = (p2_x > p1_x);
 
     // debugging wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     for (Entity& entity : registry.renderable.entities) {
         Renderable& mesh_shader = registry.renderable.get(entity);
@@ -66,20 +73,36 @@ void GlRender::render() {
         modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
+        if (entity == m_player1) {
+            if (flipP1) {
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
+            }
+            else {
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+            }
+        }
+
+        if (entity == m_player2) {
+            if (flipP2) {
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
+            }
+            else {
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+            }
+        }
+
         shader->setMat4("model", modelMatrix);
 
         if (mesh_shader.texture) {
+            glDepthMask(GL_FALSE);
             glActiveTexture(GL_TEXTURE0);
-            std::cout << "Binding Texture ID: " << mesh_shader.texture << std::endl;
             glBindTexture(GL_TEXTURE_2D, mesh_shader.texture);
             shader->setInt("m_bird_texture", 0);
-        }
-        else {
-            std::cout << "No texture found" << std::endl;
         }
 
         mesh.draw();
     }
+    glDepthMask(GL_TRUE);
 }
 
 

@@ -80,14 +80,14 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-left
-        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Bottom-left
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Bottom-right
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
         0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-right
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  1.0f, 1.0f, // Top-left
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
@@ -95,7 +95,7 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Shader* rectShader = new Shader(std::string("player2"));
     // renderer->addMesh(playerMesh, rectShader);
 
-    registry.renderable.insert(entity, Renderable{ playerMesh, rectShader });
+    registry.renderable.insert(entity, Renderable{ playerMesh, rectShader, renderer->m_bird_texture });
 
     Health& health = registry.healths.emplace(entity);
     health.currentHealth = 100.f;
