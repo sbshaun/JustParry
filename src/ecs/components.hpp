@@ -16,6 +16,23 @@ enum class PlayerState {
     RECOVERING
 };
 
+// constexpr: inline function, evaluated at compile time 
+constexpr const char* PlayerStateToString(PlayerState state) {
+    switch (state) {
+        case PlayerState::IDLE:              return "IDLE";
+        case PlayerState::WALKING:           return "WALKING";
+        case PlayerState::JUMPING:           return "JUMPING";
+        case PlayerState::CROUCHING:         return "CROUCHING";
+        case PlayerState::ATTACKING:         return "ATTACKING";
+        case PlayerState::PARRYING:          return "PARRYING";
+        case PlayerState::PERFECT_PARRYING:  return "PERFECT_PARRYING";
+        case PlayerState::COUNTER_ATTACKING: return "COUNTER_ATTACKING";
+        case PlayerState::STUNNED:           return "STUNNED";
+        case PlayerState::RECOVERING:        return "RECOVERING";
+        default:                             return "UNKNOWN";
+    }
+}
+
 // Player component, from A1 
 struct Player {
     int id; // used to separate players, 1 and 2.
@@ -57,6 +74,19 @@ struct PostureBar {
 struct StateTimer {
     float duration = 0.f; // time length that this state will last.
     float elapsedTime = 0.f;  // time elapsed since this state started. 
+
+    bool isAlive() {
+        return this->elapsedTime < this->duration;
+    }
+
+    void update(float elapsed_ms) {
+        this->elapsedTime += elapsed_ms;
+    }
+
+    void reset(float duration) {
+        this->duration = duration;
+        this->elapsedTime = 0.f;
+    }
 };
 
 struct PlayerInput {
