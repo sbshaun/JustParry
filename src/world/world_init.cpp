@@ -5,6 +5,9 @@
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
 
+    PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
+    playerState.currentState = PlayerState::IDLE;
+
     // Convert 'player' width and height to normalized device coordinates
 
     std::vector<float> rectangleVertices = {
@@ -45,19 +48,20 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     HitBox& hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = PLAYER_1_BB_WIDTH - 10; 
     hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hitBox.x = pos.x + hitBox.width / 2;
-    hitBox.y = pos.y * 0.6; 
+    hitBox.xOffset = hitBox.width / 2;
+    hitBox.yOffset = pos.y * 0.6; 
+    hitBox.active = false;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.x = pos.x;
-    parryBox.y = pos.y;
+    parryBox.xOffset = pos.x;
+    parryBox.yOffset = pos.y;
     parryBox.width = PLAYER_1_BB_WIDTH;
     parryBox.height = PLAYER_1_BB_HEIGHT;
     parryBox.active = false;
 
     PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
-    perfectParryBox.x = pos.x;
-    perfectParryBox.y = pos.y;
+    perfectParryBox.xOffset = 0;
+    perfectParryBox.yOffset = 0;
     perfectParryBox.width = PLAYER_1_BB_WIDTH;
     perfectParryBox.height = PLAYER_1_BB_HEIGHT;
     perfectParryBox.active = false;
@@ -74,6 +78,9 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
 // to be modified later.
 Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
+
+    PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
+    playerState.currentState = PlayerState::IDLE;
 
     // Convert 'player' width and height to normalized device coordinates
 
@@ -113,19 +120,20 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     HitBox& hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = PLAYER_1_BB_WIDTH - 10;
     hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hitBox.x = pos.x + hitBox.width / 2;
-    hitBox.y = pos.y * 0.6;
+    hitBox.xOffset = hitBox.width / 2;
+    hitBox.yOffset = pos.y * 0.6;
+    hitBox.active = false;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.x = pos.x;
-    parryBox.y = pos.y;
+    parryBox.xOffset = pos.x;
+    parryBox.yOffset = pos.y;
     parryBox.width = PLAYER_1_BB_WIDTH;
     parryBox.height = PLAYER_1_BB_HEIGHT;
     parryBox.active = false;
 
     PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
-    perfectParryBox.x = pos.x;
-    perfectParryBox.y = pos.y;
+    perfectParryBox.xOffset = 0;
+    perfectParryBox.yOffset = 0;
     perfectParryBox.width = PLAYER_1_BB_WIDTH;
     perfectParryBox.height = PLAYER_1_BB_HEIGHT;
     perfectParryBox.active = false;

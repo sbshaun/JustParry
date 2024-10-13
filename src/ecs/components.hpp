@@ -21,6 +21,10 @@ struct Player {
     int id; // used to separate players, 1 and 2.
 };
 
+struct PlayerCurrentState {
+    PlayerState currentState = PlayerState::IDLE;
+};
+
 // AI opponent 
 struct Opponent {
     int level; // increase difficulty by increasing level. 
@@ -69,24 +73,25 @@ struct PlayerInput {
 
 // TODO: how do we move the box along the player? 
 struct HitBox {
-    float x, y; 
+    float xOffset, yOffset; // offsets relative to player's position 
     float width, height; 
+    bool active = false; // TODO: active for how  many frames? 12? 
 };
 
 struct HurtBox {
-    float x, y; 
+    float xOffset, yOffset; // offsets relative to player's position  
     float width, height; 
 };
 
 struct ParryBox {
     // if hitbox collides ParryBox, the attack is parried. 
-    float x, y; 
+    float xOffset, yOffset; // offsets relative to player's position 
     float width, height; 
     bool active = false; // active for 12 frames 
 };
 
 struct PerfectParryBox {
-    float x, y;
+    float xOffset, yOffset; // offsets relative to player's position 
     float width, height;
     bool active = false; // active for 3 frames, check if an attack collides with PerfectParryBox 
 };
