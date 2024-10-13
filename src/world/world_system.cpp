@@ -40,7 +40,7 @@ void WorldSystem::handleInput() {
 
     // Reset inputs
     player1Input = PlayerInput();
-    player2Input = PlayerInput();
+    // player2Input = PlayerInput();
 
     // Player 1 Input
     if (isKeyPressed(GLFW_KEY_W)) player1Input.up = true;
@@ -51,12 +51,13 @@ void WorldSystem::handleInput() {
     if (isKeyPressed(GLFW_KEY_T)) player1Input.kick = true;
 
     // Player 2 Input
-    if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
+    /*if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
     if (isKeyPressed(GLFW_KEY_DOWN)) player2Input.down = true;
     if (isKeyPressed(GLFW_KEY_LEFT)) player2Input.left = true;
     if (isKeyPressed(GLFW_KEY_RIGHT)) player2Input.right = true;
     if (isKeyPressed(GLFW_KEY_COMMA)) player2Input.punch = true;
     if (isKeyPressed(GLFW_KEY_PERIOD)) player2Input.kick = true;
+    */
 }
 
 

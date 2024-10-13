@@ -11,11 +11,12 @@
 
 int timer = timer_length; //Global timer init var moved to constants
 auto last_time = std::chrono::high_resolution_clock::now();
-auto current_time = std::chrono::high_resolution_clock::now();
 
 int generateUI(GlRender& renderer) {
-    std::chrono::duration<double> elapsed = current_time - last_time;
 
+
+    auto current_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = current_time - last_time;
     // update timer each second, game stops at 0.
     if (elapsed.count() >= 1.0 && timer > 0) {
         last_time = current_time;
@@ -55,7 +56,6 @@ int main() {
 
     // Main loop
     while (!glWindow.shouldClose()) {
-        botInstance.pollBotRng(); // run bot movements
         worldSystem.handleInput(); //check if any devices keys are pressed
         worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
         worldSystem.movementProcessing(); //apply velocity for movement
@@ -69,6 +69,8 @@ int main() {
             break;
         }
         
+        botInstance.pollBotRng(timer, renderer); // run bot movements
+
         // TODO: Handle the movement and collision once implemented
         // worldSystem.step()
         // wordlSystem.handle_collisions()
