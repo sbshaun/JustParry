@@ -29,7 +29,7 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.x + NDC_WIDTH / 2.0f; //changed from [0] to x for readability
 				if (playerPos > boundary.val) 
 				{
-					std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
+					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
 						playerMotion.position.x = playerMotion.lastPos.x;
 					}
@@ -39,8 +39,8 @@ void PhysicsSystem::step() {
 			else if (boundary.dir == LEFT) {
 				float playerPos = playerMotion.position.x - NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
-					std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
-					std::cout << boundary.val << std::endl;
+					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
+					// std::cout << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
 						playerMotion.position.x = playerMotion.lastPos.x;
 					}

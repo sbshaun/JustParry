@@ -1,6 +1,6 @@
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
-
+#include "bot.hpp"
 #include "window.hpp"
 #include "renderer.hpp"
 #include <assert.h>
@@ -9,16 +9,14 @@
 #include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
 #include "world/world_system.hpp" // TEMP: test it compiles.
 
-
-// Global timer variables
-int timer = 100;
+int timer = timer_length; //Global timer init var moved to constants
 auto last_time = std::chrono::high_resolution_clock::now();
 
-
 int generateUI(GlRender& renderer) {
+
+
     auto current_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = current_time - last_time;
-
     // update timer each second, game stops at 0.
     if (elapsed.count() >= 1.0 && timer > 0) {
         last_time = current_time;
@@ -54,18 +52,17 @@ int main() {
     // Initialize the physics system that will handle collisions
     PhysicsSystem physics;
 
+    Bot botInstance; //init bot
+
     // Main loop
     while (!glWindow.shouldClose()) {
         worldSystem.handleInput(); //check if any devices keys are pressed
-
-        
         worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
         worldSystem.movementProcessing(); //apply velocity for movement
         worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 
         worldSystem.handle_collisions(); // check hitbox/hurtbox collisions 
 
         physics.step(); //check for collisions
-        //worldSystem.handle_collisions(); //if there are collisions work through them accordingly
         renderer.render();
 
         // render the UI.
@@ -74,9 +71,9 @@ int main() {
             break;
         }
         
-        // TODO: Handle the movement and collision once implemented
+        botInstance.pollBotRng(renderer); // run bot movements
+
         // worldSystem.step()
-        // wordlSystem.handle_collisions()
 
         glWindow.windowSwapBuffers();
     }

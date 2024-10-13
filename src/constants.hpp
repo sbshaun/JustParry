@@ -20,6 +20,9 @@ const float NDC_HEIGHT = PLAYER_1_BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 const float OPPONENT_1_BB_WIDTH   = 1.5f * 100.f;
 const float OPPONENT_1_BB_HEIGHT  = 3.0f * 100.f;
 
+//TIMERS
+const int timer_length = 100;
+
 // movement
 // const float JUMP_HEIGHT = 0.5f;
 // const float JUMP_DURATION = 1.0f;

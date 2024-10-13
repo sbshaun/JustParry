@@ -9,6 +9,8 @@
 #include <chrono>
 #include <sstream>
 
+#include "constants.hpp"
+
 // glfw (OpenGL)
 #define NOMINMAX
 #include <gl3w.h>
