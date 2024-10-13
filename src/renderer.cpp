@@ -49,7 +49,7 @@ void GlRender::initializeUI() {
 }
 
 void GlRender::render() {
-    glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // Black background
+    glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float p1_x = registry.motions.get(m_player1).position.x;
