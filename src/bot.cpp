@@ -52,9 +52,6 @@ void Bot::pollBotRng(GlRender& renderer) {
             //randomly choose a state and a duration
             actionCounter = 10 + rand() % 60;
             currentState = randNextState();
-            // // Transition to moving left after jumping
-            // currentState = MOVING_LEFT;
-            // actionCounter = 20;  // Move left for 0.3 seconds
             std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
         break;
@@ -66,10 +63,6 @@ void Bot::pollBotRng(GlRender& renderer) {
         if (actionCounter == 0) {
             actionCounter = 10 + rand() % 60;
             currentState = randNextState();
-            // // Transition to moving right after moving left
-            // currentState = MOVING_RIGHT;
-            // actionCounter = 20;  // Move right for 0.3 seconds
-            // std::cout << "Bot will move right next" << std::endl;
             std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
         break;
@@ -81,10 +74,6 @@ void Bot::pollBotRng(GlRender& renderer) {
         if (actionCounter == 0) {
             actionCounter = 10 + rand() % 60;
             currentState = randNextState(); 
-            // // After moving right, transition back to jumping
-            // currentState = JUMPING;
-            // actionCounter = 90;  // Prepare for the next jump after 1.5 second
-            // std::cout << "Bot will jump again" << std::endl;
             std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
         break;
@@ -96,10 +85,6 @@ void Bot::pollBotRng(GlRender& renderer) {
         if (actionCounter == 0) {
             actionCounter = 10 + rand() % 60;
             currentState = randNextState(); 
-            // // After moving right, transition back to jumping
-            // currentState = JUMPING;
-            // actionCounter = 90;  // Prepare for the next jump after 1.5 second
-            // std::cout << "Bot will jump again" << std::endl;
             std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
     }

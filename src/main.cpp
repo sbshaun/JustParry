@@ -60,7 +60,6 @@ int main() {
         worldSystem.inputProcessing(); //do the appropriate actions for key signals recieved
         worldSystem.movementProcessing(); //apply velocity for movement
         physics.step(); //check for collisions
-        //worldSystem.handle_collisions(); //if there are collisions work through them accordingly
         renderer.render();
 
         // render the UI.
@@ -71,9 +70,7 @@ int main() {
         
         botInstance.pollBotRng(renderer); // run bot movements
 
-        // TODO: Handle the movement and collision once implemented
         // worldSystem.step()
-        // wordlSystem.handle_collisions()
 
         glWindow.windowSwapBuffers();
     }
