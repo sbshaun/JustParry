@@ -33,6 +33,7 @@ struct Health {
 };
 
 struct Motion {
+    vec2 lastPos = {0, 0};
     vec2 position = {0, 0};
     vec2 velocity = {0, 0};
     bool direction = true; // true is facing right, false is facing left. 

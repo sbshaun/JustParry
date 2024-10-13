@@ -31,6 +31,7 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     health.maxHealth = 100.f; 
 
     Motion&  motion = registry.motions.emplace(entity);
+    motion.lastPos = pos;
     motion.position = pos;
     motion.velocity = {0.f, 0.f};
     motion.direction = true; // facing right 
