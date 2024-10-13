@@ -19,7 +19,6 @@ public:
 	void updateStateTimers(float elapsed_ms);
 	bool checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox);
 	// bool step(float elapsed_ms);
-
 private:
 	GlRender* renderer;
 };
