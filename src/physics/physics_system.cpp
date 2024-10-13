@@ -31,8 +31,7 @@ void PhysicsSystem::step() {
 				{
 					std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						std::cout << "COLLIDED 1 (RIGHT)" << std::endl;
-						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[j]);
+						playerMotion.position.x = playerMotion.lastPos.x;
 					}
 				}
 			}
@@ -43,12 +42,30 @@ void PhysicsSystem::step() {
 					std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					std::cout << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						std::cout << "COLLIDED 2 (LEFT)" << std::endl;
-						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[j]);
+						playerMotion.position.x = playerMotion.lastPos.x;
 					}
 				}
 
 			}
+			else if (boundary.dir == FLOOR) {
+				float playerPos = playerMotion.position.y - NDC_HEIGHT / 2.0f;
+				if (playerPos < boundary.val) {
+					if (!registry.boundaryCollisions.has(playerEntity)) {
+						playerMotion.position = playerMotion.lastPos;
+						playerMotion.velocity.y = 0.0f;
+						playerMotion.inAir = false;
+					}
+				}
+			}
+		}
+	}
+
+	// Handling the movements (only handle jumping characters for now)
+	ComponentContainer<Motion>& motionContainer = registry.motions;
+	for (uint i = 0; i < motionContainer.size(); i++) {
+		Motion& motion = registry.motions.components[i];
+		if (motion.inAir) {
+			motion.velocity.y -= 0.0005;
 		}
 	}
 	// Case: Floor

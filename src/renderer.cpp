@@ -68,12 +68,11 @@ void GlRender::render() {
         Mesh &mesh = mesh_shader.mesh;
 
         shader->use();
-        
-        Motion& motion = registry.motions.get(entity);
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
         if (entity == m_player1) {
+            Motion& motion = registry.motions.get(entity);
+            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
             if (flipP1) {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
             }
@@ -83,6 +82,9 @@ void GlRender::render() {
         }
 
         if (entity == m_player2) {
+            Motion& motion = registry.motions.get(entity);
+            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
             if (flipP2) {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
             }
