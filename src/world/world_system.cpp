@@ -14,8 +14,8 @@ void WorldSystem::init(GlRender *renderer) {
 	this->renderer = renderer;
 
 	// Create entities
-	Entity player1 = createPlayer1(renderer, { -0.3, -0.2 });
-	Entity player2 = createPlayer2(renderer, { 0.3, -0.2 });
+	Entity player1 = createPlayer1(renderer, { -0.3, -0.3 });
+	Entity player2 = createPlayer2(renderer, { 0.3, -0.3 });
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
