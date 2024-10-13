@@ -57,7 +57,8 @@ void WorldSystem::handleInput() {
     if (isKeyPressed(GLFW_KEY_PERIOD)) player2Input.kick = true;
 }
 
-void WorldSystem::inputProcessing() { //renamed as it will proccess the input -> ingame logic, not just movement
+
+void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the input -> ingame logic, not just movement
     Motion& player1Motion = registry.motions.get(renderer->m_player1);
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
 
@@ -71,7 +72,7 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
 
     player1Motion.lastPos = player1Motion.position;
     player2Motion.lastPos = player2Motion.position;
-
+    
     std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
 
     if (player1Input.left) {
@@ -82,6 +83,33 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
         player1Motion.velocity.x = MOVE_SPEED;
         // std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
     }
+
+    // Handle jump
+    if (player1Input.up && !player1IsJumping) {
+        std::cout << "Player pressed UP! Starting jump." << std::endl;
+        player1IsJumping = true;
+        player1Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
+        player1JumpStartY = player1Motion.position.y; // Save starting position
+    }
+
+    // Process jump
+    if (player1IsJumping) {
+        // Limit player jump height
+        if (player1Motion.position.y >= 0.06) {
+            player1Motion.velocity.y = -2.75 * MOVE_SPEED; // Start going down
+            player1IsJumping = false; // Reset jumping flag
+            player1Input.up = false; // Reset key
+        }
+    }
+    // Handle landing
+    if (!player1IsJumping) {
+        // check if the player has reached the ground
+        if (player1Motion.position.y <= -0.20) {
+            std::cout << "Player has landed." << std::endl;
+            player1Motion.velocity.y = 0; // Stop downward movement
+        }
+    }
+
     if(player1Input.right && player1Input.left){ //SOCD CLEANING
         player1Motion.velocity.x = 0;
     }
@@ -104,6 +132,31 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
         player2Motion.velocity.x = MOVE_SPEED;
         // std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
+    if (player2Input.up && !player2IsJumping) {
+        std::cout << "Player pressed UP! Starting jump." << std::endl;
+        player2IsJumping = true;
+        player2Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
+        player2JumpStartY = player2Motion.position.y; // Save starting position
+    }
+
+    // Process jump
+    if (player2IsJumping) {
+        // Limit player jump height
+        if (player2Motion.position.y >= 0.06) {
+            player2Motion.velocity.y = -2.75 * MOVE_SPEED; // Stop upward movement
+            player2IsJumping = false; // Reset jumping flag
+            player2Input.up = false;
+        }
+    }
+    // Handle landing
+    if (!player2IsJumping) {
+        // check if the player has reached the ground
+        if (player2Motion.position.y <= -0.20) {
+            std::cout << "Player has landed." << std::endl;
+            player2Motion.velocity.y = 0; // Stop downward movement
+        }
+    }
+
     if(player2Input.right && player2Input.left){ //SOCD CLEANING
         player2Motion.velocity.x = 0;
     }
