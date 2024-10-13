@@ -2,6 +2,7 @@
 #include "../common.hpp"
 #include "../mesh.hpp"
 #include "../shader.hpp"
+#include "../constants.hpp"
 
 enum class PlayerState { 
     IDLE,
@@ -105,38 +106,30 @@ struct Box {
     float xOffset, yOffset; // offsets relative to player's position 
     float width, height; 
 
-    vec2 getTopLeft(const vec2& playerPosition, bool facingRight) {
+    virtual float getLeft(const vec2& playerPosition, bool facingRight) const {
         if (facingRight) {
             // assuming bottom left of the screen  is (0, 0) here.  
             // TODO: should we plus yOffset or minus yOffset. 
-            return {playerPosition.x + xOffset, playerPosition.y + yOffset};
+            return playerPosition.x + xOffset; 
         } else {
-            return {playerPosition.x - (xOffset + width), playerPosition.y + yOffset};
+            return playerPosition.x - width - xOffset;
         }
     }
 
-    vec2 getTopRight(const vec2& playerPosition, bool facingRight) {
+    virtual float getRight(const vec2& playerPosition, bool facingRight) const {
         if (facingRight) {
-            return {playerPosition.x + (xOffset + width), playerPosition.y + yOffset};
+            return playerPosition.x + width + xOffset;
         } else {
-            return {playerPosition.x - xOffset, playerPosition.y + yOffset};
+            return playerPosition.x - xOffset;
         }
     }
 
-    vec2 getBottomLeft(const vec2& playerPosition, bool facingRight) {
-        if (facingRight) {
-            return {playerPosition.x + xOffset, playerPosition.y + (yOffset + height)};
-        } else {
-            return {playerPosition.x - (xOffset + width), playerPosition.y + (yOffset + height)};
-        }
+    virtual float getTop(const vec2& playerPosition, bool facingRight) const {
+        return playerPosition.y + height + yOffset;
     }
 
-    vec2 getBottomRight(const vec2& playerPosition, bool facingRight) {
-        if (facingRight) {
-            return {playerPosition.x + (xOffset + width), playerPosition.y + (yOffset + height)};
-        } else {
-            return {playerPosition.x - xOffset, playerPosition.y + (yOffset + height)};
-        }
+    virtual float getBottom(const vec2& playerPosition, bool facingRight) const {
+        return playerPosition.y + yOffset;
     }
 };
 
@@ -147,7 +140,22 @@ struct HitBox : public Box {
 
 
 struct HurtBox : public Box {
-    // 
+    // hurtbox is just same as player's size. TODO 
+    float getLeft(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.x;
+    }
+
+    float getRight(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.x + width;
+    }
+
+    float getTop(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.y + height;
+    }
+
+    float getBottom(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.y;
+    }
 };
 
 struct ParryBox : public Box {

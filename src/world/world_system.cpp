@@ -26,9 +26,11 @@ static void applyDamage(Entity player, float damage) {
 
     health.currentHealth -= damage;
 
-    if (health.currentHealth <= 0) {
-        health.currentHealth = 0;
-    }
+    // TODO: uncomment 
+    // intentionally commented out for testing 
+    // if (health.currentHealth <= 0) {
+    //     health.currentHealth = 0;
+    // }
     std::cout << "Damange: " << damage << std::endl; 
     std::cout << "Player " << (unsigned int) player << " remaining health: " << health.currentHealth << std::endl; 
 }
@@ -289,10 +291,10 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
             case PlayerState::WALKING:
                 std::cout << "Player 2 Hitbox Actived" << std::endl;
                 player2HitBox.active = true;
-                player2HitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
-                player2HitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
-                player2HitBox.width = PLAYER_1_PUNCH_WIDTH;
-                player2HitBox.height = PLAYER_1_PUNCH_HEIGHT;
+                player2HitBox.xOffset = PLAYER_2_PUNCH_X_OFFSET;
+                player2HitBox.yOffset = PLAYER_2_PUNCH_Y_OFFSET;
+                player2HitBox.width = PLAYER_2_PUNCH_WIDTH;
+                player2HitBox.height = PLAYER_2_PUNCH_HEIGHT;
                 player2State.currentState = PlayerState::ATTACKING;
                 player2StateTimer.reset(PLAYER_1_HITBOX_DURATION);
                 break;
@@ -454,20 +456,27 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     bool collision = false;
 
-    float hitBoxLeft = hitBox.getTopLeft(hitPlayerMotion.position, hitPlayerMotion.direction).x;
-    float hitBoxRight = hitBox.getTopRight(hitPlayerMotion.position, hitPlayerMotion.direction).x;
-    float hitBoxTop = hitBox.getTopLeft(hitPlayerMotion.position, hitPlayerMotion.direction).y;
-    float hitBoxBottom = hitBox.getBottomLeft(hitPlayerMotion.position, hitPlayerMotion.direction).y;
+    float hitBoxLeft = hitBox.getLeft(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxRight = hitBox.getRight(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
+    std::cout << "player's postion: " << hitPlayerMotion.position.x << ", " << hitPlayerMotion.position.y << std::endl;
     std::cout << "Hitbox 4 corners, left, right, top, bottom: " << hitBoxLeft << ", " << hitBoxRight << ", " << hitBoxTop << ", " << hitBoxBottom << std::endl;
 
-    float hurtBoxLeft = hurtBox.getTopLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction).x;
-    float hurtBoxRight = hurtBox.getTopRight(hurtPlayerMotion.position, hurtPlayerMotion.direction).x;
-    float hurtBoxTop = hurtBox.getTopLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction).y;
-    float hurtBoxBottom = hurtBox.getBottomLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction).y;
+    float hurtBoxLeft = hurtBox.getLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction);
+    float hurtBoxRight = hurtBox.getRight(hurtPlayerMotion.position, hurtPlayerMotion.direction);
+    float hurtBoxTop = hurtBox.getTop(hurtPlayerMotion.position, hurtPlayerMotion.direction);
+    float hurtBoxBottom = hurtBox.getBottom(hurtPlayerMotion.position, hurtPlayerMotion.direction);
+    std::cout << "player's postion: " << hurtPlayerMotion.position.x << ", " << hurtPlayerMotion.position.y << std::endl;
     std::cout << "Hurtbox 4 corners, left, right, top, bottom: " << hurtBoxLeft << ", " << hurtBoxRight << ", " << hurtBoxTop << ", " << hurtBoxBottom << std::endl;
 
+    std::cout << "collision: " << collision << std::endl;
+
     // AABB collision check
-    if (hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft && hitBoxTop < hurtBoxBottom && hitBoxBottom > hurtBoxTop) {
+    bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
+    bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
+    
+    if (x_collision && y_collision) {
         std::cout << "Hitbox of Player " << (unsigned int) playerWithHitBox << " collided with Hurtbox of Player" << (unsigned int) playerWithHurtBox << std::endl;
         collision = true;
     }
@@ -492,6 +501,7 @@ void WorldSystem::handle_collisions() {
         StateTimer& player2StateTimer = registry.stateTimers.get(player2);
         player2State.currentState = PlayerState::STUNNED;
         player2StateTimer.reset(PLAYER_1_STUN_DURATION);
+        std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 
     // check if player 2 hit player 1
@@ -502,5 +512,6 @@ void WorldSystem::handle_collisions() {
         StateTimer& player1StateTimer = registry.stateTimers.get(player1);
         player1State.currentState = PlayerState::STUNNED;
         player1StateTimer.reset(PLAYER_2_STUN_DURATION);
+        std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 }

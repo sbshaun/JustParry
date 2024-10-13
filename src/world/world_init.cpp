@@ -53,17 +53,17 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     hitBox.width = PLAYER_1_BB_WIDTH - 10; 
     hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
     hitBox.xOffset = hitBox.width / 2;
-    hitBox.yOffset = pos.y * 0.6; 
+    hitBox.yOffset = hitBox.height / 2;
     hitBox.active = false;
 
     // currently set to same size as the player 
     // maybe the offset is not correct. 
     // TODO: double what's the x,y of the player? center or upperleft? Modify. 
     HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.width = PLAYER_1_BB_WIDTH - 10;
-    hurtBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hurtBox.xOffset = 0;
-    hurtBox.yOffset = 0;
+    hurtBox.width = PLAYER_1_BB_WIDTH;
+    hurtBox.height = PLAYER_1_BB_WIDTH;
+    hurtBox.xOffset = -PLAYER_1_BB_WIDTH / 2;
+    hurtBox.yOffset = -PLAYER_1_BB_HEIGHT / 2;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
     parryBox.xOffset = pos.x;
@@ -138,17 +138,17 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     hitBox.width = PLAYER_1_BB_WIDTH - 10;
     hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
     hitBox.xOffset = hitBox.width / 2;
-    hitBox.yOffset = pos.y * 0.6;
+    hitBox.yOffset = hitBox.height / 2;
     hitBox.active = false;
 
     // currently set to same size as the player
     // maybe the offset is not correct.
     // TODO: double what's the x,y of the player? center or upperleft? Modify. 
     HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.width = PLAYER_1_BB_WIDTH - 10;
-    hurtBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hurtBox.xOffset = 0;
-    hurtBox.yOffset = 0;
+    hurtBox.width = PLAYER_1_BB_WIDTH;
+    hurtBox.height = PLAYER_1_BB_WIDTH;
+    hurtBox.xOffset = -PLAYER_1_BB_WIDTH / 2;
+    hurtBox.yOffset = -PLAYER_1_BB_HEIGHT / 2;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
     parryBox.xOffset = pos.x;
