@@ -2,8 +2,8 @@
 out vec4 fragColor;
 
 in vec2 TexCoord;
-uniform sampler2D birdTexture;
+uniform sampler2D m_bird_texture;
 
 void main() {
-    fragColor = texture(birdTexture, TexCoord);  // bird Sprite
+    fragColor = texture(m_bird_texture, TexCoord);  // bird Sprite
 }

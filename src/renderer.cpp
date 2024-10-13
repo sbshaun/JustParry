@@ -49,7 +49,7 @@ void GlRender::initializeUI() {
 }
 
 void GlRender::render() {
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Black background
+    glClearColor(0.0f, 0.0f, 0.1f, 0.0f); // Black background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // debugging wireframe
@@ -59,6 +59,7 @@ void GlRender::render() {
         Renderable& mesh_shader = registry.renderable.get(entity);
         Shader* shader = mesh_shader.shader;
         Mesh &mesh = mesh_shader.mesh;
+
         shader->use();
         
         Motion& motion = registry.motions.get(entity);
@@ -71,7 +72,7 @@ void GlRender::render() {
             glActiveTexture(GL_TEXTURE0);
             std::cout << "Binding Texture ID: " << mesh_shader.texture << std::endl;
             glBindTexture(GL_TEXTURE_2D, mesh_shader.texture);
-            shader->setInt("birdTexture", 0);
+            shader->setInt("m_bird_texture", 0);
         }
         else {
             std::cout << "No texture found" << std::endl;
@@ -89,11 +90,14 @@ void GlRender::loadTextures() {
 
 void GlRender::loadTexture(const std::string& path, GLuint& textureID) {
     glGenTextures(1, &textureID);
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
-    //stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(true);
 
     stbi_uc* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     
@@ -109,11 +113,6 @@ void GlRender::loadTexture(const std::string& path, GLuint& textureID) {
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
     else {
         std::cerr << "Failed to load texture from: " << path << std::endl;
