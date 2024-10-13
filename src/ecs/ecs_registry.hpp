@@ -14,6 +14,7 @@ class ECSRegistry
 public:
 	// Manually created list of all components this game has
 	ComponentContainer<Player> players; 
+	ComponentContainer<PlayerCurrentState> playerCurrentStates;
 	ComponentContainer<Opponent> opponents; 
 	ComponentContainer<Health> healths; 
 	ComponentContainer<Motion> motions; 
@@ -37,6 +38,7 @@ public:
 	ECSRegistry()
 	{
 		registry_list.push_back(&players);
+		registry_list.push_back(&playerCurrentStates);
         registry_list.push_back(&opponents);
         registry_list.push_back(&healths);
         registry_list.push_back(&motions);
