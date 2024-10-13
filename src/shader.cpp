@@ -59,6 +59,11 @@ void Shader::setMat4(const std::string& name, const glm::mat4& trans) {
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(trans));
 }
 
+void Shader::setInt(const std::string& name, int value) {
+    GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+    glUniform1i(location, value);
+}
+
 Shader::~Shader() {
     glDeleteProgram(m_shaderProgram);
     std::cout << "Shader program deleted." << std::endl;

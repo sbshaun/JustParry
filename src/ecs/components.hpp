@@ -107,6 +107,7 @@ struct BoundaryCollision {
 struct Renderable {
     Mesh mesh;
     Shader* shader;
+    unsigned int texture;
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)

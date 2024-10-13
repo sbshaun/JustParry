@@ -15,12 +15,15 @@ public:
     void initialize();
     void initializeUI();
     void render();
+    void loadTextures();
+    void loadTexture(const std::string& path, GLuint& textureID);
     void renderUI(int timer);
     void shutdown();
 
     ~GlRender();
     Entity m_player1;
     Entity m_player2;
+    GLuint m_bird_texture;
 
 private:
     // Place holders for timer and health subtexts

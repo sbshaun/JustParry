@@ -1,5 +1,8 @@
 #include "renderer.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 
 GlRender::GlRender() {}
 
@@ -7,6 +10,9 @@ GlRender::~GlRender() {}
 
 void GlRender::initialize() {
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    loadTextures();
     gltInit();
     initializeUI();
 }
@@ -61,8 +67,47 @@ void GlRender::render() {
 
         shader->setMat4("model", modelMatrix);
 
+        if (mesh_shader.texture) {
+            glActiveTexture(GL_TEXTURE0);
+            std::cout << "Binding Texture ID: " << mesh_shader.texture << std::endl;
+            glBindTexture(GL_TEXTURE_2D, mesh_shader.texture);
+            shader->setInt("birdTexture", 0);
+        }
+        else {
+            std::cout << "No texture found" << std::endl;
+        }
+
         mesh.draw();
     }
+}
+
+
+void GlRender::loadTextures() {
+    // Load texture for player 1
+    loadTexture("../assets/textures/bird.png", m_bird_texture);
+}
+
+void GlRender::loadTexture(const std::string& path, GLuint& textureID) {
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    int width, height, nrChannels;
+    //stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    else {
+        std::cerr << "Failed to load texture from: " << path << std::endl;
+    }
+    stbi_image_free(data);
 }
 
 

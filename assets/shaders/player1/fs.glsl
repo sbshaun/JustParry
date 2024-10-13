@@ -1,6 +1,9 @@
 #version 330 core
 out vec4 fragColor;
 
+in vec2 TexCoord;
+uniform sampler2D birdTexture;
+
 void main() {
-    fragColor = vec4(0.0, 1.0, 0.2, 1.0);  // Orange color
+    fragColor = texture(birdTexture, TexCoord);  // bird Sprite
 }
