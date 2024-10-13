@@ -30,7 +30,11 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../external/project_path.hpp"
 using namespace glm;
+
+//path stuff
+#include "../external/project_path.hpp"
+inline std::string asset_path() { return std::string(PROJECT_SOURCE_DIR) + "assets"; };
+inline std::string textures_path(const std::string& name) {return asset_path() + "/textures/" + std::string(name);};
 
 bool gl_has_errors();

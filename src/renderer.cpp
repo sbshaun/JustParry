@@ -1,5 +1,5 @@
 #include "renderer.hpp"
-
+#include "common.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -84,16 +84,27 @@ void GlRender::render() {
 
 void GlRender::loadTextures() {
     // Load texture for player 1
-    loadTexture("../assets/textures/bird.png", m_bird_texture);
+    loadTexture(textures_path("bird.png"), m_bird_texture);
 }
 
 void GlRender::loadTexture(const std::string& path, GLuint& textureID) {
     glGenTextures(1, &textureID);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     int width, height, nrChannels;
     //stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+
+    stbi_uc* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+    
+    //redundant check honestly
+    if (data == NULL)
+    {
+        const std::string message = "Could not load the file " + path + ".";
+        std::cout << "Reason: " << stbi_failure_reason() << std::endl;
+        fprintf(stderr, "%s", message.c_str());
+        assert(false);
+    }
 
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
