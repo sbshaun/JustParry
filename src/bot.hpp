@@ -7,7 +7,7 @@
 
 class Bot {
     public:
-        void pollBotRng(int timer, GlRender& renderer);
+        void pollBotRng(GlRender& renderer);
 };
 
 

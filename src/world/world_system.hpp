@@ -14,7 +14,7 @@ public:
 
 	// TODO: Handle the movement and collision
 	void handleInput();
-	void inputProcessing(int timer);
+	void inputProcessing();
 	void movementProcessing();
 	// bool step(float elapsed_ms);
 private:

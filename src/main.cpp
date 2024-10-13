@@ -57,7 +57,7 @@ int main() {
     // Main loop
     while (!glWindow.shouldClose()) {
         worldSystem.handleInput(); //check if any devices keys are pressed
-        worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
+        worldSystem.inputProcessing(); //do the appropriate actions for key signals recieved
         worldSystem.movementProcessing(); //apply velocity for movement
         physics.step(); //check for collisions
         //worldSystem.handle_collisions(); //if there are collisions work through them accordingly
@@ -69,7 +69,7 @@ int main() {
             break;
         }
         
-        botInstance.pollBotRng(timer, renderer); // run bot movements
+        botInstance.pollBotRng(renderer); // run bot movements
 
         // TODO: Handle the movement and collision once implemented
         // worldSystem.step()

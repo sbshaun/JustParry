@@ -4,13 +4,29 @@
 enum BotState {
     JUMPING,
     MOVING_LEFT,
-    MOVING_RIGHT
+    MOVING_RIGHT,
+    STAND
 };
 
 static int actionCounter = 0;
+static int cooldown = 0;
 static BotState currentState = JUMPING;
 
-void Bot::pollBotRng(int timer, GlRender& renderer) {
+BotState randNextState(){
+    int rng = rand() % 3;
+    switch (rng){
+        case 0:
+            return JUMPING;
+        case 1:
+            return MOVING_RIGHT;
+        case 2:
+            return MOVING_LEFT;
+        case 3:
+            return STAND;
+    }
+}
+
+void Bot::pollBotRng(GlRender& renderer) {
     PlayerInput& player2Input = registry.playerInputs.get(renderer.m_player2);
     Motion& player2Motion = registry.motions.get(renderer.m_player2);
 
@@ -33,10 +49,13 @@ void Bot::pollBotRng(int timer, GlRender& renderer) {
         actionCounter--;
 
         if (actionCounter == 0) {
-            // Transition to moving left after jumping
-            currentState = MOVING_LEFT;
-            actionCounter = 20;  // Move left for 0.3 seconds
-            std::cout << "Bot will move left next" << std::endl;
+            //randomly choose a state and a duration
+            actionCounter = 10 + rand() % 60;
+            currentState = randNextState();
+            // // Transition to moving left after jumping
+            // currentState = MOVING_LEFT;
+            // actionCounter = 20;  // Move left for 0.3 seconds
+            std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
         break;
 
@@ -45,10 +64,13 @@ void Bot::pollBotRng(int timer, GlRender& renderer) {
         actionCounter--;
 
         if (actionCounter == 0) {
-            // Transition to moving right after moving left
-            currentState = MOVING_RIGHT;
-            actionCounter = 20;  // Move right for 0.3 seconds
-            std::cout << "Bot will move right next" << std::endl;
+            actionCounter = 10 + rand() % 60;
+            currentState = randNextState();
+            // // Transition to moving right after moving left
+            // currentState = MOVING_RIGHT;
+            // actionCounter = 20;  // Move right for 0.3 seconds
+            // std::cout << "Bot will move right next" << std::endl;
+            std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
         break;
 
@@ -57,11 +79,29 @@ void Bot::pollBotRng(int timer, GlRender& renderer) {
         actionCounter--;
 
         if (actionCounter == 0) {
-            // After moving right, transition back to jumping
-            currentState = JUMPING;
-            actionCounter = 90;  // Prepare for the next jump after 1.5 second
-            std::cout << "Bot will jump again" << std::endl;
+            actionCounter = 10 + rand() % 60;
+            currentState = randNextState(); 
+            // // After moving right, transition back to jumping
+            // currentState = JUMPING;
+            // actionCounter = 90;  // Prepare for the next jump after 1.5 second
+            // std::cout << "Bot will jump again" << std::endl;
+            std::cout << "Bot will "<< currentState <<" next" << std::endl;
         }
         break;
+    case STAND:
+        player2Input.right = false;
+        player2Input.left = false;
+        player2Input.up = false;
+        actionCounter--;
+        if (actionCounter == 0) {
+            actionCounter = 10 + rand() % 60;
+            currentState = randNextState(); 
+            // // After moving right, transition back to jumping
+            // currentState = JUMPING;
+            // actionCounter = 90;  // Prepare for the next jump after 1.5 second
+            // std::cout << "Bot will jump again" << std::endl;
+            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+        }
     }
 }
+

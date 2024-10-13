@@ -62,7 +62,7 @@ void WorldSystem::handleInput() {
 }
 
 
-void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the input -> ingame logic, not just movement
+void WorldSystem::inputProcessing() { //renamed as it will proccess the input -> ingame logic, not just movement
     Motion& player1Motion = registry.motions.get(renderer->m_player1);
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
 
@@ -77,7 +77,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
     player1Motion.lastPos = player1Motion.position;
     player2Motion.lastPos = player2Motion.position;
     
-    std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
+    // std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
 
     if (player1Input.left) {
         player1Motion.velocity.x = -MOVE_SPEED;
@@ -90,7 +90,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
 
     // Handle jump
     if (player1Input.up && !player1Motion.inAir) {
-        std::cout << "Player pressed UP! Starting jump." << std::endl;
+        // std::cout << "Player pressed UP! Starting jump." << std::endl;
         player1Motion.inAir = true;
         player1Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
         player1JumpStartY = player1Motion.position.y; // Save starting position
@@ -119,7 +119,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
         // std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
     }
     if (player2Input.up && !player2Motion.inAir) {
-        std::cout << "Player pressed UP! Starting jump." << std::endl;
+        // std::cout << "Player pressed UP! Starting jump." << std::endl;
         player2Motion.inAir = true;
         player2Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
         player2JumpStartY = player2Motion.position.y; // Save starting position
