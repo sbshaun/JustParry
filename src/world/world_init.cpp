@@ -6,6 +6,13 @@
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
 
+    PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
+    playerState.currentState = PlayerState::IDLE;
+
+    StateTimer& playerStateTimer = registry.stateTimers.emplace(entity);
+    playerStateTimer.duration = 0.f;
+    playerStateTimer.elapsedTime = 0.f;
+
     // Convert 'player' width and height to normalized device coordinates
 
     std::vector<float> rectangleVertices = {
@@ -47,19 +54,29 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     HitBox& hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = PLAYER_1_BB_WIDTH - 10; 
     hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hitBox.x = pos.x + hitBox.width / 2;
-    hitBox.y = pos.y * 0.6; 
+    hitBox.xOffset = hitBox.width / 2;
+    hitBox.yOffset = hitBox.height / 2;
+    hitBox.active = false;
+
+    // currently set to same size as the player 
+    // maybe the offset is not correct. 
+    // TODO: double what's the x,y of the player? center or upperleft? Modify. 
+    HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
+    hurtBox.width = PLAYER_1_BB_WIDTH;
+    hurtBox.height = PLAYER_1_BB_WIDTH;
+    hurtBox.xOffset = -PLAYER_1_BB_WIDTH / 2;
+    hurtBox.yOffset = -PLAYER_1_BB_HEIGHT / 2;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.x = pos.x;
-    parryBox.y = pos.y;
+    parryBox.xOffset = pos.x;
+    parryBox.yOffset = pos.y;
     parryBox.width = PLAYER_1_BB_WIDTH;
     parryBox.height = PLAYER_1_BB_HEIGHT;
     parryBox.active = false;
 
     PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
-    perfectParryBox.x = pos.x;
-    perfectParryBox.y = pos.y;
+    perfectParryBox.xOffset = 0;
+    perfectParryBox.yOffset = 0;
     perfectParryBox.width = PLAYER_1_BB_WIDTH;
     perfectParryBox.height = PLAYER_1_BB_HEIGHT;
     perfectParryBox.active = false;
@@ -77,6 +94,13 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
 Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
 
+    PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
+    playerState.currentState = PlayerState::IDLE;
+
+    StateTimer& playerStateTimer = registry.stateTimers.emplace(entity);
+    playerStateTimer.duration = 0.f;
+    playerStateTimer.elapsedTime = 0.f;
+    
     // Convert 'player' width and height to normalized device coordinates
 
     std::vector<float> rectangleVertices = {
@@ -115,19 +139,29 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     HitBox& hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = PLAYER_1_BB_WIDTH - 10;
     hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hitBox.x = pos.x + hitBox.width / 2;
-    hitBox.y = pos.y * 0.6;
+    hitBox.xOffset = hitBox.width / 2;
+    hitBox.yOffset = hitBox.height / 2;
+    hitBox.active = false;
+
+    // currently set to same size as the player
+    // maybe the offset is not correct.
+    // TODO: double what's the x,y of the player? center or upperleft? Modify. 
+    HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
+    hurtBox.width = PLAYER_1_BB_WIDTH;
+    hurtBox.height = PLAYER_1_BB_WIDTH;
+    hurtBox.xOffset = -PLAYER_1_BB_WIDTH / 2;
+    hurtBox.yOffset = -PLAYER_1_BB_HEIGHT / 2;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.x = pos.x;
-    parryBox.y = pos.y;
+    parryBox.xOffset = pos.x;
+    parryBox.yOffset = pos.y;
     parryBox.width = PLAYER_1_BB_WIDTH;
     parryBox.height = PLAYER_1_BB_HEIGHT;
     parryBox.active = false;
 
     PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
-    perfectParryBox.x = pos.x;
-    perfectParryBox.y = pos.y;
+    perfectParryBox.xOffset = 0;
+    perfectParryBox.yOffset = 0;
     perfectParryBox.width = PLAYER_1_BB_WIDTH;
     perfectParryBox.height = PLAYER_1_BB_HEIGHT;
     perfectParryBox.active = false;

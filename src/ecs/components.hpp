@@ -2,6 +2,7 @@
 #include "../common.hpp"
 #include "../mesh.hpp"
 #include "../shader.hpp"
+#include "../constants.hpp"
 
 enum class PlayerState { 
     IDLE,
@@ -16,9 +17,30 @@ enum class PlayerState {
     RECOVERING
 };
 
+// constexpr: inline function, evaluated at compile time 
+constexpr const char* PlayerStateToString(PlayerState state) {
+    switch (state) {
+        case PlayerState::IDLE:              return "IDLE";
+        case PlayerState::WALKING:           return "WALKING";
+        case PlayerState::JUMPING:           return "JUMPING";
+        case PlayerState::CROUCHING:         return "CROUCHING";
+        case PlayerState::ATTACKING:         return "ATTACKING";
+        case PlayerState::PARRYING:          return "PARRYING";
+        case PlayerState::PERFECT_PARRYING:  return "PERFECT_PARRYING";
+        case PlayerState::COUNTER_ATTACKING: return "COUNTER_ATTACKING";
+        case PlayerState::STUNNED:           return "STUNNED";
+        case PlayerState::RECOVERING:        return "RECOVERING";
+        default:                             return "UNKNOWN";
+    }
+}
+
 // Player component, from A1 
 struct Player {
     int id; // used to separate players, 1 and 2.
+};
+
+struct PlayerCurrentState {
+    PlayerState currentState = PlayerState::IDLE;
 };
 
 // AI opponent 
@@ -56,6 +78,19 @@ struct PostureBar {
 struct StateTimer {
     float duration = 0.f; // time length that this state will last.
     float elapsedTime = 0.f;  // time elapsed since this state started. 
+
+    bool isAlive() {
+        return this->elapsedTime < this->duration;
+    }
+
+    void update(float elapsed_ms) {
+        this->elapsedTime += elapsed_ms;
+    }
+
+    void reset(float duration) {
+        this->duration = duration;
+        this->elapsedTime = 0.f;
+    }
 };
 
 struct PlayerInput {
@@ -67,27 +102,68 @@ struct PlayerInput {
     bool kick = false;
 };
 
+struct Box {
+    float xOffset, yOffset; // offsets relative to player's position 
+    float width, height; 
+
+    virtual float getLeft(const vec2& playerPosition, bool facingRight) const {
+        if (facingRight) {
+            // assuming bottom left of the screen  is (0, 0) here.  
+            // TODO: should we plus yOffset or minus yOffset. 
+            return playerPosition.x + xOffset; 
+        } else {
+            return playerPosition.x - width - xOffset;
+        }
+    }
+
+    virtual float getRight(const vec2& playerPosition, bool facingRight) const {
+        if (facingRight) {
+            return playerPosition.x + width + xOffset;
+        } else {
+            return playerPosition.x - xOffset;
+        }
+    }
+
+    virtual float getTop(const vec2& playerPosition, bool facingRight) const {
+        return playerPosition.y + height + yOffset;
+    }
+
+    virtual float getBottom(const vec2& playerPosition, bool facingRight) const {
+        return playerPosition.y + yOffset;
+    }
+};
+
 // TODO: how do we move the box along the player? 
-struct HitBox {
-    float x, y; 
-    float width, height; 
+struct HitBox : public Box {
+    bool active = false; // TODO: active for how  many frames? 12? 
 };
 
-struct HurtBox {
-    float x, y; 
-    float width, height; 
+
+struct HurtBox : public Box {
+    // hurtbox is just same as player's size. TODO 
+    float getLeft(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.x;
+    }
+
+    float getRight(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.x + width;
+    }
+
+    float getTop(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.y + height;
+    }
+
+    float getBottom(const vec2& playerPosition, bool facingRight = true) const override {
+        return playerPosition.y;
+    }
 };
 
-struct ParryBox {
+struct ParryBox : public Box {
     // if hitbox collides ParryBox, the attack is parried. 
-    float x, y; 
-    float width, height; 
     bool active = false; // active for 12 frames 
 };
 
-struct PerfectParryBox {
-    float x, y;
-    float width, height;
+struct PerfectParryBox : public Box {
     bool active = false; // active for 3 frames, check if an attack collides with PerfectParryBox 
 };
 
