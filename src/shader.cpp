@@ -19,8 +19,8 @@ std::string Shader::readShaderFile(const std::string& filePath) {
 }
 
 Shader::Shader(const std::string& folderPath) {
-    std::string vertexCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/shaders/") + folderPath + std::string("/vs.glsl"));
-	std::string fragmentCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/shaders/") + folderPath + std::string("/fs.glsl"));
+    std::string vertexCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/assets/shaders/") + folderPath + std::string("/vs.glsl"));
+	std::string fragmentCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/assets/shaders/") + folderPath + std::string("/fs.glsl"));
     gl_has_errors();
     const char* vertexShaderSource = vertexCode.c_str();
     const char* fragmentShaderSource = fragmentCode.c_str();
@@ -57,6 +57,11 @@ void Shader::use() {
 void Shader::setMat4(const std::string& name, const glm::mat4& trans) {
     GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(trans));
+}
+
+void Shader::setInt(const std::string& name, int value) {
+    GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+    glUniform1i(location, value);
 }
 
 Shader::~Shader() {

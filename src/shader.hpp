@@ -6,6 +6,7 @@ public:
     Shader(const std::string& folderPath);
     void use();
     void setMat4(const std::string& name, const glm::mat4& trans);
+    void setInt(const std::string& name, int value);
     ~Shader();
     GLuint m_shaderProgram;
 

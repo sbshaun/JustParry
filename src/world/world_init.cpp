@@ -1,6 +1,7 @@
 #include "world_init.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../constants.hpp"
+#include <stb_image.h>
 
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
@@ -9,22 +10,23 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-left
-        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
-        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-right
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f   // Top-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
+        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
     Shader* rectShader = new Shader(std::string("player1"));
+    
     // renderer->addMesh(playerMesh, rectShader);
 
-    registry.renderable.insert(entity, Renderable{playerMesh, rectShader});
+    registry.renderable.insert(entity, Renderable{playerMesh, rectShader, renderer->m_bird_texture});
 
     Health& health = registry.healths.emplace(entity);
     health.currentHealth = 100.f; 
@@ -79,14 +81,14 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
 
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-left
-        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-left
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
+        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f,  // Bottom-right
-        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f,  // Top-right
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f   // Top-left
+        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
+        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-right
+        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
     };
 
     // TODO: Should have the registry map the entity to its mesh
@@ -94,7 +96,7 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Shader* rectShader = new Shader(std::string("player2"));
     // renderer->addMesh(playerMesh, rectShader);
 
-    registry.renderable.insert(entity, Renderable{ playerMesh, rectShader });
+    registry.renderable.insert(entity, Renderable{ playerMesh, rectShader, renderer->m_bird_texture });
 
     Health& health = registry.healths.emplace(entity);
     health.currentHealth = 100.f;
@@ -156,7 +158,7 @@ Entity createBoundary(float val, int type) {
 Entity createFloor(GlRender* renderer) {
     Entity floor = Entity();
 
-    std::vector<float> floorVertices = {
+    /*std::vector<float> floorVertices = {
         -2.0f, -0.5f, 0.0f,
         -2.0f, -1.0f, 0.0f,
          2.0f, -1.0f, 0.0f,
@@ -169,11 +171,11 @@ Entity createFloor(GlRender* renderer) {
     Mesh floorMesh(floorVertices);
     Shader* floorShader = new Shader(std::string("floor"));
 
-    registry.renderable.insert(floor, Renderable{ floorMesh, floorShader });
+    registry.renderable.insert(floor, Renderable{ floorMesh, floorShader });*/
 
     Boundary& boundary = registry.boundaries.emplace(floor);
 
-    boundary.val = -0.5f;
+    boundary.val = -0.7f;
     boundary.dir = 3; // floor
 
     return floor;
