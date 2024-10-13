@@ -14,8 +14,8 @@ void WorldSystem::init(GlRender *renderer) {
 	this->renderer = renderer;
 
 	// Create entities
-	Entity player1 = createPlayer1(renderer, { -0.3f, -0.2f });
-	Entity player2 = createPlayer2(renderer, { 0.3f, -0.2f });
+	Entity player1 = createPlayer1(renderer, { -0.3, -0.2 });
+	Entity player2 = createPlayer2(renderer, { 0.3, -0.2 });
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
@@ -68,6 +68,11 @@ void WorldSystem::inputProcessing() { //renamed as it will proccess the input ->
     static bool player2IsJumping = false;
     static float player1JumpStartY = 0.0f;
     static float player2JumpStartY = 0.0f;
+
+    player1Motion.lastPos = player1Motion.position;
+    player2Motion.lastPos = player2Motion.position;
+
+    std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
 
     if (player1Input.left) {
         player1Motion.velocity.x = -MOVE_SPEED;
@@ -133,22 +138,13 @@ void WorldSystem::handle_collisions() {
         HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
         Boundary& boundary = registry.boundaries.get(boundaryEntity);
 
-        if (boundary.dir == RIGHT) {
-            std::cout << "RESOLVE COL 1 (RIGHT)" << std::endl;
-            playerMotion.position = vec2(boundary.val - NDC_WIDTH / 2.0f, playerMotion.position.y); //[1] -> for readability
-            registry.boundaryCollisions.remove(playerEntity); //remove the specific player rather than all collisions (as not all collisions were resolved yet)
-        }
-        if (boundary.dir == LEFT) { //removed else to cover wild edge case of both boundaries being touched simulttaneously
-            std::cout << "RESOLVE COL 2 (LEFT)" << std::endl;
-            playerMotion.position = vec2(boundary.val + NDC_WIDTH / 2.0f, playerMotion.position.y); //refer to above comments
-            registry.boundaryCollisions.remove(playerEntity);
-        }
-
+        playerMotion.position = playerMotion.lastPos;
 
         // implement when jumps are implemented
         /*else if (boundary.dir == 3) {
 
         }*/
     }
+    registry.boundaryCollisions.clear();
 }
 
