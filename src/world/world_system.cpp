@@ -305,6 +305,7 @@ void WorldSystem::movementProcessing() {
             // player can only move if not in these non-moveable states. 
             player1Motion.position += player1Motion.velocity;
     } else {
+        player1Motion.position.y += player1Motion.velocity.y;
         std::cout << "Player 1 cannot move, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
     }
 
@@ -312,6 +313,7 @@ void WorldSystem::movementProcessing() {
             // player can only move if not in these non-moveable states. 
             player2Motion.position += player2Motion.velocity;
     } else {
+        player2Motion.position.y += player2Motion.velocity.y;
         std::cout << "Player 2 cannot move, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
     }
 }
