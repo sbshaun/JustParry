@@ -29,9 +29,9 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.x + NDC_WIDTH / 2.0f; //changed from [0] to x for readability
 				if (playerPos > boundary.val) 
 				{
-					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
+					std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						// std::cout << "COLLIDED 1 (RIGHT)" << std::endl;
+						std::cout << "COLLIDED 1 (RIGHT)" << std::endl;
 						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[j]);
 					}
 				}
@@ -40,10 +40,10 @@ void PhysicsSystem::step() {
 			else if (boundary.dir == LEFT) {
 				float playerPos = playerMotion.position.x - NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
-					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
+					std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					std::cout << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						// std::cout << "COLLIDED 2 (LEFT)" << std::endl;
+						std::cout << "COLLIDED 2 (LEFT)" << std::endl;
 						registry.boundaryCollisions.emplace(playerEntity, boundaryContainer.entities[j]);
 					}
 				}

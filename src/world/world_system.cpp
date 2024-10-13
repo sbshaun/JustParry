@@ -140,20 +140,6 @@ void WorldSystem::handle_collisions() {
 
         playerMotion.position = playerMotion.lastPos;
 
-        //if (boundary.dir == RIGHT) {
-        //    //std::cout << "RESOLVE COL 1 (RIGHT)" << std::endl;
-        //    playerMotion.position = playerMotion.lastPos;
-        //    // playerMotion.position = vec2(playerMotion.position.x - NDC_WIDTH / 2.0f, playerMotion.position.y); //[1] -> for readability
-        //    registry.boundaryCollisions.remove(playerEntity); //remove the specific player rather than all collisions (as not all collisions were resolved yet)
-        //}
-        //if (boundary.dir == LEFT) { //removed else to cover wild edge case of both boundaries being touched simulttaneously
-        //    //std::cout << "RESOLVE COL 2 (LEFT)" << std::endl;
-        //    playerMotion.position = playerMotion.lastPos;
-        //    // playerMotion.position = vec2(playerMotion.position.x + NDC_WIDTH / 2.0f, playerMotion.position.y); //refer to above comments
-        //    registry.boundaryCollisions.remove(playerEntity);
-        //}
-
-
         // implement when jumps are implemented
         /*else if (boundary.dir == 3) {
 
