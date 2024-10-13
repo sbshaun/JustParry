@@ -18,6 +18,21 @@ static bool canMove(PlayerState state) {
         && state != PlayerState::COUNTER_ATTACKING;
 }
 
+/*
+helper funciton to apply damage to a player 
+*/
+static void applyDamage(Entity player, float damage) {
+    Health& health = registry.healths.get(player);
+
+    health.currentHealth -= damage;
+
+    if (health.currentHealth <= 0) {
+        health.currentHealth = 0;
+    }
+    std::cout << "Damange: " << damage << std::endl; 
+    std::cout << "Player " << (unsigned int) player << " remaining health: " << health.currentHealth << std::endl; 
+}
+
 WorldSystem::WorldSystem() {};
 
 WorldSystem::~WorldSystem() {
@@ -75,6 +90,7 @@ void WorldSystem::handleInput() {
 
 
 void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the input -> ingame logic, not just movement
+    // TODO: manage input based on PlayerState more effectively 
     Motion& player1Motion = registry.motions.get(renderer->m_player1);
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
 
@@ -363,10 +379,18 @@ void WorldSystem::updateStateTimers(float elapsed_ms) {
     StateTimer& player1StateTimer = registry.stateTimers.get(renderer->m_player1);
     StateTimer& player2StateTimer = registry.stateTimers.get(renderer->m_player2);
 
+    HitBox& player1HitBox = registry.hitBoxes.get(renderer->m_player1);
+    HitBox& player2HitBox = registry.hitBoxes.get(renderer->m_player2);
+
     // if the timer is active, update it with the step size 
     if (player1StateTimer.isAlive()) {
         player1StateTimer.update(elapsed_ms);
     } else {
+        // deactivate hitbox. 
+        if (player1HitBox.active) {
+            player1HitBox.active = false;
+            std::cout << "Player 1 HitBox deactivated." << std::endl;
+        }
         // transition state 
         PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
         if (player1State.currentState != PlayerState::IDLE) {
@@ -391,6 +415,11 @@ void WorldSystem::updateStateTimers(float elapsed_ms) {
     if (player2StateTimer.isAlive()) {
         player2StateTimer.update(PLAYER_STATE_TIMER_STEP);
     } else {
+        // deactivate hitbox.
+        if (player2HitBox.active) {
+            player2HitBox.active = false;
+            std::cout << "Player 2 HitBox deactivated." << std::endl;
+        }
         // transition state 
         PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
         
@@ -411,5 +440,67 @@ void WorldSystem::updateStateTimers(float elapsed_ms) {
                     break;
             }
         }
+    }
+}
+
+bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox) {
+    Motion& hitPlayerMotion = registry.motions.get(playerWithHitBox);
+    Motion& hurtPlayerMotion = registry.motions.get(playerWithHurtBox);
+    HitBox& hitBox = registry.hitBoxes.get(playerWithHitBox);
+    HurtBox& hurtBox = registry.hurtBoxes.get(playerWithHurtBox);
+
+    // if  hitbox is not active, skip check 
+    if (!hitBox.active) return false;
+
+    bool collision = false;
+
+    float hitBoxLeft = hitBox.getTopLeft(hitPlayerMotion.position, hitPlayerMotion.direction).x;
+    float hitBoxRight = hitBox.getTopRight(hitPlayerMotion.position, hitPlayerMotion.direction).x;
+    float hitBoxTop = hitBox.getTopLeft(hitPlayerMotion.position, hitPlayerMotion.direction).y;
+    float hitBoxBottom = hitBox.getBottomLeft(hitPlayerMotion.position, hitPlayerMotion.direction).y;
+    std::cout << "Hitbox 4 corners, left, right, top, bottom: " << hitBoxLeft << ", " << hitBoxRight << ", " << hitBoxTop << ", " << hitBoxBottom << std::endl;
+
+    float hurtBoxLeft = hurtBox.getTopLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction).x;
+    float hurtBoxRight = hurtBox.getTopRight(hurtPlayerMotion.position, hurtPlayerMotion.direction).x;
+    float hurtBoxTop = hurtBox.getTopLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction).y;
+    float hurtBoxBottom = hurtBox.getBottomLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction).y;
+    std::cout << "Hurtbox 4 corners, left, right, top, bottom: " << hurtBoxLeft << ", " << hurtBoxRight << ", " << hurtBoxTop << ", " << hurtBoxBottom << std::endl;
+
+    // AABB collision check
+    if (hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft && hitBoxTop < hurtBoxBottom && hitBoxBottom > hurtBoxTop) {
+        std::cout << "Hitbox of Player " << (unsigned int) playerWithHitBox << " collided with Hurtbox of Player" << (unsigned int) playerWithHurtBox << std::endl;
+        collision = true;
+    }
+    
+    return collision;
+};
+
+/*
+1. check if one player attacks the other player, and 
+2. apply damange if attack succeeds, i.e. hitbox hits hurtbox 
+3. set state to STUNNED if being hit, set state timer. 
+*/
+void WorldSystem::handle_collisions() {
+    Entity player1 = renderer->m_player1;
+    Entity player2 = renderer->m_player2;
+
+    // check if player 1 hit player 2
+    if (checkHitBoxCollisions(player1, player2)) {
+        applyDamage(player2, PLAYER_1_DAMAGE);  // apply damage 
+        // state transition and state timer
+        PlayerCurrentState& player2State = registry.playerCurrentStates.get(player2);
+        StateTimer& player2StateTimer = registry.stateTimers.get(player2);
+        player2State.currentState = PlayerState::STUNNED;
+        player2StateTimer.reset(PLAYER_1_STUN_DURATION);
+    }
+
+    // check if player 2 hit player 1
+    if (checkHitBoxCollisions(player2, player1)) {
+        applyDamage(player1, PLAYER_2_DAMAGE);  // apply damage 
+        // state transition and state timer
+        PlayerCurrentState& player1State = registry.playerCurrentStates.get(player1);
+        StateTimer& player1StateTimer = registry.stateTimers.get(player1);
+        player1State.currentState = PlayerState::STUNNED;
+        player1StateTimer.reset(PLAYER_2_STUN_DURATION);
     }
 }

@@ -101,28 +101,61 @@ struct PlayerInput {
     bool kick = false;
 };
 
-// TODO: how do we move the box along the player? 
-struct HitBox {
+struct Box {
     float xOffset, yOffset; // offsets relative to player's position 
     float width, height; 
+
+    vec2 getTopLeft(const vec2& playerPosition, bool facingRight) {
+        if (facingRight) {
+            // assuming bottom left of the screen  is (0, 0) here.  
+            // TODO: should we plus yOffset or minus yOffset. 
+            return {playerPosition.x + xOffset, playerPosition.y + yOffset};
+        } else {
+            return {playerPosition.x - (xOffset + width), playerPosition.y + yOffset};
+        }
+    }
+
+    vec2 getTopRight(const vec2& playerPosition, bool facingRight) {
+        if (facingRight) {
+            return {playerPosition.x + (xOffset + width), playerPosition.y + yOffset};
+        } else {
+            return {playerPosition.x - xOffset, playerPosition.y + yOffset};
+        }
+    }
+
+    vec2 getBottomLeft(const vec2& playerPosition, bool facingRight) {
+        if (facingRight) {
+            return {playerPosition.x + xOffset, playerPosition.y + (yOffset + height)};
+        } else {
+            return {playerPosition.x - (xOffset + width), playerPosition.y + (yOffset + height)};
+        }
+    }
+
+    vec2 getBottomRight(const vec2& playerPosition, bool facingRight) {
+        if (facingRight) {
+            return {playerPosition.x + (xOffset + width), playerPosition.y + (yOffset + height)};
+        } else {
+            return {playerPosition.x - xOffset, playerPosition.y + (yOffset + height)};
+        }
+    }
+};
+
+// TODO: how do we move the box along the player? 
+struct HitBox : public Box {
     bool active = false; // TODO: active for how  many frames? 12? 
 };
 
-struct HurtBox {
-    float xOffset, yOffset; // offsets relative to player's position  
-    float width, height; 
+
+struct HurtBox : public Box {
+    // 
 };
 
-struct ParryBox {
+struct ParryBox : public Box {
     // if hitbox collides ParryBox, the attack is parried. 
-    float xOffset, yOffset; // offsets relative to player's position 
-    float width, height; 
     bool active = false; // active for 12 frames 
 };
 
-struct PerfectParryBox {
-    float xOffset, yOffset; // offsets relative to player's position 
-    float width, height;
+struct PerfectParryBox : public Box {
     bool active = false; // active for 3 frames, check if an attack collides with PerfectParryBox 
 };
 

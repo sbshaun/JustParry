@@ -51,3 +51,10 @@ const float PLAYER_1_PUNCH_WIDTH = 1.0f * PLAYER_1_BB_WIDTH;
 const float PLAYER_1_PUNCH_HEIGHT = 0.333f * PLAYER_1_BB_HEIGHT; // 1/3 the player height 
 
 const float PLAYER_STATE_TIMER_STEP = 1000 * 1 / 60.f; // 60 fps, in ms 
+
+const float PLAYER_1_DAMAGE = 10.f;
+const float PLAYER_2_DAMAGE = 10.f;
+
+// TODO: decrease value. Intentionally set it to longer for development. 
+const float PLAYER_1_STUN_DURATION = 3000.f; // 1 second 
+const float PLAYER_2_STUN_DURATION = 3000.f; // 1 second
