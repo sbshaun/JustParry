@@ -55,12 +55,13 @@ void GlRender::render() {
         Mesh &mesh = mesh_shader.mesh;
         shader->use();
         
-        Motion& motion = registry.motions.get(entity);
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
+        if (registry.motions.has(entity)) {
+            Motion& motion = registry.motions.get(entity);
+            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
-        shader->setMat4("model", modelMatrix);
-
+            shader->setMat4("model", modelMatrix);
+        }
         mesh.draw();
     }
 }

@@ -12,3 +12,5 @@ Entity createPlayer1(GlRender* renderer, vec2 pos);
 Entity createPlayer2(GlRender* renderer, vec2 pos);
 Entity createOpponent1(GlRender* renderer, vec2 pos);
 Entity createBoundary(float val, int type);
+
+Entity createFloor(GlRender* renderer);

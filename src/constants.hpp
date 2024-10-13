@@ -21,13 +21,21 @@ const float OPPONENT_1_BB_WIDTH   = 1.0f * 100.f;
 const float OPPONENT_1_BB_HEIGHT  = 1.0f * 50.f;
 
 // movement
-const float JUMP_HEIGHT = 0.5f;
-const float JUMP_DURATION = 1.0f;
-const float GRAVITY = 0.1f;
+// const float JUMP_HEIGHT = 0.5f;
+// const float JUMP_DURATION = 1.0f;
+// const float GRAVITY = 0.1f;
 const float MOVE_SPEED = 0.005f;
+
+const float JUMP_VELOCITY = 0.015f;
+const float GRAVITY = 0.0005f;
+
+const float TIME_STEP = 1.0f / 60.0f;
+
 
 //BOUNDING
 const float BOUND_SIZE_L = -0.75;
 const float BOUND_SIZE_R = 0.75;
-const int LEFT = 2;
+const float FLOOR_Y = -0.5f;
 const int RIGHT = 1;
+const int LEFT = 2;
+const int FLOOR = 3;

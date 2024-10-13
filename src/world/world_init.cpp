@@ -35,6 +35,7 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     motion.position = pos;
     motion.velocity = {0.f, 0.f};
     motion.direction = true; // facing right 
+    motion.inAir = false;
 
     PostureBar& postureBar = registry.postureBars.emplace(entity);
     postureBar.currentBar = 10;
@@ -151,4 +152,30 @@ Entity createBoundary(float val, int type) {
     boundary.dir = type;
     return entity;
 };
+
+Entity createFloor(GlRender* renderer) {
+    Entity floor = Entity();
+
+    std::vector<float> floorVertices = {
+        -2.0f, -0.5f, 0.0f,
+        -2.0f, -1.0f, 0.0f,
+         2.0f, -1.0f, 0.0f,
+
+         -2.0f, -0.5f, 0.0f,
+         2.0f, -0.5f, 0.0f,
+         2.0f, -1.0f, 0.0f
+    };
+
+    Mesh floorMesh(floorVertices);
+    Shader* floorShader = new Shader(std::string("floor"));
+
+    registry.renderable.insert(floor, Renderable{ floorMesh, floorShader });
+
+    Boundary& boundary = registry.boundaries.emplace(floor);
+
+    boundary.val = -0.5f;
+    boundary.dir = 3; // floor
+
+    return floor;
+}
 
