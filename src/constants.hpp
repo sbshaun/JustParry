@@ -44,16 +44,16 @@ const int FLOOR = 3;
 // activie duration 
 const int PLAYER_1_HITBOX_DURATION = 500; // 30 frames = 500ms 
 // punch box offset 
-const float PLAYER_1_PUNCH_X_OFFSET = .5f * PLAYER_1_BB_WIDTH;
-const float PLAYER_1_PUNCH_Y_OFFSET = .5f * PLAYER_1_BB_HEIGHT; // height of the left upper corner of the hitbox 
+const float PLAYER_1_PUNCH_X_OFFSET = .5f * NDC_WIDTH;
+const float PLAYER_1_PUNCH_Y_OFFSET = .25f * NDC_HEIGHT; // height of the left upper corner of the hitbox
 // punch box size
-const float PLAYER_1_PUNCH_WIDTH = 1.0f * PLAYER_1_BB_WIDTH; 
-const float PLAYER_1_PUNCH_HEIGHT = 0.333f * PLAYER_1_BB_HEIGHT; // 1/3 the player height 
+const float PLAYER_1_PUNCH_WIDTH = 0.80f * NDC_WIDTH;
+const float PLAYER_1_PUNCH_HEIGHT = 0.333f * NDC_HEIGHT; // 1/3 the player height 
 
-const float PLAYER_2_PUNCH_X_OFFSET = .5f * PLAYER_2_BB_WIDTH;
-const float PLAYER_2_PUNCH_Y_OFFSET = .5f * PLAYER_2_BB_HEIGHT; // height of the left upper corner of the hitbox
-const float PLAYER_2_PUNCH_WIDTH = 1.0f * PLAYER_2_BB_WIDTH;
-const float PLAYER_2_PUNCH_HEIGHT = 0.333f * PLAYER_2_BB_HEIGHT; // 1/3 the player height
+const float PLAYER_2_PUNCH_X_OFFSET = .5f * NDC_WIDTH;
+const float PLAYER_2_PUNCH_Y_OFFSET = .25f * NDC_HEIGHT; // height of the left upper corner of the hitbox
+const float PLAYER_2_PUNCH_WIDTH = 0.80f * NDC_WIDTH;
+const float PLAYER_2_PUNCH_HEIGHT = 0.333f * NDC_HEIGHT; // 1/3 the player height
 
 const float PLAYER_STATE_TIMER_STEP = 1000 * 1 / 60.f; // 60 fps, in ms 
 

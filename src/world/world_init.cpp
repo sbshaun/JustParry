@@ -30,8 +30,6 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
     Shader* rectShader = new Shader(std::string("player1"));
-    
-    // renderer->addMesh(playerMesh, rectShader);
 
     registry.renderable.insert(entity, Renderable{playerMesh, rectShader, renderer->m_bird_texture});
 
@@ -52,26 +50,32 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     postureBar.recoverRate = 3; // 3 seconds per bar 
 
     HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    hitBox.width = PLAYER_1_BB_WIDTH - 10; 
-    hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hitBox.xOffset = hitBox.width / 2;
-    hitBox.yOffset = hitBox.height / 2;
+    // hitBox.width = PLAYER_1_BB_WIDTH - 10; 
+    // hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
+
+    // Use normalized device coordinates instead?
+    hitBox.width = PLAYER_1_PUNCH_WIDTH;
+	hitBox.height = PLAYER_1_PUNCH_HEIGHT;
+
+    hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
+    hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
     hitBox.active = false;
 
     // currently set to same size as the player 
     // maybe the offset is not correct. 
-    // TODO: double what's the x,y of the player? center or upperleft? Modify. 
+    // TODO: double what's the x,y of the player? center or upperleft? Modify.
+    // => x, y of the player is the center. We render the player box outward from the center.
     HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.width = PLAYER_1_BB_WIDTH;
-    hurtBox.height = PLAYER_1_BB_WIDTH;
-    hurtBox.xOffset = -PLAYER_1_BB_WIDTH / 2;
-    hurtBox.yOffset = -PLAYER_1_BB_HEIGHT / 2;
+    hurtBox.width = NDC_WIDTH;
+    hurtBox.height = NDC_HEIGHT;
+    hurtBox.xOffset = 0;
+    hurtBox.yOffset = 0;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
     parryBox.xOffset = pos.x;
     parryBox.yOffset = pos.y;
-    parryBox.width = PLAYER_1_BB_WIDTH;
-    parryBox.height = PLAYER_1_BB_HEIGHT;
+    parryBox.width = NDC_WIDTH;
+    parryBox.height = NDC_HEIGHT;
     parryBox.active = false;
 
     PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
