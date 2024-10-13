@@ -35,6 +35,7 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     motion.position = pos;
     motion.velocity = {0.f, 0.f};
     motion.direction = true; // facing right 
+    motion.inAir = false;
 
     PostureBar& postureBar = registry.postureBars.emplace(entity);
     postureBar.currentBar = 10;
