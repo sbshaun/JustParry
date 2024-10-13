@@ -16,6 +16,7 @@ public:
 	void handleInput();
 	void inputProcessing(int timer);
 	void movementProcessing();
+	void updateStateTimers(float elapsed_ms);
 	// bool step(float elapsed_ms);
 
 private:

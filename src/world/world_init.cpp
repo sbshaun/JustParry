@@ -8,6 +8,10 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
     playerState.currentState = PlayerState::IDLE;
 
+    StateTimer& playerStateTimer = registry.stateTimers.emplace(entity);
+    playerStateTimer.duration = 0.f;
+    playerStateTimer.elapsedTime = 0.f;
+
     // Convert 'player' width and height to normalized device coordinates
 
     std::vector<float> rectangleVertices = {
@@ -82,6 +86,10 @@ Entity createPlayer2(GlRender* renderer, vec2 pos) {
     PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
     playerState.currentState = PlayerState::IDLE;
 
+    StateTimer& playerStateTimer = registry.stateTimers.emplace(entity);
+    playerStateTimer.duration = 0.f;
+    playerStateTimer.elapsedTime = 0.f;
+    
     // Convert 'player' width and height to normalized device coordinates
 
     std::vector<float> rectangleVertices = {
