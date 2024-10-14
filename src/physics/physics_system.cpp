@@ -4,7 +4,6 @@
 #include "../constants.hpp"
 
 
-
 void PhysicsSystem::step() {
 	
 	// Handling the collions
@@ -65,7 +64,7 @@ void PhysicsSystem::step() {
 	for (uint i = 0; i < motionContainer.size(); i++) {
 		Motion& motion = registry.motions.components[i];
 		if (motion.inAir) {
-			motion.velocity.y -= 0.0005;
+			motion.velocity.y -= GRAVITY;
 		}
 	}
 	// Case: Floor
@@ -76,6 +75,8 @@ void PhysicsSystem::step() {
 		
 	}*/
 }
+
+
 /*
 	Physics System:
 	- Handle Collision Check

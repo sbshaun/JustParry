@@ -19,7 +19,7 @@ const float NDC_HEIGHT = PLAYER_1_BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 // AI opponent 
 const float OPPONENT_1_BB_WIDTH   = 1.5f * 100.f;
 const float OPPONENT_1_BB_HEIGHT  = 3.0f * 100.f;
-const bool BOT_ENABLED = true;
+const bool BOT_ENABLED = false;
 
 //TIMERS
 const int timer_length = 100;
@@ -37,8 +37,8 @@ const float TIME_STEP = 1.0f / 60.0f;
 
 
 //BOUNDING
-const float BOUND_SIZE_L = -0.75;
-const float BOUND_SIZE_R = 0.75;
+const float BOUND_SIZE_L = -1.00;
+const float BOUND_SIZE_R = 1.00;
 const float FLOOR_Y = -0.5f;
 const int RIGHT = 1;
 const int LEFT = 2;
