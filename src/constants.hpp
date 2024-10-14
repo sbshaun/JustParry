@@ -8,7 +8,7 @@ const int M_WINDOW_HEIGHT_PX = 768;
 // BB = bounding box
 // player 1 
 const float PLAYER_1_BB_WIDTH  = 1.5f * 100.f; // A typical height is 100px, reference; http://petesqbsite.com/sections/tutorials/tuts/tsugumo/chapter9.htm 
-const float PLAYER_1_BB_HEIGHT = 2.0f * 100.f; 
+const float PLAYER_1_BB_HEIGHT = 3.0f * 100.f; 
 // player 2 
 const float PLAYER_2_BB_WIDTH  = 1.5f * 100.f; 
 const float PLAYER_2_BB_HEIGHT = 3.0f * 100.f; 
