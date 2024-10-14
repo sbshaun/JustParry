@@ -479,3 +479,11 @@ void WorldSystem::handle_collisions() {
         std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 }
+
+void WorldSystem::playerCollisions(GlRender* renderer){
+	Motion& player1Motion = registry.motions.get(renderer->m_player1);
+    Motion& player2Motion = registry.motions.get(renderer->m_player2);
+	if(abs(player1Motion.position.x - player2Motion.position.x) < NDC_WIDTH){
+		std::cout << "PLAYERS COLLIDED"  << std::endl;
+	}
+}

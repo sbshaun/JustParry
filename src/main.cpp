@@ -63,7 +63,7 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
         }
         else {
             // run bot movements
-            botInstance.pollBotRng(renderer);
+            if(BOT_ENABLED)botInstance.pollBotRng(renderer);
             worldSystem.handleInput(); //check if any devices keys are pressed
         }
     }
@@ -93,9 +93,9 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
             worldSystem.movementProcessing(); //apply velocity for movement
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 
             worldSystem.handle_collisions(); // check hitbox/hurtbox collisions 
+            worldSystem.playerCollisions(&renderer);
             physics.step(); //check for collisions
 
-            if(BOT_ENABLED)botInstance.pollBotRng(renderer);
             // this fn calls renderer.render and also renders the UI.
             checkIsRoundOver(renderer, botInstance, worldSystem);
             if (glfwGetKey(glWindow.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
