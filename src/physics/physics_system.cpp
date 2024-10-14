@@ -10,7 +10,7 @@ void PhysicsSystem::step() {
 	ComponentContainer<Boundary>& boundaryContainer = registry.boundaries;
 	ComponentContainer<Player>& playerContainer = registry.players;
 
-	// Compare each player to each boundary 
+	// Iterate through the players 
 	for (uint i = 0; i < playerContainer.components.size(); i++) {
 
 		// std::cout << playerContainer.components.size() << std::endl;
@@ -21,11 +21,11 @@ void PhysicsSystem::step() {
 
 		// std::cout << playerMotion.position[0] << std::endl;
 
-		for (uint j = 0; j < boundaryContainer.components.size(); j++) {
+		for (uint j = 0; j < boundaryContainer.components.size(); j++) { //iterate through the boundaries: check and resolve collisions with current player
 			Boundary& boundary = boundaryContainer.components[j];
 			// Case: Right Wall 
 			if (boundary.dir == RIGHT) {
-				float playerPos = playerMotion.position.x + NDC_WIDTH / 2.0f; //changed from [0] to x for readability
+				float playerPos = playerMotion.position.x + NDC_WIDTH / 2.0f; 
 				if (playerPos > boundary.val) 
 				{
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
@@ -39,7 +39,6 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.x - NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
-					// std::cout << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
 						playerMotion.position.x = playerMotion.lastPos.x;
 					}
@@ -67,19 +66,6 @@ void PhysicsSystem::step() {
 			motion.velocity.y -= GRAVITY;
 		}
 	}
-	// Case: Floor
-	/*else if (boundary.dir == 3) {
-		if (boundary.val > playerYPosition) {
-			
-		}
-		
-	}*/
+
 }
 
-
-/*
-	Physics System:
-	- Handle Collision Check
-	- Knockback
-	- Apply gravity and momentum calculations
-*/

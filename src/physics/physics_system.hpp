@@ -15,7 +15,7 @@ public:
 };
 /*
 	Physics System:
-	- Handle Collision Check
+	- Handle Stage Collision Check
 	- Knockback
 	- Apply gravity and momentum calculations
 */
