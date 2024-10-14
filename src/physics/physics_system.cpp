@@ -50,7 +50,7 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.y - NDC_HEIGHT / 2.0f;
 				if (playerPos < boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position = playerMotion.lastPos;
+						playerMotion.position = {playerMotion.lastPos.x, boundary.val + NDC_HEIGHT / 2.0f};
 						playerMotion.velocity.y = 0.0f;
 						playerMotion.inAir = false;
 					}

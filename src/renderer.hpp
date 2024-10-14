@@ -21,6 +21,11 @@ public:
     void renderUI(int timer);
     void shutdown();
 
+    // helpers
+    void handleTexturedRenders();
+    void handleHitboxRenders();
+    void handleStaticRenders();
+
     ~GlRender();
     Entity m_player1;
     Entity m_player2;

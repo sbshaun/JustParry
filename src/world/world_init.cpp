@@ -4,11 +4,48 @@
 #include "../bot.hpp"
 #include <stb_image.h>
 
+static void renderHitbox(Entity& player, bool isPlayer1) {
+    // register the player as an entity with a hitbox
+    HitBox& hitBox = registry.hitBoxes.emplace(player);
+
+    if (isPlayer1) {
+        hitBox.width = PLAYER_1_PUNCH_WIDTH;
+        hitBox.height = PLAYER_1_PUNCH_HEIGHT;
+        hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
+        hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
+        hitBox.active = false;
+    }
+    else {
+        hitBox.width = -PLAYER_1_PUNCH_WIDTH;
+        hitBox.height = PLAYER_1_PUNCH_HEIGHT;
+        hitBox.xOffset = -PLAYER_1_PUNCH_X_OFFSET;
+        hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
+        hitBox.active = false;
+    }
+    //// Convert 'player' width and height to normalized device coordinates
+    std::vector<float> hitboxVertices = {
+        // First triangle (Top-left, Bottom-left, Bottom-right)
+        0 + hitBox.xOffset, 0 + hitBox.yOffset + hitBox.height / 2, 0.0f, // Top-left
+        0 + hitBox.xOffset, 0 + hitBox.yOffset - hitBox.height / 2, 0.0f,// Bottom-left
+        0 + hitBox.xOffset + hitBox.width, 0 + hitBox.yOffset - hitBox.height / 2, 0.0f, // Bottom-right
+        
+        // Second triangle (Bottom-right, Top-right, Top-left)
+        0 + hitBox.xOffset + hitBox.width, 0 + hitBox.yOffset - hitBox.height / 2, 0.0f, // Bottom-right
+        0 + hitBox.xOffset + hitBox.width, 0 + hitBox.yOffset + hitBox.height / 2, 0.0f, // Top-right
+        0 + hitBox.xOffset, 0 + hitBox.yOffset + hitBox.height / 2, 0.0f,  // Top-left
+    };
+
+    Entity hitBoxEntity = Entity();
+
+    Mesh hitboxMesh(hitboxVertices, false);
+    Shader* shader = new Shader(std::string("hitboxes"));
+    registry.debugRenders.insert(hitBoxEntity, HitboxRender{ hitboxMesh, shader, player });
+}
 /*
 helper function for player1, player2, and opponent1 
 p.s. entity: player entity 
 */
-static void createPlayerHelper(GlRender* renderer, Entity entity, vec2 pos, Shader* shader, GLuint texture, bool isPlayer1) {
+static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint texture, bool isPlayer1) {
     // init player's currentState to be IDLE, init stateTimer to 0 
     PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
     playerState.currentState = PlayerState::IDLE;
@@ -29,7 +66,7 @@ static void createPlayerHelper(GlRender* renderer, Entity entity, vec2 pos, Shad
         0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
     };
 
-    Mesh playerMesh(rectangleVertices);
+    Mesh playerMesh(rectangleVertices, true);
     registry.renderable.insert(entity, Renderable{playerMesh, shader, texture});
 
     Health& health = registry.healths.emplace(entity);
@@ -48,13 +85,13 @@ static void createPlayerHelper(GlRender* renderer, Entity entity, vec2 pos, Shad
     postureBar.maxBar = 10;
     postureBar.recoverRate = 3; // 3 seconds per bar 
 
-    HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    // Use normalized device coordinates instead?
+    /*HitBox& hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = PLAYER_1_PUNCH_WIDTH;
 	hitBox.height = PLAYER_1_PUNCH_HEIGHT;
     hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
     hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
-    hitBox.active = false;
+    hitBox.active = false;*/
+    renderHitbox(entity, isPlayer1);
 
     HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
     hurtBox.xOffset = 0;
@@ -91,7 +128,7 @@ Create player1 entity, init and register components using the helper function ab
 Entity createPlayer1(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
     Shader* rectShader = new Shader(std::string("player1"));
-    createPlayerHelper(renderer, entity, pos, rectShader, renderer->m_bird_texture, true);    
+    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true);    
     return entity;
 }; 
 
@@ -101,7 +138,7 @@ Create player2 entity, init and register components using the helper function ab
 Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
     Shader* rectShader = new Shader(std::string("player2"));
-    createPlayerHelper(renderer, entity, pos, rectShader, renderer->m_bird_texture, false);    
+    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false);    
     return entity;
 };
 
@@ -120,28 +157,28 @@ Entity createBoundary(float val, int type) {
     return entity;
 };
 
-Entity createFloor(GlRender* renderer) {
+Entity createFloor(float val, int type) {
     Entity floor = Entity();
 
-    /*std::vector<float> floorVertices = {
-        -2.0f, -0.5f, 0.0f,
+    std::vector<float> floorVertices = {
+        -2.0f, val, 0.0f,
         -2.0f, -1.0f, 0.0f,
          2.0f, -1.0f, 0.0f,
 
-         -2.0f, -0.5f, 0.0f,
-         2.0f, -0.5f, 0.0f,
+         -2.0f, val, 0.0f,
+         2.0f, val, 0.0f,
          2.0f, -1.0f, 0.0f
     };
 
-    Mesh floorMesh(floorVertices);
+    Mesh floorMesh(floorVertices, false);
     Shader* floorShader = new Shader(std::string("floor"));
 
-    registry.renderable.insert(floor, Renderable{ floorMesh, floorShader });*/
+    registry.staticRenders.insert(floor, StaticRender{ floorMesh, floorShader });
 
     Boundary& boundary = registry.boundaries.emplace(floor);
 
-    boundary.val = -0.7f;
-    boundary.dir = 3; // floor
+    boundary.val = val;
+    boundary.dir = type; // floor
 
     return floor;
 }

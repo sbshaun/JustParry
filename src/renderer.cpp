@@ -78,18 +78,12 @@ void GlRender::initializeUI() {
     gltSetText(m_roundOver, "ROUND OVER (please press esc and reset)");
 }
 
-void GlRender::render() {
-    glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // debugging wireframe
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+void GlRender::handleTexturedRenders() {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     for (Entity& entity : registry.renderable.entities) {
         Renderable& mesh_shader = registry.renderable.get(entity);
         Shader* shader = mesh_shader.shader;
-        Mesh &mesh = mesh_shader.mesh;
+        Mesh& mesh = mesh_shader.mesh;
 
         Player& player = registry.players.get(entity);
 
@@ -113,7 +107,8 @@ void GlRender::render() {
             else {
                 shader->setBool("takenDamage", false);
             }
-        } else if (player.id == 2) {
+        }
+        else if (player.id == 2) {
             Motion& motion = registry.motions.get(entity);
             modelMatrix = glm::mat4(1.0f);
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
@@ -142,8 +137,62 @@ void GlRender::render() {
             shader->setInt("m_bird_texture", 0);
         }
 
-        mesh.draw(true);
+        mesh.draw();
     }
+}
+
+void GlRender::handleHitboxRenders() {
+    for (Entity& hitbox_entity : registry.debugRenders.entities) {
+        HitboxRender& hitboxRender = registry.debugRenders.get(hitbox_entity);
+        Shader* shader = hitboxRender.shader;
+        Mesh& mesh = hitboxRender.mesh;
+
+        Entity& player = hitboxRender.player;
+        HitBox& player_hitBox = registry.hitBoxes.get(player);
+
+        if (player_hitBox.active) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            Motion& player_motion = registry.motions.get(player);
+            Player& registry_player = registry.players.get(player);
+            shader->use();
+
+            GLint uniformLocation = glGetUniformLocation(shader->m_shaderProgram, "playerPosition");
+            if (uniformLocation == -1) {
+                std::cerr << "Warning: Uniform ' playerPosition ' doesn't exist or isn't used in the shader." << std::endl;
+                return;
+            }
+
+            // Set the uniform value (glUniform3f for vec3)
+            glUniform3f(uniformLocation, player_motion.position.x, player_motion.position.y, 0.0f);
+            mesh.draw();
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+    }
+}
+
+void GlRender::handleStaticRenders() {
+    for (Entity& static_entity : registry.staticRenders.entities) {
+        StaticRender& staticRender = registry.staticRenders.get(static_entity);
+        Shader* shader = staticRender.shader;
+		Mesh& mesh = staticRender.mesh;
+
+        shader->use();
+
+        mesh.draw();
+    }
+}
+
+void GlRender::render() {
+    glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // debugging wireframe
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    handleStaticRenders();
+    handleTexturedRenders();
+    handleHitboxRenders();
+    
     glDepthMask(GL_TRUE);
 }
 

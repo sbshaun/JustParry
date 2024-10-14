@@ -8,7 +8,7 @@ const int M_WINDOW_HEIGHT_PX = 768;
 // BB = bounding box
 // player 1 
 const float PLAYER_1_BB_WIDTH  = 1.5f * 100.f; // A typical height is 100px, reference; http://petesqbsite.com/sections/tutorials/tuts/tsugumo/chapter9.htm 
-const float PLAYER_1_BB_HEIGHT = 3.0f * 100.f; 
+const float PLAYER_1_BB_HEIGHT = 2.0f * 100.f; 
 // player 2 
 const float PLAYER_2_BB_WIDTH  = 1.5f * 100.f; 
 const float PLAYER_2_BB_HEIGHT = 3.0f * 100.f; 
@@ -39,7 +39,7 @@ const float TIME_STEP = 1.0f / 60.0f;
 //BOUNDING
 const float BOUND_SIZE_L = -1.0f;
 const float BOUND_SIZE_R = 1.0f;
-const float FLOOR_Y = -0.5f;
+const float FLOOR_Y = -0.75f;
 const int RIGHT = 1;
 const int LEFT = 2;
 const int FLOOR = 3;
@@ -48,14 +48,15 @@ const int FLOOR = 3;
 // activie duration 
 const int PLAYER_1_HITBOX_DURATION = 500; // 30 frames = 500ms 
 // punch box offset 
-const float PLAYER_1_PUNCH_X_OFFSET = .5f * NDC_WIDTH;
-const float PLAYER_1_PUNCH_Y_OFFSET = .25f * NDC_HEIGHT; // height of the left upper corner of the hitbox
+const float PLAYER_1_PUNCH_X_OFFSET = 0.50f * NDC_WIDTH;
+const float PLAYER_1_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT; // height of the left upper corner of the hitbox
 // punch box size
 const float PLAYER_1_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
-const float PLAYER_1_PUNCH_HEIGHT = 0.333f * NDC_HEIGHT; // 1/3 the player height 
+const float PLAYER_1_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height 
 
 const float PLAYER_2_PUNCH_X_OFFSET = 0.5f * NDC_WIDTH;
-const float PLAYER_2_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT; // height of the left upper corner of the hitbox
+const float PLAYER_2_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT;
+
 const float PLAYER_2_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
 const float PLAYER_2_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height
 

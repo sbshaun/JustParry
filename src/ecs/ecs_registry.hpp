@@ -33,6 +33,7 @@ public:
     // TODO: add render related components 
 	ComponentContainer<Renderable> renderable;
 	ComponentContainer<HitboxRender> debugRenders;
+	ComponentContainer<StaticRender> staticRenders;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -56,6 +57,7 @@ public:
 		registry_list.push_back(&boundaryCollisions);
 		registry_list.push_back(&renderable);
 		registry_list.push_back(&debugRenders);
+		registry_list.push_back(&staticRenders);
 	}
 
 	void clear_all_components() {
