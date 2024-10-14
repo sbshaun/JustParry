@@ -13,7 +13,7 @@ static int cooldown = 0;
 static BotState currentState = JUMPING;
 
 BotState randNextState(){
-    int rng = rand() % 3;
+    int rng = rand() % 4;
     switch (rng){
         case 0:
             return JUMPING;
@@ -22,6 +22,7 @@ BotState randNextState(){
         case 2:
             return MOVING_LEFT;
         case 3:
+        default: 
             return STAND;
     }
 }

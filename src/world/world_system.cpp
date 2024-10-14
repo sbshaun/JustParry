@@ -332,6 +332,7 @@ void WorldSystem::updateStateTimers(float elapsed_ms) {
         // deactivate hitbox. 
         if (player1HitBox.active) {
             player1HitBox.active = false;
+            player1HitBox.hit = false;
             std::cout << "Player 1 HitBox deactivated." << std::endl;
         }
         // transition state 
@@ -361,6 +362,7 @@ void WorldSystem::updateStateTimers(float elapsed_ms) {
         // deactivate hitbox.
         if (player2HitBox.active) {
             player2HitBox.active = false;
+            player2HitBox.hit = false;
             std::cout << "Player 2 HitBox deactivated." << std::endl;
         }
         // transition state 
@@ -393,7 +395,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     HurtBox& hurtBox = registry.hurtBoxes.get(playerWithHurtBox);
 
     // if  hitbox is not active, skip check 
-    if (!hitBox.active) return false;
+    if (!hitBox.active ||  hitBox.hit) return false; 
 
     bool collision = false;
 
@@ -418,6 +420,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
     
     if (x_collision && y_collision) {
+        hitBox.hit = true;
         std::cout << "Hitbox of Player " << (unsigned int) playerWithHitBox << " collided with Hurtbox of Player" << (unsigned int) playerWithHurtBox << std::endl;
         collision = true;
     }
