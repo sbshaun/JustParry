@@ -45,17 +45,17 @@ void WorldSystem::init(GlRender *renderer) {
 	this->renderer = renderer;
 
 	// Create entities
-	Entity& player1 = createPlayer1(renderer, { -0.3, FLOOR_Y + NDC_HEIGHT / 2 });
-	Entity& player2 = createPlayer2(renderer, { 0.3, FLOOR_Y + NDC_HEIGHT / 2 });
+	Entity player1 = createPlayer1(renderer, { -0.3, FLOOR_Y + NDC_HEIGHT / 2 });
+	Entity player2 = createPlayer2(renderer, { 0.3, FLOOR_Y + NDC_HEIGHT / 2 });
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
 
     //defined BOUND_SIZE in constants
-    Entity& boundaryRight = createBoundary(BOUND_SIZE_R, RIGHT);
-    Entity& boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
+    Entity boundaryRight = createBoundary(BOUND_SIZE_R, RIGHT);
+    Entity boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
 
-    Entity& boundaryFloor = createFloor(FLOOR_Y, FLOOR);
+    Entity boundaryFloor = createFloor(FLOOR_Y, FLOOR);
 }
 
 //IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
