@@ -24,7 +24,12 @@ void GlRender::renderRoundOver(int count) {
 
     won = gltCreateText();
     assert(won);  // Check if it's not NULL
-    gltSetText(won, "PLAYER 1 WINS!");
+    if (registry.healths.get(m_player1).currentHealth <= 0) {
+        gltSetText(won, "Player 2 Wins!");
+    }
+    else {
+        gltSetText(won, "Player 1 Wins!");
+    }
 
     if (over && count == 1) {
         gltBeginDraw();

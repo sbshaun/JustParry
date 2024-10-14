@@ -38,13 +38,14 @@ int generateUI(GlRender& renderer) {
 // [m1] temp fn to check is round is over.
 void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSystem) {
     int exit = 0;
+    Health& h1 = registry.healths.get(renderer.m_player1);
     Health& h2 = registry.healths.get(renderer.m_player2);
     PlayerInput& p1 = registry.playerInputs.get(renderer.m_player1);
     PlayerInput& p2 = registry.playerInputs.get(renderer.m_player2);
 
-    if (h2.currentHealth <= 0 || exit == 1) {
+    if (h1.currentHealth <= 0 ||
+        h2.currentHealth <= 0 || exit == 1) {
         // pause the timer and game cotrols, and display Game over text 
-        h2.currentHealth = 0;
         p1 = PlayerInput();
         p2 = PlayerInput();
 
