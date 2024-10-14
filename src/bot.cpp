@@ -9,7 +9,6 @@ enum BotState {
 };
 
 static int actionCounter = 0;
-static int cooldown = 0;
 static BotState currentState = JUMPING;
 
 BotState randNextState(){

@@ -11,4 +11,4 @@ class Bot {
 };
 
 
-#endif  // BOT_HPP
+#endif 
