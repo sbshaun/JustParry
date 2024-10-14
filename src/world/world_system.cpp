@@ -101,13 +101,15 @@ void WorldSystem::handleInput() {
     // Player 2 Input
     // disabled for now to handle random bot movements
     // player2Input = PlayerInput();
-    /*if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
-    if (isKeyPressed(GLFW_KEY_DOWN)) player2Input.down = true;
-    if (isKeyPressed(GLFW_KEY_LEFT)) player2Input.left = true;
-    if (isKeyPressed(GLFW_KEY_RIGHT)) player2Input.right = true;
-    if (isKeyPressed(GLFW_KEY_COMMA)) player2Input.punch = true;
-    if (isKeyPressed(GLFW_KEY_PERIOD)) player2Input.kick = true;
-    */
+    if(!BOT_ENABLED){
+        if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
+        if (isKeyPressed(GLFW_KEY_DOWN)) player2Input.down = true;
+        if (isKeyPressed(GLFW_KEY_LEFT)) player2Input.left = true;
+        if (isKeyPressed(GLFW_KEY_RIGHT)) player2Input.right = true;
+        if (isKeyPressed(GLFW_KEY_COMMA)) player2Input.punch = true;
+        if (isKeyPressed(GLFW_KEY_PERIOD)) player2Input.kick = true;   
+    }
+
 }
 
 
