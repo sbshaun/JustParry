@@ -4,18 +4,19 @@
 #include "../bot.hpp"
 #include <stb_image.h>
 
-Entity createPlayer1(GlRender* renderer, vec2 pos) {
-    Entity entity = Entity();
-
+/*
+helper function for player1, player2, and opponent1 
+p.s. entity: player entity 
+*/
+static void createPlayerHelper(GlRender* renderer, Entity entity, vec2 pos, Shader* shader, GLuint texture, bool isPlayer1) {
+    // init player's currentState to be IDLE, init stateTimer to 0 
     PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
     playerState.currentState = PlayerState::IDLE;
-
     StateTimer& playerStateTimer = registry.stateTimers.emplace(entity);
     playerStateTimer.duration = 0.f;
     playerStateTimer.elapsedTime = 0.f;
 
     // Convert 'player' width and height to normalized device coordinates
-
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
         0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
@@ -28,11 +29,8 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
         0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
     };
 
-    // TODO: Should have the registry map the entity to its mesh
     Mesh playerMesh(rectangleVertices);
-    Shader* rectShader = new Shader(std::string("player1"));
-
-    registry.renderable.insert(entity, Renderable{playerMesh, rectShader, renderer->m_bird_texture});
+    registry.renderable.insert(entity, Renderable{playerMesh, shader, texture});
 
     Health& health = registry.healths.emplace(entity);
     health.currentHealth = 100.f; 
@@ -42,8 +40,8 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     motion.lastPos = pos;
     motion.position = pos;
     motion.velocity = {0.f, 0.f};
-    motion.direction = true; // facing right 
-    motion.inAir = false;
+    motion.direction = isPlayer1; // player1 facing right
+    motion.inAir = false;   
 
     PostureBar& postureBar = registry.postureBars.emplace(entity);
     postureBar.currentBar = 10;
@@ -51,131 +49,54 @@ Entity createPlayer1(GlRender* renderer, vec2 pos) {
     postureBar.recoverRate = 3; // 3 seconds per bar 
 
     HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    // hitBox.width = PLAYER_1_BB_WIDTH - 10; 
-    // hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-
     // Use normalized device coordinates instead?
     hitBox.width = PLAYER_1_PUNCH_WIDTH;
 	hitBox.height = PLAYER_1_PUNCH_HEIGHT;
-
     hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
     hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
     hitBox.active = false;
 
-    // currently set to same size as the player 
-    // maybe the offset is not correct. 
-    // TODO: double what's the x,y of the player? center or upperleft? Modify.
-    // => x, y of the player is the center. We render the player box outward from the center.
     HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.width = NDC_WIDTH;
-    hurtBox.height = NDC_HEIGHT;
     hurtBox.xOffset = 0;
     hurtBox.yOffset = 0;
+    hurtBox.width = NDC_WIDTH;
+    hurtBox.height = NDC_HEIGHT;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
+    parryBox.active = false;
     parryBox.xOffset = pos.x;
     parryBox.yOffset = pos.y;
     parryBox.width = NDC_WIDTH;
     parryBox.height = NDC_HEIGHT;
-    parryBox.active = false;
 
     PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
     perfectParryBox.xOffset = 0;
     perfectParryBox.yOffset = 0;
-    perfectParryBox.width = PLAYER_1_BB_WIDTH;
-    perfectParryBox.height = PLAYER_1_BB_HEIGHT;
     perfectParryBox.active = false;
+    perfectParryBox.width = NDC_WIDTH;
+    perfectParryBox.height = NDC_HEIGHT;
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
-    
-    // register player1 
     registry.players.emplace(entity);
+}
 
+/*
+Create player1 entity, init and register components using the helper function above 
+*/
+Entity createPlayer1(GlRender* renderer, vec2 pos) {
+    Entity entity = Entity();
+    Shader* rectShader = new Shader(std::string("player1"));
+    createPlayerHelper(renderer, entity, pos, rectShader, renderer->m_bird_texture, true);    
     return entity;
 }; 
 
-// the code below is the same as the above function
-// to be modified later.
+/*
+Create player2 entity, init and register components using the helper function above 
+*/
 Entity createPlayer2(GlRender* renderer, vec2 pos) {
     Entity entity = Entity();
-
-    PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
-    playerState.currentState = PlayerState::IDLE;
-
-    StateTimer& playerStateTimer = registry.stateTimers.emplace(entity);
-    playerStateTimer.duration = 0.f;
-    playerStateTimer.elapsedTime = 0.f;
-    
-    // Convert 'player' width and height to normalized device coordinates
-
-    std::vector<float> rectangleVertices = {
-        // First triangle (Top-left, Bottom-left, Bottom-right)
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
-        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
-
-        // Second triangle (Bottom-right, Top-right, Top-left)
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
-        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-right
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
-    };
-
-    // TODO: Should have the registry map the entity to its mesh
-    Mesh playerMesh(rectangleVertices);
     Shader* rectShader = new Shader(std::string("player2"));
-    // renderer->addMesh(playerMesh, rectShader);
-
-    registry.renderable.insert(entity, Renderable{ playerMesh, rectShader, renderer->m_bird_texture });
-
-    Health& health = registry.healths.emplace(entity);
-    health.currentHealth = 100.f;
-    health.maxHealth = 100.f;
-
-    Motion& motion = registry.motions.emplace(entity);
-    motion.position = pos;
-    motion.velocity = { 0.f, 0.f };
-    motion.direction = true; // facing right 
-
-    PostureBar& postureBar = registry.postureBars.emplace(entity);
-    postureBar.currentBar = 10;
-    postureBar.maxBar = 10;
-    postureBar.recoverRate = 3; // 3 seconds per bar 
-
-    HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    hitBox.width = PLAYER_1_BB_WIDTH - 10;
-    hitBox.height = PLAYER_1_BB_WIDTH / 2 - 10;
-    hitBox.xOffset = hitBox.width / 2;
-    hitBox.yOffset = hitBox.height / 2;
-    hitBox.active = false;
-
-    // currently set to same size as the player
-    // maybe the offset is not correct.
-    // TODO: double what's the x,y of the player? center or upperleft? Modify. 
-    HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.width = PLAYER_1_BB_WIDTH;
-    hurtBox.height = PLAYER_1_BB_WIDTH;
-    hurtBox.xOffset = -PLAYER_1_BB_WIDTH / 2;
-    hurtBox.yOffset = -PLAYER_1_BB_HEIGHT / 2;
-
-    ParryBox& parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.xOffset = pos.x;
-    parryBox.yOffset = pos.y;
-    parryBox.width = PLAYER_1_BB_WIDTH;
-    parryBox.height = PLAYER_1_BB_HEIGHT;
-    parryBox.active = false;
-
-    PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
-    perfectParryBox.xOffset = 0;
-    perfectParryBox.yOffset = 0;
-    perfectParryBox.width = PLAYER_1_BB_WIDTH;
-    perfectParryBox.height = PLAYER_1_BB_HEIGHT;
-    perfectParryBox.active = false;
-
-    PlayerInput playerInput = registry.playerInputs.emplace(entity);
-
-    // register player1 
-    registry.players.emplace(entity);
-
+    createPlayerHelper(renderer, entity, pos, rectShader, renderer->m_bird_texture, false);    
     return entity;
 };
 
