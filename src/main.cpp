@@ -6,8 +6,8 @@
 #include <assert.h>
 #include "constants.hpp"
 #include "physics/physics_system.hpp"
-#include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
-#include "world/world_system.hpp" // TEMP: test it compiles.
+#include "ecs/ecs_registry.hpp" 
+#include "world/world_system.hpp" 
 
 int timer = timer_length; //Global timer init var moved to constants
 auto last_time = std::chrono::high_resolution_clock::now();
