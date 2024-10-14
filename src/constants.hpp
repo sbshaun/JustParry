@@ -19,7 +19,7 @@ const float NDC_HEIGHT = PLAYER_1_BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 // AI opponent 
 const float OPPONENT_1_BB_WIDTH   = 1.5f * 100.f;
 const float OPPONENT_1_BB_HEIGHT  = 3.0f * 100.f;
-const bool BOT_ENABLED = true;
+const bool BOT_ENABLED = false;
 
 //TIMERS
 const int timer_length = 100;
@@ -51,12 +51,12 @@ const int PLAYER_1_HITBOX_DURATION = 500; // 30 frames = 500ms
 const float PLAYER_1_PUNCH_X_OFFSET = .5f * NDC_WIDTH;
 const float PLAYER_1_PUNCH_Y_OFFSET = .25f * NDC_HEIGHT; // height of the left upper corner of the hitbox
 // punch box size
-const float PLAYER_1_PUNCH_WIDTH = 0.80f * NDC_WIDTH;
+const float PLAYER_1_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
 const float PLAYER_1_PUNCH_HEIGHT = 0.333f * NDC_HEIGHT; // 1/3 the player height 
 
 const float PLAYER_2_PUNCH_X_OFFSET = 0.5f * NDC_WIDTH;
 const float PLAYER_2_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT; // height of the left upper corner of the hitbox
-const float PLAYER_2_PUNCH_WIDTH = 0.80f * NDC_WIDTH;
+const float PLAYER_2_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
 const float PLAYER_2_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height
 
 const float PLAYER_STATE_TIMER_STEP = 1000 * 1 / 60.f; // 60 fps, in ms 

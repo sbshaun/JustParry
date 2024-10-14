@@ -151,19 +151,19 @@ struct HitBox : public Box {
 struct HurtBox : public Box {
     // hurtbox is just same as player's size. TODO 
     float getLeft(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.x;
+        return playerPosition.x - width / 2;
     }
 
     float getRight(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.x + width;
+        return playerPosition.x + width / 2;
     }
 
     float getTop(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.y + height;
+        return playerPosition.y + height / 2;
     }
 
     float getBottom(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.y;
+        return playerPosition.y - height / 2;
     }
 };
 
