@@ -37,8 +37,8 @@ const float TIME_STEP = 1.0f / 60.0f;
 
 
 //BOUNDING
-const float BOUND_SIZE_L = -0.75;
-const float BOUND_SIZE_R = 0.75;
+const float BOUND_SIZE_L = -1.00;
+const float BOUND_SIZE_R = 1.00;
 const float FLOOR_Y = -0.5f;
 const int RIGHT = 1;
 const int LEFT = 2;
