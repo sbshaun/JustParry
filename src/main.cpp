@@ -85,7 +85,6 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
 
         // Initialize the physics system that will handle collisions
         PhysicsSystem physics;
-
         Bot botInstance; //init bot
 
         // Main loop
@@ -96,7 +95,7 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
             worldSystem.handle_collisions(); // check hitbox/hurtbox collisions 
             physics.step(); //check for collisions
 
-
+            if(BOT_ENABLED)botInstance.pollBotRng(renderer);
             // this fn calls renderer.render and also renders the UI.
             checkIsRoundOver(renderer, botInstance, worldSystem);
             if (glfwGetKey(glWindow.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
