@@ -77,28 +77,30 @@ void WorldSystem::handleInput() {
     if(!BOT_ENABLED)player2Input = PlayerInput();
 
     // not accepting input if player is in these states. 
-    if (player1State.currentState == PlayerState::ATTACKING) return;
-    if (player1State.currentState == PlayerState::PARRYING) return;
-    if (player1State.currentState == PlayerState::PERFECT_PARRYING) return;
-    if (player1State.currentState == PlayerState::COUNTER_ATTACKING) return;
-    if (player1State.currentState == PlayerState::STUNNED) return;
-    if (player1State.currentState == PlayerState::RECOVERING) return;
+bool canPlayer1Move = !(player1State.currentState == PlayerState::ATTACKING || 
+                            player1State.currentState == PlayerState::PARRYING ||
+                            player1State.currentState == PlayerState::PERFECT_PARRYING ||
+                            player1State.currentState == PlayerState::COUNTER_ATTACKING ||
+                            player1State.currentState == PlayerState::STUNNED || 
+                            player1State.currentState == PlayerState::RECOVERING);
+    bool canPlayer2Move = !(player2State.currentState == PlayerState::ATTACKING || 
+                            player2State.currentState == PlayerState::PARRYING ||
+                            player2State.currentState == PlayerState::PERFECT_PARRYING ||
+                            player2State.currentState == PlayerState::COUNTER_ATTACKING ||
+                            player2State.currentState == PlayerState::STUNNED || 
+                            player2State.currentState == PlayerState::RECOVERING);
 
-    if (player2State.currentState == PlayerState::ATTACKING) return;
-    if (player2State.currentState == PlayerState::PARRYING) return;
-    if (player2State.currentState == PlayerState::PERFECT_PARRYING) return;
-    if (player2State.currentState == PlayerState::COUNTER_ATTACKING) return;
-    if (player2State.currentState == PlayerState::STUNNED) return;
-    if (player2State.currentState == PlayerState::RECOVERING) return;
+    if (canPlayer1Move) {
+        // Player 1 Input
+        if (isKeyPressed(GLFW_KEY_W)) player1Input.up = true;
+        if (isKeyPressed(GLFW_KEY_S)) player1Input.down = true;
+        if (isKeyPressed(GLFW_KEY_A)) player1Input.left = true;
+        if (isKeyPressed(GLFW_KEY_D)) player1Input.right = true;
+        if (isKeyPressed(GLFW_KEY_R)) player1Input.punch = true;
+        if (isKeyPressed(GLFW_KEY_T)) player1Input.kick = true;
+    }
 
-    // Player 1 Input
-    if (isKeyPressed(GLFW_KEY_W)) player1Input.up = true;
-    if (isKeyPressed(GLFW_KEY_S)) player1Input.down = true;
-    if (isKeyPressed(GLFW_KEY_A)) player1Input.left = true;
-    if (isKeyPressed(GLFW_KEY_D)) player1Input.right = true;
-    if (isKeyPressed(GLFW_KEY_R)) player1Input.punch = true;
-    if (isKeyPressed(GLFW_KEY_T)) player1Input.kick = true;
-
+    if (!canPlayer2Move) return; 
     // Player 2 Input
     // disabled for now to handle random bot movements
     // player2Input = PlayerInput();
