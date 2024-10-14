@@ -24,7 +24,7 @@ int generateUI(GlRender& renderer) {
         std::cout << timer << std::endl;
     }
 
-    if (timer == 0) {
+    if (timer <= 0) {
         return 1;
     }
 
@@ -35,48 +35,78 @@ int generateUI(GlRender& renderer) {
 
 }
 
-int main() {
-    GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
-    const int is_fine = gl3w_init();
-    assert(is_fine == 0);
-    
-    glfwSwapInterval(1); // Enable vsync
+// [m1] temp fn to check is round is over.
+void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSystem) {
+    int exit = 0;
+    Health& h2 = registry.healths.get(renderer.m_player2);
+    PlayerInput& p1 = registry.playerInputs.get(renderer.m_player1);
+    PlayerInput& p2 = registry.playerInputs.get(renderer.m_player2);
 
-	GlRender renderer;
-    renderer.initialize();
+    if (h2.currentHealth <= 0 || exit == 1) {
+        // pause the timer and game cotrols, and display Game over text 
+        h2.currentHealth = 0;
+        p1 = PlayerInput();
+        p2 = PlayerInput();
 
-    // Initialize the world system which is responsible for creating and updating entities
-    WorldSystem worldSystem;
-	worldSystem.init(&renderer);
-
-    // Initialize the physics system that will handle collisions
-    PhysicsSystem physics;
-
-    Bot botInstance; //init bot
-
-    // Main loop
-    while (!glWindow.shouldClose()) {
-        worldSystem.handleInput(); //check if any devices keys are pressed
-        worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
-        worldSystem.movementProcessing(); //apply velocity for movement
-        worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 
-        worldSystem.handle_collisions(); // check hitbox/hurtbox collisions 
-
-        physics.step(); //check for collisions
         renderer.render();
-
-        // render the UI.
-        int exit = generateUI(renderer);
-        if (exit == 1) {
-            break;
-        }
-        
-        botInstance.pollBotRng(renderer); // run bot movements
-
-        // worldSystem.step()
-
-        glWindow.windowSwapBuffers();
+        renderer.renderUI(timer);
+        renderer.renderRoundOver(1);
     }
+    else {
+        renderer.render();
+        exit = generateUI(renderer);
+        if (exit == 1) {
+            renderer.renderRoundOver(0);
+            p1 = PlayerInput();
+            p2 = PlayerInput();
+            renderer.renderUI(timer);
+        }
+        else {
+            // run bot movements
+            botInstance.pollBotRng(renderer);
+            worldSystem.handleInput(); //check if any devices keys are pressed
+        }
+    }
+}
+
+    int main() {
+        GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
+        const int is_fine = gl3w_init();
+        assert(is_fine == 0);
+
+        glfwSwapInterval(1); // Enable vsync
+
+        GlRender renderer;
+        renderer.initialize();
+
+        // Initialize the world system which is responsible for creating and updating entities
+        WorldSystem worldSystem;
+        worldSystem.init(&renderer);
+
+        // Initialize the physics system that will handle collisions
+        PhysicsSystem physics;
+
+        Bot botInstance; //init bot
+
+        // Main loop
+        while (!glWindow.shouldClose()) {
+            worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
+            worldSystem.movementProcessing(); //apply velocity for movement
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 
+            worldSystem.handle_collisions(); // check hitbox/hurtbox collisions 
+            physics.step(); //check for collisions
+
+
+            // this fn calls renderer.render and also renders the UI.
+            checkIsRoundOver(renderer, botInstance, worldSystem);
+            if (glfwGetKey(glWindow.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                break; // Exit the loop and close the game
+            }
+
+            // worldSystem.step()
+            glWindow.windowSwapBuffers();
+        }
+    
 
     // clean up
     renderer.shutdown();

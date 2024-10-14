@@ -15,6 +15,7 @@ public:
     void initialize();
     void initializeUI();
     void render();
+    void renderRoundOver(int count);
     void loadTextures();
     void loadTexture(const std::string& path, GLuint& textureID);
     void renderUI(int timer);
@@ -36,4 +37,8 @@ private:
     GLTtext* h1;
     GLTtext* h2;
     GLTtext* time;
+
+    // round over
+    GLTtext* over;
+    GLTtext* won;
 };
