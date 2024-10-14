@@ -115,28 +115,26 @@ struct Box {
 
     virtual float getLeft(const vec2& playerPosition, bool facingRight) const {
         if (facingRight) {
-            // assuming bottom left of the screen  is (0, 0) here.  
-            // TODO: should we plus yOffset or minus yOffset. 
-            return playerPosition.x + xOffset; 
+            return playerPosition.x + xOffset;
         } else {
-            return playerPosition.x - width - xOffset;
+            return playerPosition.x - xOffset - width;
         }
     }
 
     virtual float getRight(const vec2& playerPosition, bool facingRight) const {
         if (facingRight) {
-            return playerPosition.x + width + xOffset;
+            return playerPosition.x + xOffset + width;
         } else {
             return playerPosition.x - xOffset;
         }
     }
 
     virtual float getTop(const vec2& playerPosition, bool facingRight) const {
-        return playerPosition.y + height + yOffset;
+        return playerPosition.y + yOffset +  height / 2;
     }
 
     virtual float getBottom(const vec2& playerPosition, bool facingRight) const {
-        return playerPosition.y + yOffset;
+        return playerPosition.y + yOffset - height / 2;
     }
 };
 
@@ -151,19 +149,19 @@ struct HitBox : public Box {
 struct HurtBox : public Box {
     // hurtbox is just same as player's size. TODO 
     float getLeft(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.x;
+        return playerPosition.x - width / 2;
     }
 
     float getRight(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.x + width;
+        return playerPosition.x + width / 2;
     }
 
     float getTop(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.y + height;
+        return playerPosition.y + height / 2;
     }
 
     float getBottom(const vec2& playerPosition, bool facingRight = true) const override {
-        return playerPosition.y;
+        return playerPosition.y - height / 2;
     }
 };
 
@@ -196,6 +194,18 @@ struct Renderable {
     Mesh mesh;
     Shader* shader;
     unsigned int texture;
+};
+
+struct HitboxRender {
+    Mesh mesh;
+    Shader* shader;
+    // Player that has this hitbox
+    Entity player;
+};
+
+struct StaticRender {
+    Mesh mesh;
+    Shader* shader;
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)

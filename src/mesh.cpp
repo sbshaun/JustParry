@@ -1,7 +1,8 @@
 #include "mesh.hpp"
 
-Mesh::Mesh(const std::vector<float>& vertices) {
+Mesh::Mesh(const std::vector<float>& vertices, bool textured) {
     this->vertices = vertices;
+    this->textured = textured;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -11,13 +12,17 @@ Mesh::Mesh(const std::vector<float>& vertices) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Texture coordinates
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    
+    if (textured) {
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        // Texture coordinates
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    }
+    else {
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+    }
     gl_has_errors();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -29,7 +34,11 @@ Mesh::Mesh(const std::vector<float>& vertices) {
 void Mesh::draw() {
     glBindVertexArray(VAO);
     gl_has_errors();
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 5);
+    if (this->textured) {
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 5);
+    } else{
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
+    }
     glBindVertexArray(0);
 }
 
