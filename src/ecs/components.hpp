@@ -39,6 +39,13 @@ struct Player {
     int id; // used to separate players, 1 and 2.
 };
 
+/*
+To transition a player to another state, you should: 
+1. set the currentState to the new state 
+2. set the player's stateTimer.duration to be how long the new state will last 
+p.s. player's default state is IDLE 
+p.s. when the state timer expires, the player will be transitioned to IDLE 
+*/
 struct PlayerCurrentState {
     PlayerState currentState = PlayerState::IDLE;
 };
