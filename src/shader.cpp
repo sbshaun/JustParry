@@ -64,6 +64,11 @@ void Shader::setInt(const std::string& name, int value) {
     glUniform1i(location, value);
 }
 
+void Shader::setBool(const std::string& name, bool value) {
+    GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+    glUniform1i(location, value);
+}
+
 Shader::~Shader() {
     glDeleteProgram(m_shaderProgram);
     std::cout << "Shader program deleted." << std::endl;
