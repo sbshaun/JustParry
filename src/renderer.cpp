@@ -79,6 +79,12 @@ void GlRender::render() {
             else {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
             }
+            if (registry.hitBoxes.get(m_player2).hit) {
+                shader->setBool("takenDamage", true);
+            }
+            else {
+                shader->setBool("takenDamage", false);
+            }
         }
 
         if (entity == m_player2) {
@@ -90,6 +96,12 @@ void GlRender::render() {
             }
             else {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+            }
+            if (registry.hitBoxes.get(m_player1).hit) {
+                shader->setBool("takenDamage", true);
+            }
+            else {
+                shader->setBool("takenDamage", false);
             }
         }
 
