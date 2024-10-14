@@ -69,8 +69,26 @@ void WorldSystem::handleInput() {
     PlayerInput& player1Input = registry.playerInputs.get(renderer->m_player1);
     PlayerInput& player2Input = registry.playerInputs.get(renderer->m_player2);
 
+    PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
+    PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
+
     // Reset inputs
     player1Input = PlayerInput();
+
+    // not accepting input if player is in these states. 
+    if (player1State.currentState == PlayerState::ATTACKING) return;
+    if (player1State.currentState == PlayerState::PARRYING) return;
+    if (player1State.currentState == PlayerState::PERFECT_PARRYING) return;
+    if (player1State.currentState == PlayerState::COUNTER_ATTACKING) return;
+    if (player1State.currentState == PlayerState::STUNNED) return;
+    if (player1State.currentState == PlayerState::RECOVERING) return;
+
+    if (player2State.currentState == PlayerState::ATTACKING) return;
+    if (player2State.currentState == PlayerState::PARRYING) return;
+    if (player2State.currentState == PlayerState::PERFECT_PARRYING) return;
+    if (player2State.currentState == PlayerState::COUNTER_ATTACKING) return;
+    if (player2State.currentState == PlayerState::STUNNED) return;
+    if (player2State.currentState == PlayerState::RECOVERING) return;
 
     // Player 1 Input
     if (isKeyPressed(GLFW_KEY_W)) player1Input.up = true;
