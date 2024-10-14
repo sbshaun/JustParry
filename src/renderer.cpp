@@ -17,6 +17,36 @@ void GlRender::initialize() {
     initializeUI();
 }
 
+void GlRender::renderRoundOver(int count) {
+    over = gltCreateText();
+    assert(over);  // Check if it's not NULL
+    gltSetText(over, "GAME OVER!");
+
+    won = gltCreateText();
+    assert(won);  // Check if it's not NULL
+    gltSetText(won, "PLAYER 1 WINS!");
+
+    if (over && count == 1) {
+        gltBeginDraw();
+        gltColor(1.0f, 1.0f, 1.0f, 1.0f);  // White text color
+
+        // Draw game over text
+        gltDrawText2D(over, 285, 170, 5.f);
+
+        // Draw player wins text
+        gltDrawText2D(won, 350, 250, 2.5f);
+        gltEndDraw();
+    }
+    else {
+        gltBeginDraw();
+        gltColor(1.0f, 1.0f, 1.0f, 1.0f);  // White text color
+
+        // Draw game over text
+        gltDrawText2D(over, 285, 170, 5.f);
+        gltEndDraw();
+    }
+
+}
 
 void GlRender::initializeUI() {
     m_timerText = gltCreateText();
