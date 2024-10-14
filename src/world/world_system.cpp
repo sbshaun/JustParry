@@ -486,8 +486,8 @@ void WorldSystem::playerCollisions(GlRender* renderer){
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
 	if(abs(player1Motion.position.x - player2Motion.position.x) < NDC_WIDTH){
 		std::cout << "PLAYERS COLLIDED"  << std::endl;
-        player1Motion.position -= MOVE_SPEED;
-        player2Motion.position -= MOVE_SPEED;
+        player1Motion.position.x = player1Motion.lastPos.x;
+        player1Motion.position.x = player1Motion.lastPos.x;
     }
 
 
