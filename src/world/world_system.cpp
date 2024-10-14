@@ -487,7 +487,8 @@ void WorldSystem::playerCollisions(GlRender* renderer){
 	if(abs(player1Motion.position.x - player2Motion.position.x) < NDC_WIDTH){
 		std::cout << "PLAYERS COLLIDED"  << std::endl;
         player1Motion.position.x = player1Motion.lastPos.x;
-        player1Motion.position.x = player1Motion.lastPos.x;
+        player2Motion.position.x = player2Motion.lastPos.x;
+        //do a edge case check where if they are at a boundary to move them away from it 
     }
 
 
