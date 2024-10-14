@@ -136,6 +136,8 @@ struct Box {
 // TODO: how do we move the box along the player? 
 struct HitBox : public Box {
     bool active = false; // TODO: active for how  many frames? 12? 
+    // if the current attack already caused damage 
+    bool hit = false; // flag to check before applying damage. 
 };
 
 
