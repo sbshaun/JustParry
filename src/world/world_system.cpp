@@ -28,9 +28,9 @@ static void applyDamage(Entity player, float damage) {
 
     // TODO: uncomment 
     // intentionally commented out for testing 
-    // if (health.currentHealth <= 0) {
-    //     health.currentHealth = 0;
-    // }
+     if (health.currentHealth <= 0) {
+         health.currentHealth = 0;
+     }
     std::cout << "Damange: " << damage << std::endl; 
     std::cout << "Player " << (unsigned int) player << " remaining health: " << health.currentHealth << std::endl; 
 }
@@ -45,8 +45,8 @@ void WorldSystem::init(GlRender *renderer) {
 	this->renderer = renderer;
 
 	// Create entities
-	Entity player1 = createPlayer1(renderer, { -0.3, -0.3 });
-	Entity player2 = createPlayer2(renderer, { 0.3, -0.3 });
+	Entity& player1 = createPlayer1(renderer, { -0.3, -0.3 });
+	Entity& player2 = createPlayer2(renderer, { 0.3, -0.3 });
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
@@ -155,7 +155,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
 
         // Handle jump
         if (player1Input.up && !player1Motion.inAir) {
-            std::cout << "Player pressed UP! Starting jump." << std::endl;
+            // std::cout << "Player pressed UP! Starting jump." << std::endl;
             player1Motion.inAir = true;
             player1Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
             player1JumpStartY = player1Motion.position.y; // Save starting position
@@ -192,7 +192,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
             // std::cout << "Player 2 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
         }
         if (player2Input.up && !player2Motion.inAir) {
-            std::cout << "Player pressed UP! Starting jump." << std::endl;
+            // std::cout << "Player pressed UP! Starting jump." << std::endl;
             player2Motion.inAir = true;
             player2Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
             player2JumpStartY = player2Motion.position.y; // Save starting position
@@ -232,12 +232,12 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
     TODO: extend this to consider other statess. 
     */
     if (player1Input.punch) {
-        std::cout << "Player 1 pressed punch, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
+        // std::cout << "Player 1 pressed punch, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
         switch (player1State.currentState) {
             case PlayerState::IDLE:
             case PlayerState::WALKING:
                 player1HitBox.active = true;
-                std::cout << "Player 1 Hitbox Actived" << std::endl;
+                // std::cout << "Player 1 Hitbox Actived" << std::endl;
                 player1HitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
                 player1HitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
                 player1HitBox.width = PLAYER_1_PUNCH_WIDTH;
@@ -326,7 +326,7 @@ void WorldSystem::movementProcessing() {
             player1Motion.position += player1Motion.velocity;
     } else {
         player1Motion.position.y += player1Motion.velocity.y;
-        std::cout << "Player 1 cannot move, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
+        // std::cout << "Player 1 cannot move, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
     }
 
     if (canMove(player2State.currentState)) {
@@ -334,7 +334,15 @@ void WorldSystem::movementProcessing() {
             player2Motion.position += player2Motion.velocity;
     } else {
         player2Motion.position.y += player2Motion.velocity.y;
-        std::cout << "Player 2 cannot move, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
+        // std::cout << "Player 2 cannot move, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
+    }
+
+    if (player1Motion.position.x > player2Motion.position.x) {
+        player1Motion.direction = false; // Player 1 now facing left
+        player2Motion.direction = true; // Player 2 now facing right
+    } else if (player1Motion.position.x < player2Motion.position.x) {
+        player1Motion.direction = true; // Player 1 now facing right
+        player2Motion.direction = false; // Player 2 now facing left
     }
 }
 
@@ -414,6 +422,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     HitBox& hitBox = registry.hitBoxes.get(playerWithHitBox);
     HurtBox& hurtBox = registry.hurtBoxes.get(playerWithHurtBox);
 
+    
     // if  hitbox is not active, skip check 
     if (!hitBox.active ||  hitBox.hit) return false; 
 
@@ -423,17 +432,17 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     float hitBoxRight = hitBox.getRight(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
-    std::cout << "player's postion: " << hitPlayerMotion.position.x << ", " << hitPlayerMotion.position.y << std::endl;
-    std::cout << "Hitbox 4 corners, left, right, top, bottom: " << hitBoxLeft << ", " << hitBoxRight << ", " << hitBoxTop << ", " << hitBoxBottom << std::endl;
+    // std::cout << "player's postion: " << hitPlayerMotion.position.x << ", " << hitPlayerMotion.position.y << std::endl;
+    // std::cout << "Hitbox 4 corners, left, right, top, bottom: " << hitBoxLeft << ", " << hitBoxRight << ", " << hitBoxTop << ", " << hitBoxBottom << std::endl;
 
     float hurtBoxLeft = hurtBox.getLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxRight = hurtBox.getRight(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxTop = hurtBox.getTop(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxBottom = hurtBox.getBottom(hurtPlayerMotion.position, hurtPlayerMotion.direction);
-    std::cout << "player's postion: " << hurtPlayerMotion.position.x << ", " << hurtPlayerMotion.position.y << std::endl;
-    std::cout << "Hurtbox 4 corners, left, right, top, bottom: " << hurtBoxLeft << ", " << hurtBoxRight << ", " << hurtBoxTop << ", " << hurtBoxBottom << std::endl;
+    // std::cout << "player's postion: " << hurtPlayerMotion.position.x << ", " << hurtPlayerMotion.position.y << std::endl;
+    // std::cout << "Hurtbox 4 corners, left, right, top, bottom: " << hurtBoxLeft << ", " << hurtBoxRight << ", " << hurtBoxTop << ", " << hurtBoxBottom << std::endl;
 
-    std::cout << "collision: " << collision << std::endl;
+    // std::cout << "collision: " << collision << std::endl;
 
     // AABB collision check
     bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
@@ -441,7 +450,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     
     if (x_collision && y_collision) {
         hitBox.hit = true;
-        std::cout << "Hitbox of Player " << (unsigned int) playerWithHitBox << " collided with Hurtbox of Player" << (unsigned int) playerWithHurtBox << std::endl;
+        // std::cout << "Hitbox of Player " << (unsigned int) playerWithHitBox << " collided with Hurtbox of Player" << (unsigned int) playerWithHurtBox << std::endl;
         collision = true;
     }
     
@@ -465,7 +474,7 @@ void WorldSystem::handle_collisions() {
         StateTimer& player2StateTimer = registry.stateTimers.get(player2);
         player2State.currentState = PlayerState::STUNNED;
         player2StateTimer.reset(PLAYER_1_STUN_DURATION);
-        std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
+        // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 
     // check if player 2 hit player 1
@@ -476,6 +485,6 @@ void WorldSystem::handle_collisions() {
         StateTimer& player1StateTimer = registry.stateTimers.get(player1);
         player1State.currentState = PlayerState::STUNNED;
         player1StateTimer.reset(PLAYER_2_STUN_DURATION);
-        std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
+        // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 }

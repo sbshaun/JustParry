@@ -82,12 +82,6 @@ void GlRender::render() {
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float p1_x = registry.motions.get(m_player1).position.x;
-    float p2_x = registry.motions.get(m_player2).position.x;
-
-    bool flipP1 = (p1_x > p2_x);
-    bool flipP2 = (p2_x > p1_x);
-
     // debugging wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -97,13 +91,17 @@ void GlRender::render() {
         Shader* shader = mesh_shader.shader;
         Mesh &mesh = mesh_shader.mesh;
 
+        Player& player = registry.players.get(entity);
+
         shader->use();
 
-        if (entity == m_player1) {
+        if (player.id == 1) {
             Motion& motion = registry.motions.get(entity);
             modelMatrix = glm::mat4(1.0f);
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
-            if (flipP1) {
+
+            // If player 1 is facing left, flip the model
+            if (!registry.motions.get(entity).direction) {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
             }
             else {
@@ -115,13 +113,13 @@ void GlRender::render() {
             else {
                 shader->setBool("takenDamage", false);
             }
-        }
-
-        if (entity == m_player2) {
+        } else if (player.id == 2) {
             Motion& motion = registry.motions.get(entity);
             modelMatrix = glm::mat4(1.0f);
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
-            if (flipP2) {
+
+            // If player 2 is facing right, flip the model
+            if (!registry.motions.get(entity).direction) {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
             }
             else {
@@ -144,7 +142,7 @@ void GlRender::render() {
             shader->setInt("m_bird_texture", 0);
         }
 
-        mesh.draw();
+        mesh.draw(true);
     }
     glDepthMask(GL_TRUE);
 }

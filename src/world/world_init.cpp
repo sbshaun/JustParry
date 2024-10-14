@@ -77,7 +77,12 @@ static void createPlayerHelper(GlRender* renderer, Entity entity, vec2 pos, Shad
     perfectParryBox.height = NDC_HEIGHT;
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
-    registry.players.emplace(entity);
+    if (isPlayer1) {
+        registry.players.insert(entity, Player{ 1 });
+    }
+    else {
+		registry.players.insert(entity, Player{ 2 });
+    }
 }
 
 /*

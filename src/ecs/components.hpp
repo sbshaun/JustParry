@@ -117,26 +117,26 @@ struct Box {
         if (facingRight) {
             // assuming bottom left of the screen  is (0, 0) here.  
             // TODO: should we plus yOffset or minus yOffset. 
-            return playerPosition.x + xOffset; 
-        } else {
-            return playerPosition.x - width - xOffset;
-        }
-    }
-
-    virtual float getRight(const vec2& playerPosition, bool facingRight) const {
-        if (facingRight) {
-            return playerPosition.x + width + xOffset;
+            return playerPosition.x + xOffset;
         } else {
             return playerPosition.x - xOffset;
         }
     }
 
+    virtual float getRight(const vec2& playerPosition, bool facingRight) const {
+        if (facingRight) {
+            return playerPosition.x + xOffset + width;
+        } else {
+            return playerPosition.x - xOffset - width;
+        }
+    }
+
     virtual float getTop(const vec2& playerPosition, bool facingRight) const {
-        return playerPosition.y + height + yOffset;
+        return playerPosition.y + yOffset -  height / 2;
     }
 
     virtual float getBottom(const vec2& playerPosition, bool facingRight) const {
-        return playerPosition.y + yOffset;
+        return playerPosition.y + yOffset - height / 2;
     }
 };
 
@@ -196,6 +196,13 @@ struct Renderable {
     Mesh mesh;
     Shader* shader;
     unsigned int texture;
+};
+
+struct HitboxRender {
+    Mesh mesh;
+    Shader* shader;
+    // Player that has this hitbox
+    Entity player;
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)

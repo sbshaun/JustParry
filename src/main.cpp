@@ -21,7 +21,7 @@ int generateUI(GlRender& renderer) {
     if (elapsed.count() >= 1.0 && timer > 0) {
         last_time = current_time;
         timer--;
-        std::cout << timer << std::endl;
+        // std::cout << timer << std::endl;
     }
 
     if (timer <= 0) {

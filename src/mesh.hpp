@@ -8,7 +8,7 @@ protected:
     glm::mat4 modelMatrix;
 public:
     Mesh(const std::vector<float>& vertices);
-    void draw();
+    void draw(bool textured);
     void setPosition(const glm::vec3& pos);
     void setRotation(float angle, const glm::vec3& axis);
     void setScale(const glm::vec3& scale);

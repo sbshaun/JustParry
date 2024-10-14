@@ -26,10 +26,14 @@ Mesh::Mesh(const std::vector<float>& vertices) {
     gl_has_errors();
 }
 
-void Mesh::draw() {
+void Mesh::draw(bool textured) {
     glBindVertexArray(VAO);
     gl_has_errors();
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 5);
+    if (textured) {
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 5);
+    } else{
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
+    }
     glBindVertexArray(0);
 }
 

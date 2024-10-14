@@ -37,8 +37,8 @@ const float TIME_STEP = 1.0f / 60.0f;
 
 
 //BOUNDING
-const float BOUND_SIZE_L = -0.75;
-const float BOUND_SIZE_R = 0.75;
+const float BOUND_SIZE_L = -1.0f;
+const float BOUND_SIZE_R = 1.0f;
 const float FLOOR_Y = -0.5f;
 const int RIGHT = 1;
 const int LEFT = 2;
@@ -54,10 +54,10 @@ const float PLAYER_1_PUNCH_Y_OFFSET = .25f * NDC_HEIGHT; // height of the left u
 const float PLAYER_1_PUNCH_WIDTH = 0.80f * NDC_WIDTH;
 const float PLAYER_1_PUNCH_HEIGHT = 0.333f * NDC_HEIGHT; // 1/3 the player height 
 
-const float PLAYER_2_PUNCH_X_OFFSET = .5f * NDC_WIDTH;
-const float PLAYER_2_PUNCH_Y_OFFSET = .25f * NDC_HEIGHT; // height of the left upper corner of the hitbox
+const float PLAYER_2_PUNCH_X_OFFSET = 0.5f * NDC_WIDTH;
+const float PLAYER_2_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT; // height of the left upper corner of the hitbox
 const float PLAYER_2_PUNCH_WIDTH = 0.80f * NDC_WIDTH;
-const float PLAYER_2_PUNCH_HEIGHT = 0.333f * NDC_HEIGHT; // 1/3 the player height
+const float PLAYER_2_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height
 
 const float PLAYER_STATE_TIMER_STEP = 1000 * 1 / 60.f; // 60 fps, in ms 
 
