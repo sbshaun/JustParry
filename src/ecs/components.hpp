@@ -56,8 +56,8 @@ struct Opponent {
 };
 
 struct Health {
-    float maxHealth = 100.f;
-    float currentHealth = 100.f; 
+    float maxHealth = MAX_HEALTH;
+    float currentHealth = MAX_HEALTH; 
     // float recoverRate; // optional, health recover after x seconds of not being hit. 
 };
 
@@ -77,9 +77,9 @@ struct StationaryTimer {
 };
 
 struct PostureBar {
-    int maxBar =  10; // max number of bars. 
-    int currentBar = 10; // remaining bars.  
-    int recoverRate = 3; // how many seconds to recover 1 bar. use int for implicity. 
+    int maxBar =  POSTURE_MAX; // max number of bars. 
+    int currentBar = POSTURE_MAX; // remaining bars.  
+    int recoverRate = POSTURE_REGEN; // how many seconds to recover 1 bar. use int for implicity. 
 };
 
 struct StateTimer {
@@ -222,15 +222,6 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
-// we defeined our own meshes?
-// // Mesh datastructure for storing vertex and index buffers
-// struct Mesh
-// {
-// 	static bool loadFromOBJFile(std::string obj_path, std::vector<ColoredVertex>& out_vertices, std::vector<uint16_t>& out_vertex_indices, vec2& out_size);
-// 	vec2 original_size = {1,1};
-// 	std::vector<ColoredVertex> vertices;
-// 	std::vector<uint16_t> vertex_indices;
-// };
 
 /**
  * The following enumerators represent global identifiers refering to graphic
