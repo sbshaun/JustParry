@@ -141,6 +141,16 @@ void GlRender::handleTexturedRenders() {
             if (registry.motions.get(entity).angle != 0) {
                 modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.y, 0.f));
             }
+            PlayerCurrentState& player2State = registry.playerCurrentStates.get(entity);
+            Renderable& player2Renders = registry.renderable.get(entity);
+
+            if (player2State.currentState == PlayerState::ATTACKING) {
+                player2Renders.texture = m_bird_p_texture;
+            }
+            else {
+                player2Renders.texture = m_bird_texture;
+
+            }
 
             if (registry.hitBoxes.get(m_player1).hit) {
                 shader->setBool("takenDamage", true);
