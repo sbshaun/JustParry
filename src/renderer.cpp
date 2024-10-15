@@ -106,6 +106,17 @@ void GlRender::handleTexturedRenders() {
             else {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
             }
+            PlayerCurrentState& player1State = registry.playerCurrentStates.get(entity);
+            Renderable& player1Renders = registry.renderable.get(entity);
+            
+
+            if (player1State.currentState == PlayerState::ATTACKING) {
+                player1Renders.texture = m_bird_p_texture;
+            }
+            else {
+                player1Renders.texture = m_bird_texture;
+            }
+
             if (registry.hitBoxes.get(m_player2).hit) {
                 shader->setBool("takenDamage", true);
             }
@@ -205,6 +216,7 @@ void GlRender::render() {
 void GlRender::loadTextures() {
     // Load texture for player 1
     loadTexture(textures_path("bird.png"), m_bird_texture);
+    loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
 }
 
 void GlRender::loadTexture(const std::string& path, GLuint& textureID) {

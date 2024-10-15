@@ -93,11 +93,17 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     hitBox.active = false;*/
     renderHitbox(entity, isPlayer1);
 
+    CollisionBox& collisionBox = registry.collisionBoxes.emplace(entity);
+    collisionBox.xOffset = 0;
+    collisionBox.yOffset = 0;
+    collisionBox.width = NDC_WIDTH / 8.0f;
+    collisionBox.height = NDC_HEIGHT / 8.0f;
+
     HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
     hurtBox.xOffset = 0;
     hurtBox.yOffset = 0;
-    hurtBox.width = NDC_WIDTH;
-    hurtBox.height = NDC_HEIGHT;
+    hurtBox.width = NDC_WIDTH / 6.0f;
+    hurtBox.height = NDC_HEIGHT / 5.0f;
 
     ParryBox& parryBox = registry.parryBoxes.emplace(entity);
     parryBox.active = false;

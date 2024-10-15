@@ -460,6 +460,28 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     return collision;
 };
 
+// helper function for AABB Collision
+bool WorldSystem::checkAABBCollision(const Box& box1, const vec2& position1, bool facingRight1,
+    const Box& box2, const vec2& position2, bool facingRight2) {
+
+    float box1Left = box1.getLeft(position1, facingRight1);
+    float box1Right = box1.getRight(position1, facingRight1);
+    float box1Top = box1.getTop(position1, facingRight1);
+    float box1Bottom = box1.getBottom(position1, facingRight1);
+
+    float box2Left = box2.getLeft(position2, facingRight2);
+    float box2Right = box2.getRight(position2, facingRight2);
+    float box2Top = box2.getTop(position2, facingRight2);
+    float box2Bottom = box2.getBottom(position2, facingRight2);
+
+    // Perform AABB collision check
+    bool x_collision = box1Left < box2Right && box1Right > box2Left;
+    bool y_collision = box1Top > box2Bottom && box1Bottom < box2Top;
+
+    return x_collision && y_collision;
+}
+
+
 /*
 1. check if one player attacks the other player, and 
 2. apply damange if attack succeeds, i.e. hitbox hits hurtbox 
@@ -492,13 +514,22 @@ void WorldSystem::handle_collisions() {
     }
 }
 
-void WorldSystem::playerCollisions(GlRender* renderer){
-	Motion& player1Motion = registry.motions.get(renderer->m_player1);
+void WorldSystem::playerCollisions(GlRender* renderer) {
+    Motion& player1Motion = registry.motions.get(renderer->m_player1);
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
-	if(abs(player1Motion.position.x - player2Motion.position.x) < NDC_WIDTH){
-		std::cout << "PLAYERS COLLIDED"  << std::endl;
-        player1Motion.position.x = player1Motion.lastPos.x;
-        player2Motion.position.x = player2Motion.lastPos.x;
-        //do a edge case check where if they are at a boundary to move them away from it 
+
+    CollisionBox& player1CollisionBox = registry.collisionBoxes.get(renderer->m_player1);
+    CollisionBox& player2CollisionBox = registry.collisionBoxes.get(renderer->m_player2);
+
+    bool collision = checkAABBCollision(player1CollisionBox, player1Motion.position, player1Motion.direction,
+        player2CollisionBox, player2Motion.position, player2Motion.direction);
+
+    if (collision) {
+        std::cout << "PLAYERS COLLIDED" << std::endl;
+
+        player1Motion.position = player1Motion.lastPos;
+        player2Motion.position = player2Motion.lastPos;
+
+        // add boundary checks here for wall or edge of the screen handling
     }
 }
