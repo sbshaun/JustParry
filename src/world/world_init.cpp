@@ -22,7 +22,7 @@ static void renderHitbox(Entity& player, bool isPlayer1) {
         hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
         hitBox.active = false;
     }
-    //// Convert 'player' width and height to normalized device coordinates
+    // Convert 'player' width and height to normalized device coordinates
     std::vector<float> hitboxVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
         0 + hitBox.xOffset, 0 + hitBox.yOffset + hitBox.height / 2, 0.0f, // Top-left
@@ -79,6 +79,7 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     motion.velocity = {0.f, 0.f};
     motion.direction = isPlayer1; // player1 facing right
     motion.inAir = false;   
+    motion.scale = { 0.1, 0.1 };
 
     PostureBar& postureBar = registry.postureBars.emplace(entity);
     postureBar.currentBar = 10;

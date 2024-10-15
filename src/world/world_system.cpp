@@ -26,8 +26,6 @@ static void applyDamage(Entity player, float damage) {
 
     health.currentHealth -= damage;
 
-    // TODO: uncomment 
-    // intentionally commented out for testing 
      if (health.currentHealth <= 0) {
          health.currentHealth = 0;
      }
@@ -45,8 +43,8 @@ void WorldSystem::init(GlRender *renderer) {
 	this->renderer = renderer;
 
 	// Create entities
-	Entity player1 = createPlayer1(renderer, { -0.3, FLOOR_Y + NDC_HEIGHT / 2 });
-	Entity player2 = createPlayer2(renderer, { 0.3, FLOOR_Y + NDC_HEIGHT / 2 });
+	Entity player1 = createPlayer1(renderer, { -1.25, FLOOR_Y + NDC_HEIGHT });
+	Entity player2 = createPlayer2(renderer, { 1.25, FLOOR_Y + NDC_HEIGHT });
 
 	renderer->m_player1 = player1;
 	renderer->m_player2 = player2;
@@ -77,7 +75,7 @@ void WorldSystem::handleInput() {
     if(!BOT_ENABLED)player2Input = PlayerInput();
 
     // not accepting input if player is in these states. 
-bool canPlayer1Move = !(player1State.currentState == PlayerState::ATTACKING || 
+    bool canPlayer1Move = !(player1State.currentState == PlayerState::ATTACKING || 
                             player1State.currentState == PlayerState::PARRYING ||
                             player1State.currentState == PlayerState::PERFECT_PARRYING ||
                             player1State.currentState == PlayerState::COUNTER_ATTACKING ||
@@ -101,9 +99,6 @@ bool canPlayer1Move = !(player1State.currentState == PlayerState::ATTACKING ||
     }
 
     if (!canPlayer2Move) return; 
-    // Player 2 Input
-    // disabled for now to handle random bot movements
-    // player2Input = PlayerInput();
     if(!BOT_ENABLED){
         if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
         if (isKeyPressed(GLFW_KEY_DOWN)) player2Input.down = true;

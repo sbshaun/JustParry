@@ -101,20 +101,21 @@ void GlRender::handleTexturedRenders() {
 
             // If player 1 is facing left, flip the model
             if (!registry.motions.get(entity).direction) {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(-motion.scale.x, motion.scale.y, 1.0f));
             }
             else {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
             }
+
             PlayerCurrentState& player1State = registry.playerCurrentStates.get(entity);
             Renderable& player1Renders = registry.renderable.get(entity);
             
-
             if (player1State.currentState == PlayerState::ATTACKING) {
                 player1Renders.texture = m_bird_p_texture;
             }
             else {
                 player1Renders.texture = m_bird_texture;
+
             }
 
             if (registry.hitBoxes.get(m_player2).hit) {
@@ -131,11 +132,16 @@ void GlRender::handleTexturedRenders() {
 
             // If player 2 is facing right, flip the model
             if (!registry.motions.get(entity).direction) {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(-motion.scale.x, motion.scale.y, 1.0f));
             }
             else {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
             }
+
+            if (registry.motions.get(entity).angle != 0) {
+                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.y, 0.f));
+            }
+
             if (registry.hitBoxes.get(m_player1).hit) {
                 shader->setBool("takenDamage", true);
             }
@@ -231,15 +237,6 @@ void GlRender::loadTexture(const std::string& path, GLuint& textureID) {
     stbi_set_flip_vertically_on_load(true);
 
     stbi_uc* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-    
-    //redundant check honestly
-    if (data == NULL)
-    {
-        const std::string message = "Could not load the file " + path + ".";
-        std::cout << "Reason: " << stbi_failure_reason() << std::endl;
-        fprintf(stderr, "%s", message.c_str());
-        assert(false);
-    }
 
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
