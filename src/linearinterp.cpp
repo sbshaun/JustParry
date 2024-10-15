@@ -26,7 +26,10 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		}
 		// move p1 to the ground
 		if (m1.position[1] > (FLOOR_Y + NDC_HEIGHT / 2)) {
-			m1.position[1] -= 0.00455;
+			m1.position[1] -= 0.0047;
+		}
+		else {
+			m1.position[1] = (FLOOR_Y + NDC_HEIGHT / 2);
 		}
 
 
@@ -36,8 +39,9 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		} // move p2 to ground
 		if (m2.position[1] > (FLOOR_Y + NDC_HEIGHT / 2)) {
-			m2.position[1] -= 0.00455;
-
+			m2.position[1] -= 0.0047;
+		} else {
+			m2.position[1] = (FLOOR_Y + NDC_HEIGHT / 2);
 		}
 
 		// scale p1 from 0.1 to 1
@@ -47,10 +51,9 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 			m1.scale[0] = a;
 			m1.scale[1] = a2;
 		} // stop when done, and set scale = 1.
-		else if (m1.scale[0] > 1){
+		else{
 			m1.scale[0] = 1;
-			m1.scale[1] = 1;
-							
+			m1.scale[1] = 1;						
 		}
 
 		// scale p2 from 0.1 to 1 (not working)
@@ -68,7 +71,7 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		}
 
 		// stop once done, and change isLoading to false to avoid inteference w game.
-		if (m1.position[0] < 0.3 && m1.position[1] < (FLOOR_Y + NDC_HEIGHT / 2)) {
+		if (m1.position[0] < 0.3 && m1.position[1] == (FLOOR_Y + NDC_HEIGHT / 2) && m1.scale[0] == 1) {
 			count = 1;
 
 		}
