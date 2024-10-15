@@ -160,7 +160,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
         if (player1Input.up && !player1Motion.inAir) {
             // std::cout << "Player pressed UP! Starting jump." << std::endl;
             player1Motion.inAir = true;
-            player1Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
+            player1Motion.velocity.y = 4 * MOVE_SPEED; // Jump upwards
             player1JumpStartY = player1Motion.position.y; // Save starting position
         }
 
@@ -199,7 +199,7 @@ void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the
         if (player2Input.up && !player2Motion.inAir) {
             // std::cout << "Player pressed UP! Starting jump." << std::endl;
             player2Motion.inAir = true;
-            player2Motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
+            player2Motion.velocity.y = JUMP_VELOCITY; // Jump upwards
             player2JumpStartY = player2Motion.position.y; // Save starting position
         }
 
