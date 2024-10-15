@@ -107,9 +107,15 @@ void GlRender::handleTexturedRenders() {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
             }
 
-            // basic rotation 
-            if (registry.motions.get(entity).angle != 0) {
-                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.y, 0.f));
+            PlayerCurrentState& player1State = registry.playerCurrentStates.get(entity);
+            Renderable& player1Renders = registry.renderable.get(entity);
+            
+            if (player1State.currentState == PlayerState::ATTACKING) {
+                player1Renders.texture = m_bird_p_texture;
+            }
+            else {
+                player1Renders.texture = m_bird_texture;
+
             }
 
             if (registry.hitBoxes.get(m_player2).hit) {
@@ -134,6 +140,16 @@ void GlRender::handleTexturedRenders() {
 
             if (registry.motions.get(entity).angle != 0) {
                 modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.y, 0.f));
+            }
+            PlayerCurrentState& player2State = registry.playerCurrentStates.get(entity);
+            Renderable& player2Renders = registry.renderable.get(entity);
+
+            if (player2State.currentState == PlayerState::ATTACKING) {
+                player2Renders.texture = m_bird_p_texture;
+            }
+            else {
+                player2Renders.texture = m_bird_texture;
+
             }
 
             if (registry.hitBoxes.get(m_player1).hit) {
@@ -216,6 +232,7 @@ void GlRender::render() {
 void GlRender::loadTextures() {
     // Load texture for player 1
     loadTexture(textures_path("bird.png"), m_bird_texture);
+    loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
 }
 
 void GlRender::loadTexture(const std::string& path, GLuint& textureID) {
