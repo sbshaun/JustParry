@@ -20,7 +20,7 @@ const float NDC_HEIGHT = PLAYER_1_BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 // AI opponent 
 const float OPPONENT_1_BB_WIDTH   = 1.5f * 100.f;
 const float OPPONENT_1_BB_HEIGHT  = 3.0f * 100.f;
-const bool BOT_ENABLED = false;
+const bool BOT_ENABLED = true;
 
 //TIMERS
 const int timer_length = 100;
@@ -28,7 +28,6 @@ const int timer_length = 100;
 // movement
 // const float JUMP_HEIGHT = 0.5f;
 // const float JUMP_DURATION = 1.0f;
-// const float GRAVITY = 0.1f;
 const float MOVE_SPEED = 0.005f;
 
 const float JUMP_VELOCITY = 0.015f;
@@ -46,7 +45,7 @@ const int LEFT = 2;
 const int FLOOR = 3;
 
 // Hitbox 
-// activie duration 
+// active duration 
 const int PLAYER_1_HITBOX_DURATION = 500; // 30 frames = 500ms 
 // punch box offset 
 const float PLAYER_1_PUNCH_X_OFFSET = 0.50f * NDC_WIDTH;
@@ -69,3 +68,8 @@ const float PLAYER_2_DAMAGE = 10.f;
 // TODO: decrease value. Intentionally set it to longer for development. 
 const float PLAYER_1_STUN_DURATION = 3000.f; // 1 second 
 const float PLAYER_2_STUN_DURATION = 3000.f; // 1 second
+
+//Game Component Init values
+const float MAX_HEALTH = 100.f;
+const int POSTURE_MAX = 10;
+const int POSTURE_REGEN = 3;
