@@ -101,16 +101,15 @@ void GlRender::handleTexturedRenders() {
 
             // If player 1 is facing left, flip the model
             if (!registry.motions.get(entity).direction) {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(-motion.scale.x, motion.scale.y, 1.0f));
             }
             else {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
             }
+
+            // basic rotation 
             if (registry.motions.get(entity).angle != 0) {
-                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(0, motion.position.x, 0));
-            }
-            else {
-                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.x, 0.f));
+                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.y, 0.f));
             }
 
             if (registry.hitBoxes.get(m_player2).hit) {
