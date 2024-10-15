@@ -79,6 +79,7 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     motion.velocity = {0.f, 0.f};
     motion.direction = isPlayer1; // player1 facing right
     motion.inAir = false;   
+    motion.angle = 3;
 
     PostureBar& postureBar = registry.postureBars.emplace(entity);
     postureBar.currentBar = 10;

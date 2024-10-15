@@ -8,6 +8,7 @@
 #include "physics/physics_system.hpp"
 #include "ecs/ecs_registry.hpp" // TEMP: test it compiles. 
 #include "world/world_system.hpp" // TEMP: test it compiles.
+#include "linearinterp.hpp"
 
 int timer = timer_length; //Global timer init var moved to constants
 auto last_time = std::chrono::high_resolution_clock::now();
@@ -90,6 +91,7 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
 
         // Main loop
         while (!glWindow.shouldClose()) {
+            interp_moveEntitesToScreen(renderer);
             worldSystem.inputProcessing(timer); //do the appropriate actions for key signals recieved
             worldSystem.movementProcessing(); //apply velocity for movement
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states 

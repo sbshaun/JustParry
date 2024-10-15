@@ -104,8 +104,15 @@ void GlRender::handleTexturedRenders() {
                 modelMatrix = glm::scale(modelMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
             }
             else {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
             }
+            if (registry.motions.get(entity).angle != 0) {
+                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(0, motion.position.x, 0));
+            }
+            else {
+                modelMatrix = glm::rotate(modelMatrix, motion.angle, glm::vec3(motion.position.x, motion.position.x, 0.f));
+            }
+
             if (registry.hitBoxes.get(m_player2).hit) {
                 shader->setBool("takenDamage", true);
             }
