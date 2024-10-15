@@ -68,7 +68,7 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		}
 
 		// stop once done, and change isLoading to false to avoid inteference w game.
-		if (m1.position[0] < 0.3 && m1.position[1] < (FLOOR_Y + NDC_HEIGHT / 2) && m1.scale[0] > 1) {
+		if (m1.position[0] < 0.3 && m1.position[1] < (FLOOR_Y + NDC_HEIGHT / 2)) {
 			count = 1;
 
 		}
