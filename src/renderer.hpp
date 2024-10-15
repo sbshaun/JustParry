@@ -30,6 +30,7 @@ public:
     Entity m_player1;
     Entity m_player2;
     GLuint m_bird_texture;
+    GLuint m_bird_p_texture;
 
 private:
     // Place holders for timer and health subtexts

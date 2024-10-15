@@ -18,6 +18,7 @@ public:
 	void movementProcessing();
 	void updateStateTimers(float elapsed_ms);
 	bool checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox);
+	bool checkAABBCollision(const Box& box1, const vec2& position1, bool facingRight1, const Box& box2, const vec2& position2, bool facingRight2);
 	void playerCollisions(GlRender* renderer);
 	// bool step(float elapsed_ms);
 private:

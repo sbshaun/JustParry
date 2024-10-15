@@ -7,10 +7,10 @@ const int M_WINDOW_HEIGHT_PX = 768;
 // hardcoded to the dimensions of the entity texture (size of the mesh/texture)
 // BB = bounding box
 // player 1 
-const float PLAYER_1_BB_WIDTH  = 1.5f * 100.f; // A typical height is 100px, reference; http://petesqbsite.com/sections/tutorials/tuts/tsugumo/chapter9.htm 
+const float PLAYER_1_BB_WIDTH  = 3.0f * 80.f; // A typical height is 100px, reference; http://petesqbsite.com/sections/tutorials/tuts/tsugumo/chapter9.htm 
 const float PLAYER_1_BB_HEIGHT = 3.0f * 100.f; 
 // player 2 
-const float PLAYER_2_BB_WIDTH  = 1.5f * 100.f; 
+const float PLAYER_2_BB_WIDTH  = 3.0f * 80.f;
 const float PLAYER_2_BB_HEIGHT = 3.0f * 100.f; 
 
 const float NDC_WIDTH = PLAYER_1_BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f;
@@ -18,7 +18,7 @@ const float NDC_HEIGHT = PLAYER_1_BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 
 
 // AI opponent 
-const float OPPONENT_1_BB_WIDTH   = 1.5f * 100.f;
+const float OPPONENT_1_BB_WIDTH   = 3.0f * 80.f;
 const float OPPONENT_1_BB_HEIGHT  = 3.0f * 100.f;
 const bool BOT_ENABLED = true;
 
@@ -30,8 +30,8 @@ const int timer_length = 100;
 // const float JUMP_DURATION = 1.0f;
 const float MOVE_SPEED = 0.005f;
 
-const float JUMP_VELOCITY = 0.015f;
-const float GRAVITY = 0.0005f;
+const float JUMP_VELOCITY = 0.02f;
+const float GRAVITY = 0.001f;
 
 const float TIME_STEP = 1.0f / 60.0f;
 
@@ -48,8 +48,8 @@ const int FLOOR = 3;
 // active duration 
 const int PLAYER_1_HITBOX_DURATION = 500; // 30 frames = 500ms 
 // punch box offset 
-const float PLAYER_1_PUNCH_X_OFFSET = 0.50f * NDC_WIDTH;
-const float PLAYER_1_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT; // height of the left upper corner of the hitbox
+const float PLAYER_1_PUNCH_X_OFFSET = 0.f;
+const float PLAYER_1_PUNCH_Y_OFFSET = 0.15f * NDC_HEIGHT; // height of the left upper corner of the hitbox
 // punch box size
 const float PLAYER_1_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
 const float PLAYER_1_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height 
