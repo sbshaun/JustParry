@@ -65,6 +65,8 @@ struct Motion {
     vec2 lastPos = {0, 0};
     vec2 position = {0, 0};
     vec2 velocity = {0, 0};
+    vec2 scale = { 1 ,1 };
+    float angle = 0;
     bool direction = true; // true is facing right, false is facing left. 
     // vec2 acceleration = {0, 0}; // TODO: if we want to add acceleration during initial movement after idle. 
 

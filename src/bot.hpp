@@ -6,9 +6,10 @@
 #include "renderer.hpp"
 
 class Bot {
-    public:
-        void pollBotRng(GlRender& renderer);
+public:
+    void pollBotRng(GlRender& renderer);
 };
 
 
 #endif 
+
