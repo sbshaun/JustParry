@@ -16,7 +16,6 @@ class MoveLeftCommand : public Command {
     public:
         void execute(Entity entity, StateMachine& state_machine) override {
             if (!state_machine.transition(entity, PlayerState::WALKING)) return;
-            
             Motion& motion = registry.motions.get(entity);
             motion.velocity.x = -MOVE_SPEED;
         }
@@ -43,6 +42,15 @@ class JumpCommand : public Command {
             std::cout << "Player pressed UP! Starting jump." << std::endl;
             motion.inAir = true;
             motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
+        }
+};
+
+class CrouchCommand : public Command {
+    public:
+        void execute(Entity entity, StateMachine& state_machine) override {
+            if (!state_machine.transition(entity, PlayerState::CROUCHING)) return;
+            // if stateMachine.transition("CROUCHING") success: 
+            // TODO: implement 
         }
 };
 

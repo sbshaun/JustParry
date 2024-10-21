@@ -25,7 +25,7 @@ public:
 */
 class StateMachine {
 public:
-    void addState(PlayerState state_enum, State* state) {
+    void addState(PlayerState state_enum, std::unique_ptr<State> state) {
         // bind a concrete state object to a palyer state (which is an enum) 
         states[state_enum] = std::move(state);
     }; 
@@ -34,9 +34,11 @@ public:
     PlayerState getCurrentState() const { return currentState; } // getter function 
 
 private:
-    std::unordered_map<PlayerState, State*> states; // mapping: PlayerState -> State object 
+    std::unordered_map<PlayerState, std::unique_ptr<State>> states; // mapping: PlayerState -> State object 
     PlayerState currentState = PlayerState::IDLE;
 };
+
+StateMachine createPlayerStateMachine();
 
 class IdleState : public State {
 public:
@@ -63,6 +65,14 @@ public:
 };
 
 class AttackingState : public State {
+public:
+    void enter(Entity entity) override;
+    void exit(Entity entity) override;
+    void update(Entity entity, float dt) override;
+    bool canTransitionTo(PlayerState newState) override;
+};
+
+class CrouchingState : public State {
 public:
     void enter(Entity entity) override;
     void exit(Entity entity) override;

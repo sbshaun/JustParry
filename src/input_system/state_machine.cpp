@@ -67,6 +67,10 @@ void JumpingState::update(Entity entity, float dt) {
     // add gravity, check for landing collision 
 }
 
+bool JumpingState::canTransitionTo(PlayerState newState) {
+    return newState != PlayerState::JUMPING;
+} 
+
 void AttackingState::enter(Entity entity) {
     // add attack animation
     std::cout << "Entering Attacking State" << std::endl;
@@ -82,6 +86,23 @@ void AttackingState::update(Entity entity, float dt) {
 
 bool AttackingState::canTransitionTo(PlayerState newState) {
     return newState != PlayerState::ATTACKING;
+}
+
+void CrouchingState::enter(Entity entity) {
+    // add crouch animation
+    std::cout << "Entering Crouching State" << std::endl;
+}
+
+void CrouchingState::exit(Entity entity) {
+    std::cout << "Exiting Crouching State" << std::endl;
+}
+
+void CrouchingState::update(Entity entity, float dt) {
+    // Check for input to transition to other states
+}
+
+bool CrouchingState::canTransitionTo(PlayerState newState) {
+    return newState != PlayerState::CROUCHING;
 }
 
 void ParryingState::enter(Entity entity) {
@@ -103,11 +124,11 @@ bool ParryingState::canTransitionTo(PlayerState newState) {
 
 StateMachine createPlayerStateMachine() {
     StateMachine state_machine;
-    state_machine.addState(PlayerState::IDLE, new IdleState());
-    state_machine.addState(PlayerState::WALKING, new WalkingState());
-    state_machine.addState(PlayerState::JUMPING, new JumpingState());
-    state_machine.addState(PlayerState::ATTACKING, new AttackingState());
-    state_machine.addState(PlayerState::PARRYING, new ParryingState());
+    state_machine.addState(PlayerState::IDLE, std::make_unique<IdleState>());
+    state_machine.addState(PlayerState::WALKING, std::make_unique<WalkingState>());
+    state_machine.addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    state_machine.addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    state_machine.addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     // TODO: add more states as needed. 
     return state_machine;
 }

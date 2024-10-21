@@ -1,5 +1,7 @@
 #include "../common.hpp"
 #include "../renderer.hpp"
+#include "../input_system/input_handler.hpp"
+#include "../input_system/state_machine.hpp"
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -10,6 +12,8 @@ public:
 	WorldSystem();
 	void init(GlRender* renderer);
 	void handle_collisions();
+	// Steps the game ahead by ms milliseconds
+	bool step(float elapsed_ms);
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
@@ -23,4 +27,12 @@ public:
 	// bool step(float elapsed_ms);
 private:
 	GlRender* renderer;
+
+	std::unique_ptr<InputHandler> player1InputHandler;
+	std::unique_ptr<InputHandler> player2InputHandler;
+	std::unique_ptr<StateMachine> player1StateMachine;
+	std::unique_ptr<StateMachine> player2StateMachine;
+	void initInputHandlers();
+	void initStateMachines();
+	void updatePlayerState(float elapsed_ms);
 };

@@ -32,24 +32,6 @@ class InputMapping {
             actionToKeyMap[action] = key;
         }; 
 
-        void initDefaultMapping() {
-            // player 1
-            bindKeyToAction(GLFW_KEY_A, Action::MOVE_LEFT);
-            bindKeyToAction(GLFW_KEY_D, Action::MOVE_RIGHT);
-            bindKeyToAction(GLFW_KEY_W, Action::JUMP);
-            bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
-            bindKeyToAction(GLFW_KEY_SPACE, Action::PUNCH);
-            bindKeyToAction(GLFW_KEY_LEFT_SHIFT, Action::KICK);
-
-            // player 2
-            bindKeyToAction(GLFW_KEY_LEFT, Action::MOVE_LEFT);
-            bindKeyToAction(GLFW_KEY_RIGHT, Action::MOVE_RIGHT);
-            bindKeyToAction(GLFW_KEY_UP, Action::JUMP);
-            bindKeyToAction(GLFW_KEY_DOWN, Action::CROUCH);
-            bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
-            bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
-        };
-
         Action getActionFromKey(int key) const {
             if (keyToActionMap.find(key) != keyToActionMap.end()) {
                 return keyToActionMap.at(key);
@@ -72,5 +54,5 @@ class InputMapping {
         }; 
 
         std::unordered_map<int, Action> getKeyToActionMap() const { return keyToActionMap; }
-        std::unordered_map<Action, int> getActionToKeyMap() const { return actionToKeyMap; }
+        std::unordered_map<Action, int> getActionToKeyMap() const { return actionToKeyMap; } // may be handy when doing: if (isKeyPressed(getKeyFromAction(Action::MOVE_LEFT))) { // do something } 
 };

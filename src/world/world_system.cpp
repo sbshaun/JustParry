@@ -3,6 +3,7 @@
 
 #include "../physics/physics_system.hpp"
 #include "../constants.hpp"
+#include "../input_system/input_utils.hpp"
 
 /* notes: 
 1. a helper function to check if player is movable. 
@@ -52,16 +53,59 @@ void WorldSystem::init(GlRender *renderer) {
     //defined BOUND_SIZE in constants
     Entity boundaryRight = createBoundary(BOUND_SIZE_R, RIGHT);
     Entity boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
-
     Entity boundaryFloor = createFloor(FLOOR_Y, FLOOR);
+
+    // 1. init input handlers and state machines 
+    initInputHandlers();
+    initStateMachines();
+}
+
+void WorldSystem::initInputHandlers() {
+    // player 1 <input_key -> action> mapping 
+    std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
+    player1InputMapping->bindKeyToAction(GLFW_KEY_A, Action::MOVE_LEFT);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_D, Action::MOVE_RIGHT);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_W, Action::JUMP);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_SPACE, Action::PUNCH);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_LEFT_SHIFT, Action::KICK);
+
+    // player 2 <input_key -> action> mapping
+    std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
+    player2InputMapping->bindKeyToAction(GLFW_KEY_LEFT, Action::MOVE_LEFT);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_RIGHT, Action::MOVE_RIGHT);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_UP, Action::JUMP);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_DOWN, Action::CROUCH);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
+
+    // init <action -> command> mapping 
+    player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
+    player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping));
+    player1InputHandler->initDefaultActionToCommandMapping();
+    player2InputHandler->initDefaultActionToCommandMapping();
+}
+
+void WorldSystem::initStateMachines() {
+    player1StateMachine = std::make_unique<StateMachine>();
+    player2StateMachine = std::make_unique<StateMachine>();
+
+    player1StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
+    player1StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
+    player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
+    player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+
+    player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
+    player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
+    player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
+    player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
 }
 
 //IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
-
-bool isKeyPressed(int key) {
-    GLFWwindow* window = glfwGetCurrentContext();
-    return glfwGetKey(window, key) == GLFW_PRESS;
-}
 
 void WorldSystem::handleInput() {
     PlayerInput& player1Input = registry.playerInputs.get(renderer->m_player1);

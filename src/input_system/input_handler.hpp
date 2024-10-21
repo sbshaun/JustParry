@@ -8,16 +8,17 @@
 class InputHandler {
     public: 
 
-        InputHandler(InputMapping* inputMapping) : inputMapping(inputMapping) {}
+        InputHandler(std::unique_ptr<InputMapping> inputMapping) : inputMapping(std::move(inputMapping)) {}
 
         void bindActionToCommand(Action action, std::unique_ptr<Command> command) {
-            ActionToCommandMapping[action] = std::move(command);
+            actionToCommandMapping[action] = std::move(command);
         }
 
         void initDefaultActionToCommandMapping() {
             bindActionToCommand(Action::MOVE_LEFT, std::make_unique<MoveLeftCommand>());
             bindActionToCommand(Action::MOVE_RIGHT, std::make_unique<MoveRightCommand>());
             bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
+            bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
             bindActionToCommand(Action::PUNCH, std::make_unique<PunchCommand>());
             bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());
         }
@@ -32,15 +33,15 @@ class InputHandler {
                     // get the corresponded action from the key 
                     Action action = pair.second;
                     // execute the command for the action. 
-                    if (ActionToCommandMapping.find(action) != ActionToCommandMapping.end()) {
-                        ActionToCommandMapping[action]->execute(entity, state_machine);
+                    if (actionToCommandMapping.find(action) != actionToCommandMapping.end()) {
+                        actionToCommandMapping[action]->execute(entity, state_machine);
                     }
                 }
             }
         }
 
     private: 
-        InputMapping* inputMapping;
-        std::unordered_map<Action, std::unique_ptr<Command>> ActionToCommandMapping; 
+         std::unique_ptr<InputMapping> inputMapping;
+        std::unordered_map<Action, std::unique_ptr<Command>> actionToCommandMapping; 
         // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/ 
 };
