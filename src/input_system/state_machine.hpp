@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include "../ecs/components.hpp"
+#include "../ecs/ecs.hpp"
 
 /*
 * Base State class for the concrete states to derive from. 
@@ -10,50 +11,10 @@
 class State {
 public:
     virtual ~State() = default;
-    virtual void enter() = 0; // defines actions when entering the state 
-    virtual void exit() = 0;  // defines actions when exiting the state 
-    virtual void update(float dt) = 0; // defines actions to be taken during the state 
+    virtual void enter(Entity entity) = 0; // defines actions when entering the state 
+    virtual void exit(Entity entity) = 0;  // defines actions when exiting the state 
+    virtual void update(Entity entity, float dt) = 0; // defines actions to be taken during the state 
     virtual bool canTransitionTo(PlayerState newState) = 0; // check if the new state is valid to transition to for the current state 
-};
-
-class IdleState : public State {
-public:
-    void enter() override;
-    void exit() override;
-    void update(float dt) override;
-    bool canTransitionTo(PlayerState newState) override;
-};
-
-class WalkingState : public State {
-public:
-    void enter() override;
-    void exit() override;
-    void update(float dt) override;
-    bool canTransitionTo(PlayerState newState) override;
-};
-
-class JumpingState : public State {
-public:
-    void enter() override;
-    void exit() override;
-    void update(float dt) override;
-    bool canTransitionTo(PlayerState newState) override;
-};
-
-class AttackingState : public State {
-public:
-    void enter() override;
-    void exit() override;
-    void update(float dt) override;
-    bool canTransitionTo(PlayerState newState) override;
-};
-
-class ParryingState : public State {
-public:
-    void enter() override;
-    void exit() override;
-    void update(float dt) override;
-    bool canTransitionTo(PlayerState newState) override;
 };
 
 /*
@@ -68,12 +29,51 @@ public:
         // bind a concrete state object to a palyer state (which is an enum) 
         states[state_enum] = std::move(state);
     }; 
-    bool transition(PlayerState newState); // change to the current state to the passed new state. 
-    void update(float dt); // update the current state and check if it should transition to another state
+    bool transition(Entity entity, PlayerState newState); // change to the current state to the passed new state. 
+    void update(Entity entity, float dt); // update the current state and check if it should transition to another state
     PlayerState getCurrentState() const { return currentState; } // getter function 
 
 private:
-    std::unordered_map<PlayerState, State*> states; 
+    std::unordered_map<PlayerState, State*> states; // mapping: PlayerState -> State object 
     PlayerState currentState = PlayerState::IDLE;
 };
 
+class IdleState : public State {
+public:
+    void enter(Entity entity) override;
+    void exit(Entity entity) override;
+    void update(Entity entity, float dt) override;
+    bool canTransitionTo(PlayerState newState) override;
+};
+
+class WalkingState : public State {
+public:
+    void enter(Entity entity) override;
+    void exit(Entity entity) override;
+    void update(Entity entity, float dt) override;
+    bool canTransitionTo(PlayerState newState) override;
+};
+
+class JumpingState : public State {
+public:
+    void enter(Entity entity) override;
+    void exit(Entity entity) override;
+    void update(Entity entity, float dt) override;
+    bool canTransitionTo(PlayerState newState) override;
+};
+
+class AttackingState : public State {
+public:
+    void enter(Entity entity) override;
+    void exit(Entity entity) override;
+    void update(Entity entity, float dt) override;
+    bool canTransitionTo(PlayerState newState) override;
+};
+
+class ParryingState : public State {
+public:
+    void enter(Entity entity) override;
+    void exit(Entity entity) override;
+    void update(Entity entity, float dt) override;
+    bool canTransitionTo(PlayerState newState) override;
+};

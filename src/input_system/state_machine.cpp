@@ -1,37 +1,35 @@
 #include "state_machine.hpp"
 #include "../ecs/ecs_registry.hpp"
 
-bool StateMachine::transition(PlayerState newState) {
+bool StateMachine::transition(Entity entity, PlayerState newState) {
+    // check if the new state is the same as current 
+    if (newState == currentState) return false;
+    if (states[newState] == nullptr) return false;
     // check if the new state is valid to transition to 
     if (!states[currentState]->canTransitionTo(newState)) return false;
-    // check if the new state is the same as current 
-    if (newState == currentState) return;
-    if (states[newState] == nullptr) return;
 
-    // 1. exit the current state 
-    states[currentState]->exit();
-    // 2. set current to new state 
-    currentState = newState;
-    // 3. enter new state 
-    states[currentState]->enter();
+    states[currentState]->exit(entity); // 1. exit the current state 
+    currentState = newState; // 2. set current to new state 
+    states[currentState]->enter(entity); // 3. enter new state 
+    return true;
 }
 
-void StateMachine::update(float dt) {
+void StateMachine::update(Entity entity, float dt) {
     // call update on the state object of the current state. 
-    states[currentState]->update(dt);
+    states[currentState]->update(entity, dt);
 }
 
 // TODO: implement concrete state classes
-void IdleState::enter() {
+void IdleState::enter(Entity entity) {
     // Set animation to idle
     std::cout << "Entering Idle State" << std::endl;
 }
 
-void IdleState::exit() {
+void IdleState::exit(Entity entity) {
     std::cout << "Exiting Idle State" << std::endl;
 }
 
-void IdleState::update(float dt) {
+void IdleState::update(Entity entity, float dt) {
     // Check for input to transition to other states
 }
 
@@ -39,16 +37,16 @@ bool IdleState::canTransitionTo(PlayerState newState) {
     return newState != PlayerState::IDLE;
 }
 
-void WalkingState::enter() {
+void WalkingState::enter(Entity entity) {
     // Set animation to walking
     std::cout << "Entering Walking State" << std::endl;
 }
 
-void WalkingState::exit() {
+void WalkingState::exit(Entity entity) {
     std::cout << "Exiting Walking State" << std::endl;
 }
 
-void WalkingState::update(float dt) {
+void WalkingState::update(Entity entity, float dt) {
     // Update position based on input
 }
 
@@ -56,29 +54,29 @@ bool WalkingState::canTransitionTo(PlayerState newState) {
     return newState != PlayerState::WALKING;
 }
 
-void JumpingState::enter() {
+void JumpingState::enter(Entity entity) {
     // Set initial jump velocity
     std::cout << "Entering Jumping State" << std::endl;
 }
 
-void JumpingState::exit() {
+void JumpingState::exit(Entity entity) {
     std::cout << "Exiting Jumping State" << std::endl;
 }
 
-void JumpingState::update(float dt) {
+void JumpingState::update(Entity entity, float dt) {
     // add gravity, check for landing collision 
 }
 
-void AttackingState::enter() {
+void AttackingState::enter(Entity entity) {
     // add attack animation
     std::cout << "Entering Attacking State" << std::endl;
 }
 
-void AttackingState::exit() {
+void AttackingState::exit(Entity entity) {
     std::cout << "Exiting Attacking State" << std::endl;
 }
 
-void AttackingState::update(float dt) {
+void AttackingState::update(Entity entity, float dt) {
     // Check for hit detection, transition to recovery
 }
 
@@ -86,16 +84,16 @@ bool AttackingState::canTransitionTo(PlayerState newState) {
     return newState != PlayerState::ATTACKING;
 }
 
-void ParryingState::enter() {
+void ParryingState::enter(Entity entity) {
     // add parry animation
     std::cout << "Entering Parrying State" << std::endl;
 }
 
-void ParryingState::exit() {
+void ParryingState::exit(Entity entity) {
     std::cout << "Exiting Parrying State" << std::endl;
 }
 
-void ParryingState::update(float dt) {
+void ParryingState::update(Entity entity, float dt) {
     // Check for successful parry, transition to counter or recovery
 }
 

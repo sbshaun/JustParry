@@ -10,16 +10,16 @@ class InputHandler {
 
         InputHandler(InputMapping* inputMapping) : inputMapping(inputMapping) {}
 
-        void bindActionToCommand(Action action, Command* command) {
+        void bindActionToCommand(Action action, std::unique_ptr<Command> command) {
             ActionToCommandMapping[action] = std::move(command);
         }
 
         void initDefaultActionToCommandMapping() {
-            bindActionToCommand(Action::MOVE_LEFT, new MoveLeftCommand());
-            bindActionToCommand(Action::MOVE_RIGHT, new MoveRightCommand());
-            bindActionToCommand(Action::JUMP, new JumpCommand());
-            bindActionToCommand(Action::PUNCH, new PunchCommand());
-            bindActionToCommand(Action::KICK, new KickCommand());
+            bindActionToCommand(Action::MOVE_LEFT, std::make_unique<MoveLeftCommand>());
+            bindActionToCommand(Action::MOVE_RIGHT, std::make_unique<MoveRightCommand>());
+            bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
+            bindActionToCommand(Action::PUNCH, std::make_unique<PunchCommand>());
+            bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());
         }
 
         /*
@@ -41,5 +41,6 @@ class InputHandler {
 
     private: 
         InputMapping* inputMapping;
-        std::unordered_map<Action, Command*> ActionToCommandMapping; 
+        std::unordered_map<Action, std::unique_ptr<Command>> ActionToCommandMapping; 
+        // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/ 
 };
