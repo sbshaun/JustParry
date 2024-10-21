@@ -10,6 +10,7 @@
 #include "world/world_system.hpp" // TEMP: test it compiles.
 #include "linearinterp.hpp"
 
+#include "input_system/input_handler.hpp" // test compilation 
 
 int timer = timer_length; //Global timer init var moved to constants
 auto last_time = std::chrono::high_resolution_clock::now();
