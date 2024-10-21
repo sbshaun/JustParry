@@ -24,7 +24,7 @@ class InputHandler {
         }
 
         /*
-        if the key is pressed, execute the respective command 
+        * check if a key is pressed, execute the respective command for the key 
         */
         void handleInput(Entity entity, StateMachine& state_machine) {
             for (const auto& pair : inputMapping->getKeyToActionMap()) {
@@ -40,8 +40,12 @@ class InputHandler {
             }
         }
 
+        Action getActionFromKey(int key) const {
+            return inputMapping->getActionFromKey(key);
+        }
+
     private: 
-         std::unique_ptr<InputMapping> inputMapping;
+        std::unique_ptr<InputMapping> inputMapping;
         std::unordered_map<Action, std::unique_ptr<Command>> actionToCommandMapping; 
         // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/ 
 };

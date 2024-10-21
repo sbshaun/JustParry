@@ -16,6 +16,7 @@ class MoveLeftCommand : public Command {
     public:
         void execute(Entity entity, StateMachine& state_machine) override {
             if (!state_machine.transition(entity, PlayerState::WALKING)) return;
+            
             Motion& motion = registry.motions.get(entity);
             motion.velocity.x = -MOVE_SPEED;
         }
@@ -41,7 +42,7 @@ class JumpCommand : public Command {
             // not inAir, handle jump 
             std::cout << "Player pressed UP! Starting jump." << std::endl;
             motion.inAir = true;
-            motion.velocity.y = 3 * MOVE_SPEED; // Jump upwards
+            motion.velocity.y = JUMP_VELOCITY; // Jump upwards
         }
 };
 
@@ -75,7 +76,7 @@ class PunchCommand : public Command {
                     hitBox.width = PLAYER_1_PUNCH_WIDTH;
                     hitBox.height = PLAYER_1_PUNCH_HEIGHT;
                     playerState.currentState = PlayerState::ATTACKING;
-                    stateTimer.reset(PLAYER_1_HITBOX_DURATION);
+                    stateTimer.reset(HITBOX_DURATION);
                 }
         }
 };
@@ -94,7 +95,7 @@ class KickCommand : public Command {
             if (canPunch(playerState.currentState)) {
                 hitBox.active = true;
                 playerState.currentState = PlayerState::ATTACKING;
-                stateTimer.reset(PLAYER_1_HITBOX_DURATION);
+                stateTimer.reset(HITBOX_DURATION);
             }
         }
 };
