@@ -5,6 +5,13 @@
 #include "input_utils.hpp"
 #include "state_machine.hpp"
 
+/*
+* Command interface. 
+* The execute function is used for checking if current state allows the command to be executed, 
+* and if yes, do the following 2 things: 
+* 1. transition to new state.
+* 2. set immediate effects, e.g. velocity 
+*/
 class Command {
     public: 
         virtual ~Command() = default;
@@ -19,6 +26,8 @@ class MoveLeftCommand : public Command {
             
             Motion& motion = registry.motions.get(entity);
             motion.velocity.x = -MOVE_SPEED;
+            motion.direction = false; // facing left 
+            std::cout << "Start moving left, speed: " << motion.velocity.x << std::endl;
         }
 };
 
@@ -28,7 +37,8 @@ class MoveRightCommand : public Command {
             if (!state_machine.transition(entity, PlayerState::WALKING)) return; 
             
             Motion& motion = registry.motions.get(entity);
-            motion.velocity.x = MOVE_SPEED;    
+            motion.velocity.x = MOVE_SPEED;  
+            motion.direction = true; // facing right  
         }
 };
 

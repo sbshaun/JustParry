@@ -20,6 +20,7 @@ public:
 	void handleInput();
 	void inputProcessing(int timer);
 	void movementProcessing();
+	void handlePlayerInput(Entity player, InputHandler& inputHandler, StateMachine& stateMachine);
 	void updateStateTimers(float elapsed_ms);
 	bool checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox);
 	bool checkAABBCollision(const Box& box1, const vec2& position1, bool facingRight1, const Box& box2, const vec2& position2, bool facingRight2);

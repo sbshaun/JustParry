@@ -27,9 +27,10 @@ static void applyDamage(Entity player, float damage) {
 
     health.currentHealth -= damage;
 
-     if (health.currentHealth <= 0) {
-         health.currentHealth = 0;
-     }
+    if (health.currentHealth <= 0) {
+        health.currentHealth = 0;
+    }
+
     std::cout << "Damange: " << damage << std::endl; 
     std::cout << "Player " << (unsigned int) player << " remaining health: " << health.currentHealth << std::endl; 
 }
@@ -61,16 +62,17 @@ void WorldSystem::init(GlRender *renderer) {
 }
 
 void WorldSystem::initInputHandlers() {
-    // player 1 <input_key -> action> mapping 
+    // init default keys for 2 players
+    // 1. player 1 <input_key -> action> mapping 
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
     player1InputMapping->bindKeyToAction(GLFW_KEY_A, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(GLFW_KEY_D, Action::MOVE_RIGHT);
     player1InputMapping->bindKeyToAction(GLFW_KEY_W, Action::JUMP);
     player1InputMapping->bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_SPACE, Action::PUNCH);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_LEFT_SHIFT, Action::KICK);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_R, Action::PUNCH);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_T, Action::KICK);
 
-    // player 2 <input_key -> action> mapping
+    // 2. player 2 <input_key -> action> mapping
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
     player2InputMapping->bindKeyToAction(GLFW_KEY_LEFT, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(GLFW_KEY_RIGHT, Action::MOVE_RIGHT);
@@ -79,7 +81,7 @@ void WorldSystem::initInputHandlers() {
     player2InputMapping->bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
     player2InputMapping->bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
 
-    // init <action -> command> mapping 
+    // 3. player 1 and player 2 init <action -> command> mapping 
     player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
     player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping));
     player1InputHandler->initDefaultActionToCommandMapping();
@@ -107,253 +109,43 @@ void WorldSystem::initStateMachines() {
 
 //IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput() {
-    PlayerInput& player1Input = registry.playerInputs.get(renderer->m_player1);
-    PlayerInput& player2Input = registry.playerInputs.get(renderer->m_player2);
-
-    PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
-    PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
+void WorldSystem::handlePlayerInput(Entity player, InputHandler& inputHandler, StateMachine& stateMachine) {
+    auto& motion = registry.motions.get(player);
+    auto& input  = registry.playerInputs.get(player);
 
     // Reset inputs
-    player1Input = PlayerInput();
-    if(!BOT_ENABLED)player2Input = PlayerInput();
+    input = PlayerInput();
 
-    // not accepting input if player is in these states. 
-    bool canPlayer1Move = !(player1State.currentState == PlayerState::ATTACKING || 
-                            player1State.currentState == PlayerState::PARRYING ||
-                            player1State.currentState == PlayerState::PERFECT_PARRYING ||
-                            player1State.currentState == PlayerState::COUNTER_ATTACKING ||
-                            player1State.currentState == PlayerState::STUNNED || 
-                            player1State.currentState == PlayerState::RECOVERING);
-    bool canPlayer2Move = !(player2State.currentState == PlayerState::ATTACKING || 
-                            player2State.currentState == PlayerState::PARRYING ||
-                            player2State.currentState == PlayerState::PERFECT_PARRYING ||
-                            player2State.currentState == PlayerState::COUNTER_ATTACKING ||
-                            player2State.currentState == PlayerState::STUNNED || 
-                            player2State.currentState == PlayerState::RECOVERING);
+    input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
+    input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
+    input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
+    input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
+    input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
+    input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
+}
 
-    if (canPlayer1Move) {
-        // Player 1 Input
-        if (isKeyPressed(GLFW_KEY_W)) player1Input.up = true;
-        if (isKeyPressed(GLFW_KEY_S)) player1Input.down = true;
-        if (isKeyPressed(GLFW_KEY_A)) player1Input.left = true;
-        if (isKeyPressed(GLFW_KEY_D)) player1Input.right = true;
-        if (isKeyPressed(GLFW_KEY_R)) player1Input.punch = true;
-        if (isKeyPressed(GLFW_KEY_T)) player1Input.kick = true;
-    }
-
-    if (!canPlayer2Move) return; 
-    if(!BOT_ENABLED){
-        if (isKeyPressed(GLFW_KEY_UP))player2Input.up = true;
-        if (isKeyPressed(GLFW_KEY_DOWN)) player2Input.down = true;
-        if (isKeyPressed(GLFW_KEY_LEFT)) player2Input.left = true;
-        if (isKeyPressed(GLFW_KEY_RIGHT)) player2Input.right = true;
-        if (isKeyPressed(GLFW_KEY_COMMA)) player2Input.punch = true;
-        if (isKeyPressed(GLFW_KEY_PERIOD)) player2Input.kick = true;   
-    }
-
+void WorldSystem::handleInput() {
+    player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
+    if (!BOT_ENABLED) player2InputHandler->handleInput(renderer->m_player2, *player2StateMachine);
+    player1StateMachine->update(renderer->m_player1, TIME_STEP);
+    player2StateMachine->update(renderer->m_player2, TIME_STEP);
 }
 
 
-void WorldSystem::inputProcessing(int timer) { //renamed as it will proccess the input -> ingame logic, not just movement
+void WorldSystem::inputProcessing(int timer) {
     // TODO: manage input based on PlayerState more effectively 
     Motion& player1Motion = registry.motions.get(renderer->m_player1);
     Motion& player2Motion = registry.motions.get(renderer->m_player2);
-
-    PlayerInput& player1Input = registry.playerInputs.get(renderer->m_player1);
-    PlayerInput& player2Input = registry.playerInputs.get(renderer->m_player2);
-
-    PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
-    PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
-
-    static bool player1IsJumping = false;
-    static bool player2IsJumping = false;
-    static float player1JumpStartY = 0.0f;
-    static float player2JumpStartY = 0.0f;
-
+    // TODO: what are these 2 lines for? 
+    // removing them seems to break the player rendering 
     player1Motion.lastPos = player1Motion.position;
     player2Motion.lastPos = player2Motion.position;
 
-    // std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
-    // std::cout << "Last Position" << player1Motion.lastPos.x << std::endl;
-
-    if (player1State.currentState != PlayerState::ATTACKING
-        && player1State.currentState != PlayerState::STUNNED
-        && player1State.currentState != PlayerState::RECOVERING
-        && player1State.currentState != PlayerState::PARRYING
-        && player1State.currentState != PlayerState::PERFECT_PARRYING
-        && player1State.currentState != PlayerState::COUNTER_ATTACKING 
-        ) 
-    { 
-        // player can only move if not in these non-moveable states. 
-        if (player1Input.left) {
-            player1Motion.velocity.x = -MOVE_SPEED;
-            // std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
-        }
-        if (player1Input.right) {
-            player1Motion.velocity.x = MOVE_SPEED;
-            // std::cout << "Player 1 Position: " << player1Motion.position.x << ", " << player1Motion.position.y << std::endl;
-        }
-
-        // Handle jump
-        if (player1Input.up && !player1Motion.inAir) {
-            // std::cout << "Player pressed UP! Starting jump." << std::endl;
-            player1Motion.inAir = true;
-            player1Motion.velocity.y = 4 * MOVE_SPEED; // Jump upwards
-            player1JumpStartY = player1Motion.position.y; // Save starting position
-        }
-
-        if(player1Input.right && player1Input.left){ //SOCD CLEANING
-            player1Motion.velocity.x = 0;
-        }
-        if (player1Motion.velocity.x != 0 && !player1IsJumping){ //check if left or right is still pressed and if not sets velocity back to 0 --- I wonder if we should have acceleration system? --probably overcomplicates it...
-            if(player1Motion.velocity.x > 0 && !player1Input.right){
-                player1Motion.velocity.x = 0;
-            }
-            if(player1Motion.velocity.x < 0 && !player1Input.left){
-                player1Motion.velocity.x = 0;
-            }
-        }
-    }
-
-    if (player2State.currentState != PlayerState::ATTACKING
-        && player2State.currentState != PlayerState::STUNNED
-        && player2State.currentState != PlayerState::RECOVERING
-        && player2State.currentState != PlayerState::PARRYING
-        && player2State.currentState != PlayerState::PERFECT_PARRYING
-        && player2State.currentState != PlayerState::COUNTER_ATTACKING 
-        ) 
-    { 
-        // player can only move if not in these non-moveable states. 
-        if (player2Input.left) {
-            player2Motion.velocity.x = -MOVE_SPEED;
-            // std::cout << "Player 1 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
-        }
-        if (player2Input.right) {
-            player2Motion.velocity.x = MOVE_SPEED;
-            // std::cout << "Player 1 Position: " << player2Motion.position.x << ", " << player2Motion.position.y << std::endl;
-        }
-
-        // Handle jump
-        if (player2Input.up && !player2Motion.inAir) {
-            // std::cout << "Player pressed UP! Starting jump." << std::endl;
-            player2Motion.inAir = true;
-            player2Motion.velocity.y = JUMP_VELOCITY; // Jump upwards
-            player2JumpStartY = player2Motion.position.y; // Save starting position
-        }
-
-        if(player2Input.right && player2Input.left){ //SOCD CLEANING
-            player2Motion.velocity.x = 0;
-        }
-        if (player2Motion.velocity.x != 0 && !player2IsJumping){ //check if left or right is still pressed and if not sets velocity back to 0 --- I wonder if we should have acceleration system? --probably overcomplicates it...
-            if(player2Motion.velocity.x > 0 && !player2Input.right){
-                player2Motion.velocity.x = 0;
-            }
-            if(player2Motion.velocity.x < 0 && !player2Input.left){
-                player2Motion.velocity.x = 0;
-            }
-        }
-    }
-
+    PlayerInput& player1Input = registry.playerInputs.get(renderer->m_player1);
+    PlayerInput& player2Input = registry.playerInputs.get(renderer->m_player2);
+    if (player1Input.punch) player1StateMachine->transition(renderer->m_player1, PlayerState::ATTACKING);
+    if (player2Input.punch) player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
     // TODO: handle up, down, punch, kick
-
-    // TODO: DRY this up. 
-    // Hitbox activation
-    StateTimer& player1StateTimer = registry.stateTimers.get(renderer->m_player1);
-    StateTimer& player2StateTimer = registry.stateTimers.get(renderer->m_player2);
-    HitBox& player1HitBox = registry.hitBoxes.get(renderer->m_player1);
-    HitBox& player2HitBox = registry.hitBoxes.get(renderer->m_player2);
-
-    /*
-    if punch is pressed, 
-    1. check if the current state allows to punch 
-    2. if yes, activate the hitbox and set the state to attacking 
-    3. set the StateTimer, which will be used to deactivate the hitbox at a loop somewhere else. 
-    Currently it only considers punch, and IDLE/WALKING states. 
-    TODO: extend this to also include kick, jump kick, etc... 
-    TODO: extend this to consider other statess. 
-    */
-    if (player1Input.punch) {
-        // std::cout << "Player 1 pressed punch, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
-        switch (player1State.currentState) {
-            case PlayerState::IDLE:
-            case PlayerState::WALKING:
-                player1HitBox.active = true;
-                // std::cout << "Player 1 Hitbox Actived" << std::endl;
-                player1HitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
-                player1HitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
-                player1HitBox.width = PLAYER_1_PUNCH_WIDTH;
-                player1HitBox.height = PLAYER_1_PUNCH_HEIGHT;
-                player1State.currentState = PlayerState::ATTACKING;
-                player1StateTimer.reset(PLAYER_1_HITBOX_DURATION);
-                break;
-            case PlayerState::JUMPING:
-                // TODO 
-                break;
-            case PlayerState::CROUCHING:
-                // TODO 
-                break;
-            case PlayerState::ATTACKING:
-                // TODO 
-                break;
-            case PlayerState::PARRYING:
-                // TODO 
-                break;
-            case PlayerState::PERFECT_PARRYING:
-                // TODO 
-                break;
-            case PlayerState::COUNTER_ATTACKING:
-                // TODO 
-                break;
-            case PlayerState::STUNNED:
-                // TODO 
-                break;
-            case PlayerState::RECOVERING:
-                // TODO 
-                break;
-        }
-    }
-
-    if (player2Input.punch) {
-        std::cout << "Player 2 pressed punch, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
-        switch (player2State.currentState) {
-            case PlayerState::IDLE:
-            case PlayerState::WALKING:
-                std::cout << "Player 2 Hitbox Actived" << std::endl;
-                player2HitBox.active = true;
-                player2HitBox.xOffset = PLAYER_2_PUNCH_X_OFFSET;
-                player2HitBox.yOffset = PLAYER_2_PUNCH_Y_OFFSET;
-                player2HitBox.width = PLAYER_2_PUNCH_WIDTH;
-                player2HitBox.height = PLAYER_2_PUNCH_HEIGHT;
-                player2State.currentState = PlayerState::ATTACKING;
-                player2StateTimer.reset(PLAYER_1_HITBOX_DURATION);
-                break;
-            case PlayerState::JUMPING:
-                // TODO 
-                break;
-            case PlayerState::CROUCHING:
-                // TODO 
-                break;
-            case PlayerState::ATTACKING:
-                // TODO 
-                break;
-            case PlayerState::PARRYING:
-                // TODO 
-                break;
-            case PlayerState::PERFECT_PARRYING:
-                // TODO 
-                break;
-            case PlayerState::COUNTER_ATTACKING:
-                // TODO 
-                break;
-            case PlayerState::STUNNED:
-                // TODO 
-                break;
-            case PlayerState::RECOVERING:
-                // TODO 
-                break;
-        }
-    }
 }
 
 void WorldSystem::movementProcessing() {
@@ -389,73 +181,13 @@ void WorldSystem::movementProcessing() {
 }
 
 void WorldSystem::updateStateTimers(float elapsed_ms) {
+    player1StateMachine->update(renderer->m_player1, elapsed_ms);
+    player2StateMachine->update(renderer->m_player2, elapsed_ms);
     StateTimer& player1StateTimer = registry.stateTimers.get(renderer->m_player1);
     StateTimer& player2StateTimer = registry.stateTimers.get(renderer->m_player2);
 
     HitBox& player1HitBox = registry.hitBoxes.get(renderer->m_player1);
     HitBox& player2HitBox = registry.hitBoxes.get(renderer->m_player2);
-
-    // if the timer is active, update it with the step size 
-    if (player1StateTimer.isAlive()) {
-        player1StateTimer.update(elapsed_ms);
-    } else {
-        // deactivate hitbox. 
-        if (player1HitBox.active) {
-            player1HitBox.active = false;
-            player1HitBox.hit = false;
-            std::cout << "Player 1 HitBox deactivated." << std::endl;
-        }
-        // transition state 
-        PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
-        if (player1State.currentState != PlayerState::IDLE) {
-            std::cout << "Player 1 state: \"" << PlayerStateToString(player1State.currentState) << "\" expired." << std::endl;
-            switch (player1State.currentState) {
-                case PlayerState::ATTACKING:
-                case PlayerState::PARRYING:
-                case PlayerState::PERFECT_PARRYING:
-                case PlayerState::COUNTER_ATTACKING:
-                case PlayerState::STUNNED:
-                case PlayerState::RECOVERING:
-                    player1State.currentState = PlayerState::IDLE;
-                    std::cout << "Player 1 state transition to: \"" << PlayerStateToString(player1State.currentState) << "\"." << std::endl;
-                    break;
-                default:
-                    std::cout << "Player 1 state: \"" << PlayerStateToString(player1State.currentState) << "\" expired, no transition available." << std::endl;
-                    break;
-            }
-        }
-    }
-
-    if (player2StateTimer.isAlive()) {
-        player2StateTimer.update(PLAYER_STATE_TIMER_STEP);
-    } else {
-        // deactivate hitbox.
-        if (player2HitBox.active) {
-            player2HitBox.active = false;
-            player2HitBox.hit = false;
-            std::cout << "Player 2 HitBox deactivated." << std::endl;
-        }
-        // transition state 
-        PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
-        
-        if (player2State.currentState != PlayerState::IDLE) {
-            std::cout << "Player 2 state: \"" << PlayerStateToString(player2State.currentState) << "\" expired." << std::endl;
-            switch (player2State.currentState) {
-                case PlayerState::ATTACKING:
-                case PlayerState::PARRYING:
-                case PlayerState::PERFECT_PARRYING:
-                case PlayerState::COUNTER_ATTACKING:
-                case PlayerState::STUNNED:
-                case PlayerState::RECOVERING:
-                    player2State.currentState = PlayerState::IDLE;
-                    std::cout << "Player 2 state transition to: \"" << PlayerStateToString(player2State.currentState) << "\"." << std::endl;
-                    break;
-                default:
-                    std::cout << "Player 2 state: \"" << PlayerStateToString(player2State.currentState) << "\" expired, no transition available." << std::endl;
-                    break;
-            }
-        }
-    }
 }
 
 bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox) {
