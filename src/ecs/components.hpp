@@ -3,6 +3,7 @@
 #include "../mesh.hpp"
 #include "../shader.hpp"
 #include "../constants.hpp"
+#include "ecs.hpp"
 
 enum class PlayerState { 
     IDLE,

@@ -46,7 +46,7 @@ const int FLOOR = 3;
 
 // Hitbox 
 // active duration 
-const int PLAYER_1_HITBOX_DURATION = 500; // 30 frames = 500ms 
+const int HITBOX_DURATION = 500; // 30 frames = 500ms 
 // punch box offset 
 const float PLAYER_1_PUNCH_X_OFFSET = 0.f;
 const float PLAYER_1_PUNCH_Y_OFFSET = 0.15f * NDC_HEIGHT; // height of the left upper corner of the hitbox
