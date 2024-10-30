@@ -24,7 +24,7 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 	if (isLoading)
 	{
 		// stop entity movement when loading
-		std::cout << "Linear Interpolation" << std::endl;
+		std::cout << "Running Linear Interpolation" << std::endl;
 		Motion &m1 = registry.motions.get(renderer.m_player1);
 		Motion &m2 = registry.motions.get(renderer.m_player2);
 
@@ -32,10 +32,6 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 		PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
 		p1 = PlayerInput();
 		p2 = PlayerInput();
-
-		// move p1 from left to right
-		std::cout << m1.position[0] << std::endl;
-		std::cout << m2.position[0] << std::endl;
 
 		if (m1.position[0] < -0.5)
 		{

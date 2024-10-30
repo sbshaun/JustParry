@@ -108,7 +108,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             // run bot movements using the passed botEnabled variable
             if (botEnabled)
             {
-                std::cout << "Bot is active and making moves" << std::endl; // Debug print
                 botInstance.pollBotRng(renderer);
             }
             worldSystem.handleInput();
