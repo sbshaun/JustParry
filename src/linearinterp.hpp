@@ -1,15 +1,8 @@
-
-#ifndef LINEARINTERP_HPP
-#define LINEARINTERP_HPP
-
-#include "common.hpp"
+#pragma once
 #include "renderer.hpp"
 
+void interp_moveEntitesToScreen(GlRender &renderer);
+void resetInterpVariables();
 
-void interp_moveEntitesToScreen(GlRender& renderer);
-
-
-
-
-
-#endif  // LINEAR INTERP_HP
+// Declare isLoading as extern
+extern bool isLoading;
