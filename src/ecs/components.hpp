@@ -4,6 +4,7 @@
 #include "../shader.hpp"
 #include "../constants.hpp"
 #include "ecs.hpp"
+#include "../fighters/fighters.hpp"
 
 enum class PlayerState { 
     IDLE,
@@ -38,6 +39,7 @@ constexpr const char* PlayerStateToString(PlayerState state) {
 // Player component, from A1 
 struct Player {
     int id; // used to separate players, 1 and 2.
+    Fighters current_char;
 };
 
 /*
@@ -54,6 +56,7 @@ struct PlayerCurrentState {
 // AI opponent 
 struct Opponent {
     int level; // increase difficulty by increasing level. 
+    Fighters current_char; 
 };
 
 struct Health {
