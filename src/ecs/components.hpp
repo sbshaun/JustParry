@@ -5,7 +5,8 @@
 #include "../constants.hpp"
 #include "ecs.hpp"
 
-enum class PlayerState { 
+enum class PlayerState
+{
     IDLE,
     WALKING,
     JUMPING,
@@ -18,92 +19,117 @@ enum class PlayerState {
     RECOVERING
 };
 
-// constexpr: inline function, evaluated at compile time 
-constexpr const char* PlayerStateToString(PlayerState state) {
-    switch (state) {
-        case PlayerState::IDLE:              return "IDLE";
-        case PlayerState::WALKING:           return "WALKING";
-        case PlayerState::JUMPING:           return "JUMPING";
-        case PlayerState::CROUCHING:         return "CROUCHING";
-        case PlayerState::ATTACKING:         return "ATTACKING";
-        case PlayerState::PARRYING:          return "PARRYING";
-        case PlayerState::PERFECT_PARRYING:  return "PERFECT_PARRYING";
-        case PlayerState::COUNTER_ATTACKING: return "COUNTER_ATTACKING";
-        case PlayerState::STUNNED:           return "STUNNED";
-        case PlayerState::RECOVERING:        return "RECOVERING";
-        default:                             return "UNKNOWN";
+// constexpr: inline function, evaluated at compile time
+constexpr const char *PlayerStateToString(PlayerState state)
+{
+    switch (state)
+    {
+    case PlayerState::IDLE:
+        return "IDLE";
+    case PlayerState::WALKING:
+        return "WALKING";
+    case PlayerState::JUMPING:
+        return "JUMPING";
+    case PlayerState::CROUCHING:
+        return "CROUCHING";
+    case PlayerState::ATTACKING:
+        return "ATTACKING";
+    case PlayerState::PARRYING:
+        return "PARRYING";
+    case PlayerState::PERFECT_PARRYING:
+        return "PERFECT_PARRYING";
+    case PlayerState::COUNTER_ATTACKING:
+        return "COUNTER_ATTACKING";
+    case PlayerState::STUNNED:
+        return "STUNNED";
+    case PlayerState::RECOVERING:
+        return "RECOVERING";
+    default:
+        return "UNKNOWN";
     }
 }
 
-// Player component, from A1 
-struct Player {
+// Player component, from A1
+struct Player
+{
     int id; // used to separate players, 1 and 2.
 };
 
 /*
-To transition a player to another state, you should: 
-1. set the currentState to the new state 
-2. set the player's stateTimer.duration to be how long the new state will last 
-p.s. player's default state is IDLE 
-p.s. when the state timer expires, the player will be transitioned to IDLE 
+To transition a player to another state, you should:
+1. set the currentState to the new state
+2. set the player's stateTimer.duration to be how long the new state will last
+p.s. player's default state is IDLE
+p.s. when the state timer expires, the player will be transitioned to IDLE
 */
-struct PlayerCurrentState {
+struct PlayerCurrentState
+{
     PlayerState currentState = PlayerState::IDLE;
 };
 
-// AI opponent 
-struct Opponent {
-    int level; // increase difficulty by increasing level. 
+// AI opponent
+struct Opponent
+{
+    int level; // increase difficulty by increasing level.
 };
 
-struct Health {
+struct Health
+{
     float maxHealth = MAX_HEALTH;
-    float currentHealth = MAX_HEALTH; 
-    // float recoverRate; // optional, health recover after x seconds of not being hit. 
+    float currentHealth = MAX_HEALTH;
+    // float recoverRate; // optional, health recover after x seconds of not being hit.
 };
 
-struct Motion {
+struct Motion
+{
     vec2 lastPos = {0, 0};
     vec2 position = {0, 0};
     vec2 velocity = {0, 0};
-    vec2 scale = { 1 ,1 };
+    vec2 scale = {1, 1};
     float angle = 0;
-    bool direction = true; // true is facing right, false is facing left. 
-    // vec2 acceleration = {0, 0}; // TODO: if we want to add acceleration during initial movement after idle. 
+    bool direction = true; // true is facing right, false is facing left.
+    // vec2 acceleration = {0, 0}; // TODO: if we want to add acceleration during initial movement after idle.
 
     // temp variable to maintain whether character is jumping or not
     bool inAir = false;
 };
 
-struct StationaryTimer {
-    float counter_ms = 0.f; // period of time of a player can't move because of stun, or recovery time after actions (e.g. an attack)... 
+struct StationaryTimer
+{
+    float counter_ms = 0.f; // period of time of a player can't move because of stun, or recovery time after actions (e.g. an attack)...
 };
 
-struct PostureBar {
-    int maxBar =  POSTURE_MAX; // max number of bars. 
-    int currentBar = POSTURE_MAX; // remaining bars.  
-    int recoverRate = POSTURE_REGEN; // how many seconds to recover 1 bar. use int for implicity. 
+struct PostureBar
+{
+    int maxBar = POSTURE_MAX;        // max number of bars.
+    int currentBar = POSTURE_MAX;    // remaining bars.
+    int recoverRate = POSTURE_REGEN; // how many seconds to recover 1 bar. use int for implicity.
 };
 
-struct StateTimer {
-    float duration = 0.f; // time length that this state will last.
-    float elapsedTime = 0.f;  // time elapsed since this state started. 
+struct StateTimer
+{
+    float duration = 0.f;    // time length that this state will last.
+    float elapsedTime = 0.f; // time elapsed since this state started.
 
-    bool isAlive() {
+    bool isAlive()
+    {
         return this->elapsedTime < this->duration;
     }
 
-    void update(float elapsed_ms) {
+    void update(float elapsed_ms)
+    {
         this->elapsedTime += elapsed_ms;
     }
 
-    void reset(float duration) {
+    void reset(float duration)
+    {
         this->duration = duration;
         this->elapsedTime = 0.f;
     }
 };
 
-struct PlayerInput {
+struct PlayerInput
+{
     bool up = false;
     bool down = false;
     bool left = false;
@@ -112,122 +138,146 @@ struct PlayerInput {
     bool kick = false;
 };
 
-struct Box {
-    float xOffset, yOffset; // offsets relative to player's position 
-    float width, height; 
+struct Box
+{
+    float xOffset, yOffset; // offsets relative to player's position
+    float width, height;
 
-    virtual float getLeft(const vec2& playerPosition, bool facingRight) const {
-        if (facingRight) {
+    virtual float getLeft(const vec2 &playerPosition, bool facingRight) const
+    {
+        if (facingRight)
+        {
             return playerPosition.x + xOffset;
-        } else {
+        }
+        else
+        {
             return playerPosition.x - xOffset - width;
         }
     }
 
-    virtual float getRight(const vec2& playerPosition, bool facingRight) const {
-        if (facingRight) {
+    virtual float getRight(const vec2 &playerPosition, bool facingRight) const
+    {
+        if (facingRight)
+        {
             return playerPosition.x + xOffset + width;
-        } else {
+        }
+        else
+        {
             return playerPosition.x - xOffset;
         }
     }
 
-    virtual float getTop(const vec2& playerPosition, bool facingRight) const {
-        return playerPosition.y + yOffset +  height / 2;
+    virtual float getTop(const vec2 &playerPosition, bool facingRight) const
+    {
+        return playerPosition.y + yOffset + height / 2;
     }
 
-    virtual float getBottom(const vec2& playerPosition, bool facingRight) const {
+    virtual float getBottom(const vec2 &playerPosition, bool facingRight) const
+    {
         return playerPosition.y + yOffset - height / 2;
     }
 };
 
-struct CollisionBox : public Box {
+struct CollisionBox : public Box
+{
     bool active = true;
 };
 
-// TODO: how do we move the box along the player? 
-struct HitBox : public Box {
-    bool active = false; // TODO: active for how  many frames? 12? 
-    // if the current attack already caused damage 
-    bool hit = false; // flag to check before applying damage. 
+// TODO: how do we move the box along the player?
+struct HitBox : public Box
+{
+    bool active = false; // TODO: active for how  many frames? 12?
+    // if the current attack already caused damage
+    bool hit = false; // flag to check before applying damage.
 };
 
-struct HurtBox : public Box {
-    // hurtbox is just same as player's size. TODO 
-    float getLeft(const vec2& playerPosition, bool facingRight = true) const override {
+struct HurtBox : public Box
+{
+    // hurtbox is just same as player's size. TODO
+    float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
+    {
         return playerPosition.x - width / 2;
     }
 
-    float getRight(const vec2& playerPosition, bool facingRight = true) const override {
+    float getRight(const vec2 &playerPosition, bool facingRight = true) const override
+    {
         return playerPosition.x + width / 2;
     }
 
-    float getTop(const vec2& playerPosition, bool facingRight = true) const override {
+    float getTop(const vec2 &playerPosition, bool facingRight = true) const override
+    {
         return playerPosition.y + height / 2;
     }
 
-    float getBottom(const vec2& playerPosition, bool facingRight = true) const override {
+    float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
+    {
         return playerPosition.y - height / 2;
     }
 };
 
-struct ParryBox : public Box {
-    // if hitbox collides ParryBox, the attack is parried. 
-    bool active = false; // active for 12 frames 
+struct ParryBox : public Box
+{
+    // if hitbox collides ParryBox, the attack is parried.
+    bool active = false; // active for 12 frames
 };
 
-struct PerfectParryBox : public Box {
-    bool active = false; // active for 3 frames, check if an attack collides with PerfectParryBox 
+struct PerfectParryBox : public Box
+{
+    bool active = false; // active for 3 frames, check if an attack collides with PerfectParryBox
 };
 
-struct Sprite {
-    // the sprite file to use for the entity. 
+struct Sprite
+{
+    // the sprite file to use for the entity.
 };
 
-struct Boundary {
+struct Boundary
+{
     float val; // integer to check when comparing the position, x for walls and y for floors
-    int dir; // 1: right side wall, 2: left side wall, 3: ground
+    int dir;   // 1: right side wall, 2: left side wall, 3: ground
 };
 
-struct BoundaryCollision {
+struct BoundaryCollision
+{
     Entity boundary;
-    BoundaryCollision(Entity& boundary) { this->boundary = boundary; };
+    BoundaryCollision(Entity &boundary) { this->boundary = boundary; };
 };
 
-
-// TODO: add render related components 
-struct Renderable {
+// TODO: add render related components
+struct Renderable
+{
     Mesh mesh;
-    Shader* shader;
+    Shader *shader;
     unsigned int texture;
 };
 
-struct HitboxRender {
+struct HitboxRender
+{
     Mesh mesh;
-    Shader* shader;
+    Shader *shader;
     // Player that has this hitbox
     Entity player;
 };
 
-struct StaticRender {
+struct StaticRender
+{
     Mesh mesh;
-    Shader* shader;
+    Shader *shader;
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
 struct ColoredVertex
 {
-	vec3 position;
-	vec3 color;
+    vec3 position;
+    vec3 color;
 };
 
 // Single Vertex Buffer element for textured sprites (textured.vs.glsl)
 struct TexturedVertex
 {
-	vec3 position;
-	vec2 texcoord;
+    vec3 position;
+    vec2 texcoord;
 };
-
 
 /**
  * The following enumerators represent global identifiers refering to graphic
@@ -253,28 +303,31 @@ struct TexturedVertex
  * enums there are, and as a default value to represent uninitialized fields.
  */
 
-enum class TEXTURE_ASSET_ID {
-	TEXTURE_COUNT = 0
+enum class TEXTURE_ASSET_ID
+{
+    TEXTURE_COUNT = 0
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
-enum class EFFECT_ASSET_ID {
-	EFFECT_COUNT =0 
+enum class EFFECT_ASSET_ID
+{
+    EFFECT_COUNT = 0
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
-enum class GEOMETRY_BUFFER_ID {
-	GEOMETRY_COUNT = 0
+enum class GEOMETRY_BUFFER_ID
+{
+    GEOMETRY_COUNT = 0
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
-struct RenderRequest {
-	TEXTURE_ASSET_ID used_texture = TEXTURE_ASSET_ID::TEXTURE_COUNT;
-	EFFECT_ASSET_ID used_effect = EFFECT_ASSET_ID::EFFECT_COUNT;
-	GEOMETRY_BUFFER_ID used_geometry = GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
+struct RenderRequest
+{
+    TEXTURE_ASSET_ID used_texture = TEXTURE_ASSET_ID::TEXTURE_COUNT;
+    EFFECT_ASSET_ID used_effect = EFFECT_ASSET_ID::EFFECT_COUNT;
+    GEOMETRY_BUFFER_ID used_geometry = GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 };
 
-
-// How do we implement boundries, i.e. player can't move beyond boundriess 
-// 1. what components are needed 
-// 2. how does system logic work on these components 
+// How do we implement boundries, i.e. player can't move beyond boundriess
+// 1. what components are needed
+// 2. how does system logic work on these components

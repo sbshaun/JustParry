@@ -35,7 +35,7 @@ if (IS_OS_MAC)
   endif()
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES}  "src/linearinterp.cpp")
+add_executable(${PROJECT_NAME} ${SOURCES}  "src/linearinterp.cpp" "src/state/game.cpp" "src/state/game.hpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${SOURCE_DIR})
 

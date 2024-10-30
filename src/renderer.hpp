@@ -9,15 +9,17 @@
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
 
-class GlRender {
+class GlRender
+{
 public:
     GlRender();
+
     void initialize();
     void initializeUI();
     void render();
     void renderRoundOver(int count);
     void loadTextures();
-    void loadTexture(const std::string& path, GLuint& textureID);
+    void loadTexture(const std::string &path, GLuint &textureID);
     void renderUI(int timer);
     void shutdown();
 
@@ -26,25 +28,33 @@ public:
     void handleHitboxRenders();
     void handleStaticRenders();
 
+    void renderTexturedQuad(GLuint texture);
+    void renderLoadingText();
+    void renderFPS(int fps, bool showFPS);
+
     ~GlRender();
     Entity m_player1;
     Entity m_player2;
     GLuint m_bird_texture;
     GLuint m_bird_p_texture;
+    GLuint m_backgroundTexture;
 
 private:
     // Place holders for timer and health subtexts
-    GLTtext* m_timerText;
-    GLTtext* m_leftText;
-    GLTtext* m_rightText;
-    GLTtext* m_roundOver;
+    GLTtext *m_fps;
+    GLTtext *m_loadingText;
+
+    GLTtext *m_timerText;
+    GLTtext *m_leftText;
+    GLTtext *m_rightText;
+    GLTtext *m_roundOver;
 
     // actual values
-    GLTtext* h1;
-    GLTtext* h2;
-    GLTtext* time;
+    GLTtext *h1;
+    GLTtext *h2;
+    GLTtext *time;
 
     // round over
-    GLTtext* over;
-    GLTtext* won;
+    GLTtext *over;
+    GLTtext *won;
 };
