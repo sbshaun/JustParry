@@ -81,6 +81,9 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
 
         glfwSwapInterval(1); // Enable vsync
 
+        // init fighters config 
+        FighterManager::init(); 
+        
         GlRender renderer;
         renderer.initialize();
 
