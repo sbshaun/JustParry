@@ -1,11 +1,11 @@
 #version 330 core
-out vec4 FragColor;  // Output color of the fragment
-
-in vec2 TexCoord;    // The texture coordinates passed from the vertex shader
-
-uniform sampler2D texture1; // The texture sampler
+out vec4 FragColor;
+in vec2 TexCoord;
+uniform sampler2D texture1;
+uniform float brightness = 1.0;
 
 void main()
 {
-    FragColor = texture(texture1, TexCoord); // Sample the texture and output the color
+    vec4 texColor = texture(texture1, TexCoord);
+    FragColor = vec4(texColor.rgb * brightness, texColor.a);
 }

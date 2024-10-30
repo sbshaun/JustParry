@@ -83,6 +83,19 @@ void Shader::setBool(const std::string &name, bool value)
     glUniform1i(location, value);
 }
 
+void Shader::setFloat(const std::string &name, float value)
+{
+    GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+    if (location != -1)
+    {
+        glUniform1f(location, value);
+    }
+    else
+    {
+        std::cerr << "Warning: Uniform '" << name << "' doesn't exist or isn't used in the shader." << std::endl;
+    }
+}
+
 Shader::~Shader()
 {
     glDeleteProgram(m_shaderProgram);

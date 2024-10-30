@@ -9,11 +9,22 @@ float b2 = 0;
 int count = 0;
 bool isLoading = true;
 
+void resetInterpVariables()
+{
+	a = 0;
+	a2 = 0;
+	b = 0;
+	b2 = 0;
+	count = 0;
+	isLoading = true;
+}
+
 void interp_moveEntitesToScreen(GlRender &renderer)
 {
 	if (isLoading)
 	{
 		// stop entity movement when loading
+		std::cout << "Linear Interpolation" << std::endl;
 		Motion &m1 = registry.motions.get(renderer.m_player1);
 		Motion &m2 = registry.motions.get(renderer.m_player2);
 
@@ -23,6 +34,9 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 		p2 = PlayerInput();
 
 		// move p1 from left to right
+		std::cout << m1.position[0] << std::endl;
+		std::cout << m2.position[0] << std::endl;
+
 		if (m1.position[0] < -0.5)
 		{
 			m1.position[0] += 0.0089;

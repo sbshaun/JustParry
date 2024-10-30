@@ -12,10 +12,10 @@
 #include "state/game.hpp"
 #include "fps/fps.cpp"
 
-#include "input_system/input_handler.hpp" // test compilation 
+#include "input_system/input_handler.hpp" // test compilation
 #include "input_system/state_machine.hpp" // test compilation
 
-int timer = timer_length; //Global timer init var moved to constants
+int timer = timer_length; // Global timer init var moved to constants
 auto last_time = std::chrono::high_resolution_clock::now();
 
 int generateUI(GlRender &renderer)
@@ -42,42 +42,76 @@ int generateUI(GlRender &renderer)
 }
 
 // [m1] temp fn to check is round is over.
-void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem)
+void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
 {
+    static bool roundEnded = false; // Add this flag
+
     int exit = 0;
     Health &h1 = registry.healths.get(renderer.m_player1);
     Health &h2 = registry.healths.get(renderer.m_player2);
     PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
     PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
 
-    if (h1.currentHealth <= 0 ||
-        h2.currentHealth <= 0 || exit == 1)
+    if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || exit == 1)
     {
-        // pause the timer and game cotrols, and display Game over text
+        // Update scores only once when the round ends
+        if (!roundEnded)
+        {
+            game.updateScores(h1, h2);
+            roundEnded = true;
+        }
+
+        // pause the timer and game controls, and display Game over text
         p1 = PlayerInput();
         p2 = PlayerInput();
 
         renderer.render();
         renderer.renderUI(timer);
         renderer.renderRoundOver(1);
+
+        // Check for restart input
+        GLFWwindow *window = glfwGetCurrentContext();
+        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+        {
+            roundEnded = false; // Reset the flag when restarting
+            game.resetGame(renderer);
+        }
     }
     else
     {
+        roundEnded = false; // Reset the flag during gameplay
         renderer.render();
         exit = generateUI(renderer);
         if (exit == 1)
         {
+            if (!roundEnded)
+            {
+                game.updateScores(h1, h2);
+                roundEnded = true;
+            }
+
             renderer.renderRoundOver(0);
             p1 = PlayerInput();
             p2 = PlayerInput();
             renderer.renderUI(timer);
+
+            // Check for restart input here too
+            GLFWwindow *window = glfwGetCurrentContext();
+            if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+            {
+                roundEnded = false; // Reset the flag when restarting
+                game.resetGame(renderer);
+            }
         }
         else
         {
-            // run bot movements
-            if (BOT_ENABLED)
+            // run bot movements using the passed botEnabled variable
+            if (botEnabled)
+            {
+                std::cout << "Bot is active and making moves" << std::endl; // Debug print
                 botInstance.pollBotRng(renderer);
-            worldSystem.handleInput(); // check if any devices keys are pressed
+            }
+            worldSystem.handleInput();
         }
     }
 }
@@ -100,6 +134,24 @@ void toggleFPS(GlRender &renderer, bool &showFPS, bool &fKeyPressed, GLWindow &g
     }
 
     fpsCounter.update(renderer, showFPS);
+}
+
+void toggleBot(bool &botEnabled, bool &bKeyPressed, GLWindow &glWindow)
+{
+    if (glfwGetKey(glWindow.window, GLFW_KEY_B) == GLFW_PRESS)
+    {
+        if (!bKeyPressed)
+        {
+            botEnabled = !botEnabled;
+            bKeyPressed = true; // Update the state to prevent multiple toggles
+            std::cout << "BOT " << (botEnabled ? "ENABLED" : "DISABLED") << std::endl;
+        }
+    }
+    else
+    {
+        // Reset bKeyPressed when the key is released
+        bKeyPressed = false;
+    }
 }
 
 int main()
@@ -125,6 +177,7 @@ int main()
     // Main loop
 
     Game game;
+    renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60); // Targeting 60 FPS
 
     double lastTime = glfwGetTime();
@@ -134,6 +187,14 @@ int main()
     bool showFPS = false;
     bool fKeyPressed = false;
 
+    // Declare motion variables outside switch
+    Motion *m1_ptr = nullptr;
+    Motion *m2_ptr = nullptr;
+
+    // Add these variables with the other toggles
+    bool bKeyPressed = false;
+    bool botEnabled = BOT_ENABLED; // Initialize with the default value
+
     while (!glWindow.shouldClose())
     {
         switch (game.getState())
@@ -141,31 +202,61 @@ int main()
         case GameState::MENU:
             game.generateBackground(FLOOR_Y, renderer);
             game.renderMenu(renderer);
-            renderer.renderLoadingText();
+
+            if (game.handleMenuInput(glWindow.window))
+            {
+                game.setState(GameState::PLAYING);
+            }
             break;
+
+        case GameState::HELP:
+            game.generateBackground(FLOOR_Y, renderer);
+            game.renderHelpScreen(renderer);
+
+            if (game.handleHelpInput(glWindow.window))
+            {
+                game.setState(GameState::MENU);
+            }
+            break;
+
+        case GameState::ROUND_START:
+            renderer.initializeUI();
+            interp_moveEntitesToScreen(renderer); // Move players into position
+            renderer.render();
+            renderer.renderUI(timer);
+
+            // Use pointers declared outside switch
+            m1_ptr = &registry.motions.get(renderer.m_player1);
+            m2_ptr = &registry.motions.get(renderer.m_player2);
+
+            // Only transition to PLAYING when interpolation is complete
+            if (!isLoading) // Use the global isLoading variable from linearinterp.cpp
+            {
+                game.setState(GameState::PLAYING);
+            }
+            break;
+
         case GameState::PLAYING:
             renderer.initializeUI();
             interp_moveEntitesToScreen(renderer);
-            worldSystem.inputProcessing(timer);                     // do the appropriate actions for key signals recieved
-            worldSystem.movementProcessing();                       // apply velocity for movement
-            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP); // update player states
-            worldSystem.handle_collisions();                        // check hitbox/hurtbox collisions
+            worldSystem.inputProcessing(timer);
+            worldSystem.movementProcessing();
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
+            worldSystem.handle_collisions();
             worldSystem.playerCollisions(&renderer);
-            physics.step(); // check for collisions
+            physics.step();
 
-            // this fn calls renderer.render and also renders the UI.
-            checkIsRoundOver(renderer, botInstance, worldSystem);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
             toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
-
+            toggleBot(botEnabled, bKeyPressed, glWindow);
             break;
         }
 
         if (glfwGetKey(glWindow.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            break; // Exit the loop and close the game
+            break;
         }
 
-        // worldSystem.step()
         glWindow.windowSwapBuffers();
     }
 
