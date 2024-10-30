@@ -44,7 +44,7 @@ int generateUI(GlRender &renderer)
 // [m1] temp fn to check is round is over.
 void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
 {
-    static bool roundEnded = false; // Add this flag
+    static bool roundEnded = false;
 
     int exit = 0;
     Health &h1 = registry.healths.get(renderer.m_player1);
@@ -52,7 +52,8 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
     PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
 
-    if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || exit == 1)
+    // First condition: Check for health-based game over
+    if (h1.currentHealth <= 0 || h2.currentHealth <= 0)
     {
         // Update scores only once when the round ends
         if (!roundEnded)
@@ -61,7 +62,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             roundEnded = true;
         }
 
-        // pause the timer and game controls, and display Game over text
+        // pause the timer and game controls
         p1 = PlayerInput();
         p2 = PlayerInput();
 
@@ -79,9 +80,10 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     }
     else
     {
-        roundEnded = false; // Reset the flag during gameplay
         renderer.render();
         exit = generateUI(renderer);
+
+        // Second condition: Check for timer expiration
         if (exit == 1)
         {
             if (!roundEnded)
@@ -90,12 +92,12 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
                 roundEnded = true;
             }
 
-            renderer.renderRoundOver(0);
             p1 = PlayerInput();
             p2 = PlayerInput();
+            renderer.renderRoundOver(0);
             renderer.renderUI(timer);
 
-            // Check for restart input here too
+            // Check for restart input
             GLFWwindow *window = glfwGetCurrentContext();
             if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
             {
@@ -105,7 +107,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         }
         else
         {
-            // run bot movements using the passed botEnabled variable
+            roundEnded = false; // Reset the flag during normal gameplay
             if (botEnabled)
             {
                 botInstance.pollBotRng(renderer);

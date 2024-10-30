@@ -309,6 +309,10 @@ void Game::updateScores(const Health &h1, const Health &h2)
         {
             player2Score++;
         }
-        // If health is equal, no points awarded
+        else
+        {
+            // If health is equal, give point to player 1
+            player1Score++;
+        }
     }
 }
