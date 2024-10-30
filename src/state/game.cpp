@@ -29,48 +29,7 @@ void Game::render()
 }
 void Game::generateBackground(float val, GlRender &renderer)
 {
-    // Step 1: Load the image using stb_image
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("../../assets/textures/menu 1.png", &width, &height, &nrChannels, 0);
-    if (data == nullptr)
-    {
-        std::cerr << "Failed to load background image!" << std::endl;
-        return;
-    }
-
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    // Step 3: Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Step 4: Upload image data to the texture
-    if (nrChannels == 3)
-    {
-        // For RGB images
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    }
-    else if (nrChannels == 4)
-    {
-        // For RGBA images
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    }
-    else
-    {
-        std::cerr << "Unsupported image format!" << std::endl;
-    }
-
-    // Generate mipmaps for the texture
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Step 5: Free the image data now that it's loaded into OpenGL
-    stbi_image_free(data);
-
-    renderer.renderTexturedQuad(texture);
+    renderer.renderTexturedQuad(renderer.m_backgroundTexture);
 }
 
 #include <GLFW/glfw3.h>

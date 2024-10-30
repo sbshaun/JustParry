@@ -93,7 +93,6 @@ void GlRender::initializeUI()
 void GlRender::renderLoadingText()
 {
     // Create text if it hasn't been created yet
-
     m_loadingText = gltCreateText();
     assert(m_loadingText); // Check if it's not NULL
     gltSetText(m_loadingText, "PRESS ENTER TO START!");
@@ -308,7 +307,7 @@ void GlRender::loadTextures()
     // Load texture for player 1
     loadTexture(textures_path("bird.png"), m_bird_texture);
     loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
-    loadTexture(textures_path("menu 1.png"), m_backgroundTexture);
+    loadTexture(textures_path("menu_1.png"), m_backgroundTexture);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -473,6 +472,10 @@ void GlRender::shutdown()
     if (m_roundOver)
     {
         gltDeleteText(m_roundOver);
+    }
+    if (m_fps)
+    {
+        gltDeleteText(m_fps);
     }
     gltTerminate();
 
