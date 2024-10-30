@@ -8,18 +8,40 @@ static void renderHitbox(Entity& player, bool isPlayer1) {
     // register the player as an entity with a hitbox
     HitBox& hitBox = registry.hitBoxes.emplace(player);
 
+    float PUNCH_WIDTH;
+    float PUNCH_HEIGHT;
+    float PUNCH_X_OFFSET;
+    float PUNCH_Y_OFFSET;
+    PUNCH_WIDTH = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_WIDTH;
+    PUNCH_HEIGHT = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_HEIGHT;
+    PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
+    PUNCH_Y_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_Y_OFFSET;
+    // TODO: use switch 
+    // switch(registry.players.get(player).current_char){
+    //     case Fighters::BIRDMAN:
+    //     case Fighters::PLACEHOLDER:
+    //         PUNCH_WIDTH = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_WIDTH;
+    //         PUNCH_HEIGHT = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_HEIGHT;
+    //         PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
+    //         PUNCH_Y_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_Y_OFFSET;
+    //         break;
+    //     //add a default
+    //     default:
+    //         break;
+    // }
+
     if (isPlayer1) {
-        hitBox.width = PLAYER_1_PUNCH_WIDTH;
-        hitBox.height = PLAYER_1_PUNCH_HEIGHT;
-        hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
-        hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
+        hitBox.width = PUNCH_WIDTH;
+        hitBox.height = PUNCH_HEIGHT;
+        hitBox.xOffset = PUNCH_X_OFFSET;
+        hitBox.yOffset = PUNCH_Y_OFFSET;
         hitBox.active = false;
     }
     else {
-        hitBox.width = -PLAYER_1_PUNCH_WIDTH;
-        hitBox.height = PLAYER_1_PUNCH_HEIGHT;
-        hitBox.xOffset = -PLAYER_1_PUNCH_X_OFFSET;
-        hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
+        hitBox.width = -PUNCH_WIDTH;
+        hitBox.height = PUNCH_HEIGHT;
+        hitBox.xOffset = -PUNCH_X_OFFSET;
+        hitBox.yOffset = PUNCH_Y_OFFSET;
         hitBox.active = false;
     }
     // Convert 'player' width and height to normalized device coordinates
@@ -87,10 +109,10 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     postureBar.recoverRate = 3; // 3 seconds per bar 
 
     /*HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    hitBox.width = PLAYER_1_PUNCH_WIDTH;
-	hitBox.height = PLAYER_1_PUNCH_HEIGHT;
-    hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
-    hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
+    hitBox.width = PUNCH_WIDTH;
+	hitBox.height = PUNCH_HEIGHT;
+    hitBox.xOffset = PUNCH_X_OFFSET;
+    hitBox.yOffset = PUNCH_Y_OFFSET;
     hitBox.active = false;*/
     renderHitbox(entity, isPlayer1);
 
