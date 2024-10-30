@@ -60,8 +60,8 @@ struct Opponent {
 };
 
 struct Health {
-    float maxHealth = MAX_HEALTH;
-    float currentHealth = MAX_HEALTH; 
+    float maxHealth;
+    float currentHealth; 
     // float recoverRate; // optional, health recover after x seconds of not being hit. 
 };
 
@@ -83,9 +83,9 @@ struct StationaryTimer {
 };
 
 struct PostureBar {
-    int maxBar =  POSTURE_MAX; // max number of bars. 
-    int currentBar = POSTURE_MAX; // remaining bars.  
-    int recoverRate = POSTURE_REGEN; // how many seconds to recover 1 bar. use int for implicity. 
+    int maxBar; // max number of bars. 
+    int currentBar; // remaining bars.  
+    int recoverRate; // how many seconds to recover 1 bar. use int for implicity. 
 };
 
 struct StateTimer {

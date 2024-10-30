@@ -5,7 +5,8 @@
 
 // 1. types of fighters, they have different strengths (config values) 
 enum Fighters{
-    BIRDMAN
+    BIRDMAN, 
+    PLACEHOLDER
 };
 
 // 2. fighter config struct, stores fighter's strength values 

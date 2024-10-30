@@ -132,20 +132,25 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
 /*
 Create player1 entity, init and register components using the helper function above 
 */
-Entity createPlayer1(GlRender* renderer, vec2 pos) {
+Entity createPlayer1(GlRender* renderer, vec2 pos, Fighters fighter) {
     Entity entity = Entity();
     Shader* rectShader = new Shader(std::string("player1"));
-    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true);    
+    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true);
+    // set current_char to BIRDMAN by default 
+    registry.players.get(entity).current_char = fighter;
+    std::cout << "player 1 current_char: " << (int) registry.players.get(entity).current_char << std::endl;
     return entity;
 }; 
 
 /*
 Create player2 entity, init and register components using the helper function above 
 */
-Entity createPlayer2(GlRender* renderer, vec2 pos) {
+Entity createPlayer2(GlRender* renderer, vec2 pos, Fighters fighter) {
     Entity entity = Entity();
     Shader* rectShader = new Shader(std::string("player2"));
-    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false);    
+    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false);
+    registry.players.get(entity).current_char = fighter;
+    std::cout << "player 2 current_char: " << (int) registry.players.get(entity).current_char << std::endl;
     return entity;
 };
 
