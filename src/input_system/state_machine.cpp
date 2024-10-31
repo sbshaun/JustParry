@@ -19,8 +19,10 @@ bool StateMachine::transition(Entity entity, PlayerState newState)
 
 void StateMachine::update(Entity entity, float elapsed_ms)
 {
+    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+    // for some reason, the currentState in state machine transitions to IDLE immediately after STUNNED using the playerState.currentState to check for the current state instead.
     // call update on the state object of the current state.
-    states[currentState]->update(entity, elapsed_ms, *this);
+    states[playerState.currentState]->update(entity, elapsed_ms, *this);
 }
 
 // TODO: implement concrete state classes
