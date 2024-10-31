@@ -8,8 +8,6 @@
 
 enum class PlayerState
 {
-enum class PlayerState
-{
     IDLE,
     WALKING,
     JUMPING,

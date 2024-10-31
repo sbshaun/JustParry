@@ -49,8 +49,6 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		if (m2.position[0] > 0.5)
 		{
-		if (m2.position[0] > 0.5)
-		{
 			m2.position[0] -= 0.0089;
 
 		} // move p2 to ground
@@ -62,15 +60,10 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		if (m1.scale[0] < 1)
 		{
-		if (m1.scale[0] < 1)
-		{
 			a = m1.scale[0] + 0.01;
 			a2 = m1.scale[1] + 0.01;
 			m1.scale[0] = a;
 			m1.scale[1] = a2;
-		}
-		else
-		{
 		}
 		else
 		{
@@ -81,15 +74,10 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		if (m2.scale[0] < 1)
 		{
-		if (m2.scale[0] < 1)
-		{
 			b = m2.scale[0] + 0.01;
 			b2 = m2.scale[1] + 0.01;
 			m2.scale[0] = b;
 			m2.scale[1] = b2;
-		}
-		else if ((m2.scale[0] > 1))
-		{
 		}
 		else if ((m2.scale[0] > 1))
 		{
@@ -101,9 +89,6 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		if (m1.position[0] < 0.3 && m1.position[1] == (FLOOR_Y + config1.NDC_HEIGHT / 2) && m1.scale[0] == 1) {
 			count = 1;
 		}
-
-		if (count == 1)
-		{
 		if (count == 1)
 		{
 			isLoading = false;
