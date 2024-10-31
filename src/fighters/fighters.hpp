@@ -56,12 +56,8 @@ struct FighterConfig {
 class FighterManager {
     private:
         static std::unordered_map<Fighters, FighterConfig> fighterConfigs;
-        // <Entity player, Fighters> map 
-        // static std::unordered_map<unsigned int, Fighters> playerFighterMap;
     public:
         static void init();
         static void setFighterConfig(Fighters fighter, FighterConfig& config);
         static const FighterConfig& getFighterConfig(Fighters fighter);
-        // static void setPlayerFighter(Entity player, Fighters fighter) { playerFighterMap[player] = fighter; }
-        // static Fighters getPlayerFighter(Entity player) { return playerFighterMap[player]; }
 };
