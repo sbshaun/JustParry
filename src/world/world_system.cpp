@@ -224,6 +224,9 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
 
+    // std::cout << "Hitbox: " << hitBoxLeft << " " <<  hitBoxRight << " " <<  hitBoxTop << " " << hitBoxBottom << std::endl;
+    // std::cout << "Player: " << hitPlayerMotion.position.x << " " << hitPlayerMotion.position.y << std::endl;
+
     float hurtBoxLeft = hurtBox.getLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxRight = hurtBox.getRight(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxTop = hurtBox.getTop(hurtPlayerMotion.position, hurtPlayerMotion.direction);
@@ -234,6 +237,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     if (x_collision && y_collision)
     {
+        std::cout << "hitbox hit hurtbox" << std::endl;
         hitBox.hit = true;
         return true;
     }

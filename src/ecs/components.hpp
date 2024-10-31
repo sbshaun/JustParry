@@ -151,7 +151,7 @@ struct Box
         }
         else
         {
-            return playerPosition.x - xOffset - width;
+            return playerPosition.x + xOffset + width;
         }
     }
 
@@ -163,7 +163,7 @@ struct Box
         }
         else
         {
-            return playerPosition.x - xOffset;
+            return playerPosition.x + xOffset;
         }
     }
 
