@@ -99,6 +99,7 @@ void WorldSystem::initStateMachines() {
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    player1StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
@@ -106,6 +107,7 @@ void WorldSystem::initStateMachines() {
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    player2StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
 }
 
 //IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
@@ -184,11 +186,6 @@ void WorldSystem::movementProcessing() {
 void WorldSystem::updateStateTimers(float elapsed_ms) {
     player1StateMachine->update(renderer->m_player1, elapsed_ms);
     player2StateMachine->update(renderer->m_player2, elapsed_ms);
-    StateTimer& player1StateTimer = registry.stateTimers.get(renderer->m_player1);
-    StateTimer& player2StateTimer = registry.stateTimers.get(renderer->m_player2);
-
-    HitBox& player1HitBox = registry.hitBoxes.get(renderer->m_player1);
-    HitBox& player2HitBox = registry.hitBoxes.get(renderer->m_player2);
 }
 
 bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox) {
