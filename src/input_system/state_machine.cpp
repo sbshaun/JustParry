@@ -84,7 +84,9 @@ bool JumpingState::canTransitionTo(Entity entity, PlayerState newState) {
 void AttackingState::enter(Entity entity, StateMachine& stateMachine) {
     std::cout << "Entering Attacking State" << std::endl;
     // add attack animation
-    
+    Fighters fighter = registry.players.get(entity).current_char;
+    float HITBOX_DURATION = FighterManager::getFighterConfig(fighter).HITBOX_DURATION;
+
     // 1. register a state timer
     PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
     playerState.currentState = PlayerState::ATTACKING;

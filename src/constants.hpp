@@ -20,7 +20,7 @@ const float NDC_HEIGHT = PLAYER_1_BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 // AI opponent 
 const float OPPONENT_1_BB_WIDTH   = 3.0f * 80.f;
 const float OPPONENT_1_BB_HEIGHT  = 3.0f * 100.f;
-const bool BOT_ENABLED = true;
+const bool BOT_ENABLED = false;
 
 //TIMERS
 const int timer_length = 100;
@@ -46,30 +46,30 @@ const int FLOOR = 3;
 
 // Hitbox 
 // active duration 
-const int HITBOX_DURATION = 500; // 30 frames = 500ms 
-// punch box offset 
-const float PLAYER_1_PUNCH_X_OFFSET = 0.f;
-const float PLAYER_1_PUNCH_Y_OFFSET = 0.15f * NDC_HEIGHT; // height of the left upper corner of the hitbox
-// punch box size
-const float PLAYER_1_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
-const float PLAYER_1_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height 
+// const int HITBOX_DURATION = 500; // 30 frames = 500ms 
+// // punch box offset 
+// const float PLAYER_1_PUNCH_X_OFFSET = 0.f;
+// const float PLAYER_1_PUNCH_Y_OFFSET = 0.15f * NDC_HEIGHT; // height of the left upper corner of the hitbox
+// // punch box size
+// const float PLAYER_1_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
+// const float PLAYER_1_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height 
 
-const float PLAYER_2_PUNCH_X_OFFSET = 0.5f * NDC_WIDTH;
-const float PLAYER_2_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT;
+// const float PLAYER_2_PUNCH_X_OFFSET = 0.5f * NDC_WIDTH;
+// const float PLAYER_2_PUNCH_Y_OFFSET = 0.10f * NDC_HEIGHT;
 
-const float PLAYER_2_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
-const float PLAYER_2_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height
+// const float PLAYER_2_PUNCH_WIDTH = 0.50f * NDC_WIDTH;
+// const float PLAYER_2_PUNCH_HEIGHT = 0.20f * NDC_HEIGHT; // 1/3 the player height
 
 const float PLAYER_STATE_TIMER_STEP = 1000 * 1 / 60.f; // 60 fps, in ms 
 
-const float PLAYER_1_DAMAGE = 10.f;
-const float PLAYER_2_DAMAGE = 10.f;
+// const float PLAYER_1_DAMAGE = 10.f;
+// const float PLAYER_2_DAMAGE = 10.f;
 
-// TODO: decrease value. Intentionally set it to longer for development. 
-const float PLAYER_1_STUN_DURATION = 3000.f; // 1 second 
-const float PLAYER_2_STUN_DURATION = 3000.f; // 1 second
+// // TODO: decrease value. Intentionally set it to longer for development. 
+// const float PLAYER_1_STUN_DURATION = 3000.f; // 1 second 
+// const float PLAYER_2_STUN_DURATION = 3000.f; // 1 second
 
-//Game Component Init values
-const float MAX_HEALTH = 100.f;
-const int POSTURE_MAX = 10;
-const int POSTURE_REGEN = 3;
+// //Game Component Init values
+// const float MAX_HEALTH = 100.f;
+// const int POSTURE_MAX = 10;
+// const int POSTURE_REGEN = 3;

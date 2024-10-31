@@ -27,7 +27,7 @@ struct FighterConfig {
     float JUMP_VELOCITY = 0.02f;
 
     // attack 1 (punch) 
-    int HITBOX_DURATION = 500;
+    float HITBOX_DURATION = 500.f;
     float PUNCH_X_OFFSET = 0.f;
     float PUNCH_Y_OFFSET = 0.15f * NDC_HEIGHT;
     float PUNCH_WIDTH;

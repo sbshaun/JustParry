@@ -261,26 +261,28 @@ bool WorldSystem::checkAABBCollision(const Box& box1, const vec2& position1, boo
 void WorldSystem::handle_collisions() {
     Entity player1 = renderer->m_player1;
     Entity player2 = renderer->m_player2;
+    Fighters current_char1 = registry.players.get(player1).current_char;
+    Fighters current_char2 = registry.players.get(player2).current_char;
 
     // check if player 1 hit player 2
     if (checkHitBoxCollisions(player1, player2)) {
-        applyDamage(player2, PLAYER_1_DAMAGE);  // apply damage 
+        applyDamage(player2, FighterManager::getFighterConfig(current_char1).PUNCH_DAMAGE);  // apply damage 
         // state transition and state timer
         PlayerCurrentState& player2State = registry.playerCurrentStates.get(player2);
         StateTimer& player2StateTimer = registry.stateTimers.get(player2);
         player2State.currentState = PlayerState::STUNNED;
-        player2StateTimer.reset(PLAYER_1_STUN_DURATION);
+        player2StateTimer.reset(FighterManager::getFighterConfig(current_char1).PUNCH_STUN_DURATION);
         // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 
     // check if player 2 hit player 1
     if (checkHitBoxCollisions(player2, player1)) {
-        applyDamage(player1, PLAYER_2_DAMAGE);  // apply damage 
+        applyDamage(player1, FighterManager::getFighterConfig(current_char2).PUNCH_DAMAGE);  // apply damage 
         // state transition and state timer
         PlayerCurrentState& player1State = registry.playerCurrentStates.get(player1);
         StateTimer& player1StateTimer = registry.stateTimers.get(player1);
         player1State.currentState = PlayerState::STUNNED;
-        player1StateTimer.reset(PLAYER_2_STUN_DURATION);
+        player1StateTimer.reset(FighterManager::getFighterConfig(current_char2).PUNCH_STUN_DURATION);
         // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 }

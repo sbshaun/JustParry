@@ -14,7 +14,7 @@ FighterConfig& setUpBirdmanConfig() {
     birdmanConfig.MOVE_SPEED = 0.005f;
     birdmanConfig.JUMP_VELOCITY = 0.02f;
 
-    birdmanConfig.HITBOX_DURATION = 500;
+    birdmanConfig.HITBOX_DURATION = 500.f;
     birdmanConfig.PUNCH_X_OFFSET = 0.f;
     birdmanConfig.PUNCH_DAMAGE = 10.f;
     birdmanConfig.PUNCH_STUN_DURATION = 3000.f;
