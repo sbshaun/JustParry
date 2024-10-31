@@ -121,17 +121,20 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     playerStateTimer.duration = 0.f;
     playerStateTimer.elapsedTime = 0.f;
 
+    Fighters current_char = registry.players.get(entity).current_char;
+    FighterConfig config = FighterManager::getFighterConfig(current_char);
+
     // Convert 'player' width and height to normalized device coordinates
     std::vector<float> rectangleVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
-        0 - NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
+        0 - config.NDC_WIDTH / 2, 0 + config.NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f,  // Top-left
+        0 - config.NDC_WIDTH / 2, 0 - config.NDC_HEIGHT / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
+        0 + config.NDC_WIDTH / 2, 0 - config.NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        0 + NDC_WIDTH / 2, 0 - NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
-        0 + NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-right
-        0 - NDC_WIDTH / 2, 0 + NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
+        0 + config.NDC_WIDTH / 2, 0 - config.NDC_HEIGHT / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
+        0 + config.NDC_WIDTH / 2, 0 + config.NDC_HEIGHT / 2, 0.0f, 1.0f, 1.0f, // Top-right
+        0 - config.NDC_WIDTH / 2, 0 + config.NDC_HEIGHT / 2, 0.0f, 0.0f, 1.0f, // Top-left
     };
 
     Mesh playerMesh(rectangleVertices, true);
@@ -150,12 +153,6 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     renderHitbox(entity, isPlayer1);
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
-    if (isPlayer1) {
-        registry.players.insert(entity, Player{ 1 });
-    }
-    else {
-		registry.players.insert(entity, Player{ 2 });
-    }
 }
 
 /*
@@ -163,10 +160,12 @@ Create player1 entity, init and register components using the helper function ab
 */
 Entity createPlayer1(GlRender* renderer, vec2 pos, Fighters fighter) {
     Entity entity = Entity();
+    // set current_char to BIRDMAN by default v
+    registry.players.insert(entity, Player{ 1 , fighter});
     Shader* rectShader = new Shader(std::string("player1"));
     createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true, fighter);
     // set current_char to BIRDMAN by default 
-    registry.players.get(entity).current_char = fighter;
+    // registry.players.get(entity).current_char = fighter;
     std::cout << "player 1 current_char: " << (int) registry.players.get(entity).current_char << std::endl;
     return entity;
 }; 
@@ -176,9 +175,10 @@ Create player2 entity, init and register components using the helper function ab
 */
 Entity createPlayer2(GlRender* renderer, vec2 pos, Fighters fighter) {
     Entity entity = Entity();
+	registry.players.insert(entity, Player{ 2 , fighter});
     Shader* rectShader = new Shader(std::string("player2"));
     createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false, fighter);
-    registry.players.get(entity).current_char = fighter;
+    // registry.players.get(entity).current_char = fighter;
     std::cout << "player 2 current_char: " << (int) registry.players.get(entity).current_char << std::endl;
     return entity;
 };
