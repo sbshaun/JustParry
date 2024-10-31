@@ -63,11 +63,57 @@ static void renderHitbox(Entity& player, bool isPlayer1) {
     Shader* shader = new Shader(std::string("hitboxes"));
     registry.debugRenders.insert(hitBoxEntity, HitboxRender{ hitboxMesh, shader, player });
 }
+
+void setupFighterConfig(Entity entity, const FighterConfig& config) {
+    Health& health = registry.healths.emplace(entity);
+    health.currentHealth = config.MAX_HEALTH;
+    health.maxHealth = config.MAX_HEALTH; 
+
+    PostureBar& postureBar = registry.postureBars.emplace(entity);
+    postureBar.currentBar = config.POSTURE_MAX;
+    postureBar.maxBar = config.POSTURE_MAX;
+    postureBar.recoverRate = config.POSTURE_REGEN; // 3 seconds per bar 
+
+    // HitBox& hitBox = registry.hitBoxes.emplace(entity);
+    // hitBox.width = config.PUNCH_WIDTH;
+    // hitBox.height = config.PUNCH_HEIGHT;
+    // hitBox.xOffset = config.PUNCH_X_OFFSET;
+    // hitBox.yOffset = config.PUNCH_Y_OFFSET;
+    // hitBox.active = false;
+    // hitBox.hit = false;
+
+    CollisionBox& collisionBox = registry.collisionBoxes.emplace(entity);
+    collisionBox.width = config.NDC_WIDTH / 8.0f;  
+    collisionBox.height = config.NDC_HEIGHT / 8.0f;
+    collisionBox.xOffset = 0;
+    collisionBox.yOffset = 0;
+
+    HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
+    hurtBox.width = config.NDC_WIDTH / 6.0f;
+    hurtBox.height = config.NDC_HEIGHT / 5.0f;
+    hurtBox.xOffset = 0;  
+    hurtBox.yOffset = 0;
+
+    ParryBox& parryBox = registry.parryBoxes.emplace(entity);
+    parryBox.width = config.NDC_WIDTH;
+    parryBox.height = config.NDC_HEIGHT;
+    parryBox.active = false;
+    hurtBox.xOffset = 0;
+    hurtBox.yOffset = 0;
+
+    PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
+    perfectParryBox.width = config.NDC_WIDTH;
+    perfectParryBox.height = config.NDC_HEIGHT;
+    perfectParryBox.active = false;
+    perfectParryBox.xOffset = 0;
+    perfectParryBox.yOffset = 0;
+}
+
 /*
 helper function for player1, player2, and opponent1 
 p.s. entity: player entity 
 */
-static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint texture, bool isPlayer1) {
+static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint texture, bool isPlayer1, Fighters fighter) {
     // init player's currentState to be IDLE, init stateTimer to 0 
     PlayerCurrentState& playerState = registry.playerCurrentStates.emplace(entity);
     playerState.currentState = PlayerState::IDLE;
@@ -91,9 +137,7 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     Mesh playerMesh(rectangleVertices, true);
     registry.renderable.insert(entity, Renderable{playerMesh, shader, texture});
 
-    Health& health = registry.healths.emplace(entity);
-    health.currentHealth = 100.f; 
-    health.maxHealth = 100.f; 
+    setupFighterConfig(entity, FighterManager::getFighterConfig(fighter));
 
     Motion&  motion = registry.motions.emplace(entity);
     motion.lastPos = pos;
@@ -103,44 +147,7 @@ static void createPlayerHelper(Entity& entity, vec2 pos, Shader* shader, GLuint 
     motion.inAir = false;   
     motion.scale = { 0.1, 0.1 };
 
-    PostureBar& postureBar = registry.postureBars.emplace(entity);
-    postureBar.currentBar = 10;
-    postureBar.maxBar = 10;
-    postureBar.recoverRate = 3; // 3 seconds per bar 
-
-    /*HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    hitBox.width = PUNCH_WIDTH;
-	hitBox.height = PUNCH_HEIGHT;
-    hitBox.xOffset = PUNCH_X_OFFSET;
-    hitBox.yOffset = PUNCH_Y_OFFSET;
-    hitBox.active = false;*/
     renderHitbox(entity, isPlayer1);
-
-    CollisionBox& collisionBox = registry.collisionBoxes.emplace(entity);
-    collisionBox.xOffset = 0;
-    collisionBox.yOffset = 0;
-    collisionBox.width = NDC_WIDTH / 8.0f;
-    collisionBox.height = NDC_HEIGHT / 8.0f;
-
-    HurtBox& hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.xOffset = 0;
-    hurtBox.yOffset = 0;
-    hurtBox.width = NDC_WIDTH / 6.0f;
-    hurtBox.height = NDC_HEIGHT / 5.0f;
-
-    ParryBox& parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.active = false;
-    parryBox.xOffset = pos.x;
-    parryBox.yOffset = pos.y;
-    parryBox.width = NDC_WIDTH;
-    parryBox.height = NDC_HEIGHT;
-
-    PerfectParryBox& perfectParryBox = registry.perfectParryBoxes.emplace(entity);
-    perfectParryBox.xOffset = 0;
-    perfectParryBox.yOffset = 0;
-    perfectParryBox.active = false;
-    perfectParryBox.width = NDC_WIDTH;
-    perfectParryBox.height = NDC_HEIGHT;
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
     if (isPlayer1) {
@@ -157,7 +164,7 @@ Create player1 entity, init and register components using the helper function ab
 Entity createPlayer1(GlRender* renderer, vec2 pos, Fighters fighter) {
     Entity entity = Entity();
     Shader* rectShader = new Shader(std::string("player1"));
-    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true);
+    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true, fighter);
     // set current_char to BIRDMAN by default 
     registry.players.get(entity).current_char = fighter;
     std::cout << "player 1 current_char: " << (int) registry.players.get(entity).current_char << std::endl;
@@ -170,7 +177,7 @@ Create player2 entity, init and register components using the helper function ab
 Entity createPlayer2(GlRender* renderer, vec2 pos, Fighters fighter) {
     Entity entity = Entity();
     Shader* rectShader = new Shader(std::string("player2"));
-    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false);
+    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false, fighter);
     registry.players.get(entity).current_char = fighter;
     std::cout << "player 2 current_char: " << (int) registry.players.get(entity).current_char << std::endl;
     return entity;
