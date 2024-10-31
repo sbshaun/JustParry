@@ -9,6 +9,16 @@ float b2 = 0;
 int count = 0;
 bool isLoading = true;
 
+void resetInterpVariables()
+{
+	a = 0;
+	a2 = 0;
+	b = 0;
+	b2 = 0;
+	count = 0;
+	isLoading = true;
+}
+
 void interp_moveEntitesToScreen(GlRender& renderer) {
 	if (isLoading) {
 		Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
@@ -25,8 +35,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		p1 = PlayerInput();
 		p2 = PlayerInput();
 
-		// move p1 from left to right
-		if (m1.position[0] < -0.5) {
+		if (m1.position[0] < -0.5)
+		{
 			m1.position[0] += 0.0089;
 		}
 		// move p1 to the ground
@@ -37,9 +47,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 			m1.position[1] = (FLOOR_Y + config1.NDC_HEIGHT / 2);
 		}
 
-
-		// move p2 from left to right
-		if (m2.position[0] > 0.5) {
+		if (m2.position[0] > 0.5)
+		{
 			m2.position[0] -= 0.0089;
 
 		} // move p2 to ground
@@ -49,48 +58,40 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 			m2.position[1] = (FLOOR_Y + config2.NDC_HEIGHT / 2);
 		}
 
-		// scale p1 from 0.1 to 1
-		if (m1.scale[0] < 1) {
+		if (m1.scale[0] < 1)
+		{
 			a = m1.scale[0] + 0.01;
 			a2 = m1.scale[1] + 0.01;
 			m1.scale[0] = a;
 			m1.scale[1] = a2;
-		} // stop when done, and set scale = 1.
-		else{
+		}
+		else
+		{
 			m1.scale[0] = 1;
-			m1.scale[1] = 1;						
+			m1.scale[1] = 1;
 		}
 
-		// scale p2 from 0.1 to 1 (not working)
-		if (m2.scale[0] < 1) {
+		if (m2.scale[0] < 1)
+		{
 			b = m2.scale[0] + 0.01;
 			b2 = m2.scale[1] + 0.01;
 			m2.scale[0] = b;
 			m2.scale[1] = b2;
-		} // stop when done, and set scale = 1.
-		else if ((m2.scale[0] > 1)) {
-			std::cout << m2.scale[1] << std::endl;
+		}
+		else if ((m2.scale[0] > 1))
+		{
 			m2.scale[0] = 1;
 			m2.scale[1] = 1;
-
 		}
 
 		// stop once done, and change isLoading to false to avoid inteference w game.
 		if (m1.position[0] < 0.3 && m1.position[1] == (FLOOR_Y + config1.NDC_HEIGHT / 2) && m1.scale[0] == 1) {
 			count = 1;
-
 		}
 
-		// set isLoading to false, when done.
-		if (count == 1) {
+		if (count == 1)
+		{
 			isLoading = false;
-			std::cout << "FINISHED" << std::endl;
 		}
-
 	}
-
-
-	
-
-
 }
