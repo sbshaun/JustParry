@@ -171,13 +171,84 @@ int main()
 
     // Initialize the world system which is responsible for creating and updating entities
     WorldSystem worldSystem;
+    // Initialize the world system which is responsible for creating and updating entities
+    WorldSystem worldSystem;
 
     // Initialize the physics system that will handle collisions
     PhysicsSystem physics;
     Bot botInstance; // init bot
 
     worldSystem.init(&renderer);
+    // Initialize the physics system that will handle collisions
+    PhysicsSystem physics;
+    Bot botInstance; // init bot
 
+    worldSystem.init(&renderer);
+
+    // Main loop
+
+    Game game;
+    renderer.setGameInstance(&game);
+    FPSCounter fpsCounter(60); // Targeting 60 FPS
+
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
+
+    // for fps toggle
+    bool showFPS = false;
+    bool fKeyPressed = false;
+
+    // Declare motion variables outside switch
+    Motion *m1_ptr = nullptr;
+    Motion *m2_ptr = nullptr;
+
+    // Add these variables with the other toggles
+    bool bKeyPressed = false;
+    bool botEnabled = BOT_ENABLED; // Initialize with the default value
+
+    while (!glWindow.shouldClose())
+    {
+        switch (game.getState())
+        {
+        case GameState::MENU:
+            game.generateBackground(FLOOR_Y, renderer);
+            game.renderMenu(renderer);
+
+            if (game.handleMenuInput(glWindow.window))
+            {
+                game.setState(GameState::PLAYING);
+            }
+            break;
+
+        case GameState::HELP:
+            game.generateBackground(FLOOR_Y, renderer);
+            game.renderHelpScreen(renderer);
+
+            if (game.handleHelpInput(glWindow.window))
+            {
+                game.setState(GameState::MENU);
+            }
+            break;
+
+        case GameState::ROUND_START:
+            renderer.initializeUI();
+            interp_moveEntitesToScreen(renderer); // Move players into position
+            renderer.render();
+            renderer.renderUI(timer);
+
+            // Use pointers declared outside switch
+            m1_ptr = &registry.motions.get(renderer.m_player1);
+            m2_ptr = &registry.motions.get(renderer.m_player2);
+
+            // Only transition to PLAYING when interpolation is complete
+            if (!isLoading) // Use the global isLoading variable from linearinterp.cpp
+            {
+                game.setState(GameState::PLAYING);
+            }
+            break;
+
+        case GameState::PLAYING:
+            renderer.initializeUI();
     // Main loop
 
     Game game;

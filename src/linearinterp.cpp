@@ -30,8 +30,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		Motion& m1 = registry.motions.get(renderer.m_player1);
 		Motion& m2 = registry.motions.get(renderer.m_player2);
 
-		PlayerInput& p1 = registry.playerInputs.get(renderer.m_player1);
-		PlayerInput& p2 = registry.playerInputs.get(renderer.m_player2);
+		PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
+		PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
 		p1 = PlayerInput();
 		p2 = PlayerInput();
 
@@ -49,6 +49,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		if (m2.position[0] > 0.5)
 		{
+		if (m2.position[0] > 0.5)
+		{
 			m2.position[0] -= 0.0089;
 
 		} // move p2 to ground
@@ -60,6 +62,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		if (m1.scale[0] < 1)
 		{
+		if (m1.scale[0] < 1)
+		{
 			a = m1.scale[0] + 0.01;
 			a2 = m1.scale[1] + 0.01;
 			m1.scale[0] = a;
@@ -67,16 +71,25 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		}
 		else
 		{
+		}
+		else
+		{
 			m1.scale[0] = 1;
+			m1.scale[1] = 1;
 			m1.scale[1] = 1;
 		}
 
+		if (m2.scale[0] < 1)
+		{
 		if (m2.scale[0] < 1)
 		{
 			b = m2.scale[0] + 0.01;
 			b2 = m2.scale[1] + 0.01;
 			m2.scale[0] = b;
 			m2.scale[1] = b2;
+		}
+		else if ((m2.scale[0] > 1))
+		{
 		}
 		else if ((m2.scale[0] > 1))
 		{
@@ -89,6 +102,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 			count = 1;
 		}
 
+		if (count == 1)
+		{
 		if (count == 1)
 		{
 			isLoading = false;
