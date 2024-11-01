@@ -316,11 +316,11 @@ void WorldSystem::checkAABBCollision(bool& xCollision, bool& yCollision,
     motion1.wasAbove = motion1.above;
     motion2.wasAbove = motion2.above;
 
-    if (box1Bottom > box2Top) {
+    if (x_collision && box1Bottom > box2Top) {
         motion1.above = true;
         motion2.above = false;
     }
-    else if (box2Bottom > box1Top) {
+    else if (x_collision && box2Bottom > box1Top) {
         motion2.above = true;
         motion1.above = false;
     }
@@ -386,6 +386,7 @@ void WorldSystem::playerCollisions(GlRender *renderer)
         // Player one is on top
         else if (player1Motion.wasAbove) {
             player1Motion.velocity.x = 0;
+            player2Motion.velocity.y = 0;
             if (player1Motion.direction) {
                 player1Motion.position = { player1Motion.lastPos.x - 0.05, player1Motion.lastPos.y };
             }
@@ -396,6 +397,7 @@ void WorldSystem::playerCollisions(GlRender *renderer)
         // Player two is on top
         else if (player2Motion.wasAbove) {
             player2Motion.velocity.x = 0;
+            player1Motion.velocity.y = 0;
             if (player2Motion.direction) {
                 player2Motion.position = { player2Motion.lastPos.x - 0.05, player2Motion.lastPos.y };
             }
