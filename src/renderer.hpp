@@ -43,6 +43,9 @@ public:
 
     void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, float brightness = 1.0f);
 
+    void renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color);
+    bool debugMode = false;
+
     ~GlRender();
     Entity m_player1;
     Entity m_player2;

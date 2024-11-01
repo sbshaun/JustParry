@@ -1,44 +1,28 @@
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include "../renderer.hpp"
+#include "fps.hpp"
 
-class FPSCounter
+FPSCounter::FPSCounter(int target) : targetFPS(target), frameCount(0), currentFPS(0)
 {
-private:
-    int targetFPS;
-    int frameCount;
-    int currentFPS;
-    std::chrono::time_point<std::chrono::steady_clock> lastTime;
-    std::chrono::time_point<std::chrono::steady_clock> startTime;
+    lastTime = std::chrono::steady_clock::now();
+    startTime = lastTime;
+}
 
-public:
-    FPSCounter(int target = 60) : targetFPS(target), frameCount(0), currentFPS(0)
+void FPSCounter::update(GlRender &renderer, bool showFPS)
+{
+    frameCount++;
+    auto now = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count();
+
+    // Update FPS every second
+    if (duration >= 1000)
     {
-        lastTime = std::chrono::steady_clock::now();
-        startTime = lastTime;
+        currentFPS = frameCount;
+        frameCount = 0;
+        startTime = now;
     }
+    renderer.renderFPS(currentFPS, showFPS);
+}
 
-    //  calculate FPS
-    void update(GlRender &renderer, bool showFPS)
-    {
-        frameCount++;
-        auto now = std::chrono::steady_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count();
-
-        // Update FPS every second
-        if (duration >= 1000)
-        {
-            currentFPS = frameCount;
-            frameCount = 0;
-            startTime = now;
-        }
-        renderer.renderFPS(currentFPS, showFPS);
-    }
-
-    // Getter for FPS
-    int getFPS() const
-    {
-        return (currentFPS > targetFPS ? targetFPS : currentFPS);
-    }
-};
+int FPSCounter::getFPS() const
+{
+    return (currentFPS > targetFPS ? targetFPS : currentFPS);
+}

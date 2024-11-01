@@ -41,10 +41,10 @@ void WorldSystem::init(GlRender *renderer)
 {
     this->renderer = renderer;
 
-	// Create entities
+    // Create entities
     FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
-	Entity player1 = createPlayer1(renderer, { -1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT }, Fighters::BIRDMAN);
-	Entity player2 = createPlayer2(renderer, { 1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT }, Fighters::BIRDMAN);
+    Entity player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
+    Entity player2 = createPlayer2(renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
 
     renderer->m_player1 = player1;
     renderer->m_player2 = player2;
@@ -61,8 +61,7 @@ void WorldSystem::init(GlRender *renderer)
 
 void WorldSystem::initInputHandlers()
 {
-    // init default keys for 2 players
-    // 1. player 1 <input_key -> action> mapping
+    // Player 1 controls
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
     player1InputMapping->bindKeyToAction(GLFW_KEY_A, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(GLFW_KEY_D, Action::MOVE_RIGHT);
@@ -71,7 +70,7 @@ void WorldSystem::initInputHandlers()
     player1InputMapping->bindKeyToAction(GLFW_KEY_R, Action::PUNCH);
     player1InputMapping->bindKeyToAction(GLFW_KEY_T, Action::KICK);
 
-    // 2. player 2 <input_key -> action> mapping
+    // Player 2 controls
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
     player2InputMapping->bindKeyToAction(GLFW_KEY_LEFT, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(GLFW_KEY_RIGHT, Action::MOVE_RIGHT);
@@ -215,7 +214,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     HitBox &hitBox = registry.hitBoxes.get(playerWithHitBox);
     HurtBox &hurtBox = registry.hurtBoxes.get(playerWithHurtBox);
 
-    // if  hitbox is not active, skip check
+    // if hitbox is not active or has already hit, skip check
     if (!hitBox.active || hitBox.hit)
         return false;
 
@@ -223,9 +222,6 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     float hitBoxRight = hitBox.getRight(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
-
-    // std::cout << "Hitbox: " << hitBoxLeft << " " <<  hitBoxRight << " " <<  hitBoxTop << " " << hitBoxBottom << std::endl;
-    // std::cout << "Player: " << hitPlayerMotion.position.x << " " << hitPlayerMotion.position.y << std::endl;
 
     float hurtBoxLeft = hurtBox.getLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxRight = hurtBox.getRight(hurtPlayerMotion.position, hurtPlayerMotion.direction);
@@ -237,20 +233,20 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     if (x_collision && y_collision)
     {
-        std::cout << "hitbox hit hurtbox" << std::endl;
+        Player &attacker = registry.players.get(playerWithHitBox);
+        Player &defender = registry.players.get(playerWithHurtBox);
+        std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
         hitBox.hit = true;
         return true;
     }
 
     return false;
-};
+}
 
 // helper function for AABB Collision
 bool WorldSystem::checkAABBCollision(const Box &box1, const vec2 &position1, bool facingRight1,
                                      const Box &box2, const vec2 &position2, bool facingRight2)
 {
-
-    std::cout << facingRight2 << std::endl;
 
     float box1Left = box1.getLeft(position1, facingRight1);
     float box1Right = box1.getRight(position1, facingRight1);
@@ -282,32 +278,28 @@ void WorldSystem::handle_collisions()
     Fighters current_char2 = registry.players.get(player2).current_char;
 
     // check if player 1 hit player 2
-    if (checkHitBoxCollisions(player1, player2)) {
-        applyDamage(player2, FighterManager::getFighterConfig(current_char1).PUNCH_DAMAGE);  // apply damage 
-        // state transition and state timer
+    if (checkHitBoxCollisions(player1, player2))
+    {
+        applyDamage(player2, FighterManager::getFighterConfig(current_char1).PUNCH_DAMAGE);
         PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
         StateTimer &player2StateTimer = registry.stateTimers.get(player2);
         player2State.currentState = PlayerState::STUNNED;
         player2StateTimer.reset(FighterManager::getFighterConfig(current_char1).PUNCH_STUN_DURATION);
-        // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 
     // check if player 2 hit player 1
-    if (checkHitBoxCollisions(player2, player1)) {
-        applyDamage(player1, FighterManager::getFighterConfig(current_char2).PUNCH_DAMAGE);  // apply damage 
-        // state transition and state timer
+    if (checkHitBoxCollisions(player2, player1))
+    {
+        applyDamage(player1, FighterManager::getFighterConfig(current_char2).PUNCH_DAMAGE);
         PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
         StateTimer &player1StateTimer = registry.stateTimers.get(player1);
         player1State.currentState = PlayerState::STUNNED;
         player1StateTimer.reset(FighterManager::getFighterConfig(current_char2).PUNCH_STUN_DURATION);
-        // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 }
 
 void WorldSystem::playerCollisions(GlRender *renderer)
 {
-    std::cout << "hello" << std::endl;
-
     Motion &player1Motion = registry.motions.get(renderer->m_player1);
     Motion &player2Motion = registry.motions.get(renderer->m_player2);
 
