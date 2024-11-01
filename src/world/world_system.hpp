@@ -12,7 +12,7 @@ class WorldSystem
 public:
 	WorldSystem();
 	void init(GlRender *renderer);
-	void handle_collisions();
+	void hitBoxCollisions();
 	// Steps the game ahead by ms milliseconds
 	bool step(float elapsed_ms);
 	~WorldSystem();

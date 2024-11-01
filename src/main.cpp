@@ -156,18 +156,19 @@ void toggleBot(bool &botEnabled, bool &bKeyPressed, GLWindow &glWindow)
 }
 
 int main()
-{
+{   
+    //// START INITS ////
     GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
     const int is_fine = gl3w_init();
     assert(is_fine == 0);
 
-    glfwSwapInterval(1); // Enable vsync
+    // glfwSwapInterval(1); // Enable vsync
 
-        // init fighters config 
-        FighterManager::init(); 
-        
-        GlRender renderer;
-        renderer.initialize();
+    // init fighters config 
+    FighterManager::init(); 
+    
+    GlRender renderer;
+    renderer.initialize();
 
     // Initialize the world system which is responsible for creating and updating entities
     WorldSystem worldSystem;
@@ -178,7 +179,7 @@ int main()
 
     worldSystem.init(&renderer);
 
-    // Main loop
+   
     Game game;
     renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60); // Targeting 60 FPS
@@ -188,7 +189,7 @@ int main()
 
     // for fps toggle
     bool showFPS = false;
-    bool fKeyPressed = false;
+    bool fKeyPressed = true;
 
     // Declare motion variables outside switch
     Motion *m1_ptr = nullptr;
@@ -198,8 +199,22 @@ int main()
     bool bKeyPressed = false;
     bool botEnabled = BOT_ENABLED; // Initialize with the default value
 
+    // Define the target frame duration (in milliseconds)
+    const float targetLogicDuration = 1000 / 240; // 240 logic+input checks per second
+    const float targetFrameDuration = 1000/ 60; // 60 FPS
+        //Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
+
+    double frameTimer = 0.0;
+    auto lastFrameTime = std::chrono::high_resolution_clock::now();
+
+    //// END INITS ////
+
+     // Main loop
     while (!glWindow.shouldClose())
     {
+        //start a timer for each loop
+        auto start = std::chrono::high_resolution_clock::now();
+
         switch (game.getState())
         {
         case GameState::MENU:
@@ -223,7 +238,7 @@ int main()
             break;
 
         case GameState::ROUND_START:
-            renderer.initializeUI();
+            renderer.drawUI();
             interp_moveEntitesToScreen(renderer); // Move players into position
             renderer.render();
             renderer.renderUI(timer);
@@ -240,22 +255,56 @@ int main()
             break;
 
         case GameState::PLAYING:
-            renderer.initializeUI();
-            interp_moveEntitesToScreen(renderer);
-            worldSystem.inputProcessing(timer);
-            worldSystem.movementProcessing();
-            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-            worldSystem.handle_collisions();
-            worldSystem.playerCollisions(&renderer);
-            physics.step();
+            {
+            // Calculate the elapsed time since the last frame
+            auto currentFrameTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> elapsed = currentFrameTime - lastFrameTime;
+            lastFrameTime = currentFrameTime;
 
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
-            toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
-            toggleBot(botEnabled, bKeyPressed, glWindow);
+            // Increase frameTimer by the elapsed time
+            frameTimer += elapsed.count();
+
+            if(frameTimer >= targetFrameDuration){ //Only do certain checks each frame rather than every loop
+                std::cout << frameTimer << "FRAME TIME" << std::endl;
+                frameTimer = 0; //reset timer 
+                
+                renderer.drawUI();
+                interp_moveEntitesToScreen(renderer);
+                
+                worldSystem.movementProcessing(); //PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
+                worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
+                worldSystem.hitBoxCollisions(); 
+
+                checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+                toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
+                toggleBot(botEnabled, bKeyPressed, glWindow);
+            }
+            worldSystem.inputProcessing(timer); //What are we passing a timer in for?
+            physics.step();
+            worldSystem.playerCollisions(&renderer);
+
+            // auto end = std::chrono::high_resolution_clock::now();
+            // std::chrono::duration<double, std::milli> elapsed = end - start;
+            
+            // // Calculate the remaining time to sleep
+            // int sleepDuration = targetLogicDuration - static_cast<int>(elapsed.count());
+            // if (sleepDuration > 0)
+            // {
+            //     std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
+            // }
+
+            // auto actualEnd = std::chrono::high_resolution_clock::now();
+            // std::chrono::duration<double, std::milli> actualFrameDuration = actualEnd - start;
+            // std::cout << "Actual frame duration: " << actualFrameDuration.count() << " ms" << std::endl;
+
+            }
             break;
+
         case GameState::LOADING:
             // supress compilation warning 
             std::cout << "warning: enumeration value 'LOADING' not handled in switch [-Wswitch]" << std::endl;
+            break;
+
         default:
             std::cerr << "unhandled game state" << std::endl;
             break;
@@ -265,6 +314,7 @@ int main()
             break;
         }
         glWindow.windowSwapBuffers();
+
     }
 
     // clean up
