@@ -64,7 +64,7 @@ public:
         Player &player = registry.players.get(entity);
         std::cout << "Player " << player.id << " jumped!" << std::endl;
         motion.inAir = true;
-        motion.velocity.y = JUMP_VELOCITY;
+        motion.velocity.y = FighterManager::getFighterConfig(player.current_char).JUMP_VELOCITY;
     }
 };
 
