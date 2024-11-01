@@ -217,7 +217,7 @@ int main()
     while (!glWindow.shouldClose())
     {
         //start a timer for each loop
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::steady_clock ::now();
 
         switch (game.getState())
         {
@@ -285,7 +285,7 @@ int main()
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
 
             //time the next logic check
-            auto end = std::chrono::high_resolution_clock::now();
+            auto end = std::chrono::steady_clock ::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
             // Calculate the remaining time to sleep
             int sleepDuration = targetLogicDuration - static_cast<int>(FastLoopIterTime.count());
@@ -294,7 +294,7 @@ int main()
                 std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
             }
 
-            auto actualEnd = std::chrono::high_resolution_clock::now();
+            auto actualEnd = std::chrono::steady_clock ::now();
             std::chrono::duration<double, std::milli> MainLoopIterTime = actualEnd - start;
             std::cout << "Actual loop duration: " << MainLoopIterTime.count() << " ms" << std::endl;
 
