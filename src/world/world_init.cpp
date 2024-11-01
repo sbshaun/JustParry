@@ -52,26 +52,26 @@ static void renderHurtbox(Entity &player, bool isPlayer1)
     FighterConfig config = FighterManager::getFighterConfig(registry.players.get(player).current_char);
 
     // Set hurtbox dimensions based on fighter config
-    //hurtBox.width = config.NDC_WIDTH / 2;
-    //hurtBox.height = config.NDC_HEIGHT / 2;
-    //hurtBox.xOffset = 0; // Centered on player
-    //hurtBox.yOffset = 0;
+    // hurtBox.width = config.NDC_WIDTH / 2;
+    // hurtBox.height = config.NDC_HEIGHT / 2;
+    // hurtBox.xOffset = 0; // Centered on player
+    // hurtBox.yOffset = 0;
     std::cout << "Hurtbox dimensions: " << hurtBox.width << ", " << hurtBox.height << std::endl;
 
     float hurtbox_width = hurtBox.width;
-	float hurtbox_height = hurtBox.height;
+    float hurtbox_height = hurtBox.height;
 
     // Create vertices for hurtbox visualization
     std::vector<float> hurtboxVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        -hurtbox_width, -hurtbox_height, 0.0f,  // Top-left
-        -hurtbox_width, hurtbox_height, 0.0f, // Bottom-left
-        hurtbox_width, hurtbox_height, 0.0f,  // Bottom-right
+        -hurtbox_width, -hurtbox_height, 0.0f, // Top-left
+        -hurtbox_width, hurtbox_height, 0.0f,  // Bottom-left
+        hurtbox_width, hurtbox_height, 0.0f,   // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        hurtbox_width, hurtbox_height, 0.0f, // Bottom-right
-        hurtbox_width, -hurtbox_height, 0.0f,  // Top-right
-        -hurtbox_width, -hurtbox_height, 0.0f  // Top-left
+        hurtbox_width, hurtbox_height, 0.0f,  // Bottom-right
+        hurtbox_width, -hurtbox_height, 0.0f, // Top-right
+        -hurtbox_width, -hurtbox_height, 0.0f // Top-left
     };
 
     Entity hurtBoxEntity = Entity();
@@ -250,23 +250,42 @@ Entity createFloor(float val, int type)
 // Add cleanup function
 void cleanupShaders(Entity entity)
 {
+    // Clean up renderable shaders
     if (registry.renderable.has(entity))
     {
         Renderable &renderable = registry.renderable.get(entity);
-        delete renderable.shader;
+        if (renderable.shader)
+        {
+            delete renderable.shader;
+            renderable.shader = nullptr;
+        }
     }
 
     // Clean up debug render shaders
     for (Entity &debugEntity : registry.debugRenders.entities)
     {
-        HitboxRender &hitboxRender = registry.debugRenders.get(debugEntity);
-        delete hitboxRender.shader;
+        if (registry.debugRenders.has(debugEntity))
+        {
+            HitboxRender &hitboxRender = registry.debugRenders.get(debugEntity);
+            if (hitboxRender.shader)
+            {
+                delete hitboxRender.shader;
+                hitboxRender.shader = nullptr;
+            }
+        }
     }
 
     // Clean up static render shaders
     for (Entity &staticEntity : registry.staticRenders.entities)
     {
-        StaticRender &staticRender = registry.staticRenders.get(staticEntity);
-        delete staticRender.shader;
+        if (registry.staticRenders.has(staticEntity))
+        {
+            StaticRender &staticRender = registry.staticRenders.get(staticEntity);
+            if (staticRender.shader)
+            {
+                delete staticRender.shader;
+                staticRender.shader = nullptr;
+            }
+        }
     }
 }

@@ -34,7 +34,14 @@ WorldSystem::WorldSystem() {};
 
 WorldSystem::~WorldSystem()
 {
-    // Clear all components first
+    // Clean up all shaders first
+    if (renderer)
+    {
+        cleanupShaders(renderer->m_player1);
+        cleanupShaders(renderer->m_player2);
+    }
+
+    // Clear all components
     registry.clear_all_components();
 }
 

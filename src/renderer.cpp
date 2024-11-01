@@ -6,7 +6,10 @@
 
 GlRender::GlRender() {}
 
-GlRender::~GlRender() {}
+GlRender::~GlRender()
+{
+    shutdown();
+}
 
 void GlRender::initialize()
 {
@@ -21,25 +24,31 @@ void GlRender::initialize()
     // Preload all shaders at initialization
     std::cout << "\nInitializing shaders..." << std::endl;
 
-    // Store debug shader statically so it persists
-    static Shader *debugShader = new Shader("debug");
-    std::cout << "Debug visualization shader loaded" << std::endl;
+    try
+    {
+        // Store debug shader as a member variable instead of static
+        m_debugShader = new Shader("debug");
+        std::cout << "Debug visualization shader loaded" << std::endl;
 
-    // Load other shaders if needed
-    static Shader *player1Shader = new Shader("player1");
-    std::cout << "Player 1 shader loaded" << std::endl;
+        m_player1Shader = new Shader("player1");
+        std::cout << "Player 1 shader loaded" << std::endl;
 
-    static Shader *player2Shader = new Shader("player2");
-    std::cout << "Player 2 shader loaded" << std::endl;
+        m_player2Shader = new Shader("player2");
+        std::cout << "Player 2 shader loaded" << std::endl;
 
-    static Shader *floorShader = new Shader("floor");
-    std::cout << "Floor shader loaded" << std::endl;
+        m_floorShader = new Shader("floor");
+        std::cout << "Floor shader loaded" << std::endl;
 
-    static Shader *hitboxShader = new Shader("hitboxes");
-    std::cout << "Hitbox shader loaded" << std::endl;
+        m_hitboxShader = new Shader("hitboxes");
+        std::cout << "Hitbox shader loaded" << std::endl;
 
-    std::cout << "All shaders initialized successfully\n"
-              << std::endl;
+        std::cout << "All shaders initialized successfully\n"
+                  << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error initializing shaders: " << e.what() << std::endl;
+    }
 }
 
 void GlRender::renderRoundOver(int count)
@@ -665,6 +674,19 @@ void GlRender::shutdown()
     gltTerminate();
 
     std::cout << "Resources cleaned up." << std::endl;
+
+    // Delete shaders
+    delete m_debugShader;
+    delete m_player1Shader;
+    delete m_player2Shader;
+    delete m_floorShader;
+    delete m_hitboxShader;
+
+    m_debugShader = nullptr;
+    m_player1Shader = nullptr;
+    m_player2Shader = nullptr;
+    m_floorShader = nullptr;
+    m_hitboxShader = nullptr;
 }
 
 void GlRender::renderButton(float x, float y, float width, float height, const char *text,
@@ -1004,6 +1026,12 @@ void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float 
 
 void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color)
 {
+    if (!m_debugShader)
+    {
+        std::cerr << "Debug shader not initialized!" << std::endl;
+        return;
+    }
+
     Motion &motion = registry.motions.get(entity);
 
     // Calculate box vertices in world space
@@ -1020,40 +1048,48 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
         left, bottom, 0.0f   // Bottom-left
     };
 
-    // Create and bind VAO/VBO
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    // Use debug shader
-    static Shader *debugShader = nullptr;
-    if (!debugShader)
+    // Create and bind VAO/VBO with RAII-style cleanup
+    GLuint VAO = 0, VBO = 0;
+    try
     {
-        debugShader = new Shader("debug");
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+
+        // Use debug shader
+        m_debugShader->use();
+        m_debugShader->setVec3("color", color);
+
+        // Save current line width
+        GLfloat oldLineWidth;
+        glGetFloatv(GL_LINE_WIDTH, &oldLineWidth);
+
+        // Set line width for debug boxes
+        glLineWidth(1.0f);
+
+        // Draw box outline
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+        // Restore previous line width
+        glLineWidth(oldLineWidth);
+
+        // Cleanup
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
     }
-
-    debugShader->use();
-    debugShader->setVec3("color", color);
-
-    // Enable line width for better visibility
-    GLfloat oldLineWidth;
-    glGetFloatv(GL_LINE_WIDTH, &oldLineWidth);
-    glLineWidth(2.0f);
-
-    // Draw box outline
-    glDrawArrays(GL_LINE_LOOP, 0, 4);
-
-    // Restore line width
-    glLineWidth(oldLineWidth);
-
-    // Cleanup
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    catch (...)
+    {
+        // Ensure cleanup even if an error occurs
+        if (VAO)
+            glDeleteVertexArrays(1, &VAO);
+        if (VBO)
+            glDeleteBuffers(1, &VBO);
+        throw;
+    }
 }
