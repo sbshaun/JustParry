@@ -4,6 +4,7 @@
 #include "../shader.hpp"
 #include "../constants.hpp"
 #include "ecs.hpp"
+#include "../fighters/fighters.hpp"
 
 enum class PlayerState
 {
@@ -53,6 +54,7 @@ constexpr const char *PlayerStateToString(PlayerState state)
 struct Player
 {
     int id; // used to separate players, 1 and 2.
+    Fighters current_char;
 };
 
 /*
@@ -67,17 +69,16 @@ struct PlayerCurrentState
     PlayerState currentState = PlayerState::IDLE;
 };
 
-// AI opponent
-struct Opponent
-{
-    int level; // increase difficulty by increasing level.
+// AI opponent 
+struct Opponent {
+    int level; // increase difficulty by increasing level. 
+    Fighters current_char; 
 };
 
-struct Health
-{
-    float maxHealth = MAX_HEALTH;
-    float currentHealth = MAX_HEALTH;
-    // float recoverRate; // optional, health recover after x seconds of not being hit.
+struct Health {
+    float maxHealth;
+    float currentHealth; 
+    // float recoverRate; // optional, health recover after x seconds of not being hit. 
 };
 
 struct Motion
@@ -99,11 +100,10 @@ struct StationaryTimer
     float counter_ms = 0.f; // period of time of a player can't move because of stun, or recovery time after actions (e.g. an attack)...
 };
 
-struct PostureBar
-{
-    int maxBar = POSTURE_MAX;        // max number of bars.
-    int currentBar = POSTURE_MAX;    // remaining bars.
-    int recoverRate = POSTURE_REGEN; // how many seconds to recover 1 bar. use int for implicity.
+struct PostureBar {
+    int maxBar; // max number of bars. 
+    int currentBar; // remaining bars.  
+    int recoverRate; // how many seconds to recover 1 bar. use int for implicity. 
 };
 
 struct StateTimer
@@ -151,7 +151,7 @@ struct Box
         }
         else
         {
-            return playerPosition.x - xOffset - width;
+            return playerPosition.x + xOffset + width;
         }
     }
 
@@ -163,7 +163,7 @@ struct Box
         }
         else
         {
-            return playerPosition.x - xOffset;
+            return playerPosition.x + xOffset;
         }
     }
 

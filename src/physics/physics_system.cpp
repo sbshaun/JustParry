@@ -18,6 +18,8 @@ void PhysicsSystem::step() {
 		Entity& playerEntity = playerContainer.entities[i];
 		Motion& playerMotion = registry.motions.get(playerEntity);
 		HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
+		Fighters current_char = playerContainer.components[i].current_char;
+		FighterConfig config = FighterManager::getFighterConfig(current_char);
 
 		// std::cout << playerMotion.position[0] << std::endl;
 
@@ -25,7 +27,7 @@ void PhysicsSystem::step() {
 			Boundary& boundary = boundaryContainer.components[j];
 			// Case: Right Wall 
 			if (boundary.dir == RIGHT) {
-				float playerPos = playerMotion.position.x + NDC_WIDTH / 2.0f; 
+				float playerPos = playerMotion.position.x + config.NDC_WIDTH / 2.0f; 
 				if (playerPos > boundary.val) 
 				{
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
@@ -36,7 +38,7 @@ void PhysicsSystem::step() {
 			}
 			// Case: Left Wall
 			else if (boundary.dir == LEFT) {
-				float playerPos = playerMotion.position.x - NDC_WIDTH / 2.0f;
+				float playerPos = playerMotion.position.x - config.NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
@@ -46,10 +48,10 @@ void PhysicsSystem::step() {
 
 			}
 			else if (boundary.dir == FLOOR) {
-				float playerPos = playerMotion.position.y - NDC_HEIGHT / 2.0f;
+				float playerPos = playerMotion.position.y - config.NDC_HEIGHT / 2.0f;
 				if (playerPos < boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position = {playerMotion.lastPos.x, boundary.val + NDC_HEIGHT / 2.0f};
+						playerMotion.position = {playerMotion.lastPos.x, boundary.val + config.NDC_HEIGHT / 2.0f};
 						playerMotion.velocity.y = 0.0f;
 						playerMotion.inAir = false;
 					}

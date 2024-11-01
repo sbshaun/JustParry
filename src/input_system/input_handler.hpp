@@ -4,6 +4,7 @@
 #include "input_utils.hpp"
 #include "input_mapping.hpp"
 #include "state_machine.hpp"
+#include "../ecs/components.hpp"
 
 class InputHandler {
     public: 
@@ -49,7 +50,9 @@ class InputHandler {
             if (!moving) {
                 motion.velocity.x = 0.0f;
                 if (state_machine.transition(entity, PlayerState::IDLE)) {
-                    std::cout << "Player is now IDLE" << std::endl;
+                    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+                    // std::cout << "playerState is now " << PlayerStateToString(playerState.currentState) << std::endl;
+                    // std::cout << "Player is now IDLE" << std::endl;
                 }
             }
         }

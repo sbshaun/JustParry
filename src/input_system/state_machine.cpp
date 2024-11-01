@@ -19,8 +19,10 @@ bool StateMachine::transition(Entity entity, PlayerState newState)
 
 void StateMachine::update(Entity entity, float elapsed_ms)
 {
+    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+    // for some reason, the currentState in state machine transitions to IDLE immediately after STUNNED using the playerState.currentState to check for the current state instead.
     // call update on the state object of the current state.
-    states[currentState]->update(entity, elapsed_ms, *this);
+    states[playerState.currentState]->update(entity, elapsed_ms, *this);
 }
 
 // TODO: implement concrete state classes
@@ -91,9 +93,14 @@ bool JumpingState::canTransitionTo(Entity entity, PlayerState newState)
     return newState != PlayerState::JUMPING;
 }
 
-void AttackingState::enter(Entity entity, StateMachine &stateMachine)
-{
-    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+void AttackingState::enter(Entity entity, StateMachine& stateMachine) {
+    std::cout << "Entering Attacking State" << std::endl;
+    // add attack animation
+    Fighters fighter = registry.players.get(entity).current_char;
+    float HITBOX_DURATION = FighterManager::getFighterConfig(fighter).HITBOX_DURATION;
+
+    // 1. register a state timer
+    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
     playerState.currentState = PlayerState::ATTACKING;
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     playerStateTimer.reset(HITBOX_DURATION);
@@ -172,4 +179,29 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
 bool ParryingState::canTransitionTo(Entity entity, PlayerState newState)
 {
     return newState != PlayerState::PARRYING;
+}
+
+void StunnedState::enter(Entity entity, StateMachine& stateMachine) {
+    std::cout << "Entering Stunned State" << std::endl;
+}
+
+void StunnedState::exit(Entity entity, StateMachine& stateMachine) {
+    std::cout << "Exiting Stunned State" << std::endl;
+}
+
+void StunnedState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine) {
+    StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive()) {
+        playerStateTimer.update(elapsed_ms);
+    } else {
+        PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+        playerState.currentState = PlayerState::IDLE;
+        stateMachine.transition(entity, PlayerState::IDLE);
+    }
+}
+
+bool StunnedState::canTransitionTo(Entity entity, PlayerState newState) {
+    StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive()) return false; // still in current state
+    return newState != PlayerState::STUNNED;
 }

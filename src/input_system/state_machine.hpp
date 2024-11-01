@@ -87,3 +87,11 @@ public:
     void update(Entity entity, float elapsed_ms, StateMachine& stateMachine) override;
     bool canTransitionTo(Entity entity, PlayerState newState) override;
 };
+
+class StunnedState : public State {
+public:
+    void enter(Entity entity, StateMachine& stateMachine) override;
+    void exit(Entity entity, StateMachine& stateMachine) override;
+    void update(Entity entity, float elapsed_ms, StateMachine& stateMachine) override;
+    bool canTransitionTo(Entity entity, PlayerState newState) override;
+};

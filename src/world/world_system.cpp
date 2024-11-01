@@ -41,9 +41,10 @@ void WorldSystem::init(GlRender *renderer)
 {
     this->renderer = renderer;
 
-    // Create entities
-    Entity player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + NDC_HEIGHT});
-    Entity player2 = createPlayer2(renderer, {1.25, FLOOR_Y + NDC_HEIGHT});
+	// Create entities
+    FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
+	Entity player1 = createPlayer1(renderer, { -1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT }, Fighters::BIRDMAN);
+	Entity player2 = createPlayer2(renderer, { 1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT }, Fighters::BIRDMAN);
 
     renderer->m_player1 = player1;
     renderer->m_player2 = player2;
@@ -97,6 +98,7 @@ void WorldSystem::initStateMachines()
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    player1StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
@@ -104,6 +106,7 @@ void WorldSystem::initStateMachines()
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    player2StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
 }
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
@@ -221,6 +224,9 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
 
+    // std::cout << "Hitbox: " << hitBoxLeft << " " <<  hitBoxRight << " " <<  hitBoxTop << " " << hitBoxBottom << std::endl;
+    // std::cout << "Player: " << hitPlayerMotion.position.x << " " << hitPlayerMotion.position.y << std::endl;
+
     float hurtBoxLeft = hurtBox.getLeft(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxRight = hurtBox.getRight(hurtPlayerMotion.position, hurtPlayerMotion.direction);
     float hurtBoxTop = hurtBox.getTop(hurtPlayerMotion.position, hurtPlayerMotion.direction);
@@ -231,6 +237,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     if (x_collision && y_collision)
     {
+        std::cout << "hitbox hit hurtbox" << std::endl;
         hitBox.hit = true;
         return true;
     }
@@ -269,28 +276,28 @@ void WorldSystem::handle_collisions()
 {
     Entity player1 = renderer->m_player1;
     Entity player2 = renderer->m_player2;
+    Fighters current_char1 = registry.players.get(player1).current_char;
+    Fighters current_char2 = registry.players.get(player2).current_char;
 
     // check if player 1 hit player 2
-    if (checkHitBoxCollisions(player1, player2))
-    {
-        applyDamage(player2, PLAYER_1_DAMAGE); // apply damage
+    if (checkHitBoxCollisions(player1, player2)) {
+        applyDamage(player2, FighterManager::getFighterConfig(current_char1).PUNCH_DAMAGE);  // apply damage 
         // state transition and state timer
         PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
         StateTimer &player2StateTimer = registry.stateTimers.get(player2);
         player2State.currentState = PlayerState::STUNNED;
-        player2StateTimer.reset(PLAYER_1_STUN_DURATION);
+        player2StateTimer.reset(FighterManager::getFighterConfig(current_char1).PUNCH_STUN_DURATION);
         // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 
     // check if player 2 hit player 1
-    if (checkHitBoxCollisions(player2, player1))
-    {
-        applyDamage(player1, PLAYER_2_DAMAGE); // apply damage
+    if (checkHitBoxCollisions(player2, player1)) {
+        applyDamage(player1, FighterManager::getFighterConfig(current_char2).PUNCH_DAMAGE);  // apply damage 
         // state transition and state timer
         PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
         StateTimer &player1StateTimer = registry.stateTimers.get(player1);
         player1State.currentState = PlayerState::STUNNED;
-        player1StateTimer.reset(PLAYER_2_STUN_DURATION);
+        player1StateTimer.reset(FighterManager::getFighterConfig(current_char2).PUNCH_STUN_DURATION);
         // std::cout << "Player 2 is stunned for " << PLAYER_1_STUN_DURATION << "ms." << std::endl;
     }
 }

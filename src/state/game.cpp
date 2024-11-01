@@ -250,6 +250,11 @@ bool Game::handleHelpInput(GLFWwindow *window)
 
 void Game::resetGame(GlRender &renderer)
 {
+    Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
+    Fighters current_char2 = registry.players.get(renderer.m_player2).current_char;
+    FighterConfig config1 = FighterManager::getFighterConfig(current_char1);
+	FighterConfig config2 = FighterManager::getFighterConfig(current_char2);
+
     // Reset timer
     extern int timer;
     extern const int timer_length;
@@ -269,8 +274,8 @@ void Game::resetGame(GlRender &renderer)
     Motion &m2 = registry.motions.get(renderer.m_player2);
 
     // Set initial positions off-screen and reset scales
-    m1.position = glm::vec2(-1.0f, FLOOR_Y + NDC_HEIGHT); // Start from top-left
-    m2.position = glm::vec2(1.0f, FLOOR_Y + NDC_HEIGHT);  // Start from top-right
+    m1.position = glm::vec2(-1.0f, FLOOR_Y + config1.NDC_HEIGHT); // Start from top-left
+    m2.position = glm::vec2(1.0f, FLOOR_Y + config2.NDC_HEIGHT);  // Start from top-right
 
     // Reset scales to initial small size
     m1.scale = glm::vec2(0.1f, 0.1f);

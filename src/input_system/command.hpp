@@ -4,6 +4,7 @@
 #include "../constants.hpp"
 #include "input_utils.hpp"
 #include "state_machine.hpp"
+#include "../fighters/fighters.hpp"
 
 /*
 * Command interface. 
@@ -77,16 +78,18 @@ class PunchCommand : public Command {
             PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
             HitBox& hitBox = registry.hitBoxes.get(entity);
             StateTimer& stateTimer = registry.stateTimers.get(entity);
-
+            Fighters fighter = registry.players.get(entity).current_char;
+            FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
+            
                 if (canPunch(playerState.currentState)) {
                     hitBox.active = true;
                     std::cout << "Player " << (int) entity << "Hitbox Actived" << std::endl;
-                    hitBox.xOffset = PLAYER_1_PUNCH_X_OFFSET;
-                    hitBox.yOffset = PLAYER_1_PUNCH_Y_OFFSET;
-                    hitBox.width = PLAYER_1_PUNCH_WIDTH;
-                    hitBox.height = PLAYER_1_PUNCH_HEIGHT;
+                    hitBox.xOffset = fighterConfig.PUNCH_X_OFFSET;
+                    hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
+                    hitBox.width = fighterConfig.PUNCH_WIDTH;
+                    hitBox.height = fighterConfig.PUNCH_HEIGHT;
                     playerState.currentState = PlayerState::ATTACKING;
-                    stateTimer.reset(HITBOX_DURATION);
+                    stateTimer.reset(fighterConfig.HITBOX_DURATION);
                 }
         }
 };
@@ -101,11 +104,12 @@ class KickCommand : public Command {
             PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
             HitBox& hitBox = registry.hitBoxes.get(entity);
             StateTimer& stateTimer = registry.stateTimers.get(entity);
-            
+            Fighters fighter = registry.players.get(entity).current_char;
+
             if (canPunch(playerState.currentState)) {
                 hitBox.active = true;
                 playerState.currentState = PlayerState::ATTACKING;
-                stateTimer.reset(HITBOX_DURATION);
+                stateTimer.reset(FighterManager::getFighterConfig(fighter).HITBOX_DURATION);
             }
         }
 };

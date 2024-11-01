@@ -163,12 +163,15 @@ int main()
 
     glfwSwapInterval(1); // Enable vsync
 
-    GlRender renderer;
-    renderer.initialize();
+        // init fighters config 
+        FighterManager::init(); 
+        
+        GlRender renderer;
+        renderer.initialize();
 
     // Initialize the world system which is responsible for creating and updating entities
     WorldSystem worldSystem;
-
+    worldSystem.init(&renderer);
     // Initialize the physics system that will handle collisions
     PhysicsSystem physics;
     Bot botInstance; // init bot
@@ -176,7 +179,6 @@ int main()
     worldSystem.init(&renderer);
 
     // Main loop
-
     Game game;
     renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60); // Targeting 60 FPS
@@ -251,13 +253,17 @@ int main()
             toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
             toggleBot(botEnabled, bKeyPressed, glWindow);
             break;
+        case GameState::LOADING:
+            // supress compilation warning 
+            std::cout << "warning: enumeration value 'LOADING' not handled in switch [-Wswitch]" << std::endl;
+        default:
+            std::cerr << "unhandled game state" << std::endl;
+            break;
         }
-
         if (glfwGetKey(glWindow.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             break;
         }
-
         glWindow.windowSwapBuffers();
     }
 
