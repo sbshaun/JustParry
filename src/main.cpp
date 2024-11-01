@@ -225,6 +225,7 @@ int main()
             {
                 game.setState(GameState::PLAYING);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::HELP:
@@ -235,6 +236,7 @@ int main()
             {
                 game.setState(GameState::MENU);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::ROUND_START:
@@ -252,6 +254,7 @@ int main()
             {
                 game.setState(GameState::PLAYING);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::PLAYING:
@@ -278,6 +281,7 @@ int main()
                 checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
                 toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 toggleBot(botEnabled, bKeyPressed, glWindow);
+                glWindow.windowSwapBuffers();
             }
             worldSystem.inputProcessing(timer); //What are we passing a timer in for?
             physics.step();
@@ -303,17 +307,19 @@ int main()
         case GameState::LOADING:
             // supress compilation warning 
             std::cout << "warning: enumeration value 'LOADING' not handled in switch [-Wswitch]" << std::endl;
+            glWindow.windowSwapBuffers();
             break;
 
         default:
             std::cerr << "unhandled game state" << std::endl;
+            glWindow.windowSwapBuffers();
             break;
         }
         if (glfwGetKey(glWindow.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             break;
         }
-        glWindow.windowSwapBuffers();
+        
 
     }
 
