@@ -106,17 +106,17 @@ void setupFighterConfig(Entity entity, const FighterConfig &config)
     collisionBox.yOffset = 0;
 
     HurtBox &hurtBox = registry.hurtBoxes.emplace(entity);
-    hurtBox.width = config.NDC_WIDTH / 6.0f;
-    hurtBox.height = config.NDC_HEIGHT / 5.0f;
-    hurtBox.xOffset = 0;
+    hurtBox.width = config.NDC_WIDTH / 1.6f;
+    hurtBox.height = config.NDC_HEIGHT;
+    hurtBox.xOffset = -config.NDC_WIDTH / 5.7f;
     hurtBox.yOffset = 0;
 
     ParryBox &parryBox = registry.parryBoxes.emplace(entity);
     parryBox.width = config.NDC_WIDTH;
     parryBox.height = config.NDC_HEIGHT;
     parryBox.active = false;
-    hurtBox.xOffset = 0;
-    hurtBox.yOffset = 0;
+    parryBox.xOffset = 0;
+    parryBox.yOffset = 0;
 
     PerfectParryBox &perfectParryBox = registry.perfectParryBoxes.emplace(entity);
     perfectParryBox.width = config.NDC_WIDTH;
