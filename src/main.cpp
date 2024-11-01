@@ -265,7 +265,7 @@ int main()
         case GameState::PLAYING:
             {
             if(loopsSinceLastFrame == FramesPerLogicLoop){ //Only do certain checks each frame rather than every loop
-                std::cout << "RENDER CALL" << std::endl;
+                // std::cout << "RENDER CALL" << std::endl;
                 loopsSinceLastFrame = 0;
                 renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
