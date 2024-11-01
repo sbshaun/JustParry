@@ -24,7 +24,7 @@ struct FighterConfig {
 
     // movement 
     float MOVE_SPEED = 0.005f;
-    float JUMP_VELOCITY = 0.02f;
+    float JUMP_VELOCITY = 0.2f;
 
     // attack 1 (punch) 
     float HITBOX_DURATION = 500.f;

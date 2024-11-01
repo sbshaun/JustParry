@@ -101,7 +101,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config)
 
     CollisionBox &collisionBox = registry.collisionBoxes.emplace(entity);
     collisionBox.width = config.NDC_WIDTH / 8.0f;
-    collisionBox.height = config.NDC_HEIGHT / 8.0f;
+    collisionBox.height = config.NDC_HEIGHT / 2.0f;
     collisionBox.xOffset = 0;
     collisionBox.yOffset = 0;
 

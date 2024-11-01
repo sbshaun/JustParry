@@ -29,7 +29,11 @@ public:
         if (!state_machine.transition(entity, PlayerState::WALKING))
             return;
 
+
         Motion &motion = registry.motions.get(entity);
+        if (motion.inAir)
+            return;
+
         motion.velocity.x = -MOVE_SPEED;
         motion.direction = false; // facing left
     }
@@ -44,6 +48,9 @@ public:
             return;
 
         Motion &motion = registry.motions.get(entity);
+        if (motion.inAir)
+            return;
+
         motion.velocity.x = MOVE_SPEED;
         motion.direction = true; // facing right
     }
@@ -64,7 +71,7 @@ public:
         Player &player = registry.players.get(entity);
         std::cout << "Player " << player.id << " jumped!" << std::endl;
         motion.inAir = true;
-        motion.velocity.y = FighterManager::getFighterConfig(player.current_char).JUMP_VELOCITY;
+        motion.velocity.y = JUMP_VELOCITY;
     }
 };
 

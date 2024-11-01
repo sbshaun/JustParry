@@ -286,7 +286,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 }
 
 // helper function for AABB Collision
-bool WorldSystem::checkAABBCollision(const Box &box1, const vec2 &position1, bool facingRight1,
+void WorldSystem::checkAABBCollision(bool& xCollision, bool& yCollision, int& playerOnTop,
+                                     const Box &box1, const vec2 &position1, bool facingRight1,
                                      const Box &box2, const vec2 &position2, bool facingRight2)
 {
 
@@ -304,7 +305,18 @@ bool WorldSystem::checkAABBCollision(const Box &box1, const vec2 &position1, boo
     bool x_collision = box1Left < box2Right && box1Right > box2Left;
     bool y_collision = box1Top > box2Bottom && box1Bottom < box2Top;
 
-    return x_collision && y_collision;
+    xCollision = x_collision;
+    yCollision = y_collision;
+    
+    if (box2Bottom < box1Bottom) {
+        playerOnTop = 1;
+    }
+    else if (box1Bottom < box2Bottom) {
+        playerOnTop = 2;
+    }
+    else {
+        playerOnTop = 0;
+    }
 }
 
 /*
@@ -348,12 +360,44 @@ void WorldSystem::playerCollisions(GlRender *renderer)
     CollisionBox &player1CollisionBox = registry.collisionBoxes.get(renderer->m_player1);
     CollisionBox &player2CollisionBox = registry.collisionBoxes.get(renderer->m_player2);
 
-    bool collision = checkAABBCollision(player1CollisionBox, player1Motion.position, player1Motion.direction,
-                                        player2CollisionBox, player2Motion.position, player2Motion.direction);
+    bool xCollision;
+    bool yCollision;
 
-    if (collision)
+    // When run through the checkAABBCollision this value will be changed accordingly
+    // Player One above Player Two: 1
+    // Player Two above Player One: 2
+    // Neither Player is above the other: 0
+    int playerOnTop;
+
+    checkAABBCollision(xCollision, yCollision, playerOnTop,
+                       player1CollisionBox, player1Motion.position, player1Motion.direction,
+                       player2CollisionBox, player2Motion.position, player2Motion.direction);
+
+    if (xCollision && yCollision)
     {
-        player1Motion.position.x = player1Motion.lastPos.x;
-        player2Motion.position.x = player2Motion.lastPos.x;
+        // Neither player is on top of another
+        if (playerOnTop == 0) {
+            std::cout << "0" << std::endl;
+            player1Motion.position.x = player1Motion.lastPos.x;
+            player2Motion.position.x = player2Motion.lastPos.x;
+        }
+        // Player one is on top
+        else if (playerOnTop == 1 && !player2Motion.inAir) {
+            if (player1Motion.direction) {
+                player1Motion.position = { player1Motion.lastPos.x - 0.05, player1Motion.lastPos.y };
+            }
+            else {
+                player1Motion.position = { player1Motion.lastPos.x + 0.05, player1Motion.lastPos.y };
+            }
+        }
+        // Player two is on top
+        else if (playerOnTop == 2 && !player1Motion.inAir) {
+            if (player2Motion.direction) {
+                player2Motion.position = { player2Motion.lastPos.x - 0.05, player2Motion.lastPos.y };
+            }
+            else {
+                player2Motion.position = { player2Motion.lastPos.x + 0.05, player2Motion.lastPos.y };
+            }
+        }
     }
 }

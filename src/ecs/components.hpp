@@ -162,12 +162,12 @@ struct Box
 
     virtual float getTop(const vec2 &playerPosition, bool facingRight) const
     {
-        return playerPosition.y + yOffset + height / 2;
+        return playerPosition.y + yOffset + height;
     }
 
     virtual float getBottom(const vec2 &playerPosition, bool facingRight) const
     {
-        return playerPosition.y + yOffset - height / 2;
+        return playerPosition.y - yOffset - height;
     }
 };
 
