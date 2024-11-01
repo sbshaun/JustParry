@@ -34,6 +34,7 @@ WorldSystem::WorldSystem() {};
 
 WorldSystem::~WorldSystem()
 {
+    // Clear all components first
     registry.clear_all_components();
 }
 

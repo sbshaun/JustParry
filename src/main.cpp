@@ -199,8 +199,10 @@ int main()
         glWindow.windowSwapBuffers();
     }
 
-    // Cleanup
-    renderer.shutdown();
-    glWindow.windowShutdown();
+    // Cleanup in correct order
+    registry.clear_all_components(); // Clear ECS components first
+    renderer.shutdown();             // Then shutdown renderer
+    glWindow.windowShutdown();       // Finally close window
+
     return 0;
 }

@@ -242,3 +242,27 @@ Entity createFloor(float val, int type)
 
     return floor;
 }
+
+// Add cleanup function
+void cleanupShaders(Entity entity)
+{
+    if (registry.renderable.has(entity))
+    {
+        Renderable &renderable = registry.renderable.get(entity);
+        delete renderable.shader;
+    }
+
+    // Clean up debug render shaders
+    for (Entity &debugEntity : registry.debugRenders.entities)
+    {
+        HitboxRender &hitboxRender = registry.debugRenders.get(debugEntity);
+        delete hitboxRender.shader;
+    }
+
+    // Clean up static render shaders
+    for (Entity &staticEntity : registry.staticRenders.entities)
+    {
+        StaticRender &staticRender = registry.staticRenders.get(staticEntity);
+        delete staticRender.shader;
+    }
+}

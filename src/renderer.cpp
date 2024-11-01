@@ -534,46 +534,134 @@ void GlRender::renderTexturedQuad(GLuint texture)
 
 void GlRender::shutdown()
 {
+    // Delete all shaders first
+    for (Entity entity : registry.debugRenders.entities)
+    {
+        if (registry.debugRenders.has(entity))
+        {
+            HitboxRender &hitboxRender = registry.debugRenders.get(entity);
+            if (hitboxRender.shader)
+            {
+                delete hitboxRender.shader;
+                hitboxRender.shader = nullptr;
+            }
+        }
+    }
+
+    for (Entity entity : registry.staticRenders.entities)
+    {
+        if (registry.staticRenders.has(entity))
+        {
+            StaticRender &staticRender = registry.staticRenders.get(entity);
+            if (staticRender.shader)
+            {
+                delete staticRender.shader;
+                staticRender.shader = nullptr;
+            }
+        }
+    }
+
+    for (Entity entity : registry.renderable.entities)
+    {
+        if (registry.renderable.has(entity))
+        {
+            Renderable &renderable = registry.renderable.get(entity);
+            if (renderable.shader)
+            {
+                delete renderable.shader;
+                renderable.shader = nullptr;
+            }
+        }
+    }
+
+    // Delete textures
+    glDeleteTextures(1, &m_bird_texture);
+    glDeleteTextures(1, &m_bird_p_texture);
+    glDeleteTextures(1, &m_backgroundTexture);
+
+    // Delete text objects
+    if (m_fps)
+    {
+        gltDeleteText(m_fps);
+        m_fps = nullptr;
+    }
+    if (m_loadingText)
+    {
+        gltDeleteText(m_loadingText);
+        m_loadingText = nullptr;
+    }
+    if (m_restart)
+    {
+        gltDeleteText(m_restart);
+        m_restart = nullptr;
+    }
     if (m_timerText)
     {
         gltDeleteText(m_timerText);
+        m_timerText = nullptr;
     }
     if (m_leftText)
     {
         gltDeleteText(m_leftText);
+        m_leftText = nullptr;
     }
     if (m_rightText)
     {
         gltDeleteText(m_rightText);
-    }
-    if (h1)
-    {
-        gltDeleteText(h1);
-    }
-    if (h2)
-    {
-        gltDeleteText(h2);
-    }
-    if (time)
-    {
-        gltDeleteText(time);
+        m_rightText = nullptr;
     }
     if (m_roundOver)
     {
         gltDeleteText(m_roundOver);
+        m_roundOver = nullptr;
     }
-    if (m_fps)
+    if (h1)
     {
-        gltDeleteText(m_fps);
+        gltDeleteText(h1);
+        h1 = nullptr;
+    }
+    if (h2)
+    {
+        gltDeleteText(h2);
+        h2 = nullptr;
+    }
+    if (time)
+    {
+        gltDeleteText(time);
+        time = nullptr;
+    }
+    if (over)
+    {
+        gltDeleteText(over);
+        over = nullptr;
+    }
+    if (won)
+    {
+        gltDeleteText(won);
+        won = nullptr;
     }
     if (score1)
+    {
         gltDeleteText(score1);
+        score1 = nullptr;
+    }
     if (score2)
+    {
         gltDeleteText(score2);
+        score2 = nullptr;
+    }
     if (score1Label)
+    {
         gltDeleteText(score1Label);
+        score1Label = nullptr;
+    }
     if (score2Label)
+    {
         gltDeleteText(score2Label);
+        score2Label = nullptr;
+    }
+
+    // Shutdown GLText last
     gltTerminate();
 
     std::cout << "Resources cleaned up." << std::endl;
