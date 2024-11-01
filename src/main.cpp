@@ -199,19 +199,18 @@ int main()
     bool bKeyPressed = false;
     bool botEnabled = BOT_ENABLED; // Initialize with the default value
 
-    // Define the target frame duration (in milliseconds)
+    // Define the target logic duration (in milliseconds)
     
     //1000hz = 1ms
     //240hz = 4> X >1
     //120hz = 4ms
     //Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
     //60hz = 16.66ms
-    const float targetLogicDuration = 1000 / 120; // denominator logic+input checks per second
-    const float targetFrameDuration = 1000 / 60; // 60 FPS
-        
-    double frameTimer = 100.0;
-    auto lastFrameTime = std::chrono::high_resolution_clock::now();
-
+    const int targetLogicRate = 120;
+    const float targetLogicDuration = 1000 / targetLogicRate; // denominator is logic+input checks per second
+    const float targetFrameRate = targetLogicRate / 60; // The number of logic loops that would result in 60fps
+    //IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH RATE BUT NOT SURE HOW TO GET THAT
+    int loopsSinceLastFrame = 0;
     //// END INITS ////
 
      // Main loop
@@ -264,42 +263,40 @@ int main()
 
         case GameState::PLAYING:
             {
-            // Calculate the elapsed time since the last frame
-            auto currentFrameTime = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> sinceLast = currentFrameTime - lastFrameTime;
-            lastFrameTime = currentFrameTime;
-            // Increase frameTimer by the elapsed time
-            frameTimer += sinceLast.count();
-
-            if(frameTimer >= targetFrameDuration){ //Only do certain checks each frame rather than every loop
-                std::cout << frameTimer << "FRAME TIME" << std::endl;
-                frameTimer = 0; //reset timer 
-                
+            if(loopsSinceLastFrame == targetFrameRate){ //Only do certain checks each frame rather than every loop
+                std::cout << "RENDER CALL" << std::endl;
+                loopsSinceLastFrame = 0;
                 renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
                 
-                worldSystem.movementProcessing(); //PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
-                worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-                worldSystem.hitBoxCollisions(); 
-
-                checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
-                toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
-                toggleBot(botEnabled, bKeyPressed, glWindow);
                 glWindow.windowSwapBuffers();
             }
+
+            loopsSinceLastFrame++;
+        
+            worldSystem.movementProcessing(); //PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
+            worldSystem.hitBoxCollisions(); 
             worldSystem.inputProcessing(timer); //What are we passing a timer in for?
             physics.step();
             worldSystem.playerCollisions(&renderer);
+            toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
+            toggleBot(botEnabled, bKeyPressed, glWindow);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
 
             //time the next logic check
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> MainLoopIterTime = end - start;
+            std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
             // Calculate the remaining time to sleep
-            int sleepDuration = targetLogicDuration - static_cast<int>(MainLoopIterTime.count());
+            int sleepDuration = targetLogicDuration - static_cast<int>(FastLoopIterTime.count());
             if (sleepDuration > 0)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
             }
+
+            auto actualEnd = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> MainLoopIterTime = actualEnd - start;
+            std::cout << "Actual loop duration: " << MainLoopIterTime.count() << " ms" << std::endl;
 
             }
             break;
