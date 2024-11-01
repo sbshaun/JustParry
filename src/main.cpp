@@ -189,7 +189,7 @@ int main()
 
     // for fps toggle
     bool showFPS = false;
-    bool fKeyPressed = true;
+    bool fKeyPressed = false;
 
     // Declare motion variables outside switch
     Motion *m1_ptr = nullptr;
@@ -281,9 +281,11 @@ int main()
             worldSystem.inputProcessing(timer); //What are we passing a timer in for?
             physics.step();
             worldSystem.playerCollisions(&renderer);
+
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+
             toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
             toggleBot(botEnabled, bKeyPressed, glWindow);
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
 
             //time the next logic check
             auto end = std::chrono::steady_clock ::now();
