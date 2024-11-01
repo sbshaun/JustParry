@@ -4,6 +4,9 @@
 #include "../fps/fps.hpp"
 #include "../window.hpp"
 
+// Forward declarations
+class WorldSystem;
+
 // Utility key definitions
 struct UtilityKeys
 {
@@ -17,7 +20,8 @@ struct UtilityKeys
 // Utility input handling functions
 inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnabled,
                                 bool &fKeyPressed, bool &bKeyPressed, bool &hKeyPressed,
-                                GLWindow &glWindow, FPSCounter &fpsCounter, bool &shouldExit)
+                                GLWindow &glWindow, FPSCounter &fpsCounter, bool &shouldExit,
+                                WorldSystem &worldSystem)
 {
     // Debug mode toggle
     if (glfwGetKey(glWindow.window, UtilityKeys::DEBUG_TOGGLE) == GLFW_PRESS)
@@ -56,6 +60,7 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
         if (!bKeyPressed)
         {
             botEnabled = !botEnabled;
+            worldSystem.botEnabled = botEnabled;
             bKeyPressed = true;
             std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
         }

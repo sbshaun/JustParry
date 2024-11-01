@@ -1,92 +1,150 @@
 #include "bot.hpp"
 #include <iostream>
 
-enum BotState {
-    JUMPING,
-    MOVING_LEFT,
-    MOVING_RIGHT,
-    STAND
+enum BotState
+{
+    IDLE,
+    MOVE_LEFT,
+    MOVE_RIGHT,
+    ATTACK,
+    JUMP
 };
 
 static int actionCounter = 0;
-static BotState currentState = JUMPING;
+static BotState currentState = IDLE;
 
-BotState randNextState(){
-    int rng = rand() % 4;
-    switch (rng){
-        case 0:
-            return JUMPING;
-        case 1:
-            return MOVING_RIGHT;
-        case 2:
-            return MOVING_LEFT;
-        case 3:
-        default: 
-            return STAND;
+BotState pickRandomAction()
+{
+    int rng = rand() % 100;
+
+    // More aggressive action distribution
+    if (rng < 35)
+    { // 35% chance to move
+        return (rand() % 2 == 0) ? MOVE_LEFT : MOVE_RIGHT;
+    }
+    else if (rng < 65)
+    { // 30% chance to attack
+        return ATTACK;
+    }
+    else if (rng < 85)
+    { // 20% chance to jump
+        return JUMP;
+    }
+    else
+    { // 15% chance to idle
+        return IDLE;
     }
 }
 
-void Bot::pollBotRng(GlRender& renderer) {
-    PlayerInput& player2Input = registry.playerInputs.get(renderer.m_player2);
-    Motion& player2Motion = registry.motions.get(renderer.m_player2);
+void Bot::pollBotRng(GlRender &renderer)
+{
+    Entity player2 = renderer.m_player2;
+    PlayerInput &player2Input = registry.playerInputs.get(player2);
+    Motion &player2Motion = registry.motions.get(player2);
+    PlayerCurrentState &state = registry.playerCurrentStates.get(player2);
 
-    // Reset inputs each frame
+    // Reset inputs
     player2Input = PlayerInput();
 
-    // If the bot is in the air, skip movement logic
-    if (player2Motion.inAir) {
-        return;  
+    // Don't take actions if stunned
+    if (state.currentState == PlayerState::STUNNED)
+    {
+        return;
     }
 
-    // Bot action state machine
-    switch (currentState) {
-    case JUMPING:
-        if (actionCounter == 0 || actionCounter == 60) {
-            player2Input.up = true;  // Trigger jump
-            actionCounter = 60;  // Set duration for the jump state (1 second for the jump)
-            std::cout << "Bot is jumping" << std::endl;
-        }
-        actionCounter--;
+    // Get player positions for distance-based decisions
+    Motion &player1Motion = registry.motions.get(renderer.m_player1);
+    float distance = abs(player1Motion.position.x - player2Motion.position.x);
 
-        if (actionCounter == 0) {
-            //randomly choose a state and a duration
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState();
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+    // Decrement action counter
+    actionCounter--;
+
+    // Pick new action if counter expires
+    if (actionCounter <= 0)
+    {
+        // More likely to attack when close to player
+        if (distance < 0.3f && rand() % 2 == 0)
+        {
+            currentState = ATTACK;
+            actionCounter = 20;
+        }
+        else
+        {
+            currentState = pickRandomAction();
+            actionCounter = 30 + (rand() % 30); // Random duration between 30-60 frames
+        }
+    }
+
+    // Execute current action
+    switch (currentState)
+    {
+    case MOVE_LEFT:
+        player2Input.left = true;
+        // Sometimes attack while moving
+        if (distance < 0.3f && rand() % 20 == 0)
+        {
+            player2Input.punch = true;
+        }
+        break;
+
+    case MOVE_RIGHT:
+        player2Input.right = true;
+        // Sometimes attack while moving
+        if (distance < 0.3f && rand() % 20 == 0)
+        {
+            player2Input.kick = true;
         }
         break;
 
-    case MOVING_LEFT:
-        player2Input.left = true;  // Move left
-        actionCounter--;
-
-        if (actionCounter == 0) {
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState();
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+    case ATTACK:
+        if (state.currentState != PlayerState::ATTACKING)
+        {
+            // Mix up attacks
+            if (rand() % 3 == 0)
+            {
+                player2Input.kick = true;
+            }
+            else
+            {
+                player2Input.punch = true;
+            }
+            actionCounter = 15; // Short attack duration
         }
         break;
 
-    case MOVING_RIGHT:
-        player2Input.right = true;  // Move right
-        actionCounter--;
-
-        if (actionCounter == 0) {
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState(); 
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+    case JUMP:
+        if (!player2Motion.inAir)
+        {
+            player2Input.up = true;
+            // Sometimes attack while jumping
+            if (rand() % 3 == 0)
+            {
+                player2Input.punch = (rand() % 2 == 0);
+                player2Input.kick = !player2Input.punch;
+            }
         }
         break;
-    case STAND:
-        player2Input.right = false;
-        player2Input.left = false;
-        player2Input.up = false;
-        actionCounter--;
-        if (actionCounter == 0) {
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState(); 
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+
+    case IDLE:
+        // During idle, check if should chase player
+        if (distance > 0.4f)
+        {
+            currentState = (player2Motion.position.x < player1Motion.position.x) ? MOVE_RIGHT : MOVE_LEFT;
+            actionCounter = 30;
+        }
+        break;
+    }
+
+    // Override behavior to chase if too far from player
+    if (distance > 0.5f && state.currentState != PlayerState::ATTACKING)
+    {
+        player2Input.left = (player2Motion.position.x > player1Motion.position.x);
+        player2Input.right = !player2Input.left;
+
+        // Maybe jump while chasing
+        if (!player2Motion.inAir && rand() % 20 == 0)
+        {
+            player2Input.up = true;
         }
     }
 }
-

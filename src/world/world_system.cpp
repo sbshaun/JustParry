@@ -128,30 +128,64 @@ void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, S
 
 void WorldSystem::handleInput()
 {
+    // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
-    if (!BOT_ENABLED)
+
+    // For Player 2, either handle manual input or bot input
+    if (!botEnabled)
+    {
         player2InputHandler->handleInput(renderer->m_player2, *player2StateMachine);
+    }
+    else
+    {
+        // Process bot's inputs through the state machine
+        PlayerInput &p2Input = registry.playerInputs.get(renderer->m_player2);
+
+        // Convert bot inputs to state machine transitions
+        if (p2Input.left || p2Input.right)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::WALKING);
+        if (p2Input.up)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::JUMPING);
+        if (p2Input.punch || p2Input.kick)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
+
+        // Update motion based on inputs
+        Motion &p2Motion = registry.motions.get(renderer->m_player2);
+        if (p2Input.left)
+            p2Motion.velocity.x = -MOVE_SPEED;
+        else if (p2Input.right)
+            p2Motion.velocity.x = MOVE_SPEED;
+        else
+            p2Motion.velocity.x = 0;
+    }
+
+    // Always update state machines for both players
     player1StateMachine->update(renderer->m_player1, TIME_STEP);
     player2StateMachine->update(renderer->m_player2, TIME_STEP);
 }
 
 void WorldSystem::inputProcessing(int timer)
 {
-    // TODO: manage input based on PlayerState more effectively
     Motion &player1Motion = registry.motions.get(renderer->m_player1);
     Motion &player2Motion = registry.motions.get(renderer->m_player2);
-    // TODO: what are these 2 lines for?
-    // removing them seems to break the player rendering
     player1Motion.lastPos = player1Motion.position;
     player2Motion.lastPos = player2Motion.position;
 
     PlayerInput &player1Input = registry.playerInputs.get(renderer->m_player1);
     PlayerInput &player2Input = registry.playerInputs.get(renderer->m_player2);
+
+    // Process player 1's input
     if (player1Input.punch)
         player1StateMachine->transition(renderer->m_player1, PlayerState::ATTACKING);
-    if (player2Input.punch)
-        player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
-    // TODO: handle up, down, punch, kick
+
+    // Only process player 2's manual input if bot is disabled
+    if (!botEnabled)
+    {
+        if (player2Input.punch)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
+        if (player2Input.kick)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
+    }
 }
 
 void WorldSystem::movementProcessing()

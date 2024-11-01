@@ -182,7 +182,8 @@ int main()
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
             handleUtilityInputs(renderer, showFPS, botEnabled,
                                 fKeyPressed, bKeyPressed, hKeyPressed,
-                                glWindow, fpsCounter, shouldExit);
+                                glWindow, fpsCounter, shouldExit,
+                                worldSystem);
             if (shouldExit)
                 break;
             break;

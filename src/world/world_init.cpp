@@ -46,6 +46,36 @@ static void renderHitbox(Entity &player, bool isPlayer1)
     registry.debugRenders.insert(hitBoxEntity, HitboxRender{hitboxMesh, shader, player});
 }
 
+static void renderHurtbox(Entity &player, bool isPlayer1)
+{
+    HurtBox &hurtBox = registry.hurtBoxes.get(player);
+    FighterConfig config = FighterManager::getFighterConfig(registry.players.get(player).current_char);
+
+    // Set hurtbox dimensions based on fighter config
+    hurtBox.width = config.NDC_WIDTH / 6.0f;
+    hurtBox.height = config.NDC_HEIGHT / 5.0f;
+    hurtBox.xOffset = 0; // Centered on player
+    hurtBox.yOffset = 0;
+
+    // Create vertices for hurtbox visualization
+    std::vector<float> hurtboxVertices = {
+        // First triangle (Top-left, Bottom-left, Bottom-right)
+        -hurtBox.width / 2, hurtBox.height / 2, 0.0f,  // Top-left
+        -hurtBox.width / 2, -hurtBox.height / 2, 0.0f, // Bottom-left
+        hurtBox.width / 2, -hurtBox.height / 2, 0.0f,  // Bottom-right
+
+        // Second triangle (Bottom-right, Top-right, Top-left)
+        hurtBox.width / 2, -hurtBox.height / 2, 0.0f, // Bottom-right
+        hurtBox.width / 2, hurtBox.height / 2, 0.0f,  // Top-right
+        -hurtBox.width / 2, hurtBox.height / 2, 0.0f  // Top-left
+    };
+
+    Entity hurtBoxEntity = Entity();
+    Mesh hurtboxMesh(hurtboxVertices, false);
+    Shader *shader = new Shader(std::string("hitboxes")); // Can reuse hitbox shader
+    registry.debugRenders.insert(hurtBoxEntity, HitboxRender{hurtboxMesh, shader, player});
+}
+
 void setupFighterConfig(Entity entity, const FighterConfig &config)
 {
     Health &health = registry.healths.emplace(entity);
@@ -135,6 +165,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint 
     motion.scale = {0.1, 0.1};
 
     renderHitbox(entity, isPlayer1);
+    renderHurtbox(entity, isPlayer1);
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
 }
