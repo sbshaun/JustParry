@@ -207,8 +207,9 @@ int main()
     //Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
     //60hz = 16.66ms
     const int targetLogicRate = 120;
+    const int targetFPS = 60;
     const float targetLogicDuration = 1000 / targetLogicRate; // denominator is logic+input checks per second
-    const float targetFrameRate = targetLogicRate / 60; // The number of logic loops that would result in 60fps
+    const float FramesPerLogicLoop = targetLogicRate / targetFPS; // The number of logic loops that would result in 60fps
     //IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH RATE BUT NOT SURE HOW TO GET THAT AND CANNOT BE LARGER THAN LOGIC RATE WITH CURRENT IMPLEMENTATION
     int loopsSinceLastFrame = 0;
     //// END INITS ////
@@ -263,7 +264,7 @@ int main()
 
         case GameState::PLAYING:
             {
-            if(loopsSinceLastFrame == targetFrameRate){ //Only do certain checks each frame rather than every loop
+            if(loopsSinceLastFrame == FramesPerLogicLoop){ //Only do certain checks each frame rather than every loop
                 std::cout << "RENDER CALL" << std::endl;
                 loopsSinceLastFrame = 0;
                 renderer.drawUI();
