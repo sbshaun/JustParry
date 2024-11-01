@@ -287,19 +287,19 @@ int main()
             physics.step();
             worldSystem.playerCollisions(&renderer);
 
-            // auto end = std::chrono::high_resolution_clock::now();
-            // std::chrono::duration<double, std::milli> elapsed = end - start;
-            
-            // // Calculate the remaining time to sleep
-            // int sleepDuration = targetLogicDuration - static_cast<int>(elapsed.count());
-            // if (sleepDuration > 0)
-            // {
-            //     std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
-            // }
+            //time the next logic check
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> LogicTimerElapsed = end - start;
+            // Calculate the remaining time to sleep
+            int sleepDuration = targetLogicDuration - static_cast<int>(LogicTimerElapsed.count());
+            if (sleepDuration > 0)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
+            }
 
-            // auto actualEnd = std::chrono::high_resolution_clock::now();
-            // std::chrono::duration<double, std::milli> actualFrameDuration = actualEnd - start;
-            // std::cout << "Actual frame duration: " << actualFrameDuration.count() << " ms" << std::endl;
+            auto actualEnd = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> actualFrameDuration = actualEnd - start;
+            std::cout << "Actual frame duration: " << actualFrameDuration.count() << " ms" << std::endl;
 
             }
             break;
