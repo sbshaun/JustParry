@@ -250,6 +250,8 @@ bool WorldSystem::checkAABBCollision(const Box &box1, const vec2 &position1, boo
                                      const Box &box2, const vec2 &position2, bool facingRight2)
 {
 
+    std::cout << facingRight2 << std::endl;
+
     float box1Left = box1.getLeft(position1, facingRight1);
     float box1Right = box1.getRight(position1, facingRight1);
     float box1Top = box1.getTop(position1, facingRight1);
@@ -262,7 +264,7 @@ bool WorldSystem::checkAABBCollision(const Box &box1, const vec2 &position1, boo
 
     // Perform AABB collision check
     bool x_collision = box1Left < box2Right && box1Right > box2Left;
-    bool y_collision = box1Top > box2Bottom && box1Bottom < box2Top;
+    bool y_collision = box1Top > box2Bottom || box1Bottom < box2Top;
 
     return x_collision && y_collision;
 }
@@ -304,6 +306,8 @@ void WorldSystem::handle_collisions()
 
 void WorldSystem::playerCollisions(GlRender *renderer)
 {
+    std::cout << "hello" << std::endl;
+
     Motion &player1Motion = registry.motions.get(renderer->m_player1);
     Motion &player2Motion = registry.motions.get(renderer->m_player2);
 
@@ -315,7 +319,7 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (collision)
     {
-        player1Motion.position = player1Motion.lastPos;
-        player2Motion.position = player2Motion.lastPos;
+        player1Motion.position.x = player1Motion.lastPos.x;
+        player2Motion.position.x = player2Motion.lastPos.x;
     }
 }
