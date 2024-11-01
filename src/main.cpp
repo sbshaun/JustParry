@@ -209,7 +209,7 @@ int main()
     const int targetLogicRate = 120;
     const float targetLogicDuration = 1000 / targetLogicRate; // denominator is logic+input checks per second
     const float targetFrameRate = targetLogicRate / 60; // The number of logic loops that would result in 60fps
-    //IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH RATE BUT NOT SURE HOW TO GET THAT
+    //IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH RATE BUT NOT SURE HOW TO GET THAT AND CANNOT BE LARGER THAN LOGIC RATE WITH CURRENT IMPLEMENTATION
     int loopsSinceLastFrame = 0;
     //// END INITS ////
 
@@ -287,16 +287,22 @@ int main()
             //time the next logic check
             auto end = std::chrono::steady_clock ::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
+            
             // Calculate the remaining time to sleep
             int sleepDuration = targetLogicDuration - static_cast<int>(FastLoopIterTime.count());
+            // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
             if (sleepDuration > 0)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
+                while (std::chrono::steady_clock::now() < sleepEnd);
             }
-
-            auto actualEnd = std::chrono::steady_clock ::now();
-            std::chrono::duration<double, std::milli> MainLoopIterTime = actualEnd - start;
-            std::cout << "Actual loop duration: " << MainLoopIterTime.count() << " ms" << std::endl;
+            
+            //debug prints
+            // auto actualEnd = std::chrono::steady_clock ::now();
+            // std::chrono::duration<double, std::milli>  ugh = actualEnd - end;
+            // std::cout << "i slept for  for " << ugh.count() << std::endl;
+            // std::chrono::duration<double, std::milli> MainLoopIterTime = actualEnd - start;
+            // std::cout << "Sleep loop duration: " << MainLoopIterTime.count() << " ms" << std::endl;
 
             }
             break;
