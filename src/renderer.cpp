@@ -6,15 +6,49 @@
 
 GlRender::GlRender() {}
 
-GlRender::~GlRender() {}
+GlRender::~GlRender()
+{
+    shutdown();
+}
 
 void GlRender::initialize()
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Load all textures
     loadTextures();
     gltInit();
+
+    // Preload all shaders at initialization
+    std::cout << "\nInitializing shaders..." << std::endl;
+
+    try
+    {
+        // Store debug shader as a member variable instead of static
+        m_debugShader = new Shader("debug");
+        std::cout << "Debug visualization shader loaded" << std::endl;
+
+        m_player1Shader = new Shader("player1");
+        std::cout << "Player 1 shader loaded" << std::endl;
+
+        m_player2Shader = new Shader("player2");
+        std::cout << "Player 2 shader loaded" << std::endl;
+
+        m_floorShader = new Shader("floor");
+        std::cout << "Floor shader loaded" << std::endl;
+
+        m_hitboxShader = new Shader("hitboxes");
+        std::cout << "Hitbox shader loaded" << std::endl;
+
+        std::cout << "All shaders initialized successfully\n"
+                  << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error initializing shaders: " << e.what() << std::endl;
+    }
 }
 
 void GlRender::renderRoundOver(int count)
@@ -266,39 +300,50 @@ void GlRender::handleTexturedRenders()
 
         mesh.draw();
     }
+
+    // Add debug visualization at the end of the function
+    if (debugMode)
+    {
+        // Render hitboxes and hurtboxes for both players
+        if (registry.hitBoxes.has(m_player1))
+        {
+            HitBox &p1HitBox = registry.hitBoxes.get(m_player1);
+            if (p1HitBox.active)
+            {
+                // Bright red for player 1's hitbox
+                renderDebugBoxes(m_player1, p1HitBox, glm::vec3(1.0f, 0.0f, 0.0f));
+            }
+        }
+
+        if (registry.hurtBoxes.has(m_player1))
+        {
+            HurtBox &p1HurtBox = registry.hurtBoxes.get(m_player1);
+            // Cyan for player 1's hurtbox
+            renderDebugBoxes(m_player1, p1HurtBox, glm::vec3(0.0f, 0.8f, 1.0f));
+        }
+
+        if (registry.hitBoxes.has(m_player2))
+        {
+            HitBox &p2HitBox = registry.hitBoxes.get(m_player2);
+            if (p2HitBox.active)
+            {
+                // Orange for player 2's hitbox
+                renderDebugBoxes(m_player2, p2HitBox, glm::vec3(1.0f, 0.5f, 0.0f));
+            }
+        }
+
+        if (registry.hurtBoxes.has(m_player2))
+        {
+            HurtBox &p2HurtBox = registry.hurtBoxes.get(m_player2);
+            // Yellow for player 2's hurtbox
+            renderDebugBoxes(m_player2, p2HurtBox, glm::vec3(1.0f, 1.0f, 0.0f));
+        }
+    }
 }
 
 void GlRender::handleHitboxRenders()
 {
-    for (Entity &hitbox_entity : registry.debugRenders.entities)
-    {
-        HitboxRender &hitboxRender = registry.debugRenders.get(hitbox_entity);
-        Shader *shader = hitboxRender.shader;
-        Mesh &mesh = hitboxRender.mesh;
-
-        Entity &player = hitboxRender.player;
-        HitBox &player_hitBox = registry.hitBoxes.get(player);
-
-        if (player_hitBox.active)
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            Motion &player_motion = registry.motions.get(player);
-            Player &registry_player = registry.players.get(player);
-            shader->use();
-
-            GLint uniformLocation = glGetUniformLocation(shader->m_shaderProgram, "playerPosition");
-            if (uniformLocation == -1)
-            {
-                std::cerr << "Warning: Uniform ' playerPosition ' doesn't exist or isn't used in the shader." << std::endl;
-                return;
-            }
-
-            // Set the uniform value (glUniform3f for vec3)
-            glUniform3f(uniformLocation, player_motion.position.x, player_motion.position.y, 0.0f);
-            mesh.draw();
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
-    }
+    // Empty this function since we're handling hitbox visualization in handleTexturedRenders
 }
 
 void GlRender::handleStaticRenders()
@@ -366,52 +411,71 @@ void GlRender::loadTexture(const std::string &path, GLuint &textureID)
 
 void GlRender::renderUI(int timer)
 {
-    // currently hard coded for two initial entities,
     const auto &playerhealths = registry.healths;
-
     const int p1Health = registry.healths.get(m_player1).currentHealth;
     const int p2Health = registry.healths.get(m_player2).currentHealth;
 
     if (m_timerText && m_leftText && m_rightText && game)
     {
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+
+        // Calculate positions based on window size
+        float centerX = windowWidth / 2.0f;
+        float topY = windowHeight * 0.1f; // 10% from top
+
+        // Player 1 health positions (left side)
+        float p1X = centerX * 0.4f;
+        float healthY = topY;
+        float valueY = topY + 35.0f;
+
+        // Timer positions (center)
+        float timerX = centerX - 20.0f;
+        float timerValueX = centerX - 10.0f;
+
+        // Player 2 health positions (right side)
+        float p2X = centerX * 1.6f;
+
+        // Score positions
+        float scoreY = topY + 75.0f;
+
+        // Set up text
         std::stringstream ss;
         ss << timer;
-        // update timer,
         gltSetText(time, ss.str().c_str());
 
-        // player 1 health update
         std::string strH1 = std::to_string(p1Health);
         gltSetText(h1, strH1.c_str());
 
-        // player 2 health update
         std::string strH2 = std::to_string(p2Health);
         gltSetText(h2, strH2.c_str());
 
         gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
+        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        // Draw Player 1 health text
-        gltDrawText2D(m_leftText, 100, 65, 1.5f);
-        gltDrawText2D(h1, 140, 100, 2.f);
+        // Draw Player 1 health text and value
+        gltDrawText2D(m_leftText, p1X, healthY, 1.5f);
+        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f);
 
-        // Draw timer text
-        gltDrawText2D(m_timerText, 480, 70, 1.5f);
-        gltDrawText2D(time, 490, 100, 2.5f);
+        // Draw timer text and value
+        gltDrawText2D(m_timerText, timerX, healthY, 1.5f);
+        gltDrawText2D(time, timerValueX, valueY, 2.5f);
 
-        // Draw Player 2 health text
-        gltDrawText2D(m_rightText, 800, 70, 1.5f);
-        gltDrawText2D(h2, 840, 100, 2.f);
+        // Draw Player 2 health text and value
+        gltDrawText2D(m_rightText, p2X, healthY, 1.5f);
+        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f);
 
-        // Render scores below health with adjusted positioning
-        gltDrawText2D(score1Label, 110, 140, 1.5f); // Below P1 health
+        // Draw scores
+        gltDrawText2D(score1Label, p1X, scoreY, 1.5f);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, 195, 140, 1.5f); // Adjusted X position to be after "SCORE: "
+        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f);
 
-        gltDrawText2D(score2Label, 810, 140, 1.5f); // Below P2 health
+        gltDrawText2D(score2Label, p2X, scoreY, 1.5f);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, 895, 140, 1.5f); // Adjusted X position to be after "SCORE: "
+        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f);
 
         gltEndDraw();
     }
@@ -484,49 +548,150 @@ void GlRender::renderTexturedQuad(GLuint texture)
 
 void GlRender::shutdown()
 {
+    // Delete all shaders first
+    for (Entity entity : registry.debugRenders.entities)
+    {
+        if (registry.debugRenders.has(entity))
+        {
+            HitboxRender &hitboxRender = registry.debugRenders.get(entity);
+            if (hitboxRender.shader)
+            {
+                delete hitboxRender.shader;
+                hitboxRender.shader = nullptr;
+            }
+        }
+    }
+
+    for (Entity entity : registry.staticRenders.entities)
+    {
+        if (registry.staticRenders.has(entity))
+        {
+            StaticRender &staticRender = registry.staticRenders.get(entity);
+            if (staticRender.shader)
+            {
+                delete staticRender.shader;
+                staticRender.shader = nullptr;
+            }
+        }
+    }
+
+    for (Entity entity : registry.renderable.entities)
+    {
+        if (registry.renderable.has(entity))
+        {
+            Renderable &renderable = registry.renderable.get(entity);
+            if (renderable.shader)
+            {
+                delete renderable.shader;
+                renderable.shader = nullptr;
+            }
+        }
+    }
+
+    // Delete textures
+    glDeleteTextures(1, &m_bird_texture);
+    glDeleteTextures(1, &m_bird_p_texture);
+    glDeleteTextures(1, &m_backgroundTexture);
+
+    // Delete text objects
+    if (m_fps)
+    {
+        gltDeleteText(m_fps);
+        m_fps = nullptr;
+    }
+    if (m_loadingText)
+    {
+        gltDeleteText(m_loadingText);
+        m_loadingText = nullptr;
+    }
+    if (m_restart)
+    {
+        gltDeleteText(m_restart);
+        m_restart = nullptr;
+    }
     if (m_timerText)
     {
         gltDeleteText(m_timerText);
+        m_timerText = nullptr;
     }
     if (m_leftText)
     {
         gltDeleteText(m_leftText);
+        m_leftText = nullptr;
     }
     if (m_rightText)
     {
         gltDeleteText(m_rightText);
-    }
-    if (h1)
-    {
-        gltDeleteText(h1);
-    }
-    if (h2)
-    {
-        gltDeleteText(h2);
-    }
-    if (time)
-    {
-        gltDeleteText(time);
+        m_rightText = nullptr;
     }
     if (m_roundOver)
     {
         gltDeleteText(m_roundOver);
+        m_roundOver = nullptr;
     }
-    if (m_fps)
+    if (h1)
     {
-        gltDeleteText(m_fps);
+        gltDeleteText(h1);
+        h1 = nullptr;
+    }
+    if (h2)
+    {
+        gltDeleteText(h2);
+        h2 = nullptr;
+    }
+    if (time)
+    {
+        gltDeleteText(time);
+        time = nullptr;
+    }
+    if (over)
+    {
+        gltDeleteText(over);
+        over = nullptr;
+    }
+    if (won)
+    {
+        gltDeleteText(won);
+        won = nullptr;
     }
     if (score1)
+    {
         gltDeleteText(score1);
+        score1 = nullptr;
+    }
     if (score2)
+    {
         gltDeleteText(score2);
+        score2 = nullptr;
+    }
     if (score1Label)
+    {
         gltDeleteText(score1Label);
+        score1Label = nullptr;
+    }
     if (score2Label)
+    {
         gltDeleteText(score2Label);
+        score2Label = nullptr;
+    }
+
+    // Shutdown GLText last
     gltTerminate();
 
     std::cout << "Resources cleaned up." << std::endl;
+
+    // Delete shaders
+    delete m_debugShader;
+    delete m_player1Shader;
+    delete m_player2Shader;
+    delete m_floorShader;
+    delete m_hitboxShader;
+
+    m_debugShader = nullptr;
+    m_player1Shader = nullptr;
+    m_player2Shader = nullptr;
+    m_floorShader = nullptr;
+    m_hitboxShader = nullptr;
 }
 
 void GlRender::renderButton(float x, float y, float width, float height, const char *text,
@@ -862,4 +1027,74 @@ void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float 
         glEnable(GL_DEPTH_TEST);
     }
     glDepthFunc(currentDepthFunc);
+}
+
+void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color)
+{
+    if (!m_debugShader)
+    {
+        std::cerr << "Debug shader not initialized!" << std::endl;
+        return;
+    }
+
+    Motion &motion = registry.motions.get(entity);
+
+    // Calculate box vertices in world space
+    float left = box.getLeft(motion.position, motion.direction);
+    float right = box.getRight(motion.position, motion.direction);
+    float top = box.getTop(motion.position, motion.direction);
+    float bottom = box.getBottom(motion.position, motion.direction);
+
+    // Create vertices for the box outline
+    float vertices[] = {
+        left, top, 0.0f,     // Top-left
+        right, top, 0.0f,    // Top-right
+        right, bottom, 0.0f, // Bottom-right
+        left, bottom, 0.0f   // Bottom-left
+    };
+
+    // Create and bind VAO/VBO with RAII-style cleanup
+    GLuint VAO = 0, VBO = 0;
+    try
+    {
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+
+        // Use debug shader
+        m_debugShader->use();
+        m_debugShader->setVec3("color", color);
+
+        // Save current line width
+        GLfloat oldLineWidth;
+        glGetFloatv(GL_LINE_WIDTH, &oldLineWidth);
+
+        // Set line width for debug boxes
+        glLineWidth(1.0f);
+
+        // Draw box outline
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+        // Restore previous line width
+        glLineWidth(oldLineWidth);
+
+        // Cleanup
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+    }
+    catch (...)
+    {
+        // Ensure cleanup even if an error occurs
+        if (VAO)
+            glDeleteVertexArrays(1, &VAO);
+        if (VBO)
+            glDeleteBuffers(1, &VBO);
+        throw;
+    }
 }

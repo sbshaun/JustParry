@@ -69,16 +69,18 @@ struct PlayerCurrentState
     PlayerState currentState = PlayerState::IDLE;
 };
 
-// AI opponent 
-struct Opponent {
-    int level; // increase difficulty by increasing level. 
-    Fighters current_char; 
+// AI opponent
+struct Opponent
+{
+    int level; // increase difficulty by increasing level.
+    Fighters current_char;
 };
 
-struct Health {
+struct Health
+{
     float maxHealth;
-    float currentHealth; 
-    // float recoverRate; // optional, health recover after x seconds of not being hit. 
+    float currentHealth;
+    // float recoverRate; // optional, health recover after x seconds of not being hit.
 };
 
 struct Motion
@@ -100,10 +102,11 @@ struct StationaryTimer
     float counter_ms = 0.f; // period of time of a player can't move because of stun, or recovery time after actions (e.g. an attack)...
 };
 
-struct PostureBar {
-    int maxBar; // max number of bars. 
-    int currentBar; // remaining bars.  
-    int recoverRate; // how many seconds to recover 1 bar. use int for implicity. 
+struct PostureBar
+{
+    int maxBar;      // max number of bars.
+    int currentBar;  // remaining bars.
+    int recoverRate; // how many seconds to recover 1 bar. use int for implicity.
 };
 
 struct StateTimer
@@ -145,26 +148,16 @@ struct Box
 
     virtual float getLeft(const vec2 &playerPosition, bool facingRight) const
     {
-        if (facingRight)
-        {
-            return playerPosition.x + xOffset;
-        }
-        else
-        {
-            return playerPosition.x + xOffset + width;
-        }
+        // When facing right: hitbox starts at position + xOffset
+        // When facing left: hitbox starts at position - xOffset - width
+        return facingRight ? playerPosition.x + xOffset : playerPosition.x - xOffset - width;
     }
 
     virtual float getRight(const vec2 &playerPosition, bool facingRight) const
     {
-        if (facingRight)
-        {
-            return playerPosition.x + xOffset + width;
-        }
-        else
-        {
-            return playerPosition.x + xOffset;
-        }
+        // When facing right: hitbox ends at position + xOffset + width
+        // When facing left: hitbox ends at position - xOffset
+        return facingRight ? playerPosition.x + xOffset + width : playerPosition.x - xOffset;
     }
 
     virtual float getTop(const vec2 &playerPosition, bool facingRight) const
@@ -196,12 +189,14 @@ struct HurtBox : public Box
     // hurtbox is just same as player's size. TODO
     float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.x - width / 2;
+        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        return playerPosition.x - width / 2 + xOffset;
     }
 
     float getRight(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.x + width / 2;
+        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        return playerPosition.x + width / 2 + xOffset;
     }
 
     float getTop(const vec2 &playerPosition, bool facingRight = true) const override

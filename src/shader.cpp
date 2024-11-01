@@ -3,11 +3,6 @@
 
 std::string Shader::readShaderFile(const std::string &filePath)
 {
-    if ((filePath != "C:/Users/Armaan Sawhney/Desktop/CS/CS427/project/Team25//assets/shaders/menu/vs.glsl") && (filePath != "C:/Users/Armaan Sawhney/Desktop/CS/CS427/project/Team25//assets/shaders/menu/fs.glsl"))
-    {
-        std::cout << "Loading shader filename: " << filePath << std::endl;
-    }
-
     std::ifstream ifs(filePath);
 
     if (!ifs.good())
@@ -18,17 +13,17 @@ std::string Shader::readShaderFile(const std::string &filePath)
 
     std::ostringstream oss;
     oss << ifs.rdbuf();
-
-    if ((filePath != "C:/Users/Armaan Sawhney/Desktop/CS/CS427/project/Team25//assets/shaders/menu/vs.glsl") && (filePath != "C:/Users/Armaan Sawhney/Desktop/CS/CS427/project/Team25//assets/shaders/menu/fs.glsl"))
-    {
-        std::cout << oss.str() << std::endl;
-    }
-
     return oss.str();
 }
 
 Shader::Shader(const std::string &folderPath)
 {
+    static bool firstLoad = true;
+    if (firstLoad)
+    {
+        std::cout << "Loading shader: " << folderPath << std::endl;
+    }
+
     std::string vertexCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/assets/shaders/") + folderPath + std::string("/vs.glsl"));
     std::string fragmentCode = readShaderFile(PROJECT_SOURCE_DIR + std::string("/assets/shaders/") + folderPath + std::string("/fs.glsl"));
     gl_has_errors();
@@ -58,6 +53,7 @@ Shader::Shader(const std::string &folderPath)
     glDeleteShader(fragmentShader);
 
     gl_has_errors();
+    firstLoad = false;
 }
 
 void Shader::use()
@@ -93,6 +89,15 @@ void Shader::setFloat(const std::string &name, float value)
     else
     {
         std::cerr << "Warning: Uniform '" << name << "' doesn't exist or isn't used in the shader." << std::endl;
+    }
+}
+
+void Shader::setVec3(const std::string &name, const glm::vec3 &value)
+{
+    GLint location = glGetUniformLocation(m_shaderProgram, name.c_str());
+    if (location != -1)
+    {
+        glUniform3f(location, value.x, value.y, value.z);
     }
 }
 

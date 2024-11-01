@@ -1,92 +1,185 @@
 #include "bot.hpp"
 #include <iostream>
+#include <functional>
+#include <memory>
+#include <cstdlib>
 
-enum BotState {
-    JUMPING,
-    MOVING_LEFT,
-    MOVING_RIGHT,
-    STAND
+// Bot states with clear priorities
+enum class BotState
+{
+    CHASE,   // Primary state: get in range
+    ATTACK,  // Attack when in range
+    RETREAT, // Back off if too close
+    JUMP,    // Jump occasionally to mix up movement
+    IDLE     // Brief pauses between actions
 };
 
+static BotState currentState = BotState::CHASE;
 static int actionCounter = 0;
-static BotState currentState = JUMPING;
 
-BotState randNextState(){
-    int rng = rand() % 4;
-    switch (rng){
-        case 0:
-            return JUMPING;
-        case 1:
-            return MOVING_RIGHT;
-        case 2:
-            return MOVING_LEFT;
-        case 3:
-        default: 
-            return STAND;
+// Constants for positioning
+const float IDEAL_ATTACK_DISTANCE = 0.3f; // Best distance for attacking
+const float TOO_CLOSE_DISTANCE = 0.2f;    // Distance to start backing off
+const float TOO_FAR_DISTANCE = 0.4f;      // Distance to start chasing
+
+// Helper function to pick next action based on distance
+BotState pickNextAction(float distance)
+{
+    // Always prioritize getting into position
+    if (distance > TOO_FAR_DISTANCE)
+    {
+        return BotState::CHASE;
+    }
+    else if (distance < TOO_CLOSE_DISTANCE)
+    {
+        return BotState::RETREAT;
+    }
+    // When in ideal range, choose an action
+    else
+    {
+        int rng = rand() % 100;
+        if (rng < 40)
+        { // 40% chance to attack when in range (reduced from 60%)
+            return BotState::ATTACK;
+        }
+        else if (rng < 60)
+        { // 20% chance to adjust position
+            return (distance > IDEAL_ATTACK_DISTANCE) ? BotState::CHASE : BotState::RETREAT;
+        }
+        else if (rng < 75)
+        { // 15% chance to jump
+            return BotState::JUMP;
+        }
+        else
+        { // 25% chance to pause (increased from 10%)
+            return BotState::IDLE;
+        }
     }
 }
 
-void Bot::pollBotRng(GlRender& renderer) {
-    PlayerInput& player2Input = registry.playerInputs.get(renderer.m_player2);
-    Motion& player2Motion = registry.motions.get(renderer.m_player2);
+void Bot::pollBotRng(GlRender &renderer)
+{
+    Entity player2 = renderer.m_player2;
+    Entity player1 = renderer.m_player1;
 
-    // Reset inputs each frame
+    PlayerInput &player2Input = registry.playerInputs.get(player2);
+    Motion &player2Motion = registry.motions.get(player2);
+    Motion &player1Motion = registry.motions.get(player1);
+    PlayerCurrentState &state = registry.playerCurrentStates.get(player2);
+
+    // Reset inputs
     player2Input = PlayerInput();
 
-    // If the bot is in the air, skip movement logic
-    if (player2Motion.inAir) {
-        return;  
+    // Don't take actions if stunned
+    if (state.currentState == PlayerState::STUNNED)
+    {
+        return;
     }
 
-    // Bot action state machine
-    switch (currentState) {
-    case JUMPING:
-        if (actionCounter == 0 || actionCounter == 60) {
-            player2Input.up = true;  // Trigger jump
-            actionCounter = 60;  // Set duration for the jump state (1 second for the jump)
-            std::cout << "Bot is jumping" << std::endl;
-        }
-        actionCounter--;
+    // Calculate distance and direction to player 1
+    float distance = abs(player1Motion.position.x - player2Motion.position.x);
+    bool moveLeft = (player2Motion.position.x > player1Motion.position.x);
 
-        if (actionCounter == 0) {
-            //randomly choose a state and a duration
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState();
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+    // Decrement action counter
+    actionCounter--;
+
+    // Pick new action if counter expires or distance changes significantly
+    if (actionCounter <= 0 ||
+        (currentState == BotState::ATTACK && distance > IDEAL_ATTACK_DISTANCE * 1.2f))
+    {
+        currentState = pickNextAction(distance);
+
+        // Set appropriate duration for each action (increased durations)
+        switch (currentState)
+        {
+        case BotState::ATTACK:
+            actionCounter = 45; // Increased from 20
+            break;
+        case BotState::CHASE:
+        case BotState::RETREAT:
+            actionCounter = 60; // Increased from 30
+            break;
+        case BotState::JUMP:
+            actionCounter = 50; // Increased from 40
+            break;
+        case BotState::IDLE:
+            actionCounter = 35; // Increased from 15
+            break;
+        }
+    }
+
+    // Execute current action
+    switch (currentState)
+    {
+    case BotState::CHASE:
+        // Move towards player
+        player2Input.left = moveLeft;
+        player2Input.right = !moveLeft;
+
+        // Maybe jump to close distance faster (reduced frequency)
+        if (!player2Motion.inAir && rand() % 45 == 0)
+        { // Increased from 30
+            player2Input.up = true;
         }
         break;
 
-    case MOVING_LEFT:
-        player2Input.left = true;  // Move left
-        actionCounter--;
-
-        if (actionCounter == 0) {
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState();
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+    case BotState::ATTACK:
+        // Only attack if in good range
+        if (distance <= IDEAL_ATTACK_DISTANCE * 1.2f)
+        {
+            if (rand() % 4 == 0)
+            { // Reduced attack frequency
+                player2Input.kick = true;
+            }
+            else if (rand() % 3 == 0)
+            {
+                player2Input.punch = true;
+            }
+        }
+        else
+        {
+            // If target moved out of range, go back to chasing
+            currentState = BotState::CHASE;
         }
         break;
 
-    case MOVING_RIGHT:
-        player2Input.right = true;  // Move right
-        actionCounter--;
+    case BotState::RETREAT:
+        // Move away from player
+        player2Input.right = moveLeft;
+        player2Input.left = !moveLeft;
 
-        if (actionCounter == 0) {
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState(); 
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+        // Maybe attack while retreating (reduced frequency)
+        if (rand() % 30 == 0)
+        { // Increased from 20
+            player2Input.punch = true;
         }
         break;
-    case STAND:
-        player2Input.right = false;
-        player2Input.left = false;
-        player2Input.up = false;
-        actionCounter--;
-        if (actionCounter == 0) {
-            actionCounter = 10 + rand() % 60;
-            currentState = randNextState(); 
-            std::cout << "Bot will "<< currentState <<" next" << std::endl;
+
+    case BotState::JUMP:
+        if (!player2Motion.inAir)
+        {
+            player2Input.up = true;
+            // Attack during jump if in range (reduced frequency)
+            if (distance <= IDEAL_ATTACK_DISTANCE && rand() % 3 == 0)
+            {
+                player2Input.punch = (rand() % 2 == 0);
+                player2Input.kick = !player2Input.punch;
+            }
         }
+        break;
+
+    case BotState::IDLE:
+        // Longer idle periods
+        break;
+    }
+
+    // Emergency chase if player gets too far away (reduced urgency)
+    if (distance > TOO_FAR_DISTANCE * 1.8f && // Increased from 1.5f
+        state.currentState != PlayerState::ATTACKING &&
+        state.currentState != PlayerState::JUMPING)
+    {
+        player2Input.left = moveLeft;
+        player2Input.right = !moveLeft;
+        currentState = BotState::CHASE;
     }
 }
-
