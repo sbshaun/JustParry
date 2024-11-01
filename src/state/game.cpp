@@ -352,6 +352,8 @@ void Game::updateScores(const Health &h1, const Health &h2)
     }
 }
 
+static Shader *settingsShader = nullptr; // Static shader for settings screen
+
 void Game::renderSettingsScreen(GlRender &renderer)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -365,21 +367,19 @@ void Game::renderSettingsScreen(GlRender &renderer)
     );
 
     // Calculate dimensions for settings box (centered)
-    float settingsBoxWidth = M_WINDOW_WIDTH_PX * 0.7f;   // 70% of window width
-    float settingsBoxHeight = M_WINDOW_HEIGHT_PX * 0.8f; // 80% of window height
+    float settingsBoxWidth = M_WINDOW_WIDTH_PX * 0.7f;
+    float settingsBoxHeight = M_WINDOW_HEIGHT_PX * 0.8f;
     float settingsBoxX = (M_WINDOW_WIDTH_PX - settingsBoxWidth) / 2.0f;
     float settingsBoxY = (M_WINDOW_HEIGHT_PX - settingsBoxHeight) / 2.0f;
 
-    // Draw white rectangle for settings box
-    static Shader *buttonShader = nullptr;
     GLuint VAO = 0, VBO = 0;
 
     try
     {
         // Initialize shader if needed
-        if (!buttonShader)
+        if (!settingsShader)
         {
-            buttonShader = new Shader("menu");
+            settingsShader = new Shader("menu");
         }
 
         // Create vertices for white background (two triangles)
@@ -415,8 +415,9 @@ void Game::renderSettingsScreen(GlRender &renderer)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Use shader and set color
-        buttonShader->use();
-        buttonShader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f)); // White color
+        settingsShader->use();
+        settingsShader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f)); // White color
+        settingsShader->setFloat("brightness", 1.0f);                  // Full brightness
 
         // Draw the white box
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -424,8 +425,8 @@ void Game::renderSettingsScreen(GlRender &renderer)
         // Position close button in top-right corner with padding
         closeButton.width = 50.0f;
         closeButton.height = 50.0f;
-        closeButton.x = settingsBoxX + settingsBoxWidth - closeButton.width - 20.0f; // 20px padding from right
-        closeButton.y = settingsBoxY + 20.0f;                                        // 20px padding from top
+        closeButton.x = settingsBoxX + settingsBoxWidth - closeButton.width - 20.0f;
+        closeButton.y = settingsBoxY + 20.0f;
 
         // Get mouse position and handle close button
         GLFWwindow *window = glfwGetCurrentContext();
@@ -455,9 +456,13 @@ void Game::renderSettingsScreen(GlRender &renderer)
 
     // Cleanup OpenGL resources
     if (VAO)
+    {
         glDeleteVertexArrays(1, &VAO);
+    }
     if (VBO)
+    {
         glDeleteBuffers(1, &VBO);
+    }
 
     // Restore OpenGL state
     glDisable(GL_BLEND);
@@ -491,5 +496,10 @@ bool Game::handleSettingsInput(GLFWwindow *window)
 
 Game::~Game()
 {
-    // Cleanup will be handled by the renderer
+    // Clean up settings shader
+    if (settingsShader)
+    {
+        delete settingsShader;
+        settingsShader = nullptr;
+    }
 }
