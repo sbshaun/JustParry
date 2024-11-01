@@ -199,18 +199,9 @@ int main()
     bool bKeyPressed = false;
     bool botEnabled = BOT_ENABLED; // Initialize with the default value
 
-    // Define the target logic duration (in milliseconds)
+    const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE; // denominator is logic+input checks per second
+    const float FramesPerLogicLoop = TARGET_LOGIC_RATE / TARGET_FPS; // The number of logic loops that would result in 60fps
     
-    //1000hz = 1ms
-    //240hz = 4> X >1
-    //120hz = 4ms
-    //Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
-    //60hz = 16.66ms
-    const int targetLogicRate = 120;
-    const int targetFPS = 60;
-    const float targetLogicDuration = 1000 / targetLogicRate; // denominator is logic+input checks per second
-    const float FramesPerLogicLoop = targetLogicRate / targetFPS; // The number of logic loops that would result in 60fps
-    //IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH RATE BUT NOT SURE HOW TO GET THAT AND CANNOT BE LARGER THAN LOGIC RATE WITH CURRENT IMPLEMENTATION
     int loopsSinceLastFrame = 0;
     //// END INITS ////
 
@@ -269,7 +260,7 @@ int main()
                 loopsSinceLastFrame = 0;
                 renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
-                
+                toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 glWindow.windowSwapBuffers();
             }
 
@@ -284,7 +275,7 @@ int main()
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
 
-            toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
+            // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
             toggleBot(botEnabled, bKeyPressed, glWindow);
 
             //time the next logic check

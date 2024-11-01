@@ -11,8 +11,8 @@ FighterConfig& setUpBirdmanConfig() {
     birdmanConfig.POSTURE_MAX = 10;
     birdmanConfig.POSTURE_REGEN = 3;
 
-    birdmanConfig.MOVE_SPEED = 0.005f;
-    birdmanConfig.JUMP_VELOCITY = 0.02f;
+    birdmanConfig.MOVE_SPEED = 0.005f/FPS_LOGIC_FACTOR;
+    birdmanConfig.JUMP_VELOCITY = 0.02f/FPS_LOGIC_FACTOR;
 
     birdmanConfig.HITBOX_DURATION = 500.f;
     birdmanConfig.PUNCH_X_OFFSET = 0.f;
