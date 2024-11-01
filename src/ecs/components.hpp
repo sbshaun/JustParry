@@ -95,6 +95,9 @@ struct Motion
 
     // temp variable to maintain whether character is jumping or not
     bool inAir = false;
+
+    bool wasAbove = false;
+    bool above = false;
 };
 
 struct StationaryTimer

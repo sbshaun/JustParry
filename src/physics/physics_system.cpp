@@ -54,6 +54,7 @@ void PhysicsSystem::step() {
 						playerMotion.position = {playerMotion.lastPos.x, boundary.val + config.NDC_HEIGHT / 2.0f};
 						playerMotion.velocity.y = 0.0f;
 						playerMotion.inAir = false;
+						playerMotion.above = false;
 					}
 				}
 			}
