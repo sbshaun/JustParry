@@ -302,7 +302,7 @@ bool WorldSystem::checkAABBCollision(const Box &box1, const vec2 &position1, boo
 
     // Perform AABB collision check
     bool x_collision = box1Left < box2Right && box1Right > box2Left;
-    bool y_collision = box1Top > box2Bottom || box1Bottom < box2Top;
+    bool y_collision = box1Top > box2Bottom && box1Bottom < box2Top;
 
     return x_collision && y_collision;
 }
