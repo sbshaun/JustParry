@@ -52,22 +52,26 @@ static void renderHurtbox(Entity &player, bool isPlayer1)
     FighterConfig config = FighterManager::getFighterConfig(registry.players.get(player).current_char);
 
     // Set hurtbox dimensions based on fighter config
-    hurtBox.width = config.NDC_WIDTH / 6.0f;
-    hurtBox.height = config.NDC_HEIGHT / 5.0f;
-    hurtBox.xOffset = 0; // Centered on player
-    hurtBox.yOffset = 0;
+    //hurtBox.width = config.NDC_WIDTH / 2;
+    //hurtBox.height = config.NDC_HEIGHT / 2;
+    //hurtBox.xOffset = 0; // Centered on player
+    //hurtBox.yOffset = 0;
+    std::cout << "Hurtbox dimensions: " << hurtBox.width << ", " << hurtBox.height << std::endl;
+
+    float hurtbox_width = hurtBox.width;
+	float hurtbox_height = hurtBox.height;
 
     // Create vertices for hurtbox visualization
     std::vector<float> hurtboxVertices = {
         // First triangle (Top-left, Bottom-left, Bottom-right)
-        -hurtBox.width / 2, hurtBox.height / 2, 0.0f,  // Top-left
-        -hurtBox.width / 2, -hurtBox.height / 2, 0.0f, // Bottom-left
-        hurtBox.width / 2, -hurtBox.height / 2, 0.0f,  // Bottom-right
+        -hurtbox_width, -hurtbox_height, 0.0f,  // Top-left
+        -hurtbox_width, hurtbox_height, 0.0f, // Bottom-left
+        hurtbox_width, hurtbox_height, 0.0f,  // Bottom-right
 
         // Second triangle (Bottom-right, Top-right, Top-left)
-        hurtBox.width / 2, -hurtBox.height / 2, 0.0f, // Bottom-right
-        hurtBox.width / 2, hurtBox.height / 2, 0.0f,  // Top-right
-        -hurtBox.width / 2, hurtBox.height / 2, 0.0f  // Top-left
+        hurtbox_width, hurtbox_height, 0.0f, // Bottom-right
+        hurtbox_width, -hurtbox_height, 0.0f,  // Top-right
+        -hurtbox_width, -hurtbox_height, 0.0f  // Top-left
     };
 
     Entity hurtBoxEntity = Entity();
