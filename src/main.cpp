@@ -157,6 +157,15 @@ int main()
             }
             break;
 
+        case GameState::SETTINGS:
+            game.generateBackground(FLOOR_Y, renderer);
+            game.renderSettingsScreen(renderer);
+            if (game.handleSettingsInput(glWindow.window))
+            {
+                game.setState(GameState::MENU);
+            }
+            break;
+
         case GameState::ROUND_START:
             renderer.initializeUI();
             interp_moveEntitesToScreen(renderer);

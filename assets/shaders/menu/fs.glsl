@@ -1,11 +1,17 @@
 #version 330 core
 out vec4 FragColor;
 in vec2 TexCoord;
+
+uniform vec3 color;
 uniform sampler2D texture1;
-uniform float brightness = 1.0;
+uniform float brightness;
 
 void main()
 {
-    vec4 texColor = texture(texture1, TexCoord);
-    FragColor = vec4(texColor.rgb * brightness, texColor.a);
+    if (textureSize(texture1, 0).x > 0) {
+        vec4 texColor = texture(texture1, TexCoord);
+        FragColor = vec4(texColor.rgb * brightness, texColor.a);
+    } else {
+        FragColor = vec4(color, 1.0);
+    }
 }
