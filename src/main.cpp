@@ -200,11 +200,16 @@ int main()
     bool botEnabled = BOT_ENABLED; // Initialize with the default value
 
     // Define the target frame duration (in milliseconds)
-    const float targetLogicDuration = 1000 / 240; // 240 logic+input checks per second
-    const float targetFrameDuration = 1000/ 60; // 60 FPS
-        //Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
-
-    double frameTimer = 0.0;
+    
+    //1000hz = 1ms
+    //240hz = 4> X >1
+    //120hz = 4ms
+    //Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
+    //60hz = 16.66ms
+    const float targetLogicDuration = 1000 / 120; // denominator logic+input checks per second
+    const float targetFrameDuration = 1000 / 60; // 60 FPS
+        
+    double frameTimer = 100.0;
     auto lastFrameTime = std::chrono::high_resolution_clock::now();
 
     //// END INITS ////
@@ -261,11 +266,10 @@ int main()
             {
             // Calculate the elapsed time since the last frame
             auto currentFrameTime = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> elapsed = currentFrameTime - lastFrameTime;
+            std::chrono::duration<double, std::milli> sinceLast = currentFrameTime - lastFrameTime;
             lastFrameTime = currentFrameTime;
-
             // Increase frameTimer by the elapsed time
-            frameTimer += elapsed.count();
+            frameTimer += sinceLast.count();
 
             if(frameTimer >= targetFrameDuration){ //Only do certain checks each frame rather than every loop
                 std::cout << frameTimer << "FRAME TIME" << std::endl;
@@ -289,17 +293,13 @@ int main()
 
             //time the next logic check
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> LogicTimerElapsed = end - start;
+            std::chrono::duration<double, std::milli> MainLoopIterTime = end - start;
             // Calculate the remaining time to sleep
-            int sleepDuration = targetLogicDuration - static_cast<int>(LogicTimerElapsed.count());
+            int sleepDuration = targetLogicDuration - static_cast<int>(MainLoopIterTime.count());
             if (sleepDuration > 0)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
             }
-
-            auto actualEnd = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> actualFrameDuration = actualEnd - start;
-            std::cout << "Actual frame duration: " << actualFrameDuration.count() << " ms" << std::endl;
 
             }
             break;
