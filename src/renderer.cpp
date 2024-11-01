@@ -417,25 +417,30 @@ void GlRender::renderUI(int timer)
 
     if (m_timerText && m_leftText && m_rightText && game)
     {
-        // Calculate positions relative to window size
-        float centerX = M_WINDOW_WIDTH_PX / 2.0f;
-        float topY = M_WINDOW_HEIGHT_PX * 0.1f; // 10% from top
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+
+        // Calculate positions based on window size
+        float centerX = windowWidth / 2.0f;
+        float topY = windowHeight * 0.1f; // 10% from top
 
         // Player 1 health positions (left side)
-        float p1X = centerX * 0.4f; // 20% from left
+        float p1X = centerX * 0.4f;
         float healthY = topY;
-        float valueY = topY + 35; // Offset for health value
+        float valueY = topY + 35.0f;
 
         // Timer positions (center)
-        float timerX = centerX - 20; // Slight adjustment for centering
-        float timerValueX = centerX - 10;
+        float timerX = centerX - 20.0f;
+        float timerValueX = centerX - 10.0f;
 
         // Player 2 health positions (right side)
-        float p2X = centerX * 1.6f; // 80% from left
+        float p2X = centerX * 1.6f;
 
         // Score positions
-        float scoreY = topY + 75; // Below health values
+        float scoreY = topY + 75.0f;
 
+        // Set up text
         std::stringstream ss;
         ss << timer;
         gltSetText(time, ss.str().c_str());
@@ -451,7 +456,7 @@ void GlRender::renderUI(int timer)
 
         // Draw Player 1 health text and value
         gltDrawText2D(m_leftText, p1X, healthY, 1.5f);
-        gltDrawText2D(h1, p1X + 40, valueY, 2.f);
+        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f);
 
         // Draw timer text and value
         gltDrawText2D(m_timerText, timerX, healthY, 1.5f);
@@ -459,18 +464,18 @@ void GlRender::renderUI(int timer)
 
         // Draw Player 2 health text and value
         gltDrawText2D(m_rightText, p2X, healthY, 1.5f);
-        gltDrawText2D(h2, p2X + 40, valueY, 2.f);
+        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f);
 
         // Draw scores
         gltDrawText2D(score1Label, p1X, scoreY, 1.5f);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, p1X + 85, scoreY, 1.5f);
+        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f);
 
         gltDrawText2D(score2Label, p2X, scoreY, 1.5f);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, p2X + 85, scoreY, 1.5f);
+        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f);
 
         gltEndDraw();
     }
