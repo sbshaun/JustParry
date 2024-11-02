@@ -172,12 +172,9 @@ void WorldSystem::handleInput()
     player2StateMachine->update(renderer->m_player2, TIME_STEP);
 }
 
-void WorldSystem::inputProcessing(int timer)
+void WorldSystem::inputProcessing()
 {
-    Motion &player1Motion = registry.motions.get(renderer->m_player1);
-    Motion &player2Motion = registry.motions.get(renderer->m_player2);
-    player1Motion.lastPos = player1Motion.position;
-    player2Motion.lastPos = player2Motion.position;
+    // check input queue and resolve
 
     PlayerInput &player1Input = registry.playerInputs.get(renderer->m_player1);
     PlayerInput &player2Input = registry.playerInputs.get(renderer->m_player2);
@@ -200,6 +197,9 @@ void WorldSystem::movementProcessing()
 {
     Motion &player1Motion = registry.motions.get(renderer->m_player1);
     Motion &player2Motion = registry.motions.get(renderer->m_player2);
+
+    player1Motion.lastPos = player1Motion.position;
+    player2Motion.lastPos = player2Motion.position;
 
     PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
     PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);

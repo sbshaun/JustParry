@@ -12,6 +12,7 @@ class StateMachine;
 class WorldSystem
 {
 public:
+	std::queue<Action> inputQueue;
 	WorldSystem();
 	void init(GlRender *renderer);
 	void hitBoxCollisions();
@@ -21,7 +22,7 @@ public:
 
 	// TODO: Handle the movement and collision
 	void handleInput();
-	void inputProcessing(int timer);
+	void inputProcessing();
 	void movementProcessing();
 	void handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine);
 	void updateStateTimers(float elapsed_ms);

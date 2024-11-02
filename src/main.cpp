@@ -219,7 +219,7 @@ int main(){
             worldSystem.movementProcessing(); //PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
             worldSystem.hitBoxCollisions(); 
-            worldSystem.inputProcessing(timer); //What are we passing a timer in for?
+            worldSystem.inputProcessing(); 
             physics.step();
             worldSystem.playerCollisions(&renderer);
 
@@ -236,7 +236,9 @@ int main(){
             if (sleepDuration > 0)
             {
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
-                while (std::chrono::steady_clock::now() < sleepEnd); //Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
+                while (std::chrono::steady_clock::now() < sleepEnd){
+                    worldSystem.inputProcessing();
+                } //Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
             break;
