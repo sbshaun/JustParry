@@ -181,6 +181,7 @@ int main(){
             {
                 game.setState(GameState::MENU);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::ROUND_START:
@@ -252,12 +253,11 @@ int main(){
 
         default:
             std::cerr << "unhandled game state" << std::endl;
-            glWindow.windowSwapBuffers();
-
             handleUtilityInputs(renderer, showFPS, botEnabled,
                                 fKeyPressed, bKeyPressed, hKeyPressed,
                                 glWindow, fpsCounter, shouldExit,
                                 worldSystem);
+            glWindow.windowSwapBuffers();
             if (shouldExit)
                 break;
             break;
