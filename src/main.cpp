@@ -206,6 +206,10 @@ int main(){
                 loopsSinceLastFrame = 0;
                 renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
+                handleUtilityInputs(renderer, showFPS, botEnabled,
+                    fKeyPressed, bKeyPressed, hKeyPressed,
+                    glWindow, fpsCounter, shouldExit,
+                    worldSystem);
                 // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 glWindow.windowSwapBuffers();
             }
@@ -253,10 +257,6 @@ int main(){
 
         default:
             std::cerr << "unhandled game state" << std::endl;
-            handleUtilityInputs(renderer, showFPS, botEnabled,
-                                fKeyPressed, bKeyPressed, hKeyPressed,
-                                glWindow, fpsCounter, shouldExit,
-                                worldSystem);
             glWindow.windowSwapBuffers();
             if (shouldExit)
                 break;
