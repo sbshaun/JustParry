@@ -32,7 +32,7 @@ void PhysicsSystem::step() {
 				{
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position.x = playerMotion.lastPos.x;
+						playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
 					}
 				}
 			}
@@ -42,7 +42,7 @@ void PhysicsSystem::step() {
 				if (playerPos < boundary.val) {
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position.x = playerMotion.lastPos.x;
+						playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
 					}
 				}
 
@@ -51,9 +51,10 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.y - config.NDC_HEIGHT / 2.0f;
 				if (playerPos < boundary.val) {
 					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position = {playerMotion.lastPos.x, boundary.val + config.NDC_HEIGHT / 2.0f};
+						playerMotion.position = { playerMotion.position.x - playerMotion.velocity.x, boundary.val + config.NDC_HEIGHT / 2.0f};
 						playerMotion.velocity.y = 0.0f;
 						playerMotion.inAir = false;
+						playerMotion.above = false;
 					}
 				}
 			}

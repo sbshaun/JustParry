@@ -47,7 +47,7 @@ class InputHandler {
                 }
             }
 
-            if (!moving) {
+            if (!moving && !motion.inAir) {
                 motion.velocity.x = 0.0f;
                 if (state_machine.transition(entity, PlayerState::IDLE)) {
                     PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
