@@ -20,7 +20,7 @@ public:
     void setGameInstance(Game *gameInstance) { game = gameInstance; }
 
     void initialize();
-    void initializeUI();
+    void drawUI();
     void render();
     void renderRoundOver(int count);
     void loadTextures();
