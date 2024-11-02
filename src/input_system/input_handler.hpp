@@ -30,6 +30,7 @@ class InputHandler {
        //CHANGE THIS TO CHECK IF ITS A SYSTEM BUTTON OR A FIGHT INPUT
        //IF A FIGHT INPUT QUEUE IT FOR RESOLUTION
        //NEED A WAY TO DETERMINE P1 OR P2 INPUTS OR ACCEPT SOME AMOUNT OF EACH PER LOGIC LOOP
+       //Deal with predetermined jump arc by allowing you to hold up but change directions on landing
         void handleInput(Entity entity, StateMachine& state_machine) {
             Motion& motion = registry.motions.get(entity);
             bool moving = false;
