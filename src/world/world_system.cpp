@@ -378,13 +378,15 @@ void WorldSystem::playerCollisions(GlRender *renderer)
     {
         // Neither player is on top of another
         if (!player1Motion.wasAbove && !player2Motion.wasAbove) {
-            player1Motion.position.x = player1Motion.lastPos.x;
-            player2Motion.position.x = player2Motion.lastPos.x;
+            player1Motion.position.x = player1Motion.position.x - player1Motion.velocity.x;
+            player2Motion.position.x = player2Motion.position.x - player2Motion.velocity.x;
             player1Motion.velocity.x = 0;
             player2Motion.velocity.x = 0;
+            std::cout << "0" << std::endl;
         }
         // Player one is on top
         else if (player1Motion.wasAbove) {
+            std::cout << "1" << std::endl;
             player1Motion.velocity.x = 0;
             player2Motion.velocity.y = 0;
             if (player1Motion.direction) {
@@ -396,6 +398,7 @@ void WorldSystem::playerCollisions(GlRender *renderer)
         }
         // Player two is on top
         else if (player2Motion.wasAbove) {
+            std::cout << "2" << std::endl;
             player2Motion.velocity.x = 0;
             player1Motion.velocity.y = 0;
             if (player2Motion.direction) {
