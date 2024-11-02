@@ -328,6 +328,13 @@ struct TexturedVertex
     vec2 texcoord;
 };
 
+struct ObjectMesh {
+    static bool loadFromOBJFile(std::string obj_path, std::vector<ColoredVertex>& out_vertices, std::vector<uint16_t>& out_vertex_indices, vec2& out_size);
+    vec2 original_size = { 1,1 };
+    std::vector<ColoredVertex> vertices;
+    std::vector<uint16_t> vertex_indices;
+};
+
 /**
 /**
  * The following enumerators represent global identifiers refering to graphic
@@ -361,14 +368,15 @@ const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
 enum class EFFECT_ASSET_ID
 {
-    EFFECT_COUNT = 0
+    IDLE_BIRD = 0,
+    EFFECT_COUNT = IDLE_BIRD + 1
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
 enum class GEOMETRY_BUFFER_ID
 {
     IDLE_BIRD = 0,
-    GEOMETRY_COUNT = IDLE_BIRD + 1;
+    GEOMETRY_COUNT = IDLE_BIRD + 1
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 

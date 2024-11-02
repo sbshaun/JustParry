@@ -42,5 +42,6 @@ using namespace glm;
 #include "../external/project_path.hpp"
 inline std::string asset_path() { return std::string(PROJECT_SOURCE_DIR) + "assets"; };
 inline std::string textures_path(const std::string& name) {return asset_path() + "/textures/" + std::string(name);};
+inline std::string mesh_path(const std::string& name) {return asset_path() + "/meshes/" + std::string(name);};
 
 bool gl_has_errors();
