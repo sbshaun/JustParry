@@ -1,11 +1,13 @@
+#pragma once
 #include "../common.hpp"
 #include "../renderer.hpp"
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
 
-#define SDL_MAIN_HANDLED
-#include <SDL.h>
-#include <SDL_mixer.h>
+// Forward declarations
+class GlRender;
+class InputHandler;
+class StateMachine;
 
 class WorldSystem
 {
@@ -27,6 +29,8 @@ public:
 	bool checkAABBCollision(const Box &box1, const vec2 &position1, bool facingRight1, const Box &box2, const vec2 &position2, bool facingRight2);
 	void playerCollisions(GlRender *renderer);
 	// bool step(float elapsed_ms);
+	bool botEnabled = false;
+
 private:
 	GlRender *renderer;
 

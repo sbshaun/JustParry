@@ -16,6 +16,7 @@ class GlRender
 {
 public:
     GlRender();
+    ~GlRender();
     void setGameInstance(Game *gameInstance) { game = gameInstance; }
 
     void initialize();
@@ -43,7 +44,9 @@ public:
 
     void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, float brightness = 1.0f);
 
-    ~GlRender();
+    void renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color);
+    bool debugMode = false;
+
     Entity m_player1;
     Entity m_player2;
     GLuint m_bird_texture;
@@ -52,6 +55,13 @@ public:
 
 private:
     Game *game = nullptr;
+
+    // Add shader member variables
+    Shader *m_debugShader = nullptr;
+    Shader *m_player1Shader = nullptr;
+    Shader *m_player2Shader = nullptr;
+    Shader *m_floorShader = nullptr;
+    Shader *m_hitboxShader = nullptr;
 
     // Place holders for timer and health subtexts
     GLTtext *m_fps = nullptr;
