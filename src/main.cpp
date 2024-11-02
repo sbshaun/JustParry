@@ -232,16 +232,8 @@ int main(){
             if (sleepDuration > 0)
             {
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
-                while (std::chrono::steady_clock::now() < sleepEnd);
+                while (std::chrono::steady_clock::now() < sleepEnd); //Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
-            
-            //debug prints
-            // auto actualEnd = std::chrono::steady_clock ::now();
-            // std::chrono::duration<double, std::milli>  ugh = actualEnd - end;
-            // std::cout << "i slept for  for " << ugh.count() << std::endl;
-            // std::chrono::duration<double, std::milli> MainLoopIterTime = actualEnd - start;
-            // std::cout << "Sleep loop duration: " << MainLoopIterTime.count() << " ms" << std::endl;
-
             }
             break;
 
