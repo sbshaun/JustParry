@@ -331,7 +331,7 @@ void WorldSystem::checkAABBCollision(bool& xCollision, bool& yCollision,
 2. apply damange if attack succeeds, i.e. hitbox hits hurtbox
 3. set state to STUNNED if being hit, set state timer.
 */
-void WorldSystem::handle_collisions()
+void WorldSystem::hitBoxCollisions()
 {
     Entity player1 = renderer->m_player1;
     Entity player2 = renderer->m_player2;

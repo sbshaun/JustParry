@@ -101,7 +101,7 @@ void GlRender::renderRoundOver(int count)
     gltEndDraw();
 }
 
-void GlRender::initializeUI()
+void GlRender::drawUI()
 {
     m_timerText = gltCreateText();
     assert(m_timerText); // Check if it's not NULL

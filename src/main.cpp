@@ -104,15 +104,18 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     }
 }
 
-int main()
-{
-    // Initialize window and OpenGL
+int main(){   
+    //// START INITS ////
     GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
     assert(gl3w_init() == 0);
-    glfwSwapInterval(1); // Enable vsync
+    // assert(is_fine == 0);
 
-    // Initialize game systems
-    FighterManager::init();
+    // glfwSwapInterval(1); // Enable vsync
+
+    // init fighters config 
+    FighterManager::init(); 
+    
+
     GlRender renderer;
     renderer.initialize();
 
@@ -120,6 +123,7 @@ int main()
     worldSystem.init(&renderer);
     PhysicsSystem physics;
     Bot botInstance;
+
 
     // Initialize game state
     Game game;
@@ -134,9 +138,20 @@ int main()
     bool botEnabled = false;
     bool shouldExit = false;
 
-    // Main game loop
+
+    const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE; // denominator is logic+input checks per second
+    const float FramesPerLogicLoop = TARGET_LOGIC_RATE / TARGET_FPS; // The number of logic loops that would result in 60fps
+    
+    int loopsSinceLastFrame = 0;
+    //// END INITS ////
+
+     // Main loop
+
     while (!glWindow.shouldClose())
     {
+        //start a timer for each loop
+        auto start = std::chrono::steady_clock ::now();
+
         switch (game.getState())
         {
         case GameState::MENU:
@@ -146,6 +161,7 @@ int main()
             {
                 game.setState(GameState::PLAYING);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::HELP:
@@ -155,6 +171,7 @@ int main()
             {
                 game.setState(GameState::MENU);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::SETTINGS:
@@ -164,11 +181,14 @@ int main()
             {
                 game.setState(GameState::MENU);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::ROUND_START:
-            renderer.initializeUI();
-            interp_moveEntitesToScreen(renderer);
+
+            renderer.drawUI();
+            interp_moveEntitesToScreen(renderer); // Move players into position
+
             renderer.render();
             renderer.renderUI(timer);
 
@@ -176,37 +196,80 @@ int main()
             {
                 game.setState(GameState::PLAYING);
             }
+            glWindow.windowSwapBuffers();
             break;
 
         case GameState::PLAYING:
-            renderer.initializeUI();
-            interp_moveEntitesToScreen(renderer);
-            worldSystem.inputProcessing(timer);
-            worldSystem.movementProcessing();
+            {
+            if(loopsSinceLastFrame == FramesPerLogicLoop){ //Only do certain checks each frame rather than every loop
+                // std::cout << "RENDER CALL" << std::endl;
+                loopsSinceLastFrame = 0;
+                renderer.drawUI();
+                interp_moveEntitesToScreen(renderer);
+                // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
+                glWindow.windowSwapBuffers();
+            }
+
+            loopsSinceLastFrame++;
+        
+            worldSystem.movementProcessing(); //PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-            worldSystem.handle_collisions();
-            worldSystem.playerCollisions(&renderer);
+            worldSystem.hitBoxCollisions(); 
+            worldSystem.inputProcessing(timer); //What are we passing a timer in for?
             physics.step();
+            worldSystem.playerCollisions(&renderer);
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+            // toggleBot(botEnabled, bKeyPressed, glWindow);
+
+            //time the next logic check
+            auto end = std::chrono::steady_clock ::now();
+            std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
+            
+            // Calculate the remaining time to sleep
+            int sleepDuration = targetLogicDuration - static_cast<int>(FastLoopIterTime.count());
+            // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
+            if (sleepDuration > 0)
+            {
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
+                while (std::chrono::steady_clock::now() < sleepEnd);
+            }
+            
+            //debug prints
+            // auto actualEnd = std::chrono::steady_clock ::now();
+            // std::chrono::duration<double, std::milli>  ugh = actualEnd - end;
+            // std::cout << "i slept for  for " << ugh.count() << std::endl;
+            // std::chrono::duration<double, std::milli> MainLoopIterTime = actualEnd - start;
+            // std::cout << "Sleep loop duration: " << MainLoopIterTime.count() << " ms" << std::endl;
+
+            }
+            break;
+
+        case GameState::LOADING:
+            // supress compilation warning 
+            std::cout << "warning: enumeration value 'LOADING' not handled in switch [-Wswitch]" << std::endl;
+            glWindow.windowSwapBuffers();
+            break;
+
+        default:
+            std::cerr << "unhandled game state" << std::endl;
             handleUtilityInputs(renderer, showFPS, botEnabled,
                                 fKeyPressed, bKeyPressed, hKeyPressed,
                                 glWindow, fpsCounter, shouldExit,
                                 worldSystem);
+            glWindow.windowSwapBuffers();
             if (shouldExit)
                 break;
             break;
 
-        default:
-            std::cerr << "Unhandled game state" << std::endl;
-            break;
+        
         }
 
         if (shouldExit)
             break;
 
-        glWindow.windowSwapBuffers();
-    }
+        }
+        
 
     // Cleanup in correct order
     registry.clear_all_components(); // Clear ECS components first
