@@ -104,13 +104,11 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     }
 }
 
-int main()
-
-{   
+int main(){   
     //// START INITS ////
     GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
     assert(gl3w_init() == 0);
-    assert(is_fine == 0);
+    // assert(is_fine == 0);
 
     // glfwSwapInterval(1); // Enable vsync
 
@@ -207,7 +205,7 @@ int main()
                 loopsSinceLastFrame = 0;
                 renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
-                toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
+                // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 glWindow.windowSwapBuffers();
             }
 
@@ -221,10 +219,7 @@ int main()
             worldSystem.playerCollisions(&renderer);
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
-
-
-            // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
-            toggleBot(botEnabled, bKeyPressed, glWindow);
+            // toggleBot(botEnabled, bKeyPressed, glWindow);
 
             //time the next logic check
             auto end = std::chrono::steady_clock ::now();
@@ -275,9 +270,6 @@ int main()
 
         }
         
-
-
-    }
 
     // Cleanup in correct order
     registry.clear_all_components(); // Clear ECS components first
