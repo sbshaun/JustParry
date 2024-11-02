@@ -329,6 +329,7 @@ struct TexturedVertex
 };
 
 /**
+/**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
  * currently supported by the system.
@@ -366,7 +367,8 @@ const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
 enum class GEOMETRY_BUFFER_ID
 {
-    GEOMETRY_COUNT = 0
+    IDLE_BIRD = 0,
+    GEOMETRY_COUNT = IDLE_BIRD + 1;
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
