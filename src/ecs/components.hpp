@@ -95,6 +95,9 @@ struct Motion
 
     // temp variable to maintain whether character is jumping or not
     bool inAir = false;
+
+    bool wasAbove = false;
+    bool above = false;
 };
 
 struct StationaryTimer
@@ -174,6 +177,31 @@ struct Box
 struct CollisionBox : public Box
 {
     bool active = true;
+
+    // hurtbox is just same as player's size. TODO
+    float getLeft(const vec2& playerPosition, bool facingRight = true) const override
+    {
+        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        return playerPosition.x - width / 2 + xOffset;
+        // return playerPosition.x - width - xOffset;
+    }
+
+    float getRight(const vec2& playerPosition, bool facingRight = true) const override
+    {
+        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        return playerPosition.x + width / 2 + xOffset;
+        // return playerPosition.x + width + xOffset;
+    }
+
+    float getTop(const vec2& playerPosition, bool facingRight = true) const override
+    {
+        return playerPosition.y + height;
+    }
+
+    float getBottom(const vec2& playerPosition, bool facingRight = true) const override
+    {
+        return playerPosition.y - height;
+    }
 };
 
 // TODO: how do we move the box along the player?
@@ -182,6 +210,30 @@ struct HitBox : public Box
     bool active = false; // TODO: active for how  many frames? 12?
     // if the current attack already caused damage
     bool hit = false; // flag to check before applying damage.
+
+    float getLeft(const vec2& playerPosition, bool facingRight) const override
+    {
+        // When facing right: hitbox starts at position + xOffset
+        // When facing left: hitbox starts at position - xOffset - width
+        return facingRight ? playerPosition.x + xOffset : playerPosition.x - xOffset - width;
+    }
+
+    float getRight(const vec2& playerPosition, bool facingRight) const override
+    {
+        // When facing right: hitbox ends at position + xOffset + width
+        // When facing left: hitbox ends at position - xOffset
+        return facingRight ? playerPosition.x + xOffset + width : playerPosition.x - xOffset;
+    }
+
+    float getTop(const vec2& playerPosition, bool facingRight) const override
+    {
+        return playerPosition.y + yOffset + height / 2;
+    }
+
+    float getBottom(const vec2& playerPosition, bool facingRight) const override
+    {
+        return playerPosition.y + yOffset - height / 2;
+    }
 };
 
 struct HurtBox : public Box
@@ -191,22 +243,24 @@ struct HurtBox : public Box
     {
         if (!facingRight) return playerPosition.x - width / 2 - xOffset;
         return playerPosition.x - width / 2 + xOffset;
+        // return playerPosition.x - width - xOffset;
     }
 
     float getRight(const vec2 &playerPosition, bool facingRight = true) const override
     {
         if (!facingRight) return playerPosition.x + width / 2 - xOffset;
         return playerPosition.x + width / 2 + xOffset;
+        // return playerPosition.x + width + xOffset;
     }
 
     float getTop(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y + height / 2;
+        return playerPosition.y + height;
     }
 
     float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y - height / 2;
+        return playerPosition.y - height;
     }
 };
 

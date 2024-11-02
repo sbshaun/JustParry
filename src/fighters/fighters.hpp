@@ -14,8 +14,8 @@ struct FighterConfig {
     // collision and size 
     float BB_WIDTH = 3.0f * 80.f; 
     float BB_HEIGHT = 3.0f * 100.f;
-    float NDC_WIDTH;
-    float NDC_HEIGHT;
+    float NDC_WIDTH = BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f;
+    float NDC_HEIGHT = BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 
     // properties 
     float MAX_HEALTH = 100.f;
@@ -24,14 +24,14 @@ struct FighterConfig {
 
     // movement 
     float MOVE_SPEED = 0.005f;
-    float JUMP_VELOCITY = 0.02f;
+    float JUMP_VELOCITY = 0.2f;
 
     // attack 1 (punch) 
     float HITBOX_DURATION = 500.f;
     float PUNCH_X_OFFSET = 0.f;
-    float PUNCH_Y_OFFSET = 0.15f * NDC_HEIGHT;
+    float PUNCH_Y_OFFSET = 0.20f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_WIDTH;
-    float PUNCH_HEIGHT;
+    float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;
     float PUNCH_STUN_DURATION = 3000.f;
 
@@ -45,9 +45,9 @@ struct FighterConfig {
     FighterConfig(int window_width_px = 1024, int window_height_px = 768)
         : NDC_WIDTH(BB_WIDTH / window_width_px * 2.0f),
           NDC_HEIGHT(BB_HEIGHT / window_height_px * 2.0f),
-          PUNCH_Y_OFFSET(0.15f * (BB_HEIGHT / window_height_px * 2.0f)),
+          PUNCH_Y_OFFSET(0.20f * (BB_HEIGHT / window_height_px * 2.0f)),
           PUNCH_WIDTH(0.50f * (BB_WIDTH / window_width_px * 2.0f)),
-          PUNCH_HEIGHT(0.20f * (BB_HEIGHT / window_height_px * 2.0f))
+          PUNCH_HEIGHT(0.15f * (BB_HEIGHT / window_height_px * 2.0f))
     {};
 };
 

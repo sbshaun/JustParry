@@ -26,7 +26,7 @@ public:
 	void handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine);
 	void updateStateTimers(float elapsed_ms);
 	bool checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox);
-	bool checkAABBCollision(const Box &box1, const vec2 &position1, bool facingRight1, const Box &box2, const vec2 &position2, bool facingRight2);
+	void checkAABBCollision(bool& xCollision, bool& yCollision, const Box& box1, Motion& motion1, const Box& box2, Motion& motion2);
 	void playerCollisions(GlRender *renderer);
 	// bool step(float elapsed_ms);
 	bool botEnabled = false;

@@ -3,84 +3,7 @@
 #include "../constants.hpp"
 #include "../bot.hpp"
 #include <stb_image.h>
-
-static void renderHitbox(Entity &player, bool isPlayer1)
-{
-    // register the player as an entity with a hitbox
-    HitBox &hitBox = registry.hitBoxes.emplace(player);
-
-    float PUNCH_WIDTH;
-    float PUNCH_HEIGHT;
-    float PUNCH_X_OFFSET;
-    float PUNCH_Y_OFFSET;
-    PUNCH_WIDTH = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_WIDTH;
-    PUNCH_HEIGHT = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_HEIGHT;
-    PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
-    PUNCH_Y_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_Y_OFFSET;
-
-    hitBox.width = PUNCH_WIDTH;
-    hitBox.height = PUNCH_HEIGHT;
-    hitBox.xOffset = isPlayer1 ? PUNCH_X_OFFSET : -PUNCH_X_OFFSET;
-    hitBox.yOffset = PUNCH_Y_OFFSET;
-    hitBox.active = false;
-
-    // Create vertices for hitbox visualization - adjust for player 2
-    float xOffset = isPlayer1 ? PUNCH_X_OFFSET : -PUNCH_X_OFFSET;
-    float width = PUNCH_WIDTH;
-
-    std::vector<float> hitboxVertices = {
-        // First triangle (Top-left, Bottom-left, Bottom-right)
-        0 + xOffset, 0 + PUNCH_Y_OFFSET + PUNCH_HEIGHT / 2, 0.0f,         // Top-left
-        0 + xOffset, 0 + PUNCH_Y_OFFSET - PUNCH_HEIGHT / 2, 0.0f,         // Bottom-left
-        0 + xOffset + width, 0 + PUNCH_Y_OFFSET - PUNCH_HEIGHT / 2, 0.0f, // Bottom-right
-
-        // Second triangle (Bottom-right, Top-right, Top-left)
-        0 + xOffset + width, 0 + PUNCH_Y_OFFSET - PUNCH_HEIGHT / 2, 0.0f, // Bottom-right
-        0 + xOffset + width, 0 + PUNCH_Y_OFFSET + PUNCH_HEIGHT / 2, 0.0f, // Top-right
-        0 + xOffset, 0 + PUNCH_Y_OFFSET + PUNCH_HEIGHT / 2, 0.0f          // Top-left
-    };
-
-    Entity hitBoxEntity = Entity();
-    Mesh hitboxMesh(hitboxVertices, false);
-    Shader *shader = new Shader(std::string("hitboxes"));
-    registry.debugRenders.insert(hitBoxEntity, HitboxRender{hitboxMesh, shader, player});
-}
-
-static void renderHurtbox(Entity &player, bool isPlayer1)
-{
-    HurtBox &hurtBox = registry.hurtBoxes.get(player);
-    FighterConfig config = FighterManager::getFighterConfig(registry.players.get(player).current_char);
-
-    // Set hurtbox dimensions based on fighter config
-    // hurtBox.width = config.NDC_WIDTH / 2;
-    // hurtBox.height = config.NDC_HEIGHT / 2;
-    // hurtBox.xOffset = 0; // Centered on player
-    // hurtBox.yOffset = 0;
-    std::cout << "Hurtbox dimensions: " << hurtBox.width << ", " << hurtBox.height << std::endl;
-
-    float hurtbox_width = hurtBox.width;
-    float hurtbox_height = hurtBox.height;
-
-    // Create vertices for hurtbox visualization
-    std::vector<float> hurtboxVertices = {
-        // First triangle (Top-left, Bottom-left, Bottom-right)
-        -hurtbox_width, -hurtbox_height, 0.0f, // Top-left
-        -hurtbox_width, hurtbox_height, 0.0f,  // Bottom-left
-        hurtbox_width, hurtbox_height, 0.0f,   // Bottom-right
-
-        // Second triangle (Bottom-right, Top-right, Top-left)
-        hurtbox_width, hurtbox_height, 0.0f,  // Bottom-right
-        hurtbox_width, -hurtbox_height, 0.0f, // Top-right
-        -hurtbox_width, -hurtbox_height, 0.0f // Top-left
-    };
-
-    Entity hurtBoxEntity = Entity();
-    Mesh hurtboxMesh(hurtboxVertices, false);
-    Shader *shader = new Shader(std::string("hitboxes")); // Can reuse hitbox shader
-    registry.debugRenders.insert(hurtBoxEntity, HitboxRender{hurtboxMesh, shader, player});
-}
-
-void setupFighterConfig(Entity entity, const FighterConfig &config)
+void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlayer1)
 {
     Health &health = registry.healths.emplace(entity);
     health.currentHealth = config.MAX_HEALTH;
@@ -91,23 +14,33 @@ void setupFighterConfig(Entity entity, const FighterConfig &config)
     postureBar.maxBar = config.POSTURE_MAX;
     postureBar.recoverRate = config.POSTURE_REGEN; // 3 seconds per bar
 
-    // HitBox& hitBox = registry.hitBoxes.emplace(entity);
-    // hitBox.width = config.PUNCH_WIDTH;
-    // hitBox.height = config.PUNCH_HEIGHT;
-    // hitBox.xOffset = config.PUNCH_X_OFFSET;
-    // hitBox.yOffset = config.PUNCH_Y_OFFSET;
-    // hitBox.active = false;
-    // hitBox.hit = false;
+    float PUNCH_WIDTH;
+    float PUNCH_HEIGHT;
+    float PUNCH_X_OFFSET;
+    float PUNCH_Y_OFFSET;
+    PUNCH_WIDTH = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_WIDTH;
+    PUNCH_HEIGHT = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_HEIGHT;
+    PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
+    PUNCH_Y_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_Y_OFFSET;
+
+    HitBox& hitBox = registry.hitBoxes.emplace(entity);
+    hitBox.width = config.PUNCH_WIDTH;
+    hitBox.height = config.PUNCH_HEIGHT;
+    hitBox.xOffset = isPlayer1 ? config.PUNCH_X_OFFSET : -config.PUNCH_X_OFFSET;
+    hitBox.yOffset = config.PUNCH_Y_OFFSET;
+    hitBox.active = false;
 
     CollisionBox &collisionBox = registry.collisionBoxes.emplace(entity);
-    collisionBox.width = config.NDC_WIDTH / 8.0f;
-    collisionBox.height = config.NDC_HEIGHT / 8.0f;
-    collisionBox.xOffset = 0;
+    // apparently this is the width, height, and offset calculation of the collision box
+    collisionBox.width = config.NDC_WIDTH / 1.6f; 
+    collisionBox.height = config.NDC_HEIGHT / 2.0f;
+    collisionBox.xOffset = -config.NDC_WIDTH / 5.7f;
     collisionBox.yOffset = 0;
 
     HurtBox &hurtBox = registry.hurtBoxes.emplace(entity);
+    // apparently this is the width, height, and offset calculation of the hurtbox
     hurtBox.width = config.NDC_WIDTH / 1.6f;
-    hurtBox.height = config.NDC_HEIGHT;
+    hurtBox.height = config.NDC_HEIGHT / 2.0f;
     hurtBox.xOffset = -config.NDC_WIDTH / 5.7f;
     hurtBox.yOffset = 0;
 
@@ -158,7 +91,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint 
     Mesh playerMesh(rectangleVertices, true);
     registry.renderable.insert(entity, Renderable{playerMesh, shader, texture});
 
-    setupFighterConfig(entity, FighterManager::getFighterConfig(fighter));
+    setupFighterConfig(entity, FighterManager::getFighterConfig(fighter), isPlayer1);
 
     Motion &motion = registry.motions.emplace(entity);
     motion.lastPos = pos;
@@ -168,8 +101,8 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint 
     motion.inAir = false;
     motion.scale = {0.1, 0.1};
 
-    renderHitbox(entity, isPlayer1);
-    renderHurtbox(entity, isPlayer1);
+    // renderHitbox(entity, isPlayer1);
+    // renderHurtbox(entity, isPlayer1);
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
 }
