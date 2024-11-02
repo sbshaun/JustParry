@@ -282,12 +282,6 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {   
     registry.clear_all_components();
 
-    // FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
-    // Entity player1 = createPlayer1(&renderer, {-1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
-    // Entity player2 = createPlayer2(&renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
-    // renderer.m_player1 = player1;
-    // renderer.m_player2 = player2;
-    // resetScores();
     worldSystem.init(&renderer);
     
     // Reset timer
@@ -298,33 +292,6 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     // Reset interpolation variables
     resetInterpVariables();
 
-    // // Reset player healths
-    // Health &h1 = registry.healths.get(renderer.m_player1);
-    // Health &h2 = registry.healths.get(renderer.m_player2);
-    // h1.currentHealth = h1.maxHealth;
-    // h2.currentHealth = h2.maxHealth;
-
-    // // Reset player positions (off screen)
-    // Motion &m1 = registry.motions.get(renderer.m_player1);
-    // Motion &m2 = registry.motions.get(renderer.m_player2);
-
-    // // Set initial positions off-screen and reset scales
-    // m1.position = glm::vec2(-1.0f, FLOOR_Y + config1.NDC_HEIGHT); // Start from top-left
-    // m2.position = glm::vec2(1.0f, FLOOR_Y + config2.NDC_HEIGHT);  // Start from top-right
-
-    // // Reset scales to initial small size
-    // m1.scale = glm::vec2(0.1f, 0.1f);
-    // m2.scale = glm::vec2(0.1f, 0.1f);
-
-    // // Reset player states
-    // registry.playerCurrentStates.get(renderer.m_player1).currentState = PlayerState::IDLE;
-    // registry.playerCurrentStates.get(renderer.m_player2).currentState = PlayerState::IDLE;
-
-    // Reset player inputs
-    // registry.playerInputs.get(renderer.m_player1) = PlayerInput();
-    // registry.playerInputs.get(renderer.m_player2) = PlayerInput();
-
-    // Set state to ROUND_START to trigger entry animation
     isLoading = true;
     setState(GameState::MENU);
 }
