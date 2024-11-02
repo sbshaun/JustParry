@@ -278,13 +278,18 @@ bool Game::handleHelpInput(GLFWwindow *window)
     return false; // Stay in help state
 }
 
-void Game::resetGame(GlRender &renderer)
-{
-    Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
-    Fighters current_char2 = registry.players.get(renderer.m_player2).current_char;
-    FighterConfig config1 = FighterManager::getFighterConfig(current_char1);
-    FighterConfig config2 = FighterManager::getFighterConfig(current_char2);
+void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
+{   
+    registry.clear_all_components();
 
+    // FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
+    // Entity player1 = createPlayer1(&renderer, {-1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
+    // Entity player2 = createPlayer2(&renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
+    // renderer.m_player1 = player1;
+    // renderer.m_player2 = player2;
+    // resetScores();
+    worldSystem.init(&renderer);
+    
     // Reset timer
     extern int timer;
     extern const int timer_length;
@@ -293,34 +298,35 @@ void Game::resetGame(GlRender &renderer)
     // Reset interpolation variables
     resetInterpVariables();
 
-    // Reset player healths
-    Health &h1 = registry.healths.get(renderer.m_player1);
-    Health &h2 = registry.healths.get(renderer.m_player2);
-    h1.currentHealth = h1.maxHealth;
-    h2.currentHealth = h2.maxHealth;
+    // // Reset player healths
+    // Health &h1 = registry.healths.get(renderer.m_player1);
+    // Health &h2 = registry.healths.get(renderer.m_player2);
+    // h1.currentHealth = h1.maxHealth;
+    // h2.currentHealth = h2.maxHealth;
 
-    // Reset player positions (off screen)
-    Motion &m1 = registry.motions.get(renderer.m_player1);
-    Motion &m2 = registry.motions.get(renderer.m_player2);
+    // // Reset player positions (off screen)
+    // Motion &m1 = registry.motions.get(renderer.m_player1);
+    // Motion &m2 = registry.motions.get(renderer.m_player2);
 
-    // Set initial positions off-screen and reset scales
-    m1.position = glm::vec2(-1.0f, FLOOR_Y + config1.NDC_HEIGHT); // Start from top-left
-    m2.position = glm::vec2(1.0f, FLOOR_Y + config2.NDC_HEIGHT);  // Start from top-right
+    // // Set initial positions off-screen and reset scales
+    // m1.position = glm::vec2(-1.0f, FLOOR_Y + config1.NDC_HEIGHT); // Start from top-left
+    // m2.position = glm::vec2(1.0f, FLOOR_Y + config2.NDC_HEIGHT);  // Start from top-right
 
-    // Reset scales to initial small size
-    m1.scale = glm::vec2(0.1f, 0.1f);
-    m2.scale = glm::vec2(0.1f, 0.1f);
+    // // Reset scales to initial small size
+    // m1.scale = glm::vec2(0.1f, 0.1f);
+    // m2.scale = glm::vec2(0.1f, 0.1f);
 
-    // Reset player states
-    registry.playerCurrentStates.get(renderer.m_player1).currentState = PlayerState::IDLE;
-    registry.playerCurrentStates.get(renderer.m_player2).currentState = PlayerState::IDLE;
+    // // Reset player states
+    // registry.playerCurrentStates.get(renderer.m_player1).currentState = PlayerState::IDLE;
+    // registry.playerCurrentStates.get(renderer.m_player2).currentState = PlayerState::IDLE;
 
     // Reset player inputs
-    registry.playerInputs.get(renderer.m_player1) = PlayerInput();
-    registry.playerInputs.get(renderer.m_player2) = PlayerInput();
+    // registry.playerInputs.get(renderer.m_player1) = PlayerInput();
+    // registry.playerInputs.get(renderer.m_player2) = PlayerInput();
 
     // Set state to ROUND_START to trigger entry animation
-    setState(GameState::ROUND_START);
+    isLoading = true;
+    setState(GameState::MENU);
 }
 
 void Game::updateScores(const Health &h1, const Health &h2)

@@ -118,21 +118,21 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine)
-{
-    auto &motion = registry.motions.get(player);
-    auto &input = registry.playerInputs.get(player);
+// void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine)
+// {
+//     auto &motion = registry.motions.get(player);
+//     auto &input = registry.playerInputs.get(player);
 
-    // Reset inputs
-    input = PlayerInput();
+//     // Reset inputs
+//     input = PlayerInput();
 
-    input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
-    input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
-    input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
-    input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
-    input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
-    input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
-}
+//     input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
+//     input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
+//     input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
+//     input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
+//     input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
+//     input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
+// }
 
 void WorldSystem::handleInput()
 {

@@ -16,6 +16,7 @@
 #include "input_system/utility_inputs.hpp"
 
 int timer = timer_length;
+static bool roundEnded = false;
 auto last_time = std::chrono::high_resolution_clock::now();
 
 int generateUI(GlRender &renderer)
@@ -40,8 +41,6 @@ int generateUI(GlRender &renderer)
 
 void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
 {
-    static bool roundEnded = false;
-
     Health &h1 = registry.healths.get(renderer.m_player1);
     Health &h2 = registry.healths.get(renderer.m_player2);
     PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
@@ -61,12 +60,8 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         renderer.render();
         renderer.renderUI(timer);
         renderer.renderRoundOver(1);
+        game.setState(GameState::ROUND_OVER);
 
-        if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
-        {
-            roundEnded = false;
-            game.resetGame(renderer);
-        }
     }
     else
     {
@@ -79,6 +74,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             {
                 game.updateScores(h1, h2);
                 roundEnded = true;
+                game.setState(GameState::ROUND_OVER);
             }
 
             p1 = PlayerInput();
@@ -86,11 +82,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             renderer.renderRoundOver(0);
             renderer.renderUI(timer);
 
-            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
-            {
-                roundEnded = false;
-                game.resetGame(renderer);
-            }
         }
         else
         {
@@ -99,7 +90,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             {
                 botInstance.pollBotRng(renderer);
             }
-            worldSystem.handleInput();
         }
     }
 }
@@ -159,7 +149,7 @@ int main(){
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window))
             {
-                game.setState(GameState::PLAYING);
+                game.setState(GameState::ROUND_START);
             }
             glWindow.windowSwapBuffers();
             break;
@@ -222,8 +212,9 @@ int main(){
             worldSystem.inputProcessing(); 
             physics.step();
             worldSystem.playerCollisions(&renderer);
-
+            
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+            worldSystem.handleInput();
             // toggleBot(botEnabled, bKeyPressed, glWindow);
 
             //time the next logic check
@@ -237,7 +228,7 @@ int main(){
             {
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd){
-                    worldSystem.inputProcessing();
+                    worldSystem.handleInput();
                 } //Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
@@ -248,22 +239,27 @@ int main(){
             std::cout << "warning: enumeration value 'LOADING' not handled in switch [-Wswitch]" << std::endl;
             glWindow.windowSwapBuffers();
             break;
+        
+        case GameState::ROUND_OVER:
+            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+                {
+                    roundEnded = false;
+                    game.resetGame(renderer, worldSystem);
+                }
+            glWindow.windowSwapBuffers();
+            break;
 
         default:
             std::cerr << "unhandled game state" << std::endl;
             glWindow.windowSwapBuffers();
             if (shouldExit)
                 break;
-            break;
-
-        
+            break;        
         }
-
         if (shouldExit)
             break;
 
-        }
-        
+        }        
 
     // Cleanup in correct order
     registry.clear_all_components(); // Clear ECS components first
