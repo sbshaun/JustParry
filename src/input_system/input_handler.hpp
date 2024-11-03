@@ -24,6 +24,51 @@ class InputHandler {
             bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());
         }
 
+        // helper function to print actionBuffer, e.g. actionBuffer size n: [MOVE_LEFT, JUMP, PUNCH] 
+        void printActionBufferHelper() {
+            int n = actionBuffer.size();
+            std::string actionList = "ActionBuffer size " + std::to_string(n) + ": [";
+            for (const auto& item : actionBuffer) {
+                actionList += ActionToString(item.action);
+                actionList += ", ";
+            }
+            actionList += "]";
+            std::cout << "actionBuffer: " << actionList << std::endl;
+        }
+
+        void processActionBuffer(Entity entity, StateMachine& state_machine) {
+            for (int i = 0; i < actionBuffer.size(); i++) {
+                actionBuffer[i].ttl -= TIME_STEP;
+                if (actionBuffer[i].ttl <= 0) {
+                    actionBuffer.erase(actionBuffer.begin() + i);
+                }
+            }
+
+            // printActionBufferHelper();
+
+            Motion& motion = registry.motions.get(entity);
+            bool moving = false;
+
+            for (const auto& item : actionBuffer) {
+                Action action = item.action;
+                if (actionToCommandMapping.find(action) != actionToCommandMapping.end()) {
+                    actionToCommandMapping[action]->execute(entity, state_machine);
+                }
+                if (action == Action::MOVE_LEFT || action == Action::MOVE_RIGHT) {
+                    moving = true;
+                }
+            }
+
+            if (!moving && !motion.inAir) {
+                motion.velocity.x = 0.0f;
+                if (state_machine.transition(entity, PlayerState::IDLE)) {
+                    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+                    // std::cout << "playerState is now " << PlayerStateToString(playerState.currentState) << std::endl;
+                    // std::cout << "Player is now IDLE" << std::endl;
+                }
+            }
+        }
+
         /*
         * check if a key is pressed, execute the respective command for the key 
         */
@@ -40,25 +85,11 @@ class InputHandler {
                 if (isKeyPressed(pair.first)) {
                     // get the corresponded action from the key 
                     Action action = pair.second;
-                    // execute the command for the action. 
-                    if (actionToCommandMapping.find(action) != actionToCommandMapping.end()) {
-                        actionToCommandMapping[action]->execute(entity, state_machine);
-                    }
-
-                    if (action == Action::MOVE_LEFT || action == Action::MOVE_RIGHT) {
-                        moving = true;
-                    }
+                    actionBuffer.push_back({action, TTL});
                 }
             }
 
-            if (!moving && !motion.inAir) {
-                motion.velocity.x = 0.0f;
-                if (state_machine.transition(entity, PlayerState::IDLE)) {
-                    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-                    // std::cout << "playerState is now " << PlayerStateToString(playerState.currentState) << std::endl;
-                    // std::cout << "Player is now IDLE" << std::endl;
-                }
-            }
+            processActionBuffer(entity, state_machine);
         }
 
         Action getActionFromKey(int key) const {
@@ -73,4 +104,10 @@ class InputHandler {
         std::unique_ptr<InputMapping> inputMapping;
         std::unordered_map<Action, std::unique_ptr<Command>> actionToCommandMapping; 
         // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/ 
+        struct actionBufferItem {
+            Action action;
+            float ttl; // time to live 
+        };
+        const float TTL = 0.5f; // 500ms
+        std::vector<actionBufferItem> actionBuffer;
 };
