@@ -118,22 +118,6 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-// void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine)
-// {
-//     auto &motion = registry.motions.get(player);
-//     auto &input = registry.playerInputs.get(player);
-
-//     // Reset inputs
-//     input = PlayerInput();
-
-//     input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
-//     input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
-//     input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
-//     input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
-//     input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
-//     input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
-// }
-
 void WorldSystem::handleInput()
 {
     // Player 1's input is always handled
@@ -166,10 +150,6 @@ void WorldSystem::handleInput()
         else
             p2Motion.velocity.x = 0;
     }
-
-    // Always update state machines for both players
-    player1StateMachine->update(renderer->m_player1, TIME_STEP);
-    player2StateMachine->update(renderer->m_player2, TIME_STEP);
 }
 
 void WorldSystem::inputProcessing()
@@ -242,11 +222,6 @@ void WorldSystem::updateStateTimers(float elapsed_ms)
 {
     player1StateMachine->update(renderer->m_player1, elapsed_ms);
     player2StateMachine->update(renderer->m_player2, elapsed_ms);
-    StateTimer &player1StateTimer = registry.stateTimers.get(renderer->m_player1);
-    StateTimer &player2StateTimer = registry.stateTimers.get(renderer->m_player2);
-
-    HitBox &player1HitBox = registry.hitBoxes.get(renderer->m_player1);
-    HitBox &player2HitBox = registry.hitBoxes.get(renderer->m_player2);
 }
 
 bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox)

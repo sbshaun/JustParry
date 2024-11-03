@@ -116,7 +116,6 @@ struct StateTimer
 {
     float duration = 0.f;    // time length that this state will last.
     float elapsedTime = 0.f; // time elapsed since this state started.
-    float lastUpdatedTime = 0.f; // last time stamp, added this to force update per frame rate 
 
     bool isAlive()
     {
@@ -125,13 +124,7 @@ struct StateTimer
 
     void update(float elapsed_ms)
     {
-        float currentTime = glfwGetTime() * 1000.0f; // get current time in ms 
-        float elapsedTime = currentTime - lastUpdatedTime;
-
-        if (elapsedTime < PLAYER_STATE_TIMER_STEP) return;
-        
-        this->elapsedTime += elapsedTime;
-        lastUpdatedTime = currentTime;
+        this->elapsedTime += elapsed_ms;
     }
 
     void reset(float duration)

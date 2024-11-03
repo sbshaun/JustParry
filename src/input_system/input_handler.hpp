@@ -37,13 +37,6 @@ class InputHandler {
         }
 
         void processActionBuffer(Entity entity, StateMachine& state_machine) {
-            float currentTime = glfwGetTime() * 1000.0f;  // get current time in ms
-            float elapsed_time = currentTime - lastFrameTime;
-            
-            // force the function to run per frame rate 
-            if (elapsed_time < FRAME_TIME) return; 
-
-            printActionBufferHelper();
             for (int i = 0; i < actionBuffer.size(); i++) {
                 actionBuffer[i].ttl -= PLAYER_STATE_TIMER_STEP;
                 if (actionBuffer[i].ttl <= 0) {
@@ -51,40 +44,21 @@ class InputHandler {
                 }
             }
 
-            // printActionBufferHelper();
-
             Motion& motion = registry.motions.get(entity);
             bool moving = false;
 
-            // PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-            // std::cout << "playerState is " << PlayerStateToString(playerState.currentState) << std::endl;
-            // // state in state machine
-            // PlayerState currentState = state_machine.getCurrentState();
-            // std::cout << "state_machine state is " << PlayerStateToString(currentState) << std::endl;
-            
             for (int i = 0; i < actionBuffer.size(); i++) {
                 Action action = actionBuffer[i].action;
                 // if punch is folllowed by kick, do a parry 
                 int next = i + 1; 
                 if (next < actionBuffer.size()) {
                     Action nextAction = actionBuffer[next].action;
-                    // printActionBufferHelper();
                     if ((action == Action::PUNCH && nextAction == Action::KICK) || 
                         (action == Action::KICK && nextAction == Action::PUNCH)) {
-                        // printActionBufferHelper();
                         if (state_machine.transition(entity, PlayerState::PARRYING)) {
-                            // PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-                            // std::cout << "playerState is now " << PlayerStateToString(playerState.currentState) << std::endl;
-                            // std::cout << "Player is now PARRYING" << std::endl;
                             continue;
                         } else {
                             std::cerr << "Failed to transition to PARRYING state" << std::endl; 
-                            // current state 
-                            PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-                            std::cout << "playerState is " << PlayerStateToString(playerState.currentState) << std::endl;
-                            // state in state machine
-                            PlayerState currentState = state_machine.getCurrentState();
-                            std::cout << "state_machine state is " << PlayerStateToString(currentState) << std::endl;
                         }
                     }
                 }
@@ -101,12 +75,8 @@ class InputHandler {
                 motion.velocity.x = 0.0f;
                 if (state_machine.transition(entity, PlayerState::IDLE)) {
                     PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-                    // std::cout << "playerState is now " << PlayerStateToString(playerState.currentState) << std::endl;
-                    // std::cout << "Player is now IDLE" << std::endl;
                 }
             }
-
-            lastFrameTime = currentTime;
         }
 
         /*
@@ -127,7 +97,6 @@ class InputHandler {
                     Action action = pair.second;
 
                     if (!actionBuffer.empty() && actionBuffer.back().action == action) continue;
-                    // printActionBufferHelper();
                     if (actionBuffer.size() >= MAX_BUFFER_SIZE) continue;
 
                     actionBuffer.push_back({action, TTL});
@@ -156,8 +125,4 @@ class InputHandler {
         const float TTL = 300.f; // 100ms 
         const int MAX_BUFFER_SIZE = 10; // max number of buffered actions 
         std::vector<actionBufferItem> actionBuffer;
-
-        // force the function to run per frame rate 
-        float lastFrameTime = 0.0f;  // Changed: Add frame time tracking
-        const float FRAME_TIME = 1000.0f / 60.0f;  // 16.67ms for 60fps
 };
