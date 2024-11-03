@@ -257,6 +257,10 @@ int main(){
 
         default:
             std::cerr << "unhandled game state" << std::endl;
+            /*handleUtilityInputs(renderer, showFPS, botEnabled,
+                fKeyPressed, bKeyPressed, hKeyPressed,
+                glWindow, fpsCounter, shouldExit,
+                worldSystem);*/
             glWindow.windowSwapBuffers();
             if (shouldExit)
                 break;

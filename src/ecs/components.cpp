@@ -93,22 +93,25 @@ bool ObjectMesh::loadFromOBJFile(std::string obj_path, std::vector<ColoredVertex
 	fclose(file);
 
 	// Compute bounds of the mesh
-	vec3 max_position = { -99999,-99999,-99999 };
-	vec3 min_position = { 99999,99999,99999 };
-	for (ColoredVertex& pos : out_vertices)
-	{
-		max_position = glm::max(max_position, pos.position);
-		min_position = glm::min(min_position, pos.position);
-	}
-	if (abs(max_position.z - min_position.z) < 0.001)
-		max_position.z = min_position.z + 1; // don't scale z direction when everythin is on one plane
+	//vec3 max_position = { -99999,-99999,-99999 };
+	//vec3 min_position = { 99999,99999,99999 };
+	//for (ColoredVertex& pos : out_vertices)
+	//{
+	//	max_position = glm::max(max_position, pos.position);
+	//	min_position = glm::min(min_position, pos.position);
+	//}
+	//if (abs(max_position.z - min_position.z) < 0.001)
+	//	max_position.z = min_position.z + 1; // don't scale z direction when everythin is on one plane
 
-	vec3 size3d = max_position - min_position;
-	out_size = size3d;
+	//vec3 size3d = max_position - min_position;
+	//out_size = size3d;
 
-	// Normalize mesh to range -0.5 ... 0.5
-	for (ColoredVertex& pos : out_vertices)
-		pos.position = ((pos.position - min_position) / size3d) - vec3(0.5f, 0.5f, 0.5f);
+	//// Normalize mesh to range -0.5 ... 0.5
+	//for (ColoredVertex& pos : out_vertices) {
+	//	pos.position = ((pos.position - min_position) / size3d) - vec3(0.5f, 0.5f, 0.5f);
+	//	std::cout << "Position: " << pos.position.x << " " << pos.position.y << " " << pos.position.z << std::endl;
+	//}
+		
 
 	return true;
 }

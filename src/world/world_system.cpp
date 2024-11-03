@@ -253,8 +253,6 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
     float hitBoxBottom, ObjectMesh* mesh, Motion& hurtMotion) {
 
     std::vector<vec3> originalPositions;
-    std::vector<vec2> transformedPositions;
-
     for (const ColoredVertex& vertex : mesh->vertices) {
         originalPositions.push_back(vertex.position);
     }
@@ -264,8 +262,22 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
     transform.rotate(hurtMotion.angle);
     transform.scale(hurtMotion.scale);
 
+    for (const vec3& originalPos : originalPositions) {
+        vec3 transformedVertex = transform.mat * vec3(originalPos.x, originalPos.y, 1.0);
+
+        // std::cout << "original vertex: " << originalPos.x << ", " << originalPos.y << std::endl;
+
+        bool rightCheck = transformedVertex.x < hitBoxRight;
+        bool leftChecck = transformedVertex.x > hitBoxLeft;
+        bool topCheck = transformedVertex.y < hitBoxTop;
+        bool bottomCheck = transformedVertex.y > hitBoxBottom;
+
+		if (rightCheck && leftChecck && topCheck && bottomCheck) {
+            return true;
+		}
+    }
     // temporary return
-    return true;
+    return false;
 }
 
 bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox)
@@ -294,18 +306,23 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     if (x_collision && y_collision)
     {
+        std::cout << "AABB Collision Detected" << std::endl;
         // Hitbox collided with the hurtbox of the other player
         // Check if the hitbox has collided with the mesh of the other player
-        Player &attacker = registry.players.get(playerWithHitBox);
-        Player &defender = registry.players.get(playerWithHurtBox);
         ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
+        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
+            otherPlayerMeshPtr, hurtPlayerMotion)) 
+        {
+            std::cout << "Mesh Collision Detected" << std::endl;
+            Player& attacker = registry.players.get(playerWithHitBox);
+            Player& defender = registry.players.get(playerWithHurtBox);
 
-        checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, otherPlayerMeshPtr, hurtPlayerMotion);
-
-        auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
-        std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
-        hitBox.hit = true;
-        return true;
+            auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
+            std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
+            hitBox.hit = true;
+            return true;
+        }
+        return false;
     }
 
     return false;
