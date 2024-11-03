@@ -324,9 +324,13 @@ void GlRender::handleTexturedRenders()
 
         if (registry.parryBoxes.has(m_player1))
         {
+            
             ParryBox &p1ParryBox = registry.parryBoxes.get(m_player1);
-            // Green for player 1's parrybox
-            renderDebugBoxes(m_player1, p1ParryBox, glm::vec3(0.0f, 1.0f, 0.0f));
+            if (p1ParryBox.active)
+            {
+                // Green for player 1's parrybox
+                renderDebugBoxes(m_player1, p1ParryBox, glm::vec3(0.0f, 1.0f, 0.0f));
+            }
         }
 
         if (registry.hitBoxes.has(m_player2))
@@ -349,8 +353,11 @@ void GlRender::handleTexturedRenders()
         if (registry.parryBoxes.has(m_player2))
         {
             ParryBox &p2ParryBox = registry.parryBoxes.get(m_player2);
-            // Purple for player 2's parrybox
-            renderDebugBoxes(m_player2, p2ParryBox, glm::vec3(1.0f, 0.0f, 1.0f));
+            if (p2ParryBox.active)
+            {
+                // Purple for player 2's parrybox
+                renderDebugBoxes(m_player2, p2ParryBox, glm::vec3(1.0f, 0.0f, 1.0f));
+            }
         }
     }
 }
