@@ -85,6 +85,9 @@ class InputHandler {
                 if (isKeyPressed(pair.first)) {
                     // get the corresponded action from the key 
                     Action action = pair.second;
+
+                    if (!actionBuffer.empty() && actionBuffer.back().action == action) continue;
+
                     actionBuffer.push_back({action, TTL});
                 }
             }
