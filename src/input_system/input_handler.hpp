@@ -66,7 +66,7 @@ class InputHandler {
                 Action action = actionBuffer[i].action;
                 // if punch is folllowed by kick, do a parry 
                 int next = i + 1; 
-                if (next >= actionBuffer.size()) {
+                if (next < actionBuffer.size()) {
                     Action nextAction = actionBuffer[next].action;
                     // printActionBufferHelper();
                     if ((action == Action::PUNCH && nextAction == Action::KICK) || 
