@@ -253,11 +253,11 @@ mat3 createProjectionMatrix()
 {
     // Fake projection matrix, scales with respect to window coordinates
     float left = -1.f;
-    float bottom = 1.f;
+    float bottom = -1.f;
 
     gl_has_errors();
     float right = 1.f;
-    float top = -1.f;
+    float top = 1.f;
 
     float sx = 2.f / (right - left);
     float sy = 2.f / (top - bottom);
@@ -285,16 +285,14 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
     vec3 transformedVertexFirst = projection * transform.mat * vec3(originalPositions[0].x, originalPositions[0].y, 1.0);
     vec3 transformedVertexLast = projection * transform.mat * vec3(originalPositions[originalPositions.size() - 1].x, originalPositions[originalPositions.size() - 1].y, 1.0);
 
-    std::cout << "transformed vertex last" << transformedVertexFirst.x << transformedVertexFirst.y << std::endl;
+    /*std::cout << "transformed vertex last" << transformedVertexFirst.x << transformedVertexFirst.y << std::endl;
     std::cout << "transformed vertex first" << transformedVertexLast.x << transformedVertexLast.y << std::endl;
 
     std::cout << "hitbox top" << hitBoxTop << std::endl;
-    std::cout << "hitbox bot" << hitBoxBottom << std::endl;
+    std::cout << "hitbox bot" << hitBoxBottom << std::endl;*/
 
     for (const vec3& originalPos : originalPositions) {
-        vec3 transformedVertex = projection * transform.mat * vec3(originalPos.x, originalPos.y, 1.0);
-
-
+        vec3 transformedVertex = transform.mat * vec3(originalPos.x, originalPos.y, 1.0);
 
         bool rightCheck = transformedVertex.x < hitBoxRight;
         bool leftCheck = transformedVertex.x > hitBoxLeft;
