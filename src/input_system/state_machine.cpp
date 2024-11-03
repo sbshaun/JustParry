@@ -66,7 +66,7 @@ void WalkingState::update(Entity entity, float elapsed_ms, StateMachine &stateMa
 
 bool WalkingState::canTransitionTo(Entity entity, PlayerState newState)
 {
-    return true;
+    return newState != PlayerState::WALKING;
 }
 
 void JumpingState::enter(Entity entity, StateMachine &stateMachine)
