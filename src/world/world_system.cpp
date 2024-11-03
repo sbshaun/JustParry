@@ -277,13 +277,19 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
     mat3 projection = createProjectionMatrix();
     
     Transform transform;
-    transform.translate(hurtMotion.position);
     transform.rotate(hurtMotion.angle);
-    transform.scale(hurtMotion.scale);
-
+    if (hurtMotion.direction) {
+        transform.translate({ hurtMotion.position.x - 0.086637, hurtMotion.position.y });
+        transform.rotate(hurtMotion.angle);
+        transform.scale(vec2{ 1, 1 });
+    }
+    else {
+        transform.translate({ hurtMotion.position.x + 0.086637, hurtMotion.position.y });
+        transform.rotate(hurtMotion.angle);
+        transform.scale(vec2{ -1, 1 });
+    }
 
     vec3 transformedVertexFirst = projection * transform.mat * vec3(originalPositions[0].x, originalPositions[0].y, 1.0);
-    vec3 transformedVertexLast = projection * transform.mat * vec3(originalPositions[originalPositions.size() - 1].x, originalPositions[originalPositions.size() - 1].y, 1.0);
 
     /*std::cout << "transformed vertex last" << transformedVertexFirst.x << transformedVertexFirst.y << std::endl;
     std::cout << "transformed vertex first" << transformedVertexLast.x << transformedVertexLast.y << std::endl;
@@ -291,8 +297,15 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
     std::cout << "hitbox top" << hitBoxTop << std::endl;
     std::cout << "hitbox bot" << hitBoxBottom << std::endl;*/
 
+    float farthestUp = transformedVertexFirst.y;
+    float farthestBot = transformedVertexFirst.y;
+    float farthestLeft = transformedVertexFirst.x;
+    float farthestRight = transformedVertexFirst.x;
+
     for (const vec3& originalPos : originalPositions) {
         vec3 transformedVertex = transform.mat * vec3(originalPos.x, originalPos.y, 1.0);
+
+        // std::cout << "transformed vertex" << transformedVertex.x << transformedVertex.y << std::endl;
 
         bool rightCheck = transformedVertex.x < hitBoxRight;
         bool leftCheck = transformedVertex.x > hitBoxLeft;
@@ -301,10 +314,30 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
         
         // std::cout << rightCheck << leftCheck << topCheck << bottomCheck << std::endl;
 
+        if (transformedVertex.y > farthestUp) {
+            farthestUp = transformedVertex.y;
+        }
+        if (transformedVertex.y < farthestBot) {
+            farthestBot = transformedVertex.y;
+        }
+        if (transformedVertex.x < farthestLeft) {
+            farthestLeft = transformedVertex.x;
+        }
+        if (transformedVertex.x > farthestRight) {
+            farthestRight = transformedVertex.x;
+        }
+
+
 		if (rightCheck && leftCheck && topCheck && bottomCheck) {
             return true;
 		}
     }
+
+    //std::cout << "Mesh Left:" << farthestLeft << " Mesh Right:" << farthestRight << std::endl;
+    //std::cout << "Mesh Top:" << farthestUp << " Mesh Bot:" << farthestBot << std::endl;
+    //std::cout << "Middle: " << (farthestLeft + farthestRight) / 2 << "," << (farthestUp + farthestBot) / 2 << "," << std::endl;
+    //std::cout << "Middle: " << hurtMotion.position.x << "," << hurtMotion.position.y << std::endl;
+
     // temporary return
     return false;
 }
@@ -342,12 +375,12 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
             otherPlayerMeshPtr, hurtPlayerMotion)) 
         {
-            std::cout << "Mesh Collision Detected" << std::endl;
+            // std::cout << "Mesh Collision Detected" << std::endl;
             Player& attacker = registry.players.get(playerWithHitBox);
             Player& defender = registry.players.get(playerWithHurtBox);
 
             auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
-            std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
+            // std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
             hitBox.hit = true;
             return true;
         }
