@@ -167,21 +167,55 @@ bool CrouchingState::canTransitionTo(Entity entity, PlayerState newState)
 
 void ParryingState::enter(Entity entity, StateMachine &stateMachine)
 {
-    // add parry animation
+    // similar to attacking state, register a state timer, and activate parry box 
+    Player &player = registry.players.get(entity);
+    std::cout << "Player " << player.id << " parries!" << std::endl;
+
+    Fighters fighter = registry.players.get(entity).current_char;
+    float PARRY_BOX_DURATION = FighterManager::getFighterConfig(fighter).PARRY_DURATION;
+    
+    // 1. register a state timer
+    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::PARRYING;
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(PARRY_BOX_DURATION);
+
+    ParryBox &playerParryBox = registry.parryBoxes.get(entity);
+    playerParryBox.active = true;
 }
 
 void ParryingState::exit(Entity entity, StateMachine &stateMachine)
 {
+    std::cout << "Exiting Parrying State" << std::endl; 
+    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::IDLE;
+
+    ParryBox &playerParryBox = registry.parryBoxes.get(entity);
+    playerParryBox.active = false;
 }
 
 void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-    // Check for successful parry, transition to counter or recovery
+    // Check for successful parry, transition to counter or recovery 
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive())
+    {
+        playerStateTimer.update(elapsed_ms);
+    }
+    else
+    {
+        PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+        playerState.currentState = PlayerState::IDLE;
+        stateMachine.transition(entity, PlayerState::IDLE);
+    }
 }
 
 bool ParryingState::canTransitionTo(Entity entity, PlayerState newState)
 {
-    return newState != PlayerState::PARRYING;
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive())
+        return false; // still in current state
+    return newState != PlayerState::PARRYING; 
 }
 
 void StunnedState::enter(Entity entity, StateMachine &stateMachine)

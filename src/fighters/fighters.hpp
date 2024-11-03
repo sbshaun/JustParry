@@ -33,7 +33,9 @@ struct FighterConfig {
     float PUNCH_WIDTH;
     float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;
-    float PUNCH_STUN_DURATION = 3000.f;
+    float PUNCH_STUN_DURATION = 500.f;
+
+    float PARRY_DURATION = 500.f; // for now .05s parry duration 
 
     //Graphics 
     //path to main texture 
