@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 #include "../window.hpp"
+#include "../world/world_system.hpp"
+#include "../world/world_init.hpp"
 #include <string>
 #include <GLFW/glfw3.h>
 
@@ -17,7 +19,8 @@ enum class GameState
     PLAYING,
     HELP,
     SETTINGS,
-    ROUND_START
+    ROUND_START,
+    ROUND_OVER
 };
 
 class Game
@@ -38,7 +41,7 @@ public:
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
     bool handleHelpInput(GLFWwindow *window);
-    void resetGame(GlRender &renderer);
+    void resetGame(GlRender &renderer, WorldSystem &worldSystem);
     void updateScores(const Health &h1, const Health &h2);
     int getPlayer1Score() const { return player1Score; }
     int getPlayer2Score() const { return player2Score; }
