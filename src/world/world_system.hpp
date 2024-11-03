@@ -26,6 +26,8 @@ public:
 	void handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine);
 	void updateStateTimers(float elapsed_ms);
 	bool checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox);
+	bool checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, float hitBoxTop,
+		float hitBoxBottom, ObjectMesh* mesh, Motion& hurtMotion);
 	void checkAABBCollision(bool& xCollision, bool& yCollision, const Box& box1, Motion& motion1, const Box& box2, Motion& motion2);
 	void playerCollisions(GlRender *renderer);
 	// bool step(float elapsed_ms);

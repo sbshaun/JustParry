@@ -249,6 +249,25 @@ void WorldSystem::updateStateTimers(float elapsed_ms)
     HitBox &player2HitBox = registry.hitBoxes.get(renderer->m_player2);
 }
 
+bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, float hitBoxTop, 
+    float hitBoxBottom, ObjectMesh* mesh, Motion& hurtMotion) {
+
+    std::vector<vec3> originalPositions;
+    std::vector<vec2> transformedPositions;
+
+    for (const ColoredVertex& vertex : mesh->vertices) {
+        originalPositions.push_back(vertex.position);
+    }
+    
+    Transform transform;
+    transform.translate(hurtMotion.position);
+    transform.rotate(hurtMotion.angle);
+    transform.scale(hurtMotion.scale);
+
+    // temporary return
+    return true;
+}
+
 bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox)
 {
     Motion &hitPlayerMotion = registry.motions.get(playerWithHitBox);
@@ -275,8 +294,15 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     if (x_collision && y_collision)
     {
+        // Hitbox collided with the hurtbox of the other player
+        // Check if the hitbox has collided with the mesh of the other player
         Player &attacker = registry.players.get(playerWithHitBox);
         Player &defender = registry.players.get(playerWithHurtBox);
+        ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
+
+        checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, otherPlayerMeshPtr, hurtPlayerMotion);
+
+        auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
         std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
         hitBox.hit = true;
         return true;
