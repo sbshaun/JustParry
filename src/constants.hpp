@@ -22,7 +22,7 @@ const int timer_length = 100;
 // movement
 // const float JUMP_HEIGHT = 0.5f;
 // const float JUMP_DURATION = 1.0f;
-const float MOVE_SPEED = 0.01f/FPS_LOGIC_FACTOR;
+const float MOVE_SPEED = 0.03f/FPS_LOGIC_FACTOR;
 
 const float JUMP_VELOCITY = 0.065f/FPS_LOGIC_FACTOR;
 const float GRAVITY = 0.001f/FPS_LOGIC_FACTOR;
