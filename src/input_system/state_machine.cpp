@@ -100,13 +100,24 @@ void AttackingState::enter(Entity entity, StateMachine &stateMachine)
 
     // add attack animation
     Fighters fighter = registry.players.get(entity).current_char;
-    float HITBOX_DURATION = FighterManager::getFighterConfig(fighter).HITBOX_DURATION;
+    FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
 
     // 1. register a state timer
     PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
     playerState.currentState = PlayerState::ATTACKING;
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
-    playerStateTimer.reset(HITBOX_DURATION);
+    playerStateTimer.reset(fighterConfig.HITBOX_DURATION);
+    
+    Motion &motion = registry.motions.get(entity);
+
+    HitBox &hitBox = registry.hitBoxes.get(entity);
+    hitBox.active = true;
+    hitBox.hit = false;
+    hitBox.width = 0; // fighterConfig.PUNCH_WIDTH;
+    hitBox.height = fighterConfig.PUNCH_HEIGHT;
+    hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
+    float baseOffset = fighterConfig.PUNCH_X_OFFSET; // set base offset and adjust based on player direction 
+    hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;   
 }
 
 void AttackingState::exit(Entity entity, StateMachine &stateMachine)
@@ -125,6 +136,16 @@ void AttackingState::exit(Entity entity, StateMachine &stateMachine)
 
 void AttackingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
+    // increase the width of the hitbox over time, max width is the fighter's PUNCH_WIDTH
+    HitBox &hitBox = registry.hitBoxes.get(entity);
+    Fighters fighter = registry.players.get(entity).current_char;
+    FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
+
+    if (hitBox.width < fighterConfig.PUNCH_WIDTH)
+    {
+        hitBox.width += fighterConfig.PUNCH_WIDTH / (fighterConfig.HITBOX_DURATION / 4) * elapsed_ms;
+    }
+
     // when state timer is expired, transition to idle
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())

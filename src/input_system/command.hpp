@@ -99,20 +99,6 @@ public:
     {
         if (!state_machine.transition(entity, PlayerState::ATTACKING))
             return;
-
-        Fighters fighter = registry.players.get(entity).current_char;
-        FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
-        
-        Motion &motion = registry.motions.get(entity);
-
-        HitBox &hitBox = registry.hitBoxes.get(entity);
-        hitBox.active = true;
-        hitBox.hit = false;
-        hitBox.width = fighterConfig.PUNCH_WIDTH;
-        hitBox.height = fighterConfig.PUNCH_HEIGHT;
-        hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
-        float baseOffset = fighterConfig.PUNCH_X_OFFSET; // set base offset and adjust based on player direction 
-        hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;   
     }
 };
 
