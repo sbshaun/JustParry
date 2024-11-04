@@ -118,21 +118,21 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine)
-{
-    auto &motion = registry.motions.get(player);
-    auto &input = registry.playerInputs.get(player);
+// void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine)
+// {
+//     auto &motion = registry.motions.get(player);
+//     auto &input = registry.playerInputs.get(player);
 
-    // Reset inputs
-    input = PlayerInput();
+//     // Reset inputs
+//     input = PlayerInput();
 
-    input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
-    input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
-    input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
-    input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
-    input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
-    input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
-}
+//     input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
+//     input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
+//     input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
+//     input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
+//     input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
+//     input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
+// }
 
 void WorldSystem::handleInput()
 {
@@ -172,12 +172,9 @@ void WorldSystem::handleInput()
     player2StateMachine->update(renderer->m_player2, TIME_STEP);
 }
 
-void WorldSystem::inputProcessing(int timer)
+void WorldSystem::inputProcessing()
 {
-    Motion &player1Motion = registry.motions.get(renderer->m_player1);
-    Motion &player2Motion = registry.motions.get(renderer->m_player2);
-    player1Motion.lastPos = player1Motion.position;
-    player2Motion.lastPos = player2Motion.position;
+    // check input queue and resolve
 
     PlayerInput &player1Input = registry.playerInputs.get(renderer->m_player1);
     PlayerInput &player2Input = registry.playerInputs.get(renderer->m_player2);
@@ -200,6 +197,9 @@ void WorldSystem::movementProcessing()
 {
     Motion &player1Motion = registry.motions.get(renderer->m_player1);
     Motion &player2Motion = registry.motions.get(renderer->m_player2);
+
+    player1Motion.lastPos = player1Motion.position;
+    player2Motion.lastPos = player2Motion.position;
 
     PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
     PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
