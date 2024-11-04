@@ -293,7 +293,7 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     resetInterpVariables();
 
     isLoading = true;
-    setState(GameState::MENU);
+    setState(GameState::PLAYING);
 }
 
 void Game::updateScores(const Health &h1, const Health &h2)
