@@ -488,20 +488,14 @@ void WorldSystem::hitBoxCollisions()
     if (checkHitBoxCollisions(player1, player2))
     {
         applyDamage(player2, FighterManager::getFighterConfig(current_char1).PUNCH_DAMAGE);
-        PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
-        StateTimer &player2StateTimer = registry.stateTimers.get(player2);
-        player2State.currentState = PlayerState::STUNNED;
-        player2StateTimer.reset(FighterManager::getFighterConfig(current_char1).PUNCH_STUN_DURATION);
+        player2StateMachine->transition(player2, PlayerState::STUNNED); 
     }
 
     // check if player 2 hit player 1
     if (checkHitBoxCollisions(player2, player1))
     {
         applyDamage(player1, FighterManager::getFighterConfig(current_char2).PUNCH_DAMAGE);
-        PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
-        StateTimer &player1StateTimer = registry.stateTimers.get(player1);
-        player1State.currentState = PlayerState::STUNNED;
-        player1StateTimer.reset(FighterManager::getFighterConfig(current_char2).PUNCH_STUN_DURATION);
+        player1StateMachine->transition(player1, PlayerState::STUNNED);
     }
 }
 
