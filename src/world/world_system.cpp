@@ -349,7 +349,12 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     // if hitbox collides with parry box, the attack is parried 
     if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
         // parried the attack, transition the attacking player to stunned state using state machine 
-        player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+        if (playerWithHitBox == renderer->m_player1) {
+            player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+        }
+        else {
+            player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+        }
         return false;
     }
 
@@ -412,8 +417,8 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
             otherPlayerMeshPtr, parryPlayerMotion)) 
         {
             // if parried successfully, reset state timer to 0 
-            StateTimer &player1StateTimer = registry.stateTimers.get(playerWithParryBox);
-            player1StateTimer.reset(0);
+            StateTimer &playerStateTimer = registry.stateTimers.get(playerWithParryBox);
+            playerStateTimer.reset(0);
             return true;
         }
         return false;
