@@ -345,12 +345,9 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     // check if the other player's parry box is active 
     ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
-    if (parryBox.active) {
-        if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
-            // attacck is parried 
-            return false;
-        }
-    }
+    
+    // if hitbox collides with parry box, the attack is parried 
+    if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) return false;
 
     if (x_collision && y_collision)
     {
@@ -376,11 +373,44 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     return false;
 }
 
-// simple check active or not for now 
-// TODO: add AABB and mesh based collision check? 
-bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox) {
-    ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
-    if (parryBox.active) return true;
+// check if parry box is active and if hitbox collides with it 
+bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox) {
+    if (!parryBox.active) return false; s
+    Motion &hitPlayerMotion = registry.motions.get(playerWithHitBox);
+    Motion &parryPlayerMotion = registry.motions.get(playerWithParryBox);
+    HitBox &hitBox = registry.hitBoxes.get(playerWithHitBox);
+    ParryBox &parryBox = registry.parryBoxes.get(playerWithParryBox);
+
+    // if hitbox is not active or has already hit, skip check
+    if (!hitBox.active || hitBox.hit) return false;
+
+    float hitBoxLeft = hitBox.getLeft(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxRight = hitBox.getRight(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
+
+    float parryBoxLeft = parryBox.getLeft(parryPlayerMotion.position, parryPlayerMotion.direction);
+    float parryBoxRight = parryBox.getRight(parryPlayerMotion.position, parryPlayerMotion.direction);
+    float parryBoxTop = parryBox.getTop(parryPlayerMotion.position, parryPlayerMotion.direction);
+    float parryBoxBottom = parryBox.getBottom(parryPlayerMotion.position, parryPlayerMotion.direction);    
+
+    bool x_collision = hitBoxLeft < parryBoxRight && hitBoxRight > parryBoxLeft;
+    bool y_collision = hitBoxTop > parryBoxBottom && hitBoxBottom < parryBoxTop;
+
+    if (x_collision && y_collision)
+    {
+        // std::cout << "AABB Collision Detected" << std::endl;
+        // Hitbox collided with the hurtbox of the other player
+        // Check if the hitbox has collided with the mesh of the other player
+        ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithParryBox);
+        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
+            otherPlayerMeshPtr, parryPlayerMotion)) 
+        {
+            return true;
+        }
+        return false;
+    }
+
     return false;
 }
 
