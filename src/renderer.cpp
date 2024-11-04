@@ -238,7 +238,7 @@ void GlRender::handleTexturedRenders()
                 player1Renders.texture = m_bird_texture;
             }
 
-            // if parryBox is active, turn to transparent and green tint to show player is parrying 
+            // if parryBox is active, turn to transparent and green tint to show player is parrying
             if (registry.parryBoxes.get(m_player1).active)
             {
                 shader->setBool("isParrying", true);
@@ -292,7 +292,7 @@ void GlRender::handleTexturedRenders()
             if (player2State.currentState == PlayerState::ATTACKING)
             {
                 player2Renders.texture = m_bird_p_texture;
-            } 
+            }
             else
             {
                 player2Renders.texture = m_bird_texture;
@@ -344,7 +344,7 @@ void GlRender::handleTexturedRenders()
     {
         if (registry.playableArea.has(m_playableArea))
         {
-            PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+            PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
             renderPlayableArea(m_playableArea, playableArea.position, playableArea.width, playableArea.height, glm::vec3(1.0f, 0.0f, 1.0f));
         }
 
@@ -368,7 +368,7 @@ void GlRender::handleTexturedRenders()
 
         if (registry.parryBoxes.has(m_player1))
         {
-            
+
             ParryBox &p1ParryBox = registry.parryBoxes.get(m_player1);
             if (p1ParryBox.active)
             {
@@ -430,21 +430,19 @@ void GlRender::render()
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+    PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     renderTexturedQuadScaled(
         m_backgroundTexture,
         -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5, 0,
         M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
-        1.0f
-    );
+        1.0f);
 
     renderTexturedQuadScaled(
         m_foregroundTexture,
         -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0, 0,
         M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
-        1.0f
-    );
+        1.0f);
 
     // debugging wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -462,9 +460,10 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bird.png"), m_bird_texture);
     loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
+    loadTexture(textures_path("help-screen.png"), m_helpTexture);
+    loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
     loadTexture(textures_path("bg.png"), m_backgroundTexture);
     loadTexture(textures_path("bg_parallax.png"), m_foregroundTexture);
-
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -676,10 +675,10 @@ void GlRender::shutdown()
     glDeleteTextures(1, &m_bird_texture);
     glDeleteTextures(1, &m_bird_p_texture);
     glDeleteTextures(1, &m_menuTexture);
+    glDeleteTextures(1, &m_helpTexture);
+    glDeleteTextures(1, &m_settingsTexture);
     glDeleteTextures(1, &m_backgroundTexture);
     glDeleteTextures(1, &m_foregroundTexture);
-
-
 
     // Delete text objects
     if (m_fps)
@@ -794,8 +793,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     glDisable(GL_DEPTH_TEST);
 
     static Shader *buttonShader = nullptr;
-
-    // Initialize shader if not already done
     if (!buttonShader)
     {
         try
@@ -813,16 +810,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
             return;
         }
     }
-
-    // Save current OpenGL state
-    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
-    GLint blendSrcAlpha, blendDstAlpha;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrcAlpha);
-    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDstAlpha);
-
-    // Enable blending for transparent button
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
@@ -864,17 +851,17 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
 
     buttonShader->use();
 
-    // Set the button size and corner radius uniforms
+    // Set the button position and size uniforms
+    GLint posLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonPos");
     GLint sizeLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonSize");
-    GLint radiusLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "cornerRadius");
 
+    if (posLocation != -1)
+    {
+        glUniform2f(posLocation, x, M_WINDOW_HEIGHT_PX - y - height); // Convert to OpenGL coordinates
+    }
     if (sizeLocation != -1)
     {
         glUniform2f(sizeLocation, width, height);
-    }
-    if (radiusLocation != -1)
-    {
-        glUniform1f(radiusLocation, 10.0f); // Adjust radius as needed
     }
 
     GLint colorLoc = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonColor");
@@ -896,6 +883,10 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
             glUniform3f(colorLoc, color.x, color.y, color.z);
         }
     }
+
+    // Enable blending for transparent edges
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Draw button background
     glBindVertexArray(VAO);
@@ -1126,7 +1117,7 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
     }
 
     Motion &motion = registry.motions.get(entity);
-    PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+    PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     // Calculate box vertices in world space
     float left = box.getLeft(motion.position, motion.direction) - playableArea.position.x;
@@ -1188,7 +1179,7 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
     }
 }
 
-void GlRender::renderPlayableArea(Entity entity, const vec2& position, float width, float height, const glm::vec3& color)
+void GlRender::renderPlayableArea(Entity entity, const vec2 &position, float width, float height, const glm::vec3 &color)
 {
     if (!m_debugShader)
     {
@@ -1196,8 +1187,7 @@ void GlRender::renderPlayableArea(Entity entity, const vec2& position, float wid
         return;
     }
 
-
-    PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+    PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     // Calculate box vertices in world space
     float left = position.x - width / M_WINDOW_WIDTH_PX - playableArea.position.x;
@@ -1224,7 +1214,7 @@ void GlRender::renderPlayableArea(Entity entity, const vec2& position, float wid
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
         // Use debug shader
@@ -1264,12 +1254,12 @@ void GlRender::bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, st
 {
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffers[(uint)gid]);
     glBufferData(GL_ARRAY_BUFFER,
-        sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+                 sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
     gl_has_errors();
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffers[(uint)gid]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-        sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
+                 sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
     gl_has_errors();
 }
 
@@ -1281,8 +1271,8 @@ void GlRender::initializeGlMeshes()
         GEOMETRY_BUFFER_ID geom_index = mesh_paths[i].first;
         std::string name = mesh_paths[i].second;
         ObjectMesh::loadFromOBJFile(name,
-            meshes[(int)geom_index].vertices,
-            meshes[(int)geom_index].vertex_indices,
-            meshes[(int)geom_index].original_size);
+                                    meshes[(int)geom_index].vertices,
+                                    meshes[(int)geom_index].vertex_indices,
+                                    meshes[(int)geom_index].original_size);
     }
 }
