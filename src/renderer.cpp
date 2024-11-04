@@ -248,6 +248,15 @@ void GlRender::handleTexturedRenders()
                 shader->setBool("isParrying", false);
             }
 
+            if (registry.playerCurrentStates.get(m_player1).currentState == PlayerState::STUNNED)
+            {
+                shader->setBool("stunned", true);
+            }
+            else
+            {
+                shader->setBool("stunned", false);
+            }
+
             if (registry.hitBoxes.get(m_player2).hit)
             {
                 shader->setBool("takenDamage", true);
@@ -296,6 +305,15 @@ void GlRender::handleTexturedRenders()
             else
             {
                 shader->setBool("isParrying", false);
+            }
+
+            if (registry.playerCurrentStates.get(m_player2).currentState == PlayerState::STUNNED)
+            {
+                shader->setBool("stunned", true);
+            }
+            else
+            {
+                shader->setBool("stunned", false);
             }
 
             if (registry.hitBoxes.get(m_player1).hit)

@@ -5,6 +5,7 @@ in vec2 TexCoord;
 uniform sampler2D m_bird_texture;
 uniform bool takenDamage;
 uniform bool isParrying; 
+uniform bool stunned;
 
 void main() {
     vec4 tint = vec4(1.0, 0.8, 0.8, 1.0);  // Slight red tint (1.0 in red, 0.8 in green/blue)
@@ -14,6 +15,12 @@ void main() {
         fragColor = textureColor * tint;  // Apdwply the red tint to the texture
         return;
     } 
+
+    if (stunned) {
+        vec4 textureColor = texture(m_bird_texture, TexCoord);  
+        fragColor = textureColor * vec4(0.7, 0.7, 0.7, 1.0);  // grey tint 
+        return;
+    }
 
     if (isParrying) {
         tint = vec4(0.8, 0.8, 0.8, .2);  // Slight green tint (0.8 in red, 1.0 in green, 0.8 in blue)

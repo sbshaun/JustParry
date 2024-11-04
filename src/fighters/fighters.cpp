@@ -14,11 +14,13 @@ FighterConfig& setUpBirdmanConfig() {
     birdmanConfig.MOVE_SPEED = 0.005f/FPS_LOGIC_FACTOR;
     birdmanConfig.JUMP_VELOCITY = 0.06f/FPS_LOGIC_FACTOR;
 
-
-    birdmanConfig.HITBOX_DURATION = 1000.f;
+    birdmanConfig.HITBOX_DURATION = 1500.f;
     birdmanConfig.PUNCH_X_OFFSET = 0.f;
     birdmanConfig.PUNCH_DAMAGE = 10.f;
-    birdmanConfig.PUNCH_STUN_DURATION = 1000.f;
+    birdmanConfig.PUNCH_STUN_DURATION = 700.f;
+    birdmanConfig.PARRY_STUN_DURATION = 3000.f;
+
+    birdmanConfig.PARRY_DURATION = 700.f;
 
     birdmanConfig.main_texture = "bird.png";
     birdmanConfig.punch_texture = "bird_p.png";
