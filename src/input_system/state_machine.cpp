@@ -111,6 +111,10 @@ void AttackingState::enter(Entity entity, StateMachine &stateMachine)
 
 void AttackingState::exit(Entity entity, StateMachine &stateMachine)
 {
+    // make sure the state timer is not alive 
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(0);
+
     PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
     playerState.currentState = PlayerState::IDLE;
 
@@ -135,9 +139,13 @@ void AttackingState::update(Entity entity, float elapsed_ms, StateMachine &state
 
 bool AttackingState::canTransitionTo(Entity entity, PlayerState newState)
 {
+    if (newState == PlayerState::STUNNED)
+        return true; // if being parried during attacck, override and transition to STUNNED 
+
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())
         return false; // still in current state
+
     return newState != PlayerState::ATTACKING;
 }
 
@@ -173,11 +181,12 @@ void ParryingState::enter(Entity entity, StateMachine &stateMachine)
     // 1. register a state timer
     PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
     playerState.currentState = PlayerState::PARRYING;
-    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
-    playerStateTimer.reset(PARRY_BOX_DURATION);
 
     ParryBox &playerParryBox = registry.parryBoxes.get(entity);
     playerParryBox.active = true;
+
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(PARRY_BOX_DURATION);
 }
 
 void ParryingState::exit(Entity entity, StateMachine &stateMachine)
@@ -216,7 +225,18 @@ bool ParryingState::canTransitionTo(Entity entity, PlayerState newState)
 
 void StunnedState::enter(Entity entity, StateMachine &stateMachine)
 {
-    std::cout << "Entering Stunned State" << std::endl;
+    Player &player = registry.players.get(entity);
+    std::cout << "Player " << player.id << " is stunned!" << std::endl;
+    
+    // set a timer 
+    Fighters fighter = registry.players.get(entity).current_char;
+    float STUN_DURATION = FighterManager::getFighterConfig(fighter).PUNCH_STUN_DURATION; 
+
+    // 1. register a state timer
+    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::STUNNED;
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(STUN_DURATION);
 }
 
 void StunnedState::exit(Entity entity, StateMachine &stateMachine)
@@ -226,6 +246,8 @@ void StunnedState::exit(Entity entity, StateMachine &stateMachine)
 
 void StunnedState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
+    std::cout << "Updating Stunned State" << std::endl;
+    std::cout << "duration: " << registry.stateTimers.get(entity).duration << ", elapsed: " << registry.stateTimers.get(entity).elapsedTime << std::endl;
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())
     {

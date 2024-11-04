@@ -347,7 +347,16 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
     
     // if hitbox collides with parry box, the attack is parried 
-    if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) return false;
+    if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
+        // parried the attack, transition the attacking player to stunned state using state machine 
+        if (playerWithHitBox == renderer->m_player1) {
+            player1StateMachine->transition(renderer->m_player1, PlayerState::STUNNED);
+        }
+        else {
+            player2StateMachine->transition(renderer->m_player2, PlayerState::STUNNED);
+        }
+        return false;
+    }
 
     if (x_collision && y_collision)
     {
