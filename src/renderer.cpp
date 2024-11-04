@@ -238,6 +238,16 @@ void GlRender::handleTexturedRenders()
                 player1Renders.texture = m_bird_texture;
             }
 
+            // if parryBox is active, turn to transparent and green tint to show player is parrying 
+            if (registry.parryBoxes.get(m_player1).active)
+            {
+                shader->setBool("isParrying", true);
+            }
+            else
+            {
+                shader->setBool("isParrying", false);
+            }
+
             if (registry.hitBoxes.get(m_player2).hit)
             {
                 shader->setBool("takenDamage", true);
@@ -273,10 +283,19 @@ void GlRender::handleTexturedRenders()
             if (player2State.currentState == PlayerState::ATTACKING)
             {
                 player2Renders.texture = m_bird_p_texture;
-            }
+            } 
             else
             {
                 player2Renders.texture = m_bird_texture;
+            }
+
+            if (registry.parryBoxes.get(m_player2).active)
+            {
+                shader->setBool("isParrying", true);
+            }
+            else
+            {
+                shader->setBool("isParrying", false);
             }
 
             if (registry.hitBoxes.get(m_player1).hit)

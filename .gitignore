@@ -4,3 +4,4 @@
 out/
 CMakePresets.json
 external/project_path.hpp
+.DS_Store
