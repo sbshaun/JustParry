@@ -268,6 +268,31 @@ struct ParryBox : public Box
 {
     // if hitbox collides ParryBox, the attack is parried.
     bool active = false; // active for 12 frames
+
+    // parry is just same as player's size. TODO
+    float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        return playerPosition.x - width / 2 + xOffset;
+        // return playerPosition.x - width - xOffset;
+    }
+
+    float getRight(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        return playerPosition.x + width / 2 + xOffset;
+        // return playerPosition.x + width + xOffset;
+    }
+
+    float getTop(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        return playerPosition.y + height;
+    }
+
+    float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        return playerPosition.y - height;
+    }
 };
 
 struct PerfectParryBox : public Box
@@ -335,7 +360,6 @@ struct ObjectMesh {
     std::vector<uint16_t> vertex_indices;
 };
 
-/**
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture

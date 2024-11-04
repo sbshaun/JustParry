@@ -238,6 +238,16 @@ void GlRender::handleTexturedRenders()
                 player1Renders.texture = m_bird_texture;
             }
 
+            // if parryBox is active, turn to transparent and green tint to show player is parrying 
+            if (registry.parryBoxes.get(m_player1).active)
+            {
+                shader->setBool("isParrying", true);
+            }
+            else
+            {
+                shader->setBool("isParrying", false);
+            }
+
             if (registry.hitBoxes.get(m_player2).hit)
             {
                 shader->setBool("takenDamage", true);
@@ -273,10 +283,19 @@ void GlRender::handleTexturedRenders()
             if (player2State.currentState == PlayerState::ATTACKING)
             {
                 player2Renders.texture = m_bird_p_texture;
-            }
+            } 
             else
             {
                 player2Renders.texture = m_bird_texture;
+            }
+
+            if (registry.parryBoxes.get(m_player2).active)
+            {
+                shader->setBool("isParrying", true);
+            }
+            else
+            {
+                shader->setBool("isParrying", false);
             }
 
             if (registry.hitBoxes.get(m_player1).hit)
@@ -323,6 +342,17 @@ void GlRender::handleTexturedRenders()
             renderDebugBoxes(m_player1, p1HurtBox, glm::vec3(0.0f, 0.8f, 1.0f));
         }
 
+        if (registry.parryBoxes.has(m_player1))
+        {
+            
+            ParryBox &p1ParryBox = registry.parryBoxes.get(m_player1);
+            if (p1ParryBox.active)
+            {
+                // Green for player 1's parrybox
+                renderDebugBoxes(m_player1, p1ParryBox, glm::vec3(0.0f, 1.0f, 0.0f));
+            }
+        }
+
         if (registry.hitBoxes.has(m_player2))
         {
             HitBox &p2HitBox = registry.hitBoxes.get(m_player2);
@@ -338,6 +368,16 @@ void GlRender::handleTexturedRenders()
             HurtBox &p2HurtBox = registry.hurtBoxes.get(m_player2);
             // Yellow for player 2's hurtbox
             renderDebugBoxes(m_player2, p2HurtBox, glm::vec3(1.0f, 1.0f, 0.0f));
+        }
+
+        if (registry.parryBoxes.has(m_player2))
+        {
+            ParryBox &p2ParryBox = registry.parryBoxes.get(m_player2);
+            if (p2ParryBox.active)
+            {
+                // Purple for player 2's parrybox
+                renderDebugBoxes(m_player2, p2ParryBox, glm::vec3(1.0f, 0.0f, 1.0f));
+            }
         }
     }
 }

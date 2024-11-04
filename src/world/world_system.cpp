@@ -77,6 +77,7 @@ void WorldSystem::initInputHandlers()
     player1InputMapping->bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
     player1InputMapping->bindKeyToAction(GLFW_KEY_R, Action::PUNCH);
     player1InputMapping->bindKeyToAction(GLFW_KEY_T, Action::KICK);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_G, Action::PARRY);
 
     // Player 2 controls
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
@@ -86,6 +87,7 @@ void WorldSystem::initInputHandlers()
     player2InputMapping->bindKeyToAction(GLFW_KEY_DOWN, Action::CROUCH);
     player2InputMapping->bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
     player2InputMapping->bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_M, Action::PARRY);
 
     // 3. player 1 and player 2 init <action -> command> mapping
     player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
@@ -117,22 +119,6 @@ void WorldSystem::initStateMachines()
 }
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
-
-// void WorldSystem::handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine)
-// {
-//     auto &motion = registry.motions.get(player);
-//     auto &input = registry.playerInputs.get(player);
-
-//     // Reset inputs
-//     input = PlayerInput();
-
-//     input.left = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_LEFT));
-//     input.right = isKeyPressed(inputHandler.getKeyFromAction(Action::MOVE_RIGHT));
-//     input.up = isKeyPressed(inputHandler.getKeyFromAction(Action::JUMP));
-//     input.down = isKeyPressed(inputHandler.getKeyFromAction(Action::CROUCH));
-//     input.punch = isKeyPressed(inputHandler.getKeyFromAction(Action::PUNCH));
-//     input.kick = isKeyPressed(inputHandler.getKeyFromAction(Action::KICK));
-// }
 
 void WorldSystem::handleInput()
 {
@@ -166,10 +152,6 @@ void WorldSystem::handleInput()
         else
             p2Motion.velocity.x = 0;
     }
-
-    // Always update state machines for both players
-    player1StateMachine->update(renderer->m_player1, TIME_STEP);
-    player2StateMachine->update(renderer->m_player2, TIME_STEP);
 }
 
 void WorldSystem::inputProcessing()
@@ -242,11 +224,6 @@ void WorldSystem::updateStateTimers(float elapsed_ms)
 {
     player1StateMachine->update(renderer->m_player1, elapsed_ms);
     player2StateMachine->update(renderer->m_player2, elapsed_ms);
-    StateTimer &player1StateTimer = registry.stateTimers.get(renderer->m_player1);
-    StateTimer &player2StateTimer = registry.stateTimers.get(renderer->m_player2);
-
-    HitBox &player1HitBox = registry.hitBoxes.get(renderer->m_player1);
-    HitBox &player2HitBox = registry.hitBoxes.get(renderer->m_player2);
 }
 
 mat3 createProjectionMatrix()
@@ -366,6 +343,21 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
     bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
 
+    // check if the other player's parry box is active 
+    ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
+    
+    // if hitbox collides with parry box, the attack is parried 
+    if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
+        // parried the attack, transition the attacking player to stunned state using state machine 
+        if (playerWithHitBox == renderer->m_player1) {
+            player1StateMachine->transition(renderer->m_player1, PlayerState::STUNNED);
+        }
+        else {
+            player2StateMachine->transition(renderer->m_player2, PlayerState::STUNNED);
+        }
+        return false;
+    }
+
     if (x_collision && y_collision)
     {
         // std::cout << "AABB Collision Detected" << std::endl;
@@ -382,6 +374,48 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
             // std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
             hitBox.hit = true;
+            return true;
+        }
+        return false;
+    }
+
+    return false;
+}
+
+// check if parry box is active and if hitbox collides with it 
+bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox) {
+    ParryBox &parryBox = registry.parryBoxes.get(playerWithParryBox);
+    if (!parryBox.active) return false; 
+    
+    Motion &hitPlayerMotion = registry.motions.get(playerWithHitBox);
+    Motion &parryPlayerMotion = registry.motions.get(playerWithParryBox);
+    HitBox &hitBox = registry.hitBoxes.get(playerWithHitBox);
+
+    // if hitbox is not active or has already hit, skip check
+    if (!hitBox.active || hitBox.hit) return false;
+
+    float hitBoxLeft = hitBox.getLeft(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxRight = hitBox.getRight(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxTop = hitBox.getTop(hitPlayerMotion.position, hitPlayerMotion.direction);
+    float hitBoxBottom = hitBox.getBottom(hitPlayerMotion.position, hitPlayerMotion.direction);
+
+    float parryBoxLeft = parryBox.getLeft(parryPlayerMotion.position, parryPlayerMotion.direction);
+    float parryBoxRight = parryBox.getRight(parryPlayerMotion.position, parryPlayerMotion.direction);
+    float parryBoxTop = parryBox.getTop(parryPlayerMotion.position, parryPlayerMotion.direction);
+    float parryBoxBottom = parryBox.getBottom(parryPlayerMotion.position, parryPlayerMotion.direction);    
+
+    bool x_collision = hitBoxLeft < parryBoxRight && hitBoxRight > parryBoxLeft;
+    bool y_collision = hitBoxTop > parryBoxBottom && hitBoxBottom < parryBoxTop;
+
+    if (x_collision && y_collision)
+    {
+        // std::cout << "AABB Collision Detected" << std::endl;
+        // Hitbox collided with the hurtbox of the other player
+        // Check if the hitbox has collided with the mesh of the other player
+        ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithParryBox);
+        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
+            otherPlayerMeshPtr, parryPlayerMotion)) 
+        {
             return true;
         }
         return false;

@@ -15,11 +15,7 @@ class InputMapping {
 
     public:
         InputMapping() {
-                // Initialize key mapping
-            if (keyToActionMap.empty()) {
-                // error 
-                std::cerr << "Key mapping is empty, please bind keys first" << std::endl; 
-            }
+            // Initialize key mapping
         };
 
         void bindKeyToAction(int key, Action action) {
@@ -33,6 +29,11 @@ class InputMapping {
         }; 
 
         Action getActionFromKey(int key) const {
+            if (keyToActionMap.empty()) {
+                // error 
+                std::cerr << "Key mapping is empty, please bind keys first" << std::endl; 
+            }
+
             if (keyToActionMap.find(key) != keyToActionMap.end()) {
                 return keyToActionMap.at(key);
             }

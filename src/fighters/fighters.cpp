@@ -18,7 +18,7 @@ FighterConfig& setUpBirdmanConfig() {
     birdmanConfig.HITBOX_DURATION = 1000.f;
     birdmanConfig.PUNCH_X_OFFSET = 0.f;
     birdmanConfig.PUNCH_DAMAGE = 10.f;
-    birdmanConfig.PUNCH_STUN_DURATION = 500.f;
+    birdmanConfig.PUNCH_STUN_DURATION = 1000.f;
 
     birdmanConfig.main_texture = "bird.png";
     birdmanConfig.punch_texture = "bird_p.png";
