@@ -267,8 +267,6 @@ void StunnedState::exit(Entity entity, StateMachine &stateMachine)
 
 void StunnedState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-    std::cout << "Updating Stunned State" << std::endl;
-    std::cout << "duration: " << registry.stateTimers.get(entity).duration << ", elapsed: " << registry.stateTimers.get(entity).elapsedTime << std::endl;
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())
     {
