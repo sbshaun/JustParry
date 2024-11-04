@@ -34,7 +34,9 @@ class InputHandler {
                 actionList += ", ";
             }
             actionList += "]";
-            std::cout << "actionBuffer: " << actionList << std::endl;
+
+            float current_time = glfwGetTime() * 1000;
+            std::cout << std::to_string(current_time) << " - actionBuffer: " << actionList << std::endl;
         }
 
         void processActionBuffer(Entity entity, StateMachine& state_machine) {

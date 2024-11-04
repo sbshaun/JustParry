@@ -527,7 +527,6 @@ void WorldSystem::playerCollisions(GlRender *renderer)
         }
         // Player one is on top
         else if (player1Motion.wasAbove) {
-            std::cout << "1" << std::endl;
             player2Motion.velocity.y = 0;
             if (player1Motion.direction) {
                 player1Motion.position = { player1Motion.lastPos.x - 0.05, player1Motion.lastPos.y };

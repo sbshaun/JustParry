@@ -61,7 +61,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         renderer.renderUI(timer);
         renderer.renderRoundOver(1);
         game.setState(GameState::ROUND_OVER);
-
     }
     else
     {
@@ -81,7 +80,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             p2 = PlayerInput();
             renderer.renderRoundOver(0);
             renderer.renderUI(timer);
-
         }
         else
         {
@@ -127,7 +125,6 @@ int main(){
     bool hKeyPressed = false;
     bool botEnabled = false;
     bool shouldExit = false;
-
 
     const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE; // denominator is logic+input checks per second
     const float FramesPerLogicLoop = TARGET_LOGIC_RATE / TARGET_FPS; // The number of logic loops that would result in 60fps
@@ -241,6 +238,10 @@ int main(){
             break;
         
         case GameState::ROUND_OVER:
+            renderer.drawUI();
+            renderer.render();
+            renderer.renderUI(timer);
+            renderer.renderRoundOver(1);
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
                 {
                     roundEnded = false;
