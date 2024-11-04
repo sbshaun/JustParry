@@ -504,25 +504,31 @@ void GlRender::renderUI(int timer)
         // Get the current window size
         int windowWidth, windowHeight;
         glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        float xscale, yscale;
+        // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
+        // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
+        // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
+        glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
 
         // Calculate positions based on window size
-        float centerX = windowWidth / 2.0f;
-        float topY = windowHeight * 0.1f; // 10% from top
+        float centerX = (windowWidth * xscale) / 2.0f;
+        float topY = (windowHeight * yscale) * 0.1f; // 10% from top
 
         // Player 1 health positions (left side)
         float p1X = centerX * 0.4f;
         float healthY = topY;
-        float valueY = topY + 35.0f;
+        float valueY = topY + (35.0f * yscale);
 
         // Timer positions (center)
-        float timerX = centerX - 20.0f;
-        float timerValueX = centerX - 10.0f;
+        float timerX = centerX - (20.0f * xscale);
+        float timerValueX = centerX - (10.0f  * xscale);
 
         // Player 2 health positions (right side)
         float p2X = centerX * 1.6f;
 
         // Score positions
-        float scoreY = topY + 75.0f;
+        float scoreY = topY + (75.0f * yscale);
 
         // Set up text
         std::stringstream ss;
@@ -539,27 +545,27 @@ void GlRender::renderUI(int timer)
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Draw Player 1 health text and value
-        gltDrawText2D(m_leftText, p1X, healthY, 1.5f);
-        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f);
+        gltDrawText2D(m_leftText, p1X, healthY, 1.5f * xscale);
+        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw timer text and value
-        gltDrawText2D(m_timerText, timerX, healthY, 1.5f);
-        gltDrawText2D(time, timerValueX, valueY, 2.5f);
+        gltDrawText2D(m_timerText, timerX, healthY, 1.5f * xscale);
+        gltDrawText2D(time, timerValueX, valueY, 2.5f * xscale);
 
         // Draw Player 2 health text and value
-        gltDrawText2D(m_rightText, p2X, healthY, 1.5f);
-        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f);
+        gltDrawText2D(m_rightText, p2X, healthY, 1.5f * xscale);
+        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw scores
-        gltDrawText2D(score1Label, p1X, scoreY, 1.5f);
+        gltDrawText2D(score1Label, p1X, scoreY, 1.5f * xscale);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f);
+        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f * xscale);
 
-        gltDrawText2D(score2Label, p2X, scoreY, 1.5f);
+        gltDrawText2D(score2Label, p2X, scoreY, 1.5f * xscale);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f);
+        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f * xscale);
 
         gltEndDraw();
     }
@@ -921,10 +927,16 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         {
             textY += 2; // Move text down slightly when pressed
         }
+    
+        float xscale, yscale;
+        // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
+        // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
+        // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
+        glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
 
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
-        gltDrawText2D(buttonText, textX, textY, scale);
+        gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale);
 
         gltEndDraw();
         gltDeleteText(buttonText);
