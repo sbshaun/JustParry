@@ -833,7 +833,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
             return;
         }
     }
-
+    
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
     float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
@@ -944,10 +944,10 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
         float xscale = (float) framew_width / windowWidth;
         float yscale = (float) frame_height / windowHeight;
-
+    
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
-        gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale);
+        gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale * xscale);
 
         gltEndDraw();
         gltDeleteText(buttonText);
