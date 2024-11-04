@@ -50,19 +50,6 @@ class InputHandler {
 
             for (int i = 0; i < actionBuffer.size(); i++) {
                 Action action = actionBuffer[i].action;
-                // if punch is folllowed by kick, do a parry 
-                // int next = i + 1; 
-                // if (next < actionBuffer.size()) {
-                //     Action nextAction = actionBuffer[next].action;
-                //     if ((action == Action::PUNCH && nextAction == Action::KICK) || 
-                //         (action == Action::KICK && nextAction == Action::PUNCH)) {
-                //         if (state_machine.transition(entity, PlayerState::PARRYING)) {
-                //             continue;
-                //         } else {
-                //             std::cerr << "Failed to transition to PARRYING state" << std::endl; 
-                //         }
-                //     }
-                // }
                 
                 if (actionToCommandMapping.find(action) != actionToCommandMapping.end()) {
                     actionToCommandMapping[action]->execute(entity, state_machine);
@@ -100,11 +87,61 @@ class InputHandler {
                     if (!actionBuffer.empty() && actionBuffer.back().action == action) continue;
                     if (actionBuffer.size() >= MAX_BUFFER_SIZE) continue;
 
+                    if (!shouldAddActionToBuffer(action)) continue;
                     actionBuffer.push_back({action, TTL});
                 }
             }
 
+            // loop to see key release action 
+            for (const auto& pair : inputMapping->getKeyToActionMap()) {
+                if (isKeyReleased(pair.first)) {
+                    Action action = pair.second;
+                    if (action == Action::PUNCH) {
+                        punchReleased = true;
+                    }
+                    if (action == Action::KICK) {
+                        kickReleased = true;
+                    }
+                    if (action == Action::PARRY) {
+                        parryReleased = true;
+                    }
+                }
+            }
+
+            // chek release key 
+
             processActionBuffer(entity, state_machine);
+        }
+
+        // functioin to determine if a key should be added: only add one action per press
+        bool shouldAddActionToBuffer(Action action) {
+            if (action == Action::PUNCH) {
+                if (!punchReleased) {
+                    // if punch is not released, return false 
+                    return false;
+                } else {
+                    // if punch is released, return true and set punchReleased to false
+                    punchReleased = false;
+                    return true;
+                }
+            }
+            if (action == Action::KICK) {
+                if (!kickReleased) {
+                    return false;
+                } else {
+                    kickReleased = false;
+                    return true;
+                }
+            }
+            if (action == Action::PARRY) {
+                if (!parryReleased) {
+                    return false;
+                } else {
+                    parryReleased = false;
+                    return true;
+                }
+            }
+            return true;
         }
 
         Action getActionFromKey(int key) const {
@@ -126,4 +163,8 @@ class InputHandler {
         const float TTL = 300.f; // 100ms 
         const int MAX_BUFFER_SIZE = 10; // max number of buffered actions 
         std::vector<actionBufferItem> actionBuffer;
+
+        bool punchReleased = true; // one action per press, next action requires to release the key first 
+        bool kickReleased = true;
+        bool parryReleased = true;
 };
