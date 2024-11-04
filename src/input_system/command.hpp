@@ -100,30 +100,19 @@ public:
         if (!state_machine.transition(entity, PlayerState::ATTACKING))
             return;
 
-        PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
-        HitBox &hitBox = registry.hitBoxes.get(entity);
-        StateTimer &stateTimer = registry.stateTimers.get(entity);
         Fighters fighter = registry.players.get(entity).current_char;
         FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
+        
         Motion &motion = registry.motions.get(entity);
-        Player &player = registry.players.get(entity);
 
-        if (canPunch(playerState.currentState))
-        {
-            hitBox.active = true;
-
-            // Set base offset and adjust based on player direction
-            float baseOffset = fighterConfig.PUNCH_X_OFFSET;
-            hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;
-
-            hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
-            hitBox.width = fighterConfig.PUNCH_WIDTH;
-            hitBox.height = fighterConfig.PUNCH_HEIGHT;
-            hitBox.hit = false;
-
-            playerState.currentState = PlayerState::ATTACKING;
-            stateTimer.reset(fighterConfig.HITBOX_DURATION);
-        }
+        HitBox &hitBox = registry.hitBoxes.get(entity);
+        hitBox.active = true;
+        hitBox.hit = false;
+        hitBox.width = fighterConfig.PUNCH_WIDTH;
+        hitBox.height = fighterConfig.PUNCH_HEIGHT;
+        hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
+        float baseOffset = fighterConfig.PUNCH_X_OFFSET; // set base offset and adjust based on player direction 
+        hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;   
     }
 };
 
@@ -147,5 +136,14 @@ public:
             playerState.currentState = PlayerState::ATTACKING;
             stateTimer.reset(FighterManager::getFighterConfig(fighter).HITBOX_DURATION);
         }
+    }
+};
+
+class ParryCommand : public Command
+{
+public:
+    void execute(Entity entity, StateMachine &state_machine) override
+    {
+        if (!state_machine.transition(entity, PlayerState::PARRYING)) return;
     }
 };

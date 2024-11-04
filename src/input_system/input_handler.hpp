@@ -22,6 +22,7 @@ class InputHandler {
             bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
             bindActionToCommand(Action::PUNCH, std::make_unique<PunchCommand>());
             bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());
+            bindActionToCommand(Action::PARRY, std::make_unique<ParryCommand>());
         }
 
         // helper function to print actionBuffer, e.g. actionBuffer size n: [MOVE_LEFT, JUMP, PUNCH] 
@@ -50,18 +51,18 @@ class InputHandler {
             for (int i = 0; i < actionBuffer.size(); i++) {
                 Action action = actionBuffer[i].action;
                 // if punch is folllowed by kick, do a parry 
-                int next = i + 1; 
-                if (next < actionBuffer.size()) {
-                    Action nextAction = actionBuffer[next].action;
-                    if ((action == Action::PUNCH && nextAction == Action::KICK) || 
-                        (action == Action::KICK && nextAction == Action::PUNCH)) {
-                        if (state_machine.transition(entity, PlayerState::PARRYING)) {
-                            continue;
-                        } else {
-                            std::cerr << "Failed to transition to PARRYING state" << std::endl; 
-                        }
-                    }
-                }
+                // int next = i + 1; 
+                // if (next < actionBuffer.size()) {
+                //     Action nextAction = actionBuffer[next].action;
+                //     if ((action == Action::PUNCH && nextAction == Action::KICK) || 
+                //         (action == Action::KICK && nextAction == Action::PUNCH)) {
+                //         if (state_machine.transition(entity, PlayerState::PARRYING)) {
+                //             continue;
+                //         } else {
+                //             std::cerr << "Failed to transition to PARRYING state" << std::endl; 
+                //         }
+                //     }
+                // }
                 
                 if (actionToCommandMapping.find(action) != actionToCommandMapping.end()) {
                     actionToCommandMapping[action]->execute(entity, state_machine);

@@ -77,6 +77,7 @@ void WorldSystem::initInputHandlers()
     player1InputMapping->bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
     player1InputMapping->bindKeyToAction(GLFW_KEY_R, Action::PUNCH);
     player1InputMapping->bindKeyToAction(GLFW_KEY_T, Action::KICK);
+    player1InputMapping->bindKeyToAction(GLFW_KEY_G, Action::PARRY);
 
     // Player 2 controls
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
@@ -86,6 +87,7 @@ void WorldSystem::initInputHandlers()
     player2InputMapping->bindKeyToAction(GLFW_KEY_DOWN, Action::CROUCH);
     player2InputMapping->bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
     player2InputMapping->bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
+    player2InputMapping->bindKeyToAction(GLFW_KEY_M, Action::PARRY);
 
     // 3. player 1 and player 2 init <action -> command> mapping
     player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
@@ -341,6 +343,15 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
     bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
 
+    // check if the other player's parry box is active 
+    ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
+    if (parryBox.active) {
+        if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
+            // attacck is parried 
+            return false;
+        }
+    }
+
     if (x_collision && y_collision)
     {
         // std::cout << "AABB Collision Detected" << std::endl;
@@ -362,6 +373,14 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         return false;
     }
 
+    return false;
+}
+
+// simple check active or not for now 
+// TODO: add AABB and mesh based collision check? 
+bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox) {
+    ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
+    if (parryBox.active) return true;
     return false;
 }
 

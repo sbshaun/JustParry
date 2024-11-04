@@ -107,10 +107,6 @@ void AttackingState::enter(Entity entity, StateMachine &stateMachine)
     playerState.currentState = PlayerState::ATTACKING;
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     playerStateTimer.reset(HITBOX_DURATION);
-
-    HitBox &playerHitBox = registry.hitBoxes.get(entity);
-    playerHitBox.active = true;
-    playerHitBox.hit = false;
 }
 
 void AttackingState::exit(Entity entity, StateMachine &stateMachine)
