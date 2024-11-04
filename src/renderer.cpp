@@ -74,11 +74,14 @@ void GlRender::renderRoundOver(int count)
         gltBeginDraw();
         gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
-        float xscale, yscale;
-        // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
-        // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
-        // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
-        glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
 
         // Draw game over text
         gltDrawText2D(over, 285 * xscale, 170 * yscale, 5.f * xscale);
@@ -103,11 +106,14 @@ void GlRender::renderRoundOver(int count)
     gltBeginDraw();
     gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
-    float xscale, yscale;
-    // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
-    // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
-    // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
-    glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
+    // Get the current window size
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+    
+    int framew_width, frame_height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+    float xscale = (float) framew_width / windowWidth;
+    float yscale = (float) frame_height / windowHeight;
 
     // Draw game over text
     gltDrawText2D(m_restart, 305 * xscale, 300 * yscale, 2.f * xscale);
@@ -517,11 +523,10 @@ void GlRender::renderUI(int timer)
         int windowWidth, windowHeight;
         glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
         
-        float xscale, yscale;
-        // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
-        // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
-        // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
-        glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
 
         // Calculate positions based on window size
         float centerX = (windowWidth * xscale) / 2.0f;
@@ -940,11 +945,14 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
             textY += 2; // Move text down slightly when pressed
         }
     
-        float xscale, yscale;
-        // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
-        // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
-        // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
-        glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
 
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
