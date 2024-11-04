@@ -29,10 +29,12 @@ public:
     bool transition(Entity entity, PlayerState newState);        // change to the current state to the passed new state.
     void update(Entity entity, float elapsed_ms);                // update the current state and check if it should transition to another state
     PlayerState getCurrentState() const { return currentState; } // getter function
+    PlayerState getPreviousState() const { return previousState; }
 
 private:
     std::unordered_map<PlayerState, std::unique_ptr<State>> states; // mapping: PlayerState -> State object
     PlayerState currentState = PlayerState::IDLE;
+    PlayerState previousState = PlayerState::IDLE;
 };
 
 /*

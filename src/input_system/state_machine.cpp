@@ -12,6 +12,7 @@ bool StateMachine::transition(Entity entity, PlayerState newState)
         return false;
 
     states[currentState]->exit(entity, *this);  // 1. exit the current state
+    previousState = currentState;               // 2. set previous to current
     currentState = newState;                    // 2. set current to new state
     states[currentState]->enter(entity, *this); // 3. enter new state
     return true;
@@ -197,6 +198,7 @@ void ParryingState::enter(Entity entity, StateMachine &stateMachine)
     std::cout << "Player " << player.id << " parries!" << std::endl;
 
     Fighters fighter = registry.players.get(entity).current_char;
+
     float PARRY_BOX_DURATION = FighterManager::getFighterConfig(fighter).PARRY_DURATION;
     
     // 1. register a state timer
@@ -224,6 +226,7 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
 {
     // Check for successful parry, transition to counter or recovery 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    // std::cout << "Parrying State Timer: " << playerStateTimer.elapsedTime << std::endl;
     if (playerStateTimer.isAlive())
     {
         playerStateTimer.update(elapsed_ms);
@@ -251,7 +254,17 @@ void StunnedState::enter(Entity entity, StateMachine &stateMachine)
     
     // set a timer 
     Fighters fighter = registry.players.get(entity).current_char;
-    float STUN_DURATION = FighterManager::getFighterConfig(fighter).PUNCH_STUN_DURATION; 
+    
+    float STUN_DURATION;
+    
+    if (stateMachine.getPreviousState() == PlayerState::ATTACKING)
+    {
+        STUN_DURATION = FighterManager::getFighterConfig(fighter).PARRY_STUN_DURATION;
+    }
+    else
+    {
+        STUN_DURATION = FighterManager::getFighterConfig(fighter).PUNCH_STUN_DURATION;
+    }
 
     // 1. register a state timer
     PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);

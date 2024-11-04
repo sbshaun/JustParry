@@ -349,12 +349,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     // if hitbox collides with parry box, the attack is parried 
     if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
         // parried the attack, transition the attacking player to stunned state using state machine 
-        if (playerWithHitBox == renderer->m_player1) {
-            player1StateMachine->transition(renderer->m_player1, PlayerState::STUNNED);
-        }
-        else {
-            player2StateMachine->transition(renderer->m_player2, PlayerState::STUNNED);
-        }
+        player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
         return false;
     }
 
@@ -416,6 +411,9 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
             otherPlayerMeshPtr, parryPlayerMotion)) 
         {
+            // if parried successfully, reset state timer to 0 
+            StateTimer &player1StateTimer = registry.stateTimers.get(playerWithParryBox);
+            player1StateTimer.reset(0);
             return true;
         }
         return false;
@@ -521,12 +519,10 @@ void WorldSystem::playerCollisions(GlRender *renderer)
             player2Motion.position.x = player2Motion.position.x - player2Motion.velocity.x;
             player1Motion.velocity.x = 0;
             player2Motion.velocity.x = 0;
-            std::cout << "0" << std::endl;
         }
         // Player one is on top
         else if (player1Motion.wasAbove) {
             std::cout << "1" << std::endl;
-            player1Motion.velocity.x = 0;
             player2Motion.velocity.y = 0;
             if (player1Motion.direction) {
                 player1Motion.position = { player1Motion.lastPos.x - 0.05, player1Motion.lastPos.y };
@@ -537,7 +533,6 @@ void WorldSystem::playerCollisions(GlRender *renderer)
         }
         // Player two is on top
         else if (player2Motion.wasAbove) {
-            std::cout << "2" << std::endl;
             player2Motion.velocity.x = 0;
             player1Motion.velocity.y = 0;
             if (player2Motion.direction) {
