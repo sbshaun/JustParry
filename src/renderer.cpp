@@ -74,11 +74,20 @@ void GlRender::renderRoundOver(int count)
         gltBeginDraw();
         gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
+
         // Draw game over text
-        gltDrawText2D(over, 285, 170, 5.f);
+        gltDrawText2D(over, 285 * xscale, 170 * yscale, 5.f * xscale);
 
         // Draw player wins text
-        gltDrawText2D(won, 350, 250, 2.5f);
+        gltDrawText2D(won, 350 * xscale, 250 * yscale, 2.5f * yscale);
         gltEndDraw();
     }
     else
@@ -97,8 +106,17 @@ void GlRender::renderRoundOver(int count)
     gltBeginDraw();
     gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
+    // Get the current window size
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+    
+    int framew_width, frame_height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+    float xscale = (float) framew_width / windowWidth;
+    float yscale = (float) frame_height / windowHeight;
+
     // Draw game over text
-    gltDrawText2D(m_restart, 305, 300, 2.f);
+    gltDrawText2D(m_restart, 305 * xscale, 300 * yscale, 2.f * xscale);
     gltEndDraw();
 }
 
@@ -503,25 +521,30 @@ void GlRender::renderUI(int timer)
         // Get the current window size
         int windowWidth, windowHeight;
         glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
 
         // Calculate positions based on window size
-        float centerX = windowWidth / 2.0f;
-        float topY = windowHeight * 0.1f; // 10% from top
+        float centerX = (windowWidth * xscale) / 2.0f;
+        float topY = (windowHeight * yscale) * 0.1f; // 10% from top
 
         // Player 1 health positions (left side)
         float p1X = centerX * 0.4f;
         float healthY = topY;
-        float valueY = topY + 35.0f;
+        float valueY = topY + (35.0f * yscale);
 
         // Timer positions (center)
-        float timerX = centerX - 20.0f;
-        float timerValueX = centerX - 10.0f;
+        float timerX = centerX - (20.0f * xscale);
+        float timerValueX = centerX - (10.0f  * xscale);
 
         // Player 2 health positions (right side)
         float p2X = centerX * 1.6f;
 
         // Score positions
-        float scoreY = topY + 75.0f;
+        float scoreY = topY + (75.0f * yscale);
 
         // Set up text
         std::stringstream ss;
@@ -538,27 +561,27 @@ void GlRender::renderUI(int timer)
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Draw Player 1 health text and value
-        gltDrawText2D(m_leftText, p1X, healthY, 1.5f);
-        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f);
+        gltDrawText2D(m_leftText, p1X, healthY, 1.5f * xscale);
+        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw timer text and value
-        gltDrawText2D(m_timerText, timerX, healthY, 1.5f);
-        gltDrawText2D(time, timerValueX, valueY, 2.5f);
+        gltDrawText2D(m_timerText, timerX, healthY, 1.5f * xscale);
+        gltDrawText2D(time, timerValueX, valueY, 2.5f * xscale);
 
         // Draw Player 2 health text and value
-        gltDrawText2D(m_rightText, p2X, healthY, 1.5f);
-        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f);
+        gltDrawText2D(m_rightText, p2X, healthY, 1.5f * xscale);
+        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw scores
-        gltDrawText2D(score1Label, p1X, scoreY, 1.5f);
+        gltDrawText2D(score1Label, p1X, scoreY, 1.5f * xscale);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f);
+        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f * xscale);
 
-        gltDrawText2D(score2Label, p2X, scoreY, 1.5f);
+        gltDrawText2D(score2Label, p2X, scoreY, 1.5f * xscale);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f);
+        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f * xscale);
 
         gltEndDraw();
     }
@@ -912,10 +935,19 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         {
             textY += 2; // Move text down slightly when pressed
         }
+    
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
 
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
-        gltDrawText2D(buttonText, textX, textY, scale);
+        gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale);
 
         gltEndDraw();
         gltDeleteText(buttonText);
