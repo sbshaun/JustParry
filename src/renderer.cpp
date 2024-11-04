@@ -833,7 +833,16 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
             return;
         }
     }
+
+    // Get the current window size
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
     
+    int framew_width, frame_height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+    float xscale = (float) framew_width / windowWidth;
+    float yscale = (float) frame_height / windowHeight;
+
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
     float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
@@ -880,11 +889,11 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
 
     if (posLocation != -1)
     {
-        glUniform2f(posLocation, x, M_WINDOW_HEIGHT_PX - y - height); // Convert to OpenGL coordinates
+        glUniform2f(posLocation, x * xscale, (M_WINDOW_HEIGHT_PX - y - height) * yscale); // Convert to OpenGL coordinates
     }
     if (sizeLocation != -1)
     {
-        glUniform2f(sizeLocation, width, height);
+        glUniform2f(sizeLocation, width * xscale, height * yscale);
     }
 
     GLint colorLoc = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonColor");
@@ -935,15 +944,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         {
             textY += 2; // Move text down slightly when pressed
         }
-    
-        // Get the current window size
-        int windowWidth, windowHeight;
-        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
-        
-        int framew_width, frame_height;
-        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
-        float xscale = (float) framew_width / windowWidth;
-        float yscale = (float) frame_height / windowHeight;
     
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
