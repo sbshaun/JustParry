@@ -375,11 +375,12 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
 // check if parry box is active and if hitbox collides with it 
 bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox) {
-    if (!parryBox.active) return false; s
+    ParryBox &parryBox = registry.parryBoxes.get(playerWithParryBox);
+    if (!parryBox.active) return false; 
+    
     Motion &hitPlayerMotion = registry.motions.get(playerWithHitBox);
     Motion &parryPlayerMotion = registry.motions.get(playerWithParryBox);
     HitBox &hitBox = registry.hitBoxes.get(playerWithHitBox);
-    ParryBox &parryBox = registry.parryBoxes.get(playerWithParryBox);
 
     // if hitbox is not active or has already hit, skip check
     if (!hitBox.active || hitBox.hit) return false;
