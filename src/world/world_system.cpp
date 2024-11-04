@@ -62,6 +62,10 @@ void WorldSystem::init(GlRender *renderer)
     Entity boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
     Entity boundaryFloor = createFloor(FLOOR_Y, FLOOR);
 
+    // TODO: Figure out height dimensions correctly, floor_y value appears to shrink playable height too much
+    Entity playableArea = createPlayableArea({ 0, 0.125}, M_WINDOW_WIDTH_PX * 0.9f, M_WINDOW_HEIGHT_PX * 0.875);
+    renderer->m_playableArea = playableArea;
+
     // 1. init input handlers and state machines
     initInputHandlers();
     initStateMachines();

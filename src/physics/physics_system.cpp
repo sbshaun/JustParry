@@ -8,6 +8,7 @@ void PhysicsSystem::step() {
 	
 	// Handling the collions
 	ComponentContainer<Boundary>& boundaryContainer = registry.boundaries;
+	ComponentContainer<PlayableArea>& playableAreaContainer = registry.playableArea;
 	ComponentContainer<Player>& playerContainer = registry.players;
 
 	// Iterate through the players 
@@ -22,6 +23,18 @@ void PhysicsSystem::step() {
 		FighterConfig config = FighterManager::getFighterConfig(current_char);
 
 		// std::cout << playerMotion.position[0] << std::endl;
+
+		for (uint j = 0; j < playableAreaContainer.components.size(); j++) {
+			PlayableArea& playableArea = playableAreaContainer.components[j];
+			float playerPosLeft = playerMotion.position.x - config.NDC_WIDTH / 2.0f;
+			float playerPosRight = playerMotion.position.x + config.NDC_WIDTH / 2.0f;
+			float playableAreaLeft = playableArea.position.x - playableArea.width / M_WINDOW_WIDTH_PX;
+			float playableAreaRight = playableArea.position.x + playableArea.width / M_WINDOW_WIDTH_PX;
+			if (playerPosRight > playableAreaRight || playerPosLeft < playableAreaLeft)
+			{
+				playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+			}
+		}
 
 		for (uint j = 0; j < boundaryContainer.components.size(); j++) { //iterate through the boundaries: check and resolve collisions with current player
 			Boundary& boundary = boundaryContainer.components[j];

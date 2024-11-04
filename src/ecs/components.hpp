@@ -311,6 +311,20 @@ struct Boundary
     int dir;   // 1: right side wall, 2: left side wall, 3: ground
 };
 
+struct PlayableArea
+{
+    vec2 position = vec2(0,0);
+    float width;
+    float height;
+    void updatePosition(const vec2& player1Position, const vec2& player2Position) {
+        position.x = clamp((player1Position.x + player2Position.x) / 2.0f, -0.5f, 0.5f);
+    }
+    void updateWorldModel(mat4& worldModel) {
+        worldModel = mat4(1);
+        worldModel = glm::translate(worldModel, vec3(-position.x, 0.0f, 0.0f));
+    }
+};
+
 struct BoundaryCollision
 {
     Entity boundary;

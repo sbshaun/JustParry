@@ -57,14 +57,12 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         p1 = PlayerInput();
         p2 = PlayerInput();
 
-        renderer.render();
-        renderer.renderUI(timer);
         renderer.renderRoundOver(1);
         game.setState(GameState::ROUND_OVER);
     }
     else
     {
-        renderer.render();
+        
         int exit = generateUI(renderer);
 
         if (exit == 1)
@@ -79,7 +77,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             p1 = PlayerInput();
             p2 = PlayerInput();
             renderer.renderRoundOver(0);
-            renderer.renderUI(timer);
         }
         else
         {
@@ -109,7 +106,7 @@ int main(){
 
     WorldSystem worldSystem;
     worldSystem.init(&renderer);
-    PhysicsSystem physics;
+    PhysicsSystem physicsSystem;
     Bot botInstance;
 
 
@@ -142,7 +139,6 @@ int main(){
         switch (game.getState())
         {
         case GameState::MENU:
-            game.generateBackground(FLOOR_Y, renderer);
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window))
             {
@@ -152,7 +148,7 @@ int main(){
             break;
 
         case GameState::HELP:
-            game.generateBackground(FLOOR_Y, renderer);
+
             game.renderHelpScreen(renderer);
             if (game.handleHelpInput(glWindow.window))
             {
@@ -162,7 +158,6 @@ int main(){
             break;
 
         case GameState::SETTINGS:
-            game.generateBackground(FLOOR_Y, renderer);
             game.renderSettingsScreen(renderer);
             if (game.handleSettingsInput(glWindow.window))
             {
@@ -207,8 +202,18 @@ int main(){
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
             worldSystem.hitBoxCollisions(); 
             worldSystem.inputProcessing(); 
-            physics.step();
+            physicsSystem.step();
+            
+            // Update center for playable area
+            PlayableArea& playableArea = registry.playableArea.get(renderer.m_playableArea);
+            Motion& player1Motion = registry.motions.get(renderer.m_player1);
+            Motion& player2Motion = registry.motions.get(renderer.m_player2);
+            playableArea.updatePosition(player1Motion.position, player2Motion.position);
+            playableArea.updateWorldModel(renderer.m_worldModel);
+
             worldSystem.playerCollisions(&renderer);
+            renderer.render();
+            renderer.renderUI(timer);
             
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
             worldSystem.handleInput();
