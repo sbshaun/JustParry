@@ -74,11 +74,17 @@ void GlRender::renderRoundOver(int count)
         gltBeginDraw();
         gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
+        float xscale, yscale;
+        // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
+        // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
+        // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
+        glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
+
         // Draw game over text
-        gltDrawText2D(over, 285, 170, 5.f);
+        gltDrawText2D(over, 285 * xscale, 170 * yscale, 5.f * xscale);
 
         // Draw player wins text
-        gltDrawText2D(won, 350, 250, 2.5f);
+        gltDrawText2D(won, 350 * xscale, 250 * yscale, 2.5f * yscale);
         gltEndDraw();
     }
     else
@@ -97,8 +103,14 @@ void GlRender::renderRoundOver(int count)
     gltBeginDraw();
     gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
+    float xscale, yscale;
+    // https://www.glfw.org/docs/3.3/group__window.html#gaf5d31de9c19c4f994facea64d2b3106c 
+    // this function returns the factor of how many physical pixel is used for per logical pixel (current DPI / standard DPI) 
+    // on windows, usually 1:1, on mac retina display, usually 2:1 (2 physical pixel is used for 1 logical pixel)  
+    glfwGetWindowContentScale(glfwGetCurrentContext(), &xscale, &yscale); 
+
     // Draw game over text
-    gltDrawText2D(m_restart, 305, 300, 2.f);
+    gltDrawText2D(m_restart, 305 * xscale, 300 * yscale, 2.f * xscale);
     gltEndDraw();
 }
 
