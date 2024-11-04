@@ -34,6 +34,7 @@ public:
         if (motion.inAir)
             return;
 
+        // check max seperation between players before allowing back move hhere
         motion.velocity.x = -MOVE_SPEED;
         motion.direction = false; // facing left
     }

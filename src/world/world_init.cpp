@@ -155,6 +155,18 @@ Entity createBoundary(float val, int type)
     return entity;
 };
 
+Entity createPlayableArea(const vec2& pos, float width, float height)
+{
+    Entity entity = Entity();
+
+    PlayableArea& playableArea = registry.playableArea.emplace(entity);
+    playableArea.position = pos;
+    playableArea.width = width;
+    playableArea.height = height;
+
+    return entity;
+}
+
 Entity createFloor(float val, int type)
 {
     Entity floor = Entity();

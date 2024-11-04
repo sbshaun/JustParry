@@ -213,7 +213,7 @@ void GlRender::handleTexturedRenders()
         if (player.id == 1)
         {
             Motion &motion = registry.motions.get(entity);
-            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = m_worldModel;
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
             // If player 1 is facing left, flip the model
@@ -269,7 +269,7 @@ void GlRender::handleTexturedRenders()
         else if (player.id == 2)
         {
             Motion &motion = registry.motions.get(entity);
-            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = m_worldModel;
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
             // If player 2 is facing right, flip the model
@@ -342,6 +342,12 @@ void GlRender::handleTexturedRenders()
     // Add debug visualization at the end of the function
     if (debugMode)
     {
+        if (registry.playableArea.has(m_playableArea))
+        {
+            PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+            renderPlayableArea(m_playableArea, playableArea.position, playableArea.width, playableArea.height, glm::vec3(1.0f, 0.0f, 1.0f));
+        }
+
         // Render hitboxes and hurtboxes for both players
         if (registry.hitBoxes.has(m_player1))
         {
@@ -424,6 +430,22 @@ void GlRender::render()
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+
+    renderTexturedQuadScaled(
+        m_backgroundTexture,
+        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5, 0,
+        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        1.0f
+    );
+
+    renderTexturedQuadScaled(
+        m_foregroundTexture,
+        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0, 0,
+        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        1.0f
+    );
+
     // debugging wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -439,7 +461,10 @@ void GlRender::loadTextures()
     // Load texture for player 1
     loadTexture(textures_path("bird.png"), m_bird_texture);
     loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
-    loadTexture(textures_path("menu_1.png"), m_backgroundTexture);
+    loadTexture(textures_path("menu_1.png"), m_menuTexture);
+    loadTexture(textures_path("bg.png"), m_backgroundTexture);
+    loadTexture(textures_path("bg_parallax.png"), m_foregroundTexture);
+
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -650,7 +675,11 @@ void GlRender::shutdown()
     // Delete textures
     glDeleteTextures(1, &m_bird_texture);
     glDeleteTextures(1, &m_bird_p_texture);
+    glDeleteTextures(1, &m_menuTexture);
     glDeleteTextures(1, &m_backgroundTexture);
+    glDeleteTextures(1, &m_foregroundTexture);
+
+
 
     // Delete text objects
     if (m_fps)
@@ -1097,10 +1126,11 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
     }
 
     Motion &motion = registry.motions.get(entity);
+    PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
 
     // Calculate box vertices in world space
-    float left = box.getLeft(motion.position, motion.direction);
-    float right = box.getRight(motion.position, motion.direction);
+    float left = box.getLeft(motion.position, motion.direction) - playableArea.position.x;
+    float right = box.getRight(motion.position, motion.direction) - playableArea.position.x;
     float top = box.getTop(motion.position, motion.direction);
     float bottom = box.getBottom(motion.position, motion.direction);
 
@@ -1124,6 +1154,77 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+
+        // Use debug shader
+        m_debugShader->use();
+        m_debugShader->setVec3("color", color);
+
+        // Save current line width
+        GLfloat oldLineWidth;
+        glGetFloatv(GL_LINE_WIDTH, &oldLineWidth);
+
+        // Set line width for debug boxes
+        glLineWidth(1.0f);
+
+        // Draw box outline
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+        // Restore previous line width
+        glLineWidth(oldLineWidth);
+
+        // Cleanup
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+    }
+    catch (...)
+    {
+        // Ensure cleanup even if an error occurs
+        if (VAO)
+            glDeleteVertexArrays(1, &VAO);
+        if (VBO)
+            glDeleteBuffers(1, &VBO);
+        throw;
+    }
+}
+
+void GlRender::renderPlayableArea(Entity entity, const vec2& position, float width, float height, const glm::vec3& color)
+{
+    if (!m_debugShader)
+    {
+        std::cerr << "Debug shader not initialized!" << std::endl;
+        return;
+    }
+
+
+    PlayableArea& playableArea = registry.playableArea.get(m_playableArea);
+
+    // Calculate box vertices in world space
+    float left = position.x - width / M_WINDOW_WIDTH_PX - playableArea.position.x;
+    float right = position.x + width / M_WINDOW_WIDTH_PX - playableArea.position.x;
+    float top = position.y + height / M_WINDOW_HEIGHT_PX;
+    float bottom = position.y - height / M_WINDOW_HEIGHT_PX;
+
+    // Create vertices for the box outline
+    float vertices[] = {
+        left, top, 0.0f,     // Top-left
+        right, top, 0.0f,    // Top-right
+        right, bottom, 0.0f, // Bottom-right
+        left, bottom, 0.0f   // Bottom-left
+    };
+
+    // Create and bind VAO/VBO with RAII-style cleanup
+    GLuint VAO = 0, VBO = 0;
+    try
+    {
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         // Use debug shader

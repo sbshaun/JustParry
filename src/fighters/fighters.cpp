@@ -35,7 +35,7 @@ void FighterManager::setFighterConfig(Fighters fighter, FighterConfig& config) {
 } 
 
 const FighterConfig& FighterManager::getFighterConfig(Fighters fighter) {
-    // check it eixsts, adn retutrn correct type 
+    // check it exists, adn retutrn correct type 
     if (fighterConfigs.find(fighter) != fighterConfigs.end()) {
         return fighterConfigs[fighter];
     } else {

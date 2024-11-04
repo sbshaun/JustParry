@@ -69,7 +69,7 @@ void Game::render()
 }
 void Game::generateBackground(float val, GlRender &renderer)
 {
-    renderer.renderTexturedQuad(renderer.m_backgroundTexture);
+    renderer.renderTexturedQuad(renderer.m_menuTexture);
 }
 
 #include <GLFW/glfw3.h>
@@ -87,7 +87,7 @@ void Game::renderMenu(GlRender &renderer)
 
     // Render background with full brightness
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_menuTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         1.0f // Full brightness for main menu
@@ -146,7 +146,7 @@ void Game::renderHelpScreen(GlRender &renderer)
 
     // First render the full background (darkened)
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_menuTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         0.3f // Darkness factor
@@ -160,7 +160,7 @@ void Game::renderHelpScreen(GlRender &renderer)
 
     // Render the smaller background in the center
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_menuTexture,
         helpBoxX, helpBoxY,
         helpBoxWidth, helpBoxHeight,
         1.0f // No darkening for the center image
@@ -333,7 +333,7 @@ void Game::renderSettingsScreen(GlRender &renderer)
 
     // First render the full background (darkened)
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_menuTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         0.3f // Darkness factor
