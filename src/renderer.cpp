@@ -20,6 +20,7 @@ void GlRender::initialize()
     // Load all textures
     loadTextures();
     gltInit();
+    initializeGlMeshes();
 
     // Preload all shaders at initialization
     std::cout << "\nInitializing shaders..." << std::endl;
@@ -1096,5 +1097,33 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
         if (VBO)
             glDeleteBuffers(1, &VBO);
         throw;
+    }
+}
+
+template <class T>
+void GlRender::bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, std::vector<uint16_t> indices)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffers[(uint)gid]);
+    glBufferData(GL_ARRAY_BUFFER,
+        sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    gl_has_errors();
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffers[(uint)gid]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
+    gl_has_errors();
+}
+
+void GlRender::initializeGlMeshes()
+{
+    for (uint i = 0; i < mesh_paths.size(); i++)
+    {
+        // Initialize meshes
+        GEOMETRY_BUFFER_ID geom_index = mesh_paths[i].first;
+        std::string name = mesh_paths[i].second;
+        ObjectMesh::loadFromOBJFile(name,
+            meshes[(int)geom_index].vertices,
+            meshes[(int)geom_index].vertex_indices,
+            meshes[(int)geom_index].original_size);
     }
 }

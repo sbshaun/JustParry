@@ -249,6 +249,99 @@ void WorldSystem::updateStateTimers(float elapsed_ms)
     HitBox &player2HitBox = registry.hitBoxes.get(renderer->m_player2);
 }
 
+mat3 createProjectionMatrix()
+{
+    // Fake projection matrix, scales with respect to window coordinates
+    float left = -1.f;
+    float bottom = -1.f;
+
+    gl_has_errors();
+    float right = 1.f;
+    float top = 1.f;
+
+    float sx = 2.f / (right - left);
+    float sy = 2.f / (top - bottom);
+    float tx = -(right + left) / (right - left);
+    float ty = -(top + bottom) / (top - bottom);
+    return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
+}
+
+bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, float hitBoxTop, 
+    float hitBoxBottom, ObjectMesh* mesh, Motion& hurtMotion) {
+
+    std::vector<vec3> originalPositions;
+    for (const ColoredVertex& vertex : mesh->vertices) {
+        originalPositions.push_back(vertex.position);
+    }
+
+    mat3 projection = createProjectionMatrix();
+    
+    Transform transform;
+    transform.rotate(hurtMotion.angle);
+    if (hurtMotion.direction) {
+        transform.translate({ hurtMotion.position.x - 0.086637, hurtMotion.position.y });
+        transform.rotate(hurtMotion.angle);
+        transform.scale(vec2{ 1, 1 });
+    }
+    else {
+        transform.translate({ hurtMotion.position.x + 0.086637, hurtMotion.position.y });
+        transform.rotate(hurtMotion.angle);
+        transform.scale(vec2{ -1, 1 });
+    }
+
+    vec3 transformedVertexFirst = projection * transform.mat * vec3(originalPositions[0].x, originalPositions[0].y, 1.0);
+
+    /*std::cout << "transformed vertex last" << transformedVertexFirst.x << transformedVertexFirst.y << std::endl;
+    std::cout << "transformed vertex first" << transformedVertexLast.x << transformedVertexLast.y << std::endl;
+
+    std::cout << "hitbox top" << hitBoxTop << std::endl;
+    std::cout << "hitbox bot" << hitBoxBottom << std::endl;*/
+
+    float farthestUp = transformedVertexFirst.y;
+    float farthestBot = transformedVertexFirst.y;
+    float farthestLeft = transformedVertexFirst.x;
+    float farthestRight = transformedVertexFirst.x;
+
+    for (const vec3& originalPos : originalPositions) {
+        vec3 transformedVertex = transform.mat * vec3(originalPos.x, originalPos.y, 1.0);
+
+        // std::cout << "transformed vertex" << transformedVertex.x << transformedVertex.y << std::endl;
+
+        bool rightCheck = transformedVertex.x < hitBoxRight;
+        bool leftCheck = transformedVertex.x > hitBoxLeft;
+        bool topCheck = transformedVertex.y < hitBoxTop;
+        bool bottomCheck = transformedVertex.y > hitBoxBottom;
+        
+        // std::cout << rightCheck << leftCheck << topCheck << bottomCheck << std::endl;
+
+        if (transformedVertex.y > farthestUp) {
+            farthestUp = transformedVertex.y;
+        }
+        if (transformedVertex.y < farthestBot) {
+            farthestBot = transformedVertex.y;
+        }
+        if (transformedVertex.x < farthestLeft) {
+            farthestLeft = transformedVertex.x;
+        }
+        if (transformedVertex.x > farthestRight) {
+            farthestRight = transformedVertex.x;
+        }
+
+
+		if (rightCheck && leftCheck && topCheck && bottomCheck) {
+            return true;
+		}
+    }
+
+    //std::cout << "Mesh Left:" << farthestLeft << " Mesh Right:" << farthestRight << std::endl;
+    //std::cout << "Mesh Top:" << farthestUp << " Mesh Bot:" << farthestBot << std::endl;
+    //std::cout << "Middle: " << (farthestLeft + farthestRight) / 2 << "," << (farthestUp + farthestBot) / 2 << "," << std::endl;
+    //std::cout << "Middle: " << hurtMotion.position.x << "," << hurtMotion.position.y << std::endl;
+
+    // temporary return
+    return false;
+}
+
 bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox)
 {
     Motion &hitPlayerMotion = registry.motions.get(playerWithHitBox);
@@ -275,11 +368,23 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
 
     if (x_collision && y_collision)
     {
-        Player &attacker = registry.players.get(playerWithHitBox);
-        Player &defender = registry.players.get(playerWithHurtBox);
-        std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
-        hitBox.hit = true;
-        return true;
+        // std::cout << "AABB Collision Detected" << std::endl;
+        // Hitbox collided with the hurtbox of the other player
+        // Check if the hitbox has collided with the mesh of the other player
+        ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
+        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
+            otherPlayerMeshPtr, hurtPlayerMotion)) 
+        {
+            // std::cout << "Mesh Collision Detected" << std::endl;
+            Player& attacker = registry.players.get(playerWithHitBox);
+            Player& defender = registry.players.get(playerWithHurtBox);
+
+            auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
+            // std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
+            hitBox.hit = true;
+            return true;
+        }
+        return false;
     }
 
     return false;

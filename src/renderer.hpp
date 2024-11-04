@@ -5,6 +5,9 @@
 #include "common.hpp"
 #include "ecs/ecs.hpp"
 #include "ecs/ecs_registry.hpp"
+#include "ecs/components.hpp"
+#include "mesh.hpp"
+#include <array>
 
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
@@ -45,6 +48,13 @@ public:
     void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, float brightness = 1.0f);
 
     void renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color);
+    // bool loadFromOBJFile(std::string obj_path, std::vector<ColoredVertex>& out_vertices, std::vector<uint16_t>& out_vertex_indices, vec2& out_size);
+    void initializeGlMeshes();
+
+    template <class T>
+    void bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, std::vector<uint16_t> indices);
+    ObjectMesh& getMesh(GEOMETRY_BUFFER_ID gid) { return meshes[(int)gid]; }
+
     bool debugMode = false;
 
     Entity m_player1;
@@ -52,6 +62,20 @@ public:
     GLuint m_bird_texture;
     GLuint m_bird_p_texture;
     GLuint m_backgroundTexture;
+
+    // Make sure these paths remain in sync with the associated enumerators.
+    // Associated id with .obj path
+    const std::vector < std::pair<GEOMETRY_BUFFER_ID, std::string>> mesh_paths =
+    {
+          std::pair<GEOMETRY_BUFFER_ID, std::string>(
+              GEOMETRY_BUFFER_ID::IDLE_BIRD, mesh_path("idle_bird.obj")
+          ),
+          // specify meshes of other assets here
+    };
+
+    std::array<GLuint, geometry_count> vertex_buffers;
+    std::array<GLuint, geometry_count> index_buffers;
+    std::array<ObjectMesh, geometry_count> meshes;
 
 private:
     Game *game = nullptr;

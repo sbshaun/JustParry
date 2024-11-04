@@ -63,7 +63,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
 helper function for player1, player2, and opponent1
 p.s. entity: player entity
 */
-static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint texture, bool isPlayer1, Fighters fighter)
+static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRender* renderer, bool isPlayer1, Fighters fighter)
 {
     // init player's currentState to be IDLE, init stateTimer to 0
     PlayerCurrentState &playerState = registry.playerCurrentStates.emplace(entity);
@@ -74,6 +74,9 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint 
 
     Fighters current_char = registry.players.get(entity).current_char;
     FighterConfig config = FighterManager::getFighterConfig(current_char);
+
+    ObjectMesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::IDLE_BIRD);
+    registry.objectMeshPtrs.emplace(entity, &mesh);
 
     // Convert 'player' width and height to normalized device coordinates
     std::vector<float> rectangleVertices = {
@@ -89,7 +92,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint 
     };
 
     Mesh playerMesh(rectangleVertices, true);
-    registry.renderable.insert(entity, Renderable{playerMesh, shader, texture});
+    registry.renderable.insert(entity, Renderable{playerMesh, shader, renderer->m_bird_texture});
 
     setupFighterConfig(entity, FighterManager::getFighterConfig(fighter), isPlayer1);
 
@@ -100,9 +103,6 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GLuint 
     motion.direction = isPlayer1; // player1 facing right
     motion.inAir = false;
     motion.scale = {0.1, 0.1};
-
-    // renderHitbox(entity, isPlayer1);
-    // renderHurtbox(entity, isPlayer1);
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
 }
@@ -116,7 +116,7 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     // set current_char to BIRDMAN by default v
     registry.players.insert(entity, Player{1, fighter});
     Shader *rectShader = new Shader(std::string("player1"));
-    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, true, fighter);
+    createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
     // set current_char to BIRDMAN by default
     // registry.players.get(entity).current_char = fighter;
     std::cout << "player 1 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
@@ -126,12 +126,12 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
 /*
 Create player2 entity, init and register components using the helper function above
 */
-Entity createPlayer2(GlRender *renderer, vec2 pos, Fighters fighter)
+Entity createPlayer2(GlRender* renderer, vec2 pos, Fighters fighter)
 {
     Entity entity = Entity();
     registry.players.insert(entity, Player{2, fighter});
     Shader *rectShader = new Shader(std::string("player2"));
-    createPlayerHelper(entity, pos, rectShader, renderer->m_bird_texture, false, fighter);
+    createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
     // registry.players.get(entity).current_char = fighter;
     std::cout << "player 2 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;
