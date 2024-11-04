@@ -36,6 +36,9 @@ public:
 	ComponentContainer<HitboxRender> debugRenders;
 	ComponentContainer<StaticRender> staticRenders;
 
+	ComponentContainer<ObjectMesh*> objectMeshPtrs;
+	ComponentContainer<RenderRequest> renderRequests;
+
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
 	ECSRegistry()
@@ -60,6 +63,9 @@ public:
 		registry_list.push_back(&renderable);
 		registry_list.push_back(&debugRenders);
 		registry_list.push_back(&staticRenders);
+
+		registry_list.push_back(&objectMeshPtrs);
+		registry_list.push_back(&renderRequests);
 	}
 
 	void clear_all_components() {

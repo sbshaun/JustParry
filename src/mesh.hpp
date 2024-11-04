@@ -4,10 +4,10 @@
 class Mesh {
 protected:
     GLuint VAO, VBO;
-    std::vector<float> vertices;
     glm::mat4 modelMatrix;
     bool textured = false;
 public:
+    std::vector<float> vertices;
     Mesh(const std::vector<float>& vertices, bool textured);
     void draw();
     void setPosition(const glm::vec3& pos);
