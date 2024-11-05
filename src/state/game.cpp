@@ -614,6 +614,40 @@ void Game::renderPauseButton(GlRender &renderer)
             extern int timer;
             timer = timer_length;
 
+            // Reset camera/playable area position and world model
+            renderer.m_worldModel = mat4(1.0f); // Reset world model to identity matrix
+
+            // Reset player positions for next game
+            if (worldSystem)
+            {
+                worldSystem->init(&renderer);
+
+                // Get the players and reset their positions
+                Motion &p1Motion = registry.motions.get(renderer.m_player1);
+                Motion &p2Motion = registry.motions.get(renderer.m_player2);
+
+                // Reset positions to starting points
+                Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
+                Fighters current_char2 = registry.players.get(renderer.m_player2).current_char;
+                FighterConfig config1 = FighterManager::getFighterConfig(current_char1);
+                FighterConfig config2 = FighterManager::getFighterConfig(current_char2);
+
+                p1Motion.position = {-1.25f, FLOOR_Y + config1.NDC_HEIGHT};
+                p2Motion.position = {1.25f, FLOOR_Y + config2.NDC_HEIGHT};
+
+                // Reset scales
+                p1Motion.scale = {0.1f, 0.1f};
+                p2Motion.scale = {0.1f, 0.1f};
+
+                // Reset playable area
+                if (registry.playableArea.has(renderer.m_playableArea))
+                {
+                    PlayableArea &playableArea = registry.playableArea.get(renderer.m_playableArea);
+                    playableArea.position = vec2(0, 0); // Reset to center
+                    playableArea.updateWorldModel(renderer.m_worldModel);
+                }
+            }
+
             // Don't try to reinitialize here - let the INIT state handle it
             worldSystem = nullptr; // Clear the world system pointer
         }
