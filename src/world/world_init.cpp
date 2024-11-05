@@ -183,7 +183,7 @@ Entity createFloor(float val, int type)
     Mesh floorMesh(floorVertices, false);
     Shader *floorShader = new Shader(std::string("floor"));
 
-    registry.staticRenders.insert(floor, StaticRender{floorMesh, floorShader});
+    //registry.staticRenders.insert(floor, StaticRender{floorMesh, floorShader});
 
     Boundary &boundary = registry.boundaries.emplace(floor);
 

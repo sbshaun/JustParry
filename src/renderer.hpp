@@ -69,8 +69,10 @@ public:
     GLuint m_menuTexture;
     GLuint m_helpTexture;
     GLuint m_settingsTexture;
-    GLuint m_backgroundTexture;
-    GLuint m_foregroundTexture;
+    GLuint m_bg1Texture;
+    GLuint m_bg2Texture;
+    GLuint m_bg3Texture;
+    GLuint m_bg4Texture;
     GLuint m_roundOverTexture;
     GLuint m_timerBackgroundTexture;
     GLuint m_barTexture;
