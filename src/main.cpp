@@ -188,7 +188,6 @@ int main()
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
             worldSystem.hitBoxCollisions();
             worldSystem.inputProcessing();
-            physicsSystem.step();
 
             // Update center for playable area
             PlayableArea &playableArea = registry.playableArea.get(renderer.m_playableArea);
@@ -198,6 +197,7 @@ int main()
             playableArea.updateWorldModel(renderer.m_worldModel);
 
             worldSystem.playerCollisions(&renderer);
+            physicsSystem.step();
             renderer.render();
             renderer.renderUI(timer);
 
