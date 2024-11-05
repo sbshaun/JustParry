@@ -30,8 +30,8 @@ const float GRAVITY = 0.001f / FPS_LOGIC_FACTOR;
 const float TIME_STEP = 1.0f / 60.0f;
 
 // BOUNDING
-const float BOUND_SIZE_L = -1.5f;
-const float BOUND_SIZE_R = 1.5f;
+const float BOUND_SIZE_L = -1.4f;
+const float BOUND_SIZE_R = 1.4f;
 const float FLOOR_Y = -0.75f;
 const int RIGHT = 1;
 const int LEFT = 2;
