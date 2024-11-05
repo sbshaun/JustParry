@@ -20,7 +20,7 @@ void PhysicsSystem::step() {
 		Motion& playerMotion = registry.motions.get(playerEntity);
 		HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
 		Fighters current_char = playerContainer.components[i].current_char;
-		const FighterConfig& config = FighterManager::getFighterConfig(current_char);
+		FighterConfig config = FighterManager::getFighterConfig(current_char);
 
 		// std::cout << playerMotion.position[0] << std::endl;
 
@@ -34,22 +34,11 @@ void PhysicsSystem::step() {
 			bool rightCollision = playerPosRight > playableAreaRight;
 			bool leftCollision = playerPosLeft < playableAreaLeft;
 
+			std::cout << playerPosLeft << std::endl;
+
 			if (rightCollision || leftCollision)
 			{
-				if (rightCollision) {
-					playerMotion.position.x = playableAreaRight - config.NDC_WIDTH / 2.0f;
-					if (playerMotion.wasAbove) {
-						playerMotion.position.x -= MOVE_SPEED;
-						playerMotion.velocity.y += GRAVITY;
-					}
-				}
-				if (leftCollision) {
-					playerMotion.position.x = playableAreaLeft + config.NDC_WIDTH / 2.0f;
-					if (playerMotion.wasAbove) {
-						playerMotion.position.x += MOVE_SPEED;
-						playerMotion.velocity.y += GRAVITY;
-					}
-				}
+				playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
 			}
 			
 		}
@@ -61,9 +50,8 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.x + config.NDC_WIDTH / 2.0f; 
 				if (playerPos > boundary.val) 
 				{
-					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
 					//if (!registry.boundaryCollisions.has(playerEntity)) {
-					playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+					playerMotion.position.x = playerMotion.position.x - MOVE_SPEED;
 					if (playerMotion.wasAbove) {
 						playerMotion.position.x -= MOVE_SPEED;
 						playerMotion.velocity.y += GRAVITY;
@@ -74,9 +62,7 @@ void PhysicsSystem::step() {
 			else if (boundary.dir == LEFT) {
 				float playerPos = playerMotion.position.x - config.NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
-					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
-
-					playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+					playerMotion.position.x = playerMotion.position.x + MOVE_SPEED;
 					if (playerMotion.wasAbove) {
 						playerMotion.position.x += MOVE_SPEED;
 						playerMotion.velocity.y += GRAVITY;
