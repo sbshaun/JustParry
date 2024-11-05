@@ -23,8 +23,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 	if (isLoading) {
 		Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
 		Fighters current_char2 = registry.players.get(renderer.m_player2).current_char;
-		FighterConfig config1 = FighterManager::getFighterConfig(current_char1);
-		FighterConfig config2 = FighterManager::getFighterConfig(current_char2);
+		const FighterConfig& config1 = FighterManager::getFighterConfig(current_char1);
+		const FighterConfig& config2 = FighterManager::getFighterConfig(current_char2);
 
 		// stop entity movement when loading
 		Motion& m1 = registry.motions.get(renderer.m_player1);

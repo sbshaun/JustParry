@@ -50,7 +50,7 @@ void WorldSystem::init(GlRender *renderer)
     this->renderer = renderer;
 
     // Create entities
-    FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
+    const FighterConfig &birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
     Entity player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
     Entity player2 = createPlayer2(renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
 

@@ -64,8 +64,6 @@ public:
     Entity m_player1;
     Entity m_player2;
     Entity m_playableArea;
-    GLuint m_bird_texture;
-    GLuint m_bird_p_texture;
     GLuint m_menuTexture;
     GLuint m_helpTexture;
     GLuint m_settingsTexture;

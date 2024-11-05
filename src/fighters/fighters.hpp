@@ -9,6 +9,8 @@ enum Fighters{
     PLACEHOLDER
 };
 
+class GlRender;
+
 // 2. fighter config struct, stores fighter's strength values 
 struct FighterConfig {
     // collision and size 
@@ -38,12 +40,11 @@ struct FighterConfig {
 
     float PARRY_DURATION; // parry duration (parryBox active time)
 
-
-    //Graphics 
-    //path to main texture 
-    std::string main_texture = "bird.png";
-    //path to animations 
-    std::string punch_texture = "bird_p.png";
+    GLuint m_bird_idle_f1_texture;
+    GLuint m_bird_idle_f2_texture;
+    GLuint m_bird_punch_f1_texture;
+    GLuint m_bird_punch_f2_texture;
+   
 
     // default constructor 
     FighterConfig(int window_width_px = 1024, int window_height_px = 768)
@@ -63,5 +64,7 @@ class FighterManager {
     public:
         static void init();
         static void setFighterConfig(Fighters fighter, FighterConfig& config);
-        static const FighterConfig& getFighterConfig(Fighters fighter);
+        static FighterConfig& getFighterConfig(Fighters fighter);
+        static void loadBirdTextures(GlRender& renderer);
+        static void deleteBirdTextures();
 };

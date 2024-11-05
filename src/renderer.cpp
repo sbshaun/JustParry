@@ -353,15 +353,10 @@ void GlRender::handleTexturedRenders()
 
             PlayerCurrentState &player1State = registry.playerCurrentStates.get(entity);
             Renderable &player1Renders = registry.renderable.get(entity);
-
-            if (player1State.currentState == PlayerState::ATTACKING)
-            {
-                player1Renders.texture = m_bird_p_texture;
-            }
-            else
-            {
-                player1Renders.texture = m_bird_texture;
-            }
+            
+            Animation& animation = registry.animations.get(entity);
+            player1Renders.texture = animation.currentTexture;
+           
 
             // if parryBox is active, turn to transparent and green tint to show player is parrying
             if (registry.parryBoxes.get(m_player1).active)
@@ -413,15 +408,9 @@ void GlRender::handleTexturedRenders()
             }
             PlayerCurrentState &player2State = registry.playerCurrentStates.get(entity);
             Renderable &player2Renders = registry.renderable.get(entity);
-
-            if (player2State.currentState == PlayerState::ATTACKING)
-            {
-                player2Renders.texture = m_bird_p_texture;
-            }
-            else
-            {
-                player2Renders.texture = m_bird_texture;
-            }
+            Animation& animation = registry.animations.get(entity);
+            player2Renders.texture = animation.currentTexture;
+        
 
             if (registry.parryBoxes.get(m_player2).active)
             {
@@ -594,8 +583,6 @@ void GlRender::render()
 void GlRender::loadTextures()
 {
     // Load texture for player 1
-    loadTexture(textures_path("bird.png"), m_bird_texture);
-    loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
     loadTexture(textures_path("help-screen.png"), m_helpTexture);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
@@ -607,6 +594,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
+    FighterManager::loadBirdTextures(*this);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -889,8 +877,6 @@ void GlRender::shutdown()
 
     // Delete textures - make sure we include all textures
     GLuint textures[] = {
-        m_bird_texture,
-        m_bird_p_texture,
         m_menuTexture,
         m_helpTexture,
         m_settingsTexture,
@@ -905,10 +891,9 @@ void GlRender::shutdown()
 
     // Delete all textures at once
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
+    FighterManager::deleteBirdTextures();
 
     // Set texture IDs to 0 after deletion
-    m_bird_texture = 0;
-    m_bird_p_texture = 0;
     m_menuTexture = 0;
     m_helpTexture = 0;
     m_settingsTexture = 0;

@@ -18,6 +18,8 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     float PUNCH_HEIGHT;
     float PUNCH_X_OFFSET;
     float PUNCH_Y_OFFSET;
+
+    // TODO: Shouldnt assume fighter, read player
     PUNCH_WIDTH = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_WIDTH;
     PUNCH_HEIGHT = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_HEIGHT;
     PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
@@ -58,6 +60,11 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     perfectParryBox.active = false;
     perfectParryBox.xOffset = 0;
     perfectParryBox.yOffset = 0;
+
+    // TODO: Shouldnt  assume fighter, read player
+    Animation& animation = registry.animations.emplace(entity);
+    animation.currentTexture = config.m_bird_idle_f1_texture;
+    animation.currentFrame = 0;
 }
 
 /*
@@ -72,9 +79,12 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
     StateTimer &playerStateTimer = registry.stateTimers.emplace(entity);
     playerStateTimer.duration = 0.f;
     playerStateTimer.elapsedTime = 0.f;
+    setupFighterConfig(entity, FighterManager::getFighterConfig(fighter), isPlayer1);
 
     Fighters current_char = registry.players.get(entity).current_char;
     FighterConfig config = FighterManager::getFighterConfig(current_char);
+
+    Animation& animation = registry.animations.get(entity);
 
     ObjectMesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::IDLE_BIRD);
     registry.objectMeshPtrs.emplace(entity, &mesh);
@@ -93,9 +103,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
     };
 
     Mesh playerMesh(rectangleVertices, true);
-    registry.renderable.insert(entity, Renderable{playerMesh, shader, renderer->m_bird_texture});
-
-    setupFighterConfig(entity, FighterManager::getFighterConfig(fighter), isPlayer1);
+    registry.renderable.insert(entity, Renderable{playerMesh, shader, animation.currentTexture});
 
     Motion &motion = registry.motions.emplace(entity);
     motion.lastPos = pos;
