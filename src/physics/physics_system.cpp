@@ -30,10 +30,27 @@ void PhysicsSystem::step() {
 			float playerPosRight = playerMotion.position.x + config.NDC_WIDTH / 2.0f;
 			float playableAreaLeft = playableArea.position.x - playableArea.width / M_WINDOW_WIDTH_PX;
 			float playableAreaRight = playableArea.position.x + playableArea.width / M_WINDOW_WIDTH_PX;
-			if (playerPosRight > playableAreaRight || playerPosLeft < playableAreaLeft)
+
+			bool rightCollision = playerPosRight > playableAreaRight;
+			bool leftCollision = playerPosLeft < playableAreaLeft;
+
+			if (rightCollision || leftCollision)
 			{
 				playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+				if (rightCollision) {
+					if (playerMotion.wasAbove) {
+						playerMotion.position.x -= MOVE_SPEED;
+						playerMotion.velocity.y += GRAVITY;
+					}
+				}
+				if (leftCollision) {
+					if (playerMotion.wasAbove) {
+						playerMotion.position.x += MOVE_SPEED;
+						playerMotion.velocity.y += GRAVITY;
+					}
+				}
 			}
+			
 		}
 
 		for (uint j = 0; j < boundaryContainer.components.size(); j++) { //iterate through the boundaries: check and resolve collisions with current player
