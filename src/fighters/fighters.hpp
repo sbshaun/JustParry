@@ -27,13 +27,17 @@ struct FighterConfig {
     float JUMP_VELOCITY = 0.2f;
 
     // attack 1 (punch) 
-    float HITBOX_DURATION = 500.f;
+    float HITBOX_DURATION; // this is the time the hitbox is active 
     float PUNCH_X_OFFSET = 0.f;
     float PUNCH_Y_OFFSET = 0.20f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_WIDTH;
     float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;
-    float PUNCH_STUN_DURATION = 3000.f;
+    float PUNCH_STUN_DURATION; // time of how long the player itself is stunned after being hit by a punch, not to the other player 
+    float PARRY_STUN_DURATION; // if a hit is parried, the player is stunned longer than being punched, heavy panelty on failed attack, this prevent abuse of attacking
+
+    float PARRY_DURATION; // parry duration (parryBox active time)
+
 
     //Graphics 
     //path to main texture 

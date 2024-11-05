@@ -44,12 +44,13 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     hurtBox.xOffset = -config.NDC_WIDTH / 5.7f;
     hurtBox.yOffset = 0;
 
+    // slighly bigger than hurtbox to not overlap when rendering 
     ParryBox &parryBox = registry.parryBoxes.emplace(entity);
-    parryBox.width = config.NDC_WIDTH;
-    parryBox.height = config.NDC_HEIGHT;
-    parryBox.active = false;
-    parryBox.xOffset = 0;
+    parryBox.width = config.NDC_WIDTH / 1.5f;
+    parryBox.height = config.NDC_HEIGHT / 1.9f;
+    parryBox.xOffset = -config.NDC_WIDTH / 5.7f;
     parryBox.yOffset = 0;
+    parryBox.active = false;
 
     PerfectParryBox &perfectParryBox = registry.perfectParryBoxes.emplace(entity);
     perfectParryBox.width = config.NDC_WIDTH;
@@ -153,6 +154,18 @@ Entity createBoundary(float val, int type)
     boundary.dir = type;
     return entity;
 };
+
+Entity createPlayableArea(const vec2& pos, float width, float height)
+{
+    Entity entity = Entity();
+
+    PlayableArea& playableArea = registry.playableArea.emplace(entity);
+    playableArea.position = pos;
+    playableArea.width = width;
+    playableArea.height = height;
+
+    return entity;
+}
 
 Entity createFloor(float val, int type)
 {

@@ -4,31 +4,34 @@
 
 Game::Game() : currentState(GameState::MENU), running(true), loadingProgress(0.0f)
 {
-    // Position start button (moved down by additional 100px)
+    float leftShift = M_WINDOW_WIDTH_PX * (0.05f + 0.015f + 0.02f + 0.03f); // 5% + 1.5% + 2% + 3% of window width
+    float upShift = M_WINDOW_HEIGHT_PX * 0.05f;                             // 5% of window height
+
+    // Position start button (moved left and up)
     startButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 210.0f, // x position
-        425.0f,                            // y position (was 325)
-        260.0f,                            // width
-        80.0f,                             // height
-        "START"                            // button text
+        M_WINDOW_WIDTH_PX / 2.0f + 210.0f - leftShift, // x position
+        425.0f - upShift,                              // y position
+        260.0f,                                        // width
+        80.0f,                                         // height
+        "START"                                        // button text
     };
 
     // Position help button below start button
     helpButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 210.0f, // x position
-        525.0f,                            // y position (was 425)
-        260.0f,                            // width
-        80.0f,                             // height
-        "HELP"                             // button text
+        M_WINDOW_WIDTH_PX / 2.0f + 210.0f - leftShift, // x position
+        525.0f - upShift,                              // y position
+        260.0f,                                        // width
+        80.0f,                                         // height
+        "HELP"                                         // button text
     };
 
     // Add settings button below help button
     newButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 210.0f, // x position
-        625.0f,                            // y position (was 525)
-        260.0f,                            // width
-        80.0f,                             // height
-        "SETTINGS"                         // renamed from "NEW BUTTON"
+        M_WINDOW_WIDTH_PX / 2.0f + 210.0f - leftShift, // x position
+        625.0f - upShift,                              // y position
+        260.0f,                                        // width
+        80.0f,                                         // height
+        "SETTINGS"                                     // renamed from "NEW BUTTON"
     };
 
     // Position close button for help dialog
@@ -69,7 +72,7 @@ void Game::render()
 }
 void Game::generateBackground(float val, GlRender &renderer)
 {
-    renderer.renderTexturedQuad(renderer.m_backgroundTexture);
+    renderer.renderTexturedQuad(renderer.m_menuTexture);
 }
 
 #include <GLFW/glfw3.h>
@@ -87,7 +90,7 @@ void Game::renderMenu(GlRender &renderer)
 
     // Render background with full brightness
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_menuTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         1.0f // Full brightness for main menu
@@ -146,44 +149,99 @@ void Game::renderHelpScreen(GlRender &renderer)
 
     // First render the full background (darkened)
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_menuTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         0.3f // Darkness factor
     );
 
-    // Calculate dimensions for the smaller centered background
-    float helpBoxWidth = 600.0f;  // Fixed width
-    float helpBoxHeight = 400.0f; // Fixed height
+    // Calculate dimensions for the help screen image
+    float helpBoxWidth = 660.0f;
+    float helpBoxHeight = 500.0f;
     float helpBoxX = (M_WINDOW_WIDTH_PX - helpBoxWidth) / 2.0f;
     float helpBoxY = (M_WINDOW_HEIGHT_PX - helpBoxHeight) / 2.0f;
 
-    // Render the smaller background in the center
+    // Render the help screen image in the center
     renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
+        renderer.m_helpTexture,
         helpBoxX, helpBoxY,
         helpBoxWidth, helpBoxHeight,
-        1.0f // No darkening for the center image
-    );
+        1.0f);
 
-    // Get mouse position for close button hover effect
+    // Position and size the close button (make it square)
+    closeButton = {
+        helpBoxX + helpBoxWidth - 50.0f - 10.0f, // 10px padding from right
+        helpBoxY + 10.0f,                        // 10px padding from top
+        50.0f,                                   // Square width
+        50.0f,                                   // Square height
+        "X"};
+
+    // Get mouse position and check hover/press state
     GLFWwindow *window = glfwGetCurrentContext();
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
-    // Position the close button in the top-right corner of the help box
-    closeButton.x = helpBoxX + helpBoxWidth - closeButton.width - 10; // 10px padding
-    closeButton.y = helpBoxY + 10;                                    // 10px padding from top
-
-    // Check close button state
-    bool closeHovered =
-        mouseX >= closeButton.x &&
-        mouseX <= closeButton.x + closeButton.width &&
-        mouseY >= closeButton.y &&
-        mouseY <= closeButton.y + closeButton.height;
+    bool closeHovered = mouseX >= closeButton.x &&
+                        mouseX <= closeButton.x + closeButton.width &&
+                        mouseY >= closeButton.y &&
+                        mouseY <= closeButton.y + closeButton.height;
     bool closePressed = closeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-    // Render close/back button
+    // Render close button
+    renderer.renderButton(
+        closeButton.x, closeButton.y,
+        closeButton.width, closeButton.height,
+        closeButton.text,
+        closeHovered, closePressed,
+        glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
+    );
+}
+
+void Game::renderSettingsScreen(GlRender &renderer)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // First render the full background (darkened)
+    renderer.renderTexturedQuadScaled(
+        renderer.m_menuTexture,
+        0, 0,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        0.3f // Darkness factor
+    );
+
+    // Calculate dimensions for the settings screen image
+    float settingsBoxWidth = 660.0f;
+    float settingsBoxHeight = 500.0f;
+    float settingsBoxX = (M_WINDOW_WIDTH_PX - settingsBoxWidth) / 2.0f;
+    float settingsBoxY = (M_WINDOW_HEIGHT_PX - settingsBoxHeight) / 2.0f;
+
+    // Render the settings screen image in the center
+    renderer.renderTexturedQuadScaled(
+        renderer.m_settingsTexture,
+        settingsBoxX, settingsBoxY,
+        settingsBoxWidth, settingsBoxHeight,
+        1.0f);
+
+    // Position and size the close button (make it square)
+    closeButton = {
+        settingsBoxX + settingsBoxWidth - 50.0f - 10.0f, // 10px padding from right
+        settingsBoxY + 10.0f,                            // 10px padding from top
+        50.0f,                                           // Square width
+        50.0f,                                           // Square height
+        "X"};
+
+    // Get mouse position and check hover/press state
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    bool closeHovered = mouseX >= closeButton.x &&
+                        mouseX <= closeButton.x + closeButton.width &&
+                        mouseY >= closeButton.y &&
+                        mouseY <= closeButton.y + closeButton.height;
+    bool closePressed = closeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    // Render close button
     renderer.renderButton(
         closeButton.x, closeButton.y,
         closeButton.width, closeButton.height,
@@ -279,11 +337,11 @@ bool Game::handleHelpInput(GLFWwindow *window)
 }
 
 void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
-{   
+{
     registry.clear_all_components();
 
     worldSystem.init(&renderer);
-    
+
     // Reset timer
     extern int timer;
     extern const int timer_length;
@@ -293,7 +351,7 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     resetInterpVariables();
 
     isLoading = true;
-    setState(GameState::MENU);
+    setState(GameState::PLAYING);
 }
 
 void Game::updateScores(const Health &h1, const Health &h2)
@@ -325,122 +383,6 @@ void Game::updateScores(const Health &h1, const Health &h2)
     }
 }
 
-static Shader *settingsShader = nullptr; // Static shader for settings screen
-
-void Game::renderSettingsScreen(GlRender &renderer)
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // First render the full background (darkened)
-    renderer.renderTexturedQuadScaled(
-        renderer.m_backgroundTexture,
-        0, 0,
-        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-        0.3f // Darkness factor
-    );
-
-    // Calculate dimensions for settings box (centered)
-    float settingsBoxWidth = M_WINDOW_WIDTH_PX * 0.7f;
-    float settingsBoxHeight = M_WINDOW_HEIGHT_PX * 0.8f;
-    float settingsBoxX = (M_WINDOW_WIDTH_PX - settingsBoxWidth) / 2.0f;
-    float settingsBoxY = (M_WINDOW_HEIGHT_PX - settingsBoxHeight) / 2.0f;
-
-    GLuint VAO = 0, VBO = 0;
-
-    try
-    {
-        // Initialize shader if needed
-        if (!settingsShader)
-        {
-            settingsShader = new Shader("menu");
-        }
-
-        // Create vertices for white background (two triangles)
-        float vertices[] = {
-            // Position (x, y, z)            // Texture coords (u, v)
-            -0.7f, 0.8f, 0.0f, 0.0f, 1.0f,  // Top-left
-            -0.7f, -0.8f, 0.0f, 0.0f, 0.0f, // Bottom-left
-            0.7f, -0.8f, 0.0f, 1.0f, 0.0f,  // Bottom-right
-
-            0.7f, -0.8f, 0.0f, 1.0f, 0.0f, // Bottom-right
-            0.7f, 0.8f, 0.0f, 1.0f, 1.0f,  // Top-right
-            -0.7f, 0.8f, 0.0f, 0.0f, 1.0f  // Top-left
-        };
-
-        // Create and bind VAO/VBO
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        // Position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-        glEnableVertexAttribArray(0);
-
-        // Texture coord attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        // Enable blending for transparency
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // Use shader and set color
-        settingsShader->use();
-        settingsShader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f)); // White color
-        settingsShader->setFloat("brightness", 1.0f);                  // Full brightness
-
-        // Draw the white box
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        // Position close button in top-right corner with padding
-        closeButton.width = 50.0f;
-        closeButton.height = 50.0f;
-        closeButton.x = settingsBoxX + settingsBoxWidth - closeButton.width - 20.0f;
-        closeButton.y = settingsBoxY + 20.0f;
-
-        // Get mouse position and handle close button
-        GLFWwindow *window = glfwGetCurrentContext();
-        double mouseX, mouseY;
-        glfwGetCursorPos(window, &mouseX, &mouseY);
-
-        bool closeHovered = mouseX >= closeButton.x &&
-                            mouseX <= closeButton.x + closeButton.width &&
-                            mouseY >= closeButton.y &&
-                            mouseY <= closeButton.y + closeButton.height;
-        bool closePressed = closeHovered &&
-                            glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-        // Render close button
-        renderer.renderButton(
-            closeButton.x, closeButton.y,
-            closeButton.width, closeButton.height,
-            closeButton.text,
-            closeHovered, closePressed,
-            glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
-        );
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Error in renderSettingsScreen: " << e.what() << std::endl;
-    }
-
-    // Cleanup OpenGL resources
-    if (VAO)
-    {
-        glDeleteVertexArrays(1, &VAO);
-    }
-    if (VBO)
-    {
-        glDeleteBuffers(1, &VBO);
-    }
-
-    // Restore OpenGL state
-    glDisable(GL_BLEND);
-}
-
 void Game::handleSettingsButton()
 {
     setState(GameState::SETTINGS);
@@ -469,10 +411,5 @@ bool Game::handleSettingsInput(GLFWwindow *window)
 
 Game::~Game()
 {
-    // Clean up settings shader
-    if (settingsShader)
-    {
-        delete settingsShader;
-        settingsShader = nullptr;
-    }
+    // No cleanup needed here since shaders are managed by the renderer
 }

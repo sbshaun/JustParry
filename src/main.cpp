@@ -57,15 +57,12 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         p1 = PlayerInput();
         p2 = PlayerInput();
 
-        renderer.render();
-        renderer.renderUI(timer);
         renderer.renderRoundOver(1);
         game.setState(GameState::ROUND_OVER);
-
     }
     else
     {
-        renderer.render();
+
         int exit = generateUI(renderer);
 
         if (exit == 1)
@@ -80,8 +77,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             p1 = PlayerInput();
             p2 = PlayerInput();
             renderer.renderRoundOver(0);
-            renderer.renderUI(timer);
-
         }
         else
         {
@@ -94,7 +89,8 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     }
 }
 
-int main(){   
+int main()
+{
     //// START INITS ////
     GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
     assert(gl3w_init() == 0);
@@ -102,18 +98,16 @@ int main(){
 
     // glfwSwapInterval(1); // Enable vsync
 
-    // init fighters config 
-    FighterManager::init(); 
-    
+    // init fighters config
+    FighterManager::init();
 
     GlRender renderer;
     renderer.initialize();
 
     WorldSystem worldSystem;
     worldSystem.init(&renderer);
-    PhysicsSystem physics;
+    PhysicsSystem physicsSystem;
     Bot botInstance;
-
 
     // Initialize game state
     Game game;
@@ -128,24 +122,22 @@ int main(){
     bool botEnabled = false;
     bool shouldExit = false;
 
-
-    const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE; // denominator is logic+input checks per second
+    const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE;      // denominator is logic+input checks per second
     const float FramesPerLogicLoop = TARGET_LOGIC_RATE / TARGET_FPS; // The number of logic loops that would result in 60fps
-    
+
     int loopsSinceLastFrame = 0;
     //// END INITS ////
 
-     // Main loop
+    // Main loop
 
     while (!glWindow.shouldClose())
     {
-        //start a timer for each loop
+        // start a timer for each loop
         auto start = std::chrono::steady_clock ::now();
 
         switch (game.getState())
         {
         case GameState::MENU:
-            game.generateBackground(FLOOR_Y, renderer);
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window))
             {
@@ -155,7 +147,7 @@ int main(){
             break;
 
         case GameState::HELP:
-            game.generateBackground(FLOOR_Y, renderer);
+
             game.renderHelpScreen(renderer);
             if (game.handleHelpInput(glWindow.window))
             {
@@ -165,7 +157,6 @@ int main(){
             break;
 
         case GameState::SETTINGS:
-            game.generateBackground(FLOOR_Y, renderer);
             game.renderSettingsScreen(renderer);
             if (game.handleSettingsInput(glWindow.window))
             {
@@ -190,62 +181,78 @@ int main(){
             break;
 
         case GameState::PLAYING:
-            {
-            if(loopsSinceLastFrame == FramesPerLogicLoop){ //Only do certain checks each frame rather than every loop
+        {
+            if (loopsSinceLastFrame == FramesPerLogicLoop)
+            { // Only do certain checks each frame rather than every loop
                 // std::cout << "RENDER CALL" << std::endl;
                 loopsSinceLastFrame = 0;
                 renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
                 handleUtilityInputs(renderer, showFPS, botEnabled,
-                    fKeyPressed, bKeyPressed, hKeyPressed,
-                    glWindow, fpsCounter, shouldExit,
-                    worldSystem);
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
                 // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 glWindow.windowSwapBuffers();
             }
 
             loopsSinceLastFrame++;
-        
-            worldSystem.movementProcessing(); //PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
+
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-            worldSystem.hitBoxCollisions(); 
-            worldSystem.inputProcessing(); 
+            worldSystem.hitBoxCollisions();
+            worldSystem.inputProcessing();
+            physicsSystem.step();
+
+            // Update center for playable area
+            PlayableArea &playableArea = registry.playableArea.get(renderer.m_playableArea);
+            Motion &player1Motion = registry.motions.get(renderer.m_player1);
+            Motion &player2Motion = registry.motions.get(renderer.m_player2);
+            playableArea.updatePosition(player1Motion.position, player2Motion.position);
+            playableArea.updateWorldModel(renderer.m_worldModel);
+
             worldSystem.playerCollisions(&renderer);
-            physics.step();
-            
+            renderer.render();
+            renderer.renderUI(timer);
+
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
             worldSystem.handleInput();
             // toggleBot(botEnabled, bKeyPressed, glWindow);
 
-            //time the next logic check
+            // time the next logic check
             auto end = std::chrono::steady_clock ::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
-            
+
             // Calculate the remaining time to sleep
             int sleepDuration = targetLogicDuration - static_cast<int>(FastLoopIterTime.count());
             // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
             if (sleepDuration > 0)
             {
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
-                while (std::chrono::steady_clock::now() < sleepEnd){
+                while (std::chrono::steady_clock::now() < sleepEnd)
+                {
                     worldSystem.handleInput();
-                } //Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
+                } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
-            }
-            break;
+        }
+        break;
 
         case GameState::LOADING:
-            // supress compilation warning 
+            // supress compilation warning
             std::cout << "warning: enumeration value 'LOADING' not handled in switch [-Wswitch]" << std::endl;
             glWindow.windowSwapBuffers();
             break;
-        
+
         case GameState::ROUND_OVER:
+            renderer.drawUI();
+            renderer.render();
+            renderer.renderUI(timer);
+            renderer.renderRoundOver(1);
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
-                {
-                    roundEnded = false;
-                    game.resetGame(renderer, worldSystem);
-                }
+            {
+                roundEnded = false;
+                game.resetGame(renderer, worldSystem);
+            }
             glWindow.windowSwapBuffers();
             break;
 
@@ -258,12 +265,11 @@ int main(){
             glWindow.windowSwapBuffers();
             if (shouldExit)
                 break;
-            break;        
+            break;
         }
         if (shouldExit)
             break;
-
-        }        
+    }
 
     // Cleanup in correct order
     registry.clear_all_components(); // Clear ECS components first

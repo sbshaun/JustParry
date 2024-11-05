@@ -268,6 +268,31 @@ struct ParryBox : public Box
 {
     // if hitbox collides ParryBox, the attack is parried.
     bool active = false; // active for 12 frames
+
+    // parry is just same as player's size. TODO
+    float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        return playerPosition.x - width / 2 + xOffset;
+        // return playerPosition.x - width - xOffset;
+    }
+
+    float getRight(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        return playerPosition.x + width / 2 + xOffset;
+        // return playerPosition.x + width + xOffset;
+    }
+
+    float getTop(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        return playerPosition.y + height;
+    }
+
+    float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
+    {
+        return playerPosition.y - height;
+    }
 };
 
 struct PerfectParryBox : public Box
@@ -284,6 +309,20 @@ struct Boundary
 {
     float val; // integer to check when comparing the position, x for walls and y for floors
     int dir;   // 1: right side wall, 2: left side wall, 3: ground
+};
+
+struct PlayableArea
+{
+    vec2 position = vec2(0,0);
+    float width;
+    float height;
+    void updatePosition(const vec2& player1Position, const vec2& player2Position) {
+        position.x = clamp((player1Position.x + player2Position.x) / 2.0f, -0.5f, 0.5f);
+    }
+    void updateWorldModel(mat4& worldModel) {
+        worldModel = mat4(1);
+        worldModel = glm::translate(worldModel, vec3(-position.x, 0.0f, 0.0f));
+    }
 };
 
 struct BoundaryCollision
@@ -335,7 +374,6 @@ struct ObjectMesh {
     std::vector<uint16_t> vertex_indices;
 };
 
-/**
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture

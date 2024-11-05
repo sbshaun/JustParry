@@ -74,11 +74,20 @@ void GlRender::renderRoundOver(int count)
         gltBeginDraw();
         gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
+        // Get the current window size
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
+
         // Draw game over text
-        gltDrawText2D(over, 285, 170, 5.f);
+        gltDrawText2D(over, 285 * xscale, 170 * yscale, 5.f * xscale);
 
         // Draw player wins text
-        gltDrawText2D(won, 350, 250, 2.5f);
+        gltDrawText2D(won, 350 * xscale, 250 * yscale, 2.5f * yscale);
         gltEndDraw();
     }
     else
@@ -97,8 +106,17 @@ void GlRender::renderRoundOver(int count)
     gltBeginDraw();
     gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
 
+    // Get the current window size
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+    
+    int framew_width, frame_height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+    float xscale = (float) framew_width / windowWidth;
+    float yscale = (float) frame_height / windowHeight;
+
     // Draw game over text
-    gltDrawText2D(m_restart, 305, 300, 2.f);
+    gltDrawText2D(m_restart, 305 * xscale, 300 * yscale, 2.f * xscale);
     gltEndDraw();
 }
 
@@ -213,7 +231,7 @@ void GlRender::handleTexturedRenders()
         if (player.id == 1)
         {
             Motion &motion = registry.motions.get(entity);
-            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = m_worldModel;
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
             // If player 1 is facing left, flip the model
@@ -238,6 +256,25 @@ void GlRender::handleTexturedRenders()
                 player1Renders.texture = m_bird_texture;
             }
 
+            // if parryBox is active, turn to transparent and green tint to show player is parrying
+            if (registry.parryBoxes.get(m_player1).active)
+            {
+                shader->setBool("isParrying", true);
+            }
+            else
+            {
+                shader->setBool("isParrying", false);
+            }
+
+            if (registry.playerCurrentStates.get(m_player1).currentState == PlayerState::STUNNED)
+            {
+                shader->setBool("stunned", true);
+            }
+            else
+            {
+                shader->setBool("stunned", false);
+            }
+
             if (registry.hitBoxes.get(m_player2).hit)
             {
                 shader->setBool("takenDamage", true);
@@ -250,7 +287,7 @@ void GlRender::handleTexturedRenders()
         else if (player.id == 2)
         {
             Motion &motion = registry.motions.get(entity);
-            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = m_worldModel;
             modelMatrix = glm::translate(modelMatrix, glm::vec3(motion.position.x, motion.position.y, 0.0f));
 
             // If player 2 is facing right, flip the model
@@ -279,6 +316,24 @@ void GlRender::handleTexturedRenders()
                 player2Renders.texture = m_bird_texture;
             }
 
+            if (registry.parryBoxes.get(m_player2).active)
+            {
+                shader->setBool("isParrying", true);
+            }
+            else
+            {
+                shader->setBool("isParrying", false);
+            }
+
+            if (registry.playerCurrentStates.get(m_player2).currentState == PlayerState::STUNNED)
+            {
+                shader->setBool("stunned", true);
+            }
+            else
+            {
+                shader->setBool("stunned", false);
+            }
+
             if (registry.hitBoxes.get(m_player1).hit)
             {
                 shader->setBool("takenDamage", true);
@@ -305,6 +360,12 @@ void GlRender::handleTexturedRenders()
     // Add debug visualization at the end of the function
     if (debugMode)
     {
+        if (registry.playableArea.has(m_playableArea))
+        {
+            PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
+            renderPlayableArea(m_playableArea, playableArea.position, playableArea.width, playableArea.height, glm::vec3(1.0f, 0.0f, 1.0f));
+        }
+
         // Render hitboxes and hurtboxes for both players
         if (registry.hitBoxes.has(m_player1))
         {
@@ -323,6 +384,17 @@ void GlRender::handleTexturedRenders()
             renderDebugBoxes(m_player1, p1HurtBox, glm::vec3(0.0f, 0.8f, 1.0f));
         }
 
+        if (registry.parryBoxes.has(m_player1))
+        {
+
+            ParryBox &p1ParryBox = registry.parryBoxes.get(m_player1);
+            if (p1ParryBox.active)
+            {
+                // Green for player 1's parrybox
+                renderDebugBoxes(m_player1, p1ParryBox, glm::vec3(0.0f, 1.0f, 0.0f));
+            }
+        }
+
         if (registry.hitBoxes.has(m_player2))
         {
             HitBox &p2HitBox = registry.hitBoxes.get(m_player2);
@@ -338,6 +410,16 @@ void GlRender::handleTexturedRenders()
             HurtBox &p2HurtBox = registry.hurtBoxes.get(m_player2);
             // Yellow for player 2's hurtbox
             renderDebugBoxes(m_player2, p2HurtBox, glm::vec3(1.0f, 1.0f, 0.0f));
+        }
+
+        if (registry.parryBoxes.has(m_player2))
+        {
+            ParryBox &p2ParryBox = registry.parryBoxes.get(m_player2);
+            if (p2ParryBox.active)
+            {
+                // Purple for player 2's parrybox
+                renderDebugBoxes(m_player2, p2ParryBox, glm::vec3(1.0f, 0.0f, 1.0f));
+            }
         }
     }
 }
@@ -366,6 +448,20 @@ void GlRender::render()
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // White background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
+
+    renderTexturedQuadScaled(
+        m_backgroundTexture,
+        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5, 0,
+        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        1.0f);
+
+    renderTexturedQuadScaled(
+        m_foregroundTexture,
+        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0, 0,
+        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        1.0f);
+
     // debugging wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -381,7 +477,11 @@ void GlRender::loadTextures()
     // Load texture for player 1
     loadTexture(textures_path("bird.png"), m_bird_texture);
     loadTexture(textures_path("bird_p.png"), m_bird_p_texture);
-    loadTexture(textures_path("menu_1.png"), m_backgroundTexture);
+    loadTexture(textures_path("menu_1.png"), m_menuTexture);
+    loadTexture(textures_path("help-screen.png"), m_helpTexture);
+    loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
+    loadTexture(textures_path("bg.png"), m_backgroundTexture);
+    loadTexture(textures_path("bg_parallax.png"), m_foregroundTexture);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -421,25 +521,30 @@ void GlRender::renderUI(int timer)
         // Get the current window size
         int windowWidth, windowHeight;
         glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+        
+        int framew_width, frame_height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+        float xscale = (float) framew_width / windowWidth;
+        float yscale = (float) frame_height / windowHeight;
 
         // Calculate positions based on window size
-        float centerX = windowWidth / 2.0f;
-        float topY = windowHeight * 0.1f; // 10% from top
+        float centerX = (windowWidth * xscale) / 2.0f;
+        float topY = (windowHeight * yscale) * 0.1f; // 10% from top
 
         // Player 1 health positions (left side)
         float p1X = centerX * 0.4f;
         float healthY = topY;
-        float valueY = topY + 35.0f;
+        float valueY = topY + (35.0f * yscale);
 
         // Timer positions (center)
-        float timerX = centerX - 20.0f;
-        float timerValueX = centerX - 10.0f;
+        float timerX = centerX - (20.0f * xscale);
+        float timerValueX = centerX - (10.0f  * xscale);
 
         // Player 2 health positions (right side)
         float p2X = centerX * 1.6f;
 
         // Score positions
-        float scoreY = topY + 75.0f;
+        float scoreY = topY + (75.0f * yscale);
 
         // Set up text
         std::stringstream ss;
@@ -456,27 +561,27 @@ void GlRender::renderUI(int timer)
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Draw Player 1 health text and value
-        gltDrawText2D(m_leftText, p1X, healthY, 1.5f);
-        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f);
+        gltDrawText2D(m_leftText, p1X, healthY, 1.5f * xscale);
+        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw timer text and value
-        gltDrawText2D(m_timerText, timerX, healthY, 1.5f);
-        gltDrawText2D(time, timerValueX, valueY, 2.5f);
+        gltDrawText2D(m_timerText, timerX, healthY, 1.5f * xscale);
+        gltDrawText2D(time, timerValueX, valueY, 2.5f * xscale);
 
         // Draw Player 2 health text and value
-        gltDrawText2D(m_rightText, p2X, healthY, 1.5f);
-        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f);
+        gltDrawText2D(m_rightText, p2X, healthY, 1.5f * xscale);
+        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw scores
-        gltDrawText2D(score1Label, p1X, scoreY, 1.5f);
+        gltDrawText2D(score1Label, p1X, scoreY, 1.5f * xscale);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f);
+        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f * xscale);
 
-        gltDrawText2D(score2Label, p2X, scoreY, 1.5f);
+        gltDrawText2D(score2Label, p2X, scoreY, 1.5f * xscale);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f);
+        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f * xscale);
 
         gltEndDraw();
     }
@@ -592,7 +697,11 @@ void GlRender::shutdown()
     // Delete textures
     glDeleteTextures(1, &m_bird_texture);
     glDeleteTextures(1, &m_bird_p_texture);
+    glDeleteTextures(1, &m_menuTexture);
+    glDeleteTextures(1, &m_helpTexture);
+    glDeleteTextures(1, &m_settingsTexture);
     glDeleteTextures(1, &m_backgroundTexture);
+    glDeleteTextures(1, &m_foregroundTexture);
 
     // Delete text objects
     if (m_fps)
@@ -707,8 +816,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     glDisable(GL_DEPTH_TEST);
 
     static Shader *buttonShader = nullptr;
-
-    // Initialize shader if not already done
     if (!buttonShader)
     {
         try
@@ -727,15 +834,14 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         }
     }
 
-    // Save current OpenGL state
-    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
-    GLint blendSrcAlpha, blendDstAlpha;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrcAlpha);
-    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDstAlpha);
-
-    // Enable blending for transparent button
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Get the current window size
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+    
+    int framew_width, frame_height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+    float xscale = (float) framew_width / windowWidth;
+    float yscale = (float) frame_height / windowHeight;
 
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
@@ -777,17 +883,17 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
 
     buttonShader->use();
 
-    // Set the button size and corner radius uniforms
+    // Set the button position and size uniforms
+    GLint posLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonPos");
     GLint sizeLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonSize");
-    GLint radiusLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "cornerRadius");
 
+    if (posLocation != -1)
+    {
+        glUniform2f(posLocation, x * xscale, (M_WINDOW_HEIGHT_PX - y - height) * yscale); // Convert to OpenGL coordinates
+    }
     if (sizeLocation != -1)
     {
-        glUniform2f(sizeLocation, width, height);
-    }
-    if (radiusLocation != -1)
-    {
-        glUniform1f(radiusLocation, 10.0f); // Adjust radius as needed
+        glUniform2f(sizeLocation, width * xscale, height * yscale);
     }
 
     GLint colorLoc = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonColor");
@@ -809,6 +915,10 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
             glUniform3f(colorLoc, color.x, color.y, color.z);
         }
     }
+
+    // Enable blending for transparent edges
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Draw button background
     glBindVertexArray(VAO);
@@ -834,10 +944,10 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         {
             textY += 2; // Move text down slightly when pressed
         }
-
+    
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
-        gltDrawText2D(buttonText, textX, textY, scale);
+        gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale * xscale);
 
         gltEndDraw();
         gltDeleteText(buttonText);
@@ -1039,12 +1149,83 @@ void GlRender::renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &
     }
 
     Motion &motion = registry.motions.get(entity);
+    PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     // Calculate box vertices in world space
-    float left = box.getLeft(motion.position, motion.direction);
-    float right = box.getRight(motion.position, motion.direction);
+    float left = box.getLeft(motion.position, motion.direction) - playableArea.position.x;
+    float right = box.getRight(motion.position, motion.direction) - playableArea.position.x;
     float top = box.getTop(motion.position, motion.direction);
     float bottom = box.getBottom(motion.position, motion.direction);
+
+    // Create vertices for the box outline
+    float vertices[] = {
+        left, top, 0.0f,     // Top-left
+        right, top, 0.0f,    // Top-right
+        right, bottom, 0.0f, // Bottom-right
+        left, bottom, 0.0f   // Bottom-left
+    };
+
+    // Create and bind VAO/VBO with RAII-style cleanup
+    GLuint VAO = 0, VBO = 0;
+    try
+    {
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+
+        // Use debug shader
+        m_debugShader->use();
+        m_debugShader->setVec3("color", color);
+
+        // Save current line width
+        GLfloat oldLineWidth;
+        glGetFloatv(GL_LINE_WIDTH, &oldLineWidth);
+
+        // Set line width for debug boxes
+        glLineWidth(1.0f);
+
+        // Draw box outline
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+        // Restore previous line width
+        glLineWidth(oldLineWidth);
+
+        // Cleanup
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+    }
+    catch (...)
+    {
+        // Ensure cleanup even if an error occurs
+        if (VAO)
+            glDeleteVertexArrays(1, &VAO);
+        if (VBO)
+            glDeleteBuffers(1, &VBO);
+        throw;
+    }
+}
+
+void GlRender::renderPlayableArea(Entity entity, const vec2 &position, float width, float height, const glm::vec3 &color)
+{
+    if (!m_debugShader)
+    {
+        std::cerr << "Debug shader not initialized!" << std::endl;
+        return;
+    }
+
+    PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
+
+    // Calculate box vertices in world space
+    float left = position.x - width / M_WINDOW_WIDTH_PX - playableArea.position.x;
+    float right = position.x + width / M_WINDOW_WIDTH_PX - playableArea.position.x;
+    float top = position.y + height / M_WINDOW_HEIGHT_PX;
+    float bottom = position.y - height / M_WINDOW_HEIGHT_PX;
 
     // Create vertices for the box outline
     float vertices[] = {
@@ -1105,12 +1286,12 @@ void GlRender::bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, st
 {
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffers[(uint)gid]);
     glBufferData(GL_ARRAY_BUFFER,
-        sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+                 sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
     gl_has_errors();
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffers[(uint)gid]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-        sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
+                 sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
     gl_has_errors();
 }
 
@@ -1122,8 +1303,8 @@ void GlRender::initializeGlMeshes()
         GEOMETRY_BUFFER_ID geom_index = mesh_paths[i].first;
         std::string name = mesh_paths[i].second;
         ObjectMesh::loadFromOBJFile(name,
-            meshes[(int)geom_index].vertices,
-            meshes[(int)geom_index].vertex_indices,
-            meshes[(int)geom_index].original_size);
+                                    meshes[(int)geom_index].vertices,
+                                    meshes[(int)geom_index].vertex_indices,
+                                    meshes[(int)geom_index].original_size);
     }
 }

@@ -10,6 +10,7 @@ enum class Action {
     CROUCH,
     PUNCH, 
     KICK,
+    PARRY,
     NONE // default do nothing  
 };
 
@@ -21,6 +22,7 @@ constexpr const char* ActionToString(Action action) {
         case Action::CROUCH: return "CROUCH";
         case Action::PUNCH: return "PUNCH";
         case Action::KICK: return "KICK";
+        case Action::PARRY: return "PARRY";
         case Action::NONE: return "NONE";
         default: return "UNKNOWN";
     }
