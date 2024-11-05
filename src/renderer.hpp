@@ -46,7 +46,8 @@ public:
                       glm::vec3 color = glm::vec3(0.4078f, 0.4549f, 0.5020f));
     void renderDialogBox(float x, float y, float width, float height, float alpha = 0.8f);
 
-    void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, float brightness = 1.0f);
+    void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
+                                  float brightness = 1.0f, float alpha = 1.0f);
 
     void renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color);
     void renderPlayableArea(Entity entity, const vec2 &position, float width, float height, const glm::vec3 &color);
@@ -75,6 +76,7 @@ public:
     GLuint m_timerBackgroundTexture;
     GLuint m_barTexture;
     GLuint m_avatarTexture;
+    GLuint m_pauseMenuTexture;
 
     // Make sure these paths remain in sync with the associated enumerators.
     // Associated id with .obj path
@@ -149,4 +151,7 @@ private:
     float m_exitY = -750.0f;             // Changed from -600 to -750 pixels
     std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::steady_clock::now();
     bool m_animationComplete = false; // Track if exit animation is complete
+
+    // Add after line 140 with the other GLTtext declarations
+    GLTtext *m_pauseText = nullptr;
 };
