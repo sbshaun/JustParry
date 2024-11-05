@@ -46,46 +46,32 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
     PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
 
-    if (h1.currentHealth <= 0 || h2.currentHealth <= 0)
+    // Check if round is over due to health or timer
+    if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || generateUI(renderer) == 1)
     {
+        // Update scores and set round over state only once
         if (!roundEnded)
         {
             game.updateScores(h1, h2);
             roundEnded = true;
+            game.setState(GameState::ROUND_OVER);
         }
 
+        // Disable player inputs during round over
         p1 = PlayerInput();
         p2 = PlayerInput();
 
+        // Always render round over animation with winner text
         renderer.renderRoundOver(1);
-        game.setState(GameState::ROUND_OVER);
     }
     else
     {
-
-        int exit = generateUI(renderer);
-
-        if (exit == 1)
+        roundEnded = false;
+        if (botEnabled)
         {
-            if (!roundEnded)
-            {
-                game.updateScores(h1, h2);
-                roundEnded = true;
-                game.setState(GameState::ROUND_OVER);
-            }
-
-            p1 = PlayerInput();
-            p2 = PlayerInput();
-            renderer.renderRoundOver(0);
+            botInstance.pollBotRng(renderer);
         }
-        else
-        {
-            roundEnded = false;
-            if (botEnabled)
-            {
-                botInstance.pollBotRng(renderer);
-            }
-        }
+        renderer.renderUI(timer);
     }
 }
 

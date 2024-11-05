@@ -338,7 +338,7 @@ bool Game::handleHelpInput(GLFWwindow *window)
 
 void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
 {
-    worldSystem = &worldSystemRef; // Store the pointer
+    worldSystem = &worldSystemRef;
     registry.clear_all_components();
     worldSystem->init(&renderer);
 
@@ -352,6 +352,10 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
 
     // Reset round over animation
     renderer.resetRoundOverAnimation();
+
+    // Reset animation flags using the setter methods
+    renderer.setAnimationComplete(false);
+    renderer.setExitAnimationStarted(false);
 
     isLoading = true;
     setState(GameState::PLAYING);
@@ -369,7 +373,7 @@ void Game::updateScores(const Health &h1, const Health &h2)
     }
     else
     {
-        // Timer ran out, give point to player with higher health
+        // Timer ran out, give point based on health
         if (h1.currentHealth > h2.currentHealth)
         {
             player1Score++;
@@ -378,11 +382,7 @@ void Game::updateScores(const Health &h1, const Health &h2)
         {
             player2Score++;
         }
-        else
-        {
-            // If health is equal, give point to player 1
-            player1Score++;
-        }
+        // If health is equal (tie), don't give points to anyone
     }
 }
 
