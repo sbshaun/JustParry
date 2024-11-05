@@ -45,8 +45,8 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
 
     // Position pause button in top left corner
     pauseButton = {
-        10.0f, // x position (10px from left edge)
-        10.0f, // y position (10px from top)
+        20.0f, // x position (10px from left edge)
+        20.0f, // y position (10px from top)
         75.0f, // width
         75.0f, // height
         ""     // pause symbol
