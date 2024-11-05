@@ -177,6 +177,12 @@ int main()
             renderer.render();
             renderer.renderUI(timer);
 
+            // Render FPS counter if enabled
+            if (showFPS)
+            {
+                renderer.renderFPS(fpsCounter.getFPS(), showFPS);
+            }
+
             // Render the pause menu on top
             game.renderPauseButton(renderer);
 
