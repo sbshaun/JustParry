@@ -248,11 +248,21 @@ int main()
             renderer.render();
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);
-            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+
+            // Only handle enter press if exit animation hasn't started
+            if (!renderer.isExitAnimationStarted() &&
+                glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+            {
+                renderer.startExitAnimation();
+            }
+
+            // Only reset the game once the exit animation is complete
+            if (renderer.isExitAnimationComplete())
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
             }
+
             glWindow.windowSwapBuffers();
             break;
 
