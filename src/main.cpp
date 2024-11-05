@@ -15,7 +15,7 @@
 #include "input_system/state_machine.hpp"
 #include "input_system/utility_inputs.hpp"
 
-int timer = 2;
+int timer = timer_length;
 static bool roundEnded = false;
 auto last_time = std::chrono::high_resolution_clock::now();
 

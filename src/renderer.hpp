@@ -71,6 +71,8 @@ public:
     GLuint m_settingsTexture;
     GLuint m_backgroundTexture;
     GLuint m_foregroundTexture;
+    GLuint m_roundOverTexture;
+    GLuint m_timerBackgroundTexture;
 
     // Make sure these paths remain in sync with the associated enumerators.
     // Associated id with .obj path
@@ -108,10 +110,8 @@ private:
     // Place holders for timer and health subtexts
     GLTtext *m_fps = nullptr;
     GLTtext *m_loadingText = nullptr;
-
     GLTtext *m_restart = nullptr;
 
-    GLTtext *m_timerText = nullptr;
     GLTtext *m_leftText = nullptr;
     GLTtext *m_rightText = nullptr;
     GLTtext *m_roundOver = nullptr;
@@ -130,9 +130,6 @@ private:
     GLTtext *score2 = nullptr;
     GLTtext *score1Label = nullptr;
     GLTtext *score2Label = nullptr;
-
-    // Add to the private member variables
-    GLuint m_roundOverTexture;
 
     // Round over screen animation properties
     float m_roundOverY = -600.0f;        // Starting Y position (off screen)
