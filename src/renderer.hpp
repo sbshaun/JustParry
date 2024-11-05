@@ -97,6 +97,10 @@ public:
         m_animationProgress = 0.0f;
     }
 
+    // Make these accessible to Game class
+    void setAnimationComplete(bool value) { m_animationComplete = value; }
+    void setExitAnimationStarted(bool value) { m_exitAnimationStarted = value; }
+
 private:
     Game *game = nullptr;
 

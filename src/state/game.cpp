@@ -338,7 +338,7 @@ bool Game::handleHelpInput(GLFWwindow *window)
 
 void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
 {
-    worldSystem = &worldSystemRef; // Store the pointer
+    worldSystem = &worldSystemRef;
     registry.clear_all_components();
     worldSystem->init(&renderer);
 
@@ -352,6 +352,10 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
 
     // Reset round over animation
     renderer.resetRoundOverAnimation();
+
+    // Reset animation flags using the setter methods
+    renderer.setAnimationComplete(false);
+    renderer.setExitAnimationStarted(false);
 
     isLoading = true;
     setState(GameState::PLAYING);
