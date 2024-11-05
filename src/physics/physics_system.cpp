@@ -20,7 +20,7 @@ void PhysicsSystem::step() {
 		Motion& playerMotion = registry.motions.get(playerEntity);
 		HitBox& playerHitBox = registry.hitBoxes.get(playerEntity);
 		Fighters current_char = playerContainer.components[i].current_char;
-		FighterConfig config = FighterManager::getFighterConfig(current_char);
+		const FighterConfig& config = FighterManager::getFighterConfig(current_char);
 
 		// std::cout << playerMotion.position[0] << std::endl;
 

@@ -83,6 +83,12 @@ struct Health
     // float recoverRate; // optional, health recover after x seconds of not being hit.
 };
 
+struct Animation
+{
+    GLuint currentTexture;
+    int currentFrame;
+};
+
 struct Motion
 {
     vec2 lastPos = {0, 0};

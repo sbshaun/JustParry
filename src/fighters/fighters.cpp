@@ -1,5 +1,6 @@
 #include "../constants.hpp"
 #include "../common.hpp"
+#include "../renderer.hpp"
 #include "fighters.hpp"
 
 FighterConfig& setUpBirdmanConfig() {
@@ -21,9 +22,6 @@ FighterConfig& setUpBirdmanConfig() {
     birdmanConfig.PARRY_STUN_DURATION = 3000.f;
 
     birdmanConfig.PARRY_DURATION = 700.f;
-
-    birdmanConfig.main_texture = "bird.png";
-    birdmanConfig.punch_texture = "bird_p.png";
     return birdmanConfig; 
 }
 
@@ -34,7 +32,7 @@ void FighterManager::setFighterConfig(Fighters fighter, FighterConfig& config) {
     fighterConfigs[fighter] = config;
 } 
 
-const FighterConfig& FighterManager::getFighterConfig(Fighters fighter) {
+FighterConfig& FighterManager::getFighterConfig(Fighters fighter) {
     // check it exists, adn retutrn correct type 
     if (fighterConfigs.find(fighter) != fighterConfigs.end()) {
         return fighterConfigs[fighter];
@@ -42,6 +40,22 @@ const FighterConfig& FighterManager::getFighterConfig(Fighters fighter) {
         std::cerr << "FighterManager::getFighterConfig Fighter not found, returning default." << std::endl;
         return setUpBirdmanConfig();
     }
+}
+
+void FighterManager::loadBirdTextures(GlRender& renderer) {
+    auto& birdConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
+    renderer.loadTexture(textures_path("bird_idle_f1.png"), birdConfig.m_bird_idle_f1_texture);
+    renderer.loadTexture(textures_path("bird_idle_f2.png"), birdConfig.m_bird_idle_f2_texture);
+    renderer.loadTexture(textures_path("bird_punch_f1.png"), birdConfig.m_bird_punch_f1_texture);
+    renderer.loadTexture(textures_path("bird_punch_f2.png"), birdConfig.m_bird_punch_f2_texture);
+};
+
+void FighterManager::deleteBirdTextures() {
+    auto& birdConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN); 
+    glDeleteTextures(1, &birdConfig.m_bird_idle_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_idle_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_punch_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_punch_f2_texture);
 }
 
 // reigster fighter configs to FighterManager 

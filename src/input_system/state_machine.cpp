@@ -29,17 +29,30 @@ void StateMachine::update(Entity entity, float elapsed_ms)
 // TODO: implement concrete state classes
 void IdleState::enter(Entity entity, StateMachine &stateMachine)
 {
-    // TODO: add animation to idle?
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
 }
 
 void IdleState::exit(Entity entity, StateMachine &stateMachine)
 {
-    // do nothing
+    // TODO: Clean up animation data? Each state should be fine to reset it on enter
 }
 
 void IdleState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-    // do nothing
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    if ((animation.currentFrame  / 10 ) % 2 == 0) {
+       animation.currentTexture = fighterConfig.m_bird_idle_f2_texture;
+    } else {
+        animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
+    }
+
+    animation.currentFrame = animation.currentFrame + 1;
 }
 
 bool IdleState::canTransitionTo(Entity entity, PlayerState newState)
@@ -49,20 +62,31 @@ bool IdleState::canTransitionTo(Entity entity, PlayerState newState)
 
 void WalkingState::enter(Entity entity, StateMachine &stateMachine)
 {
-    // Set animation to walking
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
 }
 
 void WalkingState::exit(Entity entity, StateMachine &stateMachine)
 {
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_idle_f2_texture;
 }
 
 void WalkingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-    Motion &motion = registry.motions.get(entity);
+   // TODO: DONT RENTER WALK STATE EVERY TIME BUTTON IS PRESSED
+    Motion& motion = registry.motions.get(entity);
     if (motion.velocity.x == 0)
     {
         // stateMachine.transition(entity, PlayerState::IDLE);
     }
+
 }
 
 bool WalkingState::canTransitionTo(Entity entity, PlayerState newState)
@@ -73,6 +97,11 @@ bool WalkingState::canTransitionTo(Entity entity, PlayerState newState)
 void JumpingState::enter(Entity entity, StateMachine &stateMachine)
 {
     // Set initial jump velocity
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
 }
 
 void JumpingState::exit(Entity entity, StateMachine &stateMachine)
@@ -101,7 +130,7 @@ void AttackingState::enter(Entity entity, StateMachine &stateMachine)
 
     // add attack animation
     Fighters fighter = registry.players.get(entity).current_char;
-    FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
 
     // 1. register a state timer
     PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
@@ -119,6 +148,10 @@ void AttackingState::enter(Entity entity, StateMachine &stateMachine)
     hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
     float baseOffset = fighterConfig.PUNCH_X_OFFSET; // set base offset and adjust based on player direction 
     hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;   
+
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
 }
 
 void AttackingState::exit(Entity entity, StateMachine &stateMachine)
@@ -140,12 +173,21 @@ void AttackingState::update(Entity entity, float elapsed_ms, StateMachine &state
     // increase the width of the hitbox over time, max width is the fighter's PUNCH_WIDTH
     HitBox &hitBox = registry.hitBoxes.get(entity);
     Fighters fighter = registry.players.get(entity).current_char;
-    FighterConfig fighterConfig = FighterManager::getFighterConfig(fighter);
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
 
     if (hitBox.width < fighterConfig.PUNCH_WIDTH)
     {
         hitBox.width += fighterConfig.PUNCH_WIDTH / (fighterConfig.HITBOX_DURATION / 4) * elapsed_ms;
     }
+
+    Animation& animation = registry.animations.get(entity);
+    if (animation.currentFrame < 4) {
+        animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+    } else {
+        animation.currentTexture = fighterConfig.m_bird_punch_f2_texture;
+    }
+
+    animation.currentFrame = animation.currentFrame + 1;
 
     // when state timer is expired, transition to idle
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
@@ -155,6 +197,7 @@ void AttackingState::update(Entity entity, float elapsed_ms, StateMachine &state
     }
     else
     {
+        // TODO: Transition to a winding down state, play winding down animation THEN go to idle
         stateMachine.transition(entity, PlayerState::IDLE);
     }
 }
@@ -198,8 +241,12 @@ void ParryingState::enter(Entity entity, StateMachine &stateMachine)
     std::cout << "Player " << player.id << " parries!" << std::endl;
 
     Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
 
-    float PARRY_BOX_DURATION = FighterManager::getFighterConfig(fighter).PARRY_DURATION;
+    float PARRY_BOX_DURATION = fighterConfig.PARRY_DURATION;
     
     // 1. register a state timer
     PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
@@ -252,11 +299,13 @@ void StunnedState::enter(Entity entity, StateMachine &stateMachine)
     Player &player = registry.players.get(entity);
     std::cout << "Player " << player.id << " is stunned!" << std::endl;
     
-    // set a timer 
     Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
     
     float STUN_DURATION;
-    
     if (stateMachine.getPreviousState() == PlayerState::ATTACKING)
     {
         STUN_DURATION = FighterManager::getFighterConfig(fighter).PARRY_STUN_DURATION;

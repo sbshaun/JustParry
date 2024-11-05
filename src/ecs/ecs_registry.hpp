@@ -16,7 +16,8 @@ public:
 	ComponentContainer<Player> players; 
 	ComponentContainer<PlayerCurrentState> playerCurrentStates;
 	ComponentContainer<Opponent> opponents; 
-	ComponentContainer<Health> healths; 
+	ComponentContainer<Health> healths;
+	ComponentContainer<Animation> animations;
 	ComponentContainer<Motion> motions; 
     ComponentContainer<StationaryTimer> stationaryTimers; 
     ComponentContainer<PostureBar> postureBars; 
@@ -48,6 +49,7 @@ public:
 		registry_list.push_back(&playerCurrentStates);
         registry_list.push_back(&opponents);
         registry_list.push_back(&healths);
+		registry_list.push_back(&animations);
         registry_list.push_back(&motions);
         registry_list.push_back(&stationaryTimers);
         registry_list.push_back(&postureBars);
