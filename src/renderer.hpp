@@ -75,6 +75,8 @@ public:
     GLuint m_bg4Texture;
     GLuint m_roundOverTexture;
     GLuint m_timerBackgroundTexture;
+    GLuint m_barTexture;
+    GLuint m_avatarTexture;
 
     // Make sure these paths remain in sync with the associated enumerators.
     // Associated id with .obj path
@@ -98,6 +100,10 @@ public:
         m_exitAnimationStarted = true;
         m_animationProgress = 0.0f;
     }
+
+    // Make these accessible to Game class
+    void setAnimationComplete(bool value) { m_animationComplete = value; }
+    void setExitAnimationStarted(bool value) { m_exitAnimationStarted = value; }
 
 private:
     Game *game = nullptr;
