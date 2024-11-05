@@ -641,8 +641,8 @@ void GlRender::renderUI(int timer)
         float yscale = (float)frame_height / windowHeight;
 
         // Calculate positions
-        float centerX = (windowWidth * xscale) / 2.0f;
-        float topY = (windowHeight * yscale) * 0.1f;
+        float centerX = (windowWidth) / 2.0f;
+        float topY = (windowHeight) * 0.1f;
 
         float p1X = centerX * 0.4f;
         float healthY = topY;
@@ -651,15 +651,15 @@ void GlRender::renderUI(int timer)
         float scoreY = topY + (75.0f * yscale);
 
         // Timer background dimensions and position
-        float timerBgWidth = 115.0f * xscale;
-        float timerBgHeight = 92.0f * yscale;
+        float timerBgWidth = 115.0f;
+        float timerBgHeight = 92.0f;
         float timerBgX = centerX - (timerBgWidth / 2.0f);
         float timerBgY = topY - 10.0f;
 
         // Bar dimensions and positions
-        float barWidth = 275.0f * xscale;
-        float barHeight = 40.0f * yscale;
-        float barPadding = -5.0f * xscale; // Space between timer and bars
+        float barWidth = 275.0f;
+        float barHeight = 40.0f;
+        float barPadding = -5.0f; // Space between timer and bars
 
         // Avatar dimensions
         float avatarSize = barHeight * 1.8f; // Increased from 1.2f to 1.8f for larger avatars
