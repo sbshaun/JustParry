@@ -8,6 +8,7 @@
 #include "ecs/components.hpp"
 #include "mesh.hpp"
 #include <array>
+#include <chrono>
 
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
@@ -84,6 +85,16 @@ public:
     std::array<GLuint, geometry_count> index_buffers;
     std::array<ObjectMesh, geometry_count> meshes;
 
+    void resetRoundOverAnimation();
+
+    bool isExitAnimationStarted() const { return m_exitAnimationStarted; }
+    bool isExitAnimationComplete() const { return m_animationComplete; }
+    void startExitAnimation()
+    {
+        m_exitAnimationStarted = true;
+        m_animationProgress = 0.0f;
+    }
+
 private:
     Game *game = nullptr;
 
@@ -119,4 +130,20 @@ private:
     GLTtext *score2 = nullptr;
     GLTtext *score1Label = nullptr;
     GLTtext *score2Label = nullptr;
+
+    // Add to the private member variables
+    GLuint m_roundOverTexture;
+
+    // Round over screen animation properties
+    float m_roundOverY = -600.0f;        // Starting Y position (off screen)
+    float m_targetY = 0;                 // Final Y position
+    const float SLIDE_SPEED = 50.0f;     // Animation speed in pixels per second
+    float m_animationProgress = 0.0f;    // Animation progress (0 to 1)
+    const float ANIMATION_DELAY = 1.0f;  // Delay before animation starts
+    float m_delayTimer = 0.0f;           // Timer to track delay
+    bool m_animationStarted = false;     // Track if animation has started
+    bool m_exitAnimationStarted = false; // Track if exit animation has started
+    float m_exitY = -650.0f;             // Changed from -600 to -650 pixels
+    std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::steady_clock::now();
+    bool m_animationComplete = false; // Track if exit animation is complete
 };

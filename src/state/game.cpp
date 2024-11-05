@@ -336,11 +336,11 @@ bool Game::handleHelpInput(GLFWwindow *window)
     return false; // Stay in help state
 }
 
-void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
+void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
 {
+    worldSystem = &worldSystemRef; // Store the pointer
     registry.clear_all_components();
-
-    worldSystem.init(&renderer);
+    worldSystem->init(&renderer);
 
     // Reset timer
     extern int timer;
@@ -349,6 +349,9 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 
     // Reset interpolation variables
     resetInterpVariables();
+
+    // Reset round over animation
+    renderer.resetRoundOverAnimation();
 
     isLoading = true;
     setState(GameState::PLAYING);

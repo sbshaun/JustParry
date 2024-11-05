@@ -50,74 +50,161 @@ void GlRender::initialize()
     {
         std::cerr << "Error initializing shaders: " << e.what() << std::endl;
     }
+
+    // Reset animation values
+    m_animationStarted = false;
+    m_delayTimer = 0.0f;
+    m_roundOverY = -600.0f;
+    m_animationProgress = 0.0f;
+    m_lastUpdateTime = std::chrono::steady_clock::now();
 }
 
 void GlRender::renderRoundOver(int count)
 {
-    over = gltCreateText();
-    assert(over); // Check if it's not NULL
-    gltSetText(over, "GAME OVER!");
+    // Calculate time since last frame
+    auto currentTime = std::chrono::steady_clock::now();
+    float deltaTime = std::chrono::duration<float>(currentTime - m_lastUpdateTime).count();
+    m_lastUpdateTime = currentTime;
 
-    won = gltCreateText();
-    assert(won); // Check if it's not NULL
-    if (registry.healths.get(m_player1).currentHealth <= 0)
+    // Check if enter is pressed to start exit animation
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS && !m_exitAnimationStarted)
     {
-        gltSetText(won, "Player 2 Wins!");
-    }
-    else
-    {
-        gltSetText(won, "Player 1 Wins!");
+        m_exitAnimationStarted = true;
+        m_animationProgress = 0.0f; // Reset progress for exit animation
     }
 
-    if (over && count == 1)
+    // Handle exit animation
+    if (m_exitAnimationStarted)
     {
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
+        m_animationProgress += deltaTime * 1.0f;
+        m_animationProgress = std::min(m_animationProgress, 1.0f);
 
-        // Get the current window size
+        // Ease-in cubic function for upward movement
+        float easeIn = m_animationProgress * m_animationProgress * m_animationProgress;
+        m_roundOverY = m_targetY + (m_exitY - m_targetY) * easeIn;
+
+        // Render at current position
+        renderTexturedQuadScaled(
+            m_roundOverTexture,
+            0, m_roundOverY,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+
+        // Only mark animation as complete when it has fully finished
+        if (m_animationProgress >= 1.0f && m_roundOverY <= m_exitY)
+        {
+            m_animationComplete = true;
+        }
+
+        return;
+    }
+
+    // Handle entrance animation
+    if (!m_animationStarted)
+    {
+        m_delayTimer += deltaTime;
+        if (m_delayTimer >= ANIMATION_DELAY)
+        {
+            m_animationStarted = true;
+            m_roundOverY = -600.0f;
+            m_animationProgress = 0.0f;
+        }
+        return;
+    }
+
+    // Update animation if not complete
+    if (m_animationProgress < 1.0f)
+    {
+        // Progress animation based on time
+        m_animationProgress += deltaTime * 0.8f;
+        m_animationProgress = std::min(m_animationProgress, 1.0f);
+
+        // Apply cubic ease-out function for smooth deceleration
+        float easeOut = 1.0f - powf(1.0f - m_animationProgress, 3.0f);
+
+        // Calculate current position using easing
+        m_roundOverY = -600.0f + (m_targetY + 600.0f) * easeOut;
+    }
+
+    // Render the round over background image at current position
+    renderTexturedQuadScaled(
+        m_roundOverTexture,
+        0, m_roundOverY,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        1.0f);
+
+    // Only show text once the image is mostly in position
+    float textRevealThreshold = m_targetY - 50.0f;
+    if (m_roundOverY >= textRevealThreshold)
+    {
+        // Create and render game over text
+        over = gltCreateText();
+        assert(over);
+        gltSetText(over, "GAME OVER!");
+
+        // Create and render winner text
+        won = gltCreateText();
+        assert(won);
+        if (registry.healths.get(m_player1).currentHealth <= 0)
+        {
+            gltSetText(won, "Player 2 Wins!");
+        }
+        else
+        {
+            gltSetText(won, "Player 1 Wins!");
+        }
+
+        // Get window size and calculate scaling factors
         int windowWidth, windowHeight;
         glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
-        
+
         int framew_width, frame_height;
         glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
-        float xscale = (float) framew_width / windowWidth;
-        float yscale = (float) frame_height / windowHeight;
+        float xscale = (float)framew_width / windowWidth;
+        float yscale = (float)frame_height / windowHeight;
 
-        // Draw game over text
-        gltDrawText2D(over, 285 * xscale, 170 * yscale, 5.f * xscale);
+        // Calculate text positions
+        float baseX = windowWidth * 0.51f;
+        float baseY = windowHeight * 0.55f;
 
-        // Draw player wins text
-        gltDrawText2D(won, 350 * xscale, 250 * yscale, 2.5f * yscale);
-        gltEndDraw();
-    }
-    else
-    {
+        // Render game over and winner text
+        if (over && count == 1)
+        {
+            gltBeginDraw();
+            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+            gltDrawText2D(over, baseX * xscale, baseY * yscale, 5.f * xscale);
+            gltDrawText2D(won, (baseX + 50.0f) * xscale, (baseY + 80.0f) * yscale, 2.5f * xscale);
+            gltEndDraw();
+        }
+        else
+        {
+            gltBeginDraw();
+            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+            gltDrawText2D(over, baseX * xscale, baseY * yscale, 5.f * xscale);
+            gltEndDraw();
+        }
+
+        // Create and render restart prompt
+        m_restart = gltCreateText();
+        assert(m_restart);
+        gltSetText(m_restart, "PRESS ENTER TO RESTART!");
+
         gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
-
-        // Draw game over text
-        gltDrawText2D(over, 285, 170, 5.f);
+        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+        gltDrawText2D(m_restart, (baseX + 25.0f) * xscale, (baseY + 160.0f) * yscale, 2.f * xscale);
         gltEndDraw();
     }
-    m_restart = gltCreateText();
-    assert(m_restart); // Check if it's not NULL
-    gltSetText(m_restart, "PRESS ENTER TO RESTART!");
+}
 
-    gltBeginDraw();
-    gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
-
-    // Get the current window size
-    int windowWidth, windowHeight;
-    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
-    
-    int framew_width, frame_height;
-    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
-    float xscale = (float) framew_width / windowWidth;
-    float yscale = (float) frame_height / windowHeight;
-
-    // Draw game over text
-    gltDrawText2D(m_restart, 305 * xscale, 300 * yscale, 2.f * xscale);
-    gltEndDraw();
+// Reset animation state
+void GlRender::resetRoundOverAnimation()
+{
+    m_animationStarted = false;
+    m_exitAnimationStarted = false;
+    m_delayTimer = 0.0f;
+    m_roundOverY = -600.0f;
+    m_animationProgress = 0.0f;
+    m_lastUpdateTime = std::chrono::steady_clock::now();
 }
 
 void GlRender::drawUI()
@@ -482,6 +569,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
     loadTexture(textures_path("bg.png"), m_backgroundTexture);
     loadTexture(textures_path("bg_parallax.png"), m_foregroundTexture);
+    loadTexture(textures_path("round_over.png"), m_roundOverTexture);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -521,11 +609,11 @@ void GlRender::renderUI(int timer)
         // Get the current window size
         int windowWidth, windowHeight;
         glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
-        
+
         int framew_width, frame_height;
         glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
-        float xscale = (float) framew_width / windowWidth;
-        float yscale = (float) frame_height / windowHeight;
+        float xscale = (float)framew_width / windowWidth;
+        float yscale = (float)frame_height / windowHeight;
 
         // Calculate positions based on window size
         float centerX = (windowWidth * xscale) / 2.0f;
@@ -538,7 +626,7 @@ void GlRender::renderUI(int timer)
 
         // Timer positions (center)
         float timerX = centerX - (20.0f * xscale);
-        float timerValueX = centerX - (10.0f  * xscale);
+        float timerValueX = centerX - (10.0f * xscale);
 
         // Player 2 health positions (right side)
         float p2X = centerX * 1.6f;
@@ -702,6 +790,7 @@ void GlRender::shutdown()
     glDeleteTextures(1, &m_settingsTexture);
     glDeleteTextures(1, &m_backgroundTexture);
     glDeleteTextures(1, &m_foregroundTexture);
+    glDeleteTextures(1, &m_roundOverTexture);
 
     // Delete text objects
     if (m_fps)
@@ -837,11 +926,11 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     // Get the current window size
     int windowWidth, windowHeight;
     glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
-    
+
     int framew_width, frame_height;
     glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
-    float xscale = (float) framew_width / windowWidth;
-    float yscale = (float) frame_height / windowHeight;
+    float xscale = (float)framew_width / windowWidth;
+    float yscale = (float)frame_height / windowHeight;
 
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
@@ -944,7 +1033,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         {
             textY += 2; // Move text down slightly when pressed
         }
-    
+
         // Different scale for X button vs other buttons
         float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
         gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale * xscale);

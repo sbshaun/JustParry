@@ -15,7 +15,7 @@
 #include "input_system/state_machine.hpp"
 #include "input_system/utility_inputs.hpp"
 
-int timer = timer_length;
+int timer = 10;
 static bool roundEnded = false;
 auto last_time = std::chrono::high_resolution_clock::now();
 
@@ -248,11 +248,21 @@ int main()
             renderer.render();
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);
-            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+
+            // Only handle enter press if exit animation hasn't started
+            if (!renderer.isExitAnimationStarted() &&
+                glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+            {
+                renderer.startExitAnimation();
+            }
+
+            // Only reset the game once the exit animation is complete
+            if (renderer.isExitAnimationComplete())
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
             }
+
             glWindow.windowSwapBuffers();
             break;
 

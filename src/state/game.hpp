@@ -52,6 +52,7 @@ public:
     }
     void renderSettingsScreen(GlRender &renderer);
     bool handleSettingsInput(GLFWwindow *window);
+    WorldSystem *getWorldSystem() { return worldSystem; }
 
 private:
     GameState currentState;
@@ -70,4 +71,5 @@ private:
 
     int player1Score = 0;
     int player2Score = 0;
+    WorldSystem *worldSystem = nullptr;
 };
