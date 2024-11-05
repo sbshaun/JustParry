@@ -699,15 +699,15 @@ void GlRender::renderUI(int timer)
         // Draw health and score text
 
         // Draw scores
-        gltDrawText2D(score1Label, p1X - 15.f, scoreY - 15.f, 1.5f * xscale);
+        gltDrawText2D(score1Label, (p1X - 15.f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, p1X + 70.0f, scoreY - 15.f, 1.5f * xscale);
+        gltDrawText2D(score1, (p1X + 70.0f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
 
-        gltDrawText2D(score2Label, p2X - 85.f, scoreY - 15.f, 1.5f * xscale);
+        gltDrawText2D(score2Label, (p2X - 85.f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, p2X + 0.0f, scoreY - 15.f, 1.5f * xscale);
+        gltDrawText2D(score2, (p2X + 0.0f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
         gltEndDraw();
 
         // Disable depth testing for UI elements
@@ -753,14 +753,14 @@ void GlRender::renderUI(int timer)
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
         float textWidth = ss.str().length() * 20.0f * xscale;
         float timerX = centerX - (textWidth / 2.0f);
-        gltDrawText2D(time, timerX - 2.f, valueY - 19.f, 2.5f * xscale);
+        gltDrawText2D(time, timerX * xscale - 2.f, (valueY - 19.f * yscale) * yscale, 2.5f * xscale);
         gltEndDraw();
 
-        gltDrawText2D(m_leftText, p1X - 15.f, healthY - 10.f, 1.5f * xscale);
-        gltDrawText2D(h1, p1X + 90.0f, valueY - 15.f, 2.0f * xscale);
+        gltDrawText2D(m_leftText, (p1X - 15.f) * xscale, (healthY - 10.f) * yscale, 1.5f * xscale);
+        gltDrawText2D(h1, (p1X + 90.0f) * xscale, (valueY - 15.f * yscale * yscale) * yscale, 2.0f * xscale);
 
-        gltDrawText2D(m_rightText, p2X - 10.f, healthY - 10.f, 1.5f * xscale);
-        gltDrawText2D(h2, p2X - 140.0f, valueY - 15.f, 2.0f * xscale);
+        gltDrawText2D(m_rightText, (p2X - 10.f) * xscale, (healthY - 10.f) * yscale, 1.5f * xscale);
+        gltDrawText2D(h2, (p2X - 140.0f) * xscale, (valueY - 15.f * yscale * yscale) * yscale, 2.0f * xscale);
 
         // Restore depth testing
         glEnable(GL_DEPTH_TEST);
