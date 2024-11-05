@@ -31,8 +31,11 @@ void PhysicsSystem::step() {
 				if (playerPos > boundary.val) 
 				{
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
-					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+					//if (!registry.boundaryCollisions.has(playerEntity)) {
+					playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+					if (playerMotion.wasAbove) {
+						playerMotion.position.x -= MOVE_SPEED;
+						playerMotion.velocity.y += GRAVITY;
 					}
 				}
 			}
@@ -41,21 +44,23 @@ void PhysicsSystem::step() {
 				float playerPos = playerMotion.position.x - config.NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
 					// std::cout << "Player: " << playerMotion.position.x << "Boundary: " << boundary.val << std::endl;
-					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+
+					playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
+					if (playerMotion.wasAbove) {
+						playerMotion.position.x += MOVE_SPEED;
+						playerMotion.velocity.y += GRAVITY;
 					}
+					
 				}
 
 			}
 			else if (boundary.dir == FLOOR) {
 				float playerPos = playerMotion.position.y - config.NDC_HEIGHT / 2.0f;
 				if (playerPos < boundary.val) {
-					if (!registry.boundaryCollisions.has(playerEntity)) {
-						playerMotion.position = { playerMotion.position.x - playerMotion.velocity.x, boundary.val + config.NDC_HEIGHT / 2.0f};
-						playerMotion.velocity.y = 0.0f;
-						playerMotion.inAir = false;
-						playerMotion.above = false;
-					}
+					playerMotion.position = { playerMotion.position.x - playerMotion.velocity.x, boundary.val + config.NDC_HEIGHT / 2.0f};
+					playerMotion.velocity.y = 0.0f;
+					playerMotion.inAir = false;
+					playerMotion.above = false;
 				}
 			}
 		}

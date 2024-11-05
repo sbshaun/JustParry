@@ -210,8 +210,8 @@ int main(){
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
             worldSystem.hitBoxCollisions(); 
             worldSystem.inputProcessing(); 
-            physics.step();
             worldSystem.playerCollisions(&renderer);
+            physics.step();
             
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
             worldSystem.handleInput();

@@ -429,6 +429,10 @@ void WorldSystem::checkAABBCollision(bool& xCollision, bool& yCollision,
         motion2.above = true;
         motion1.above = false;
     }
+    else if (box1Bottom < box2Top && box2Bottom < box1Top) {
+        motion1.above = false;
+        motion2.above = false;
+    }
 }
 
 /*
@@ -487,31 +491,34 @@ void WorldSystem::playerCollisions(GlRender *renderer)
             player2Motion.position.x = player2Motion.position.x - player2Motion.velocity.x;
             player1Motion.velocity.x = 0;
             player2Motion.velocity.x = 0;
-            std::cout << "0" << std::endl;
+           
         }
         // Player one is on top
         else if (player1Motion.wasAbove) {
-            std::cout << "1" << std::endl;
-            player1Motion.velocity.x = 0;
-            player2Motion.velocity.y = 0;
+            player2Motion.velocity.x = 0;
             if (player1Motion.direction) {
-                player1Motion.position = { player1Motion.lastPos.x - 0.05, player1Motion.lastPos.y };
+                player1Motion.position = { player1Motion.lastPos.x - MOVE_SPEED, player1Motion.lastPos.y };
             }
             else {
-                player1Motion.position = { player1Motion.lastPos.x + 0.05, player1Motion.lastPos.y };
+                player1Motion.position = { player1Motion.lastPos.x + MOVE_SPEED, player1Motion.lastPos.y };
             }
+            player1Motion.above = true;
+            player1Motion.velocity.x = 0;
+            player2Motion.velocity.x = 0;
+            player2Motion.velocity.y = player1Motion.velocity.y - GRAVITY;
         }
         // Player two is on top
         else if (player2Motion.wasAbove) {
-            std::cout << "2" << std::endl;
-            player2Motion.velocity.x = 0;
-            player1Motion.velocity.y = 0;
             if (player2Motion.direction) {
-                player2Motion.position = { player2Motion.lastPos.x - 0.05, player2Motion.lastPos.y };
+                player2Motion.position = { player2Motion.lastPos.x - MOVE_SPEED, player2Motion.lastPos.y };
             }
             else {
-                player2Motion.position = { player2Motion.lastPos.x + 0.05, player2Motion.lastPos.y };
+                player2Motion.position = { player2Motion.lastPos.x + MOVE_SPEED, player2Motion.lastPos.y };
             }
+            player1Motion.velocity.x = 0;
+            player1Motion.velocity.y = player2Motion.velocity.y - GRAVITY;
+            player2Motion.velocity.x = 0;
+            player2Motion.above = true;
         }
     }
 }
