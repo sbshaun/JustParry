@@ -160,7 +160,7 @@ void GlRender::renderRoundOver(int count)
         {
             gltSetText(won, "Both players tied!");
         }
-        else if (h1.currentHealth <= 0)
+        else if (h1.currentHealth < h2.currentHealth)
         {
             gltSetText(won, "Player 2 Wins!");
         }
@@ -235,11 +235,11 @@ void GlRender::drawUI()
 {
     m_leftText = gltCreateText();
     assert(m_leftText);
-    gltSetText(m_leftText, "P1 HEALTH: ");
+    gltSetText(m_leftText, "P1");
 
     m_rightText = gltCreateText();
     assert(m_rightText);
-    gltSetText(m_rightText, "P2 HEALTH: ");
+    gltSetText(m_rightText, "P2");
 
     h1 = gltCreateText();
     assert(h1);
@@ -591,6 +591,8 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bg_parallax.png"), m_foregroundTexture);
     loadTexture(textures_path("round_over.png"), m_roundOverTexture);
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
+    loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
+    loadTexture(textures_path("avatar.png"), m_avatarTexture);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -647,10 +649,35 @@ void GlRender::renderUI(int timer)
         float scoreY = topY + (75.0f * yscale);
 
         // Timer background dimensions and position
-        float timerBgWidth = 115.0f * xscale; // Increased from 100.0f by 15%
-        float timerBgHeight = 92.0f * yscale; // Increased from 80.0f by 15%
+        float timerBgWidth = 115.0f * xscale;
+        float timerBgHeight = 92.0f * yscale;
         float timerBgX = centerX - (timerBgWidth / 2.0f);
         float timerBgY = topY - 10.0f;
+
+        // Bar dimensions and positions
+        float barWidth = 275.0f * xscale;
+        float barHeight = 40.0f * yscale;
+        float barPadding = -5.0f * xscale; // Space between timer and bars
+
+        // Avatar dimensions
+        float avatarSize = barHeight * 1.8f; // Increased from 1.2f to 1.8f for larger avatars
+        float avatarPadding = 10.0f * xscale;
+
+        // Left bar position
+        float leftBarX = timerBgX - barWidth - barPadding;
+        float leftBarY = timerBgY + (timerBgHeight - barHeight) / 2.0f;
+
+        // Left avatar position - adjust Y position to keep it centered with the bar
+        float leftAvatarX = leftBarX - avatarSize - avatarPadding;
+        float leftAvatarY = leftBarY - (avatarSize - barHeight) / 2.0f;
+
+        // Right bar position
+        float rightBarX = timerBgX + timerBgWidth + barPadding;
+        float rightBarY = leftBarY;
+
+        // Right avatar position - adjust Y position to keep it centered with the bar
+        float rightAvatarX = rightBarX + barWidth + avatarPadding;
+        float rightAvatarY = leftAvatarY;
 
         // Set up text values
         std::stringstream ss;
@@ -668,25 +695,49 @@ void GlRender::renderUI(int timer)
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Draw health and score text
-        gltDrawText2D(m_leftText, p1X, healthY, 1.5f * xscale);
-        gltDrawText2D(h1, p1X + 40.0f, valueY, 2.0f * xscale);
-        gltDrawText2D(m_rightText, p2X, healthY, 1.5f * xscale);
-        gltDrawText2D(h2, p2X + 40.0f, valueY, 2.0f * xscale);
 
         // Draw scores
-        gltDrawText2D(score1Label, p1X, scoreY, 1.5f * xscale);
+        gltDrawText2D(score1Label, p1X - 15.f, scoreY - 15.f, 1.5f * xscale);
         std::string strScore1 = std::to_string(game->getPlayer1Score());
         gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, p1X + 85.0f, scoreY, 1.5f * xscale);
+        gltDrawText2D(score1, p1X + 70.0f, scoreY - 15.f, 1.5f * xscale);
 
-        gltDrawText2D(score2Label, p2X, scoreY, 1.5f * xscale);
+        gltDrawText2D(score2Label, p2X - 85.f, scoreY - 15.f, 1.5f * xscale);
         std::string strScore2 = std::to_string(game->getPlayer2Score());
         gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, p2X + 85.0f, scoreY, 1.5f * xscale);
+        gltDrawText2D(score2, p2X + 0.0f, scoreY - 15.f, 1.5f * xscale);
         gltEndDraw();
 
         // Disable depth testing for UI elements
         glDisable(GL_DEPTH_TEST);
+
+        // Render left avatar
+        renderTexturedQuadScaled(
+            m_avatarTexture,
+            leftAvatarX, leftAvatarY,
+            avatarSize, avatarSize,
+            1.0f);
+
+        // Render left bar
+        renderTexturedQuadScaled(
+            m_barTexture,
+            leftBarX, leftBarY,
+            barWidth, barHeight,
+            1.0f);
+
+        // Render right bar
+        renderTexturedQuadScaled(
+            m_barTexture,
+            rightBarX, rightBarY,
+            barWidth, barHeight,
+            1.0f);
+
+        // Render right avatar
+        renderTexturedQuadScaled(
+            m_avatarTexture,
+            rightAvatarX, rightAvatarY,
+            avatarSize, avatarSize,
+            1.0f);
 
         // Render timer background
         renderTexturedQuadScaled(
@@ -702,6 +753,12 @@ void GlRender::renderUI(int timer)
         float timerX = centerX - (textWidth / 2.0f);
         gltDrawText2D(time, timerX - 2.f, valueY - 19.f, 2.5f * xscale);
         gltEndDraw();
+
+        gltDrawText2D(m_leftText, p1X - 15.f, healthY - 10.f, 1.5f * xscale);
+        gltDrawText2D(h1, p1X + 90.0f, valueY - 15.f, 2.0f * xscale);
+
+        gltDrawText2D(m_rightText, p2X - 10.f, healthY - 10.f, 1.5f * xscale);
+        gltDrawText2D(h2, p2X - 140.0f, valueY - 15.f, 2.0f * xscale);
 
         // Restore depth testing
         glEnable(GL_DEPTH_TEST);
@@ -816,15 +873,20 @@ void GlRender::shutdown()
     }
 
     // Delete textures
-    glDeleteTextures(1, &m_bird_texture);
-    glDeleteTextures(1, &m_bird_p_texture);
-    glDeleteTextures(1, &m_menuTexture);
-    glDeleteTextures(1, &m_helpTexture);
-    glDeleteTextures(1, &m_settingsTexture);
-    glDeleteTextures(1, &m_backgroundTexture);
-    glDeleteTextures(1, &m_foregroundTexture);
-    glDeleteTextures(1, &m_roundOverTexture);
-    glDeleteTextures(1, &m_timerBackgroundTexture);
+    GLuint textures[] = {
+        m_bird_texture,
+        m_bird_p_texture,
+        m_menuTexture,
+        m_helpTexture,
+        m_settingsTexture,
+        m_backgroundTexture,
+        m_foregroundTexture,
+        m_roundOverTexture,
+        m_timerBackgroundTexture,
+        m_barTexture,
+        m_avatarTexture};
+
+    glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
     // Delete text objects
     if (m_fps)

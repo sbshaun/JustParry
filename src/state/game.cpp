@@ -373,7 +373,7 @@ void Game::updateScores(const Health &h1, const Health &h2)
     }
     else
     {
-        // Timer ran out, give point to player with higher health
+        // Timer ran out, give point based on health
         if (h1.currentHealth > h2.currentHealth)
         {
             player1Score++;
@@ -382,11 +382,7 @@ void Game::updateScores(const Health &h1, const Health &h2)
         {
             player2Score++;
         }
-        else
-        {
-            // If health is equal, give point to player 1
-            player1Score++;
-        }
+        // If health is equal (tie), don't give points to anyone
     }
 }
 

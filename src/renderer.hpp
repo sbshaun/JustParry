@@ -73,6 +73,8 @@ public:
     GLuint m_foregroundTexture;
     GLuint m_roundOverTexture;
     GLuint m_timerBackgroundTexture;
+    GLuint m_barTexture;
+    GLuint m_avatarTexture;
 
     // Make sure these paths remain in sync with the associated enumerators.
     // Associated id with .obj path
