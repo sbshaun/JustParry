@@ -872,7 +872,7 @@ void GlRender::shutdown()
         }
     }
 
-    // Delete textures
+    // Delete textures - make sure we include all textures
     GLuint textures[] = {
         m_bird_texture,
         m_bird_p_texture,
@@ -886,7 +886,21 @@ void GlRender::shutdown()
         m_barTexture,
         m_avatarTexture};
 
+    // Delete all textures at once
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
+
+    // Set texture IDs to 0 after deletion
+    m_bird_texture = 0;
+    m_bird_p_texture = 0;
+    m_menuTexture = 0;
+    m_helpTexture = 0;
+    m_settingsTexture = 0;
+    m_backgroundTexture = 0;
+    m_foregroundTexture = 0;
+    m_roundOverTexture = 0;
+    m_timerBackgroundTexture = 0;
+    m_barTexture = 0;
+    m_avatarTexture = 0;
 
     // Delete text objects
     if (m_fps)
