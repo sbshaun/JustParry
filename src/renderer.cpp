@@ -306,7 +306,6 @@ void GlRender::renderLoadingText()
 
 void GlRender::renderFPS(int fps, bool showFPS)
 {
-
     if (showFPS)
     {
         std::string strH1 = std::to_string(fps);
@@ -315,8 +314,8 @@ void GlRender::renderFPS(int fps, bool showFPS)
         gltBeginDraw();
         gltColor(0.0f, 1.0f, 0.0f, 1.0f); // White text color
 
-        // Draw the loading text at the specified position and scale
-        gltDrawText2D(m_fps, 10, 10, 2.f);
+        // Move FPS counter to top right corner
+        gltDrawText2D(m_fps, M_WINDOW_WIDTH_PX - 50.0f, 10.f, 2.f);
 
         gltEndDraw();
     }
@@ -586,6 +585,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
     loadTexture(textures_path("help-screen.png"), m_helpTexture);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
+    loadTexture(textures_path("paused.png"), m_pauseMenuTexture);
     loadTexture(textures_path("bg1.png"), m_bg1Texture);
     loadTexture(textures_path("bg2.png"), m_bg2Texture);
     loadTexture(textures_path("bg3.png"), m_bg3Texture);
@@ -874,14 +874,14 @@ void GlRender::shutdown()
         }
     }
 
-
     // Delete textures - make sure we include all textures
     GLuint textures[] = {
         m_menuTexture,
         m_helpTexture,
         m_settingsTexture,
+        m_pauseMenuTexture,
         m_bg1Texture,
-        m_bg1Texture,
+        m_bg2Texture,
         m_bg3Texture,
         m_bg4Texture,
         m_roundOverTexture,
@@ -897,15 +897,15 @@ void GlRender::shutdown()
     m_menuTexture = 0;
     m_helpTexture = 0;
     m_settingsTexture = 0;
+    m_pauseMenuTexture = 0;
     m_bg1Texture = 0;
-    m_bg1Texture = 0;
+    m_bg2Texture = 0;
     m_bg3Texture = 0;
     m_bg4Texture = 0;
     m_roundOverTexture = 0;
     m_timerBackgroundTexture = 0;
     m_barTexture = 0;
     m_avatarTexture = 0;
-
 
     // Delete text objects
     if (m_fps)
@@ -1130,7 +1130,21 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         }
 
         // Different scale for X button vs other buttons
-        float scale = (strcmp(text, "X") == 0) ? 2.0f : 2.5f;
+        float scale;
+        if (strcmp(text, "X") == 0)
+        {
+            scale = 2.0f;
+        }
+        else if (strcmp(text, "||") == 0)
+        {
+            scale = 3.5f;    // Larger scale for pause symbol
+            textWidth = 15;  // Override the text width calculation for pause symbol
+            textHeight = 40; // Taller height for pause symbol
+        }
+        else
+        {
+            scale = 2.5f;
+        }
         gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale * xscale);
 
         gltEndDraw();
@@ -1238,7 +1252,8 @@ void GlRender::renderDialogBox(float x, float y, float width, float height, floa
     glDeleteBuffers(1, &EBO);
 }
 
-void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, float brightness)
+void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
+                                        float brightness, float alpha)
 {
     // Convert to normalized device coordinates
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
@@ -1255,7 +1270,6 @@ void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float 
     glDisable(GL_DEPTH_TEST);
 
     float vertices[] = {
-        // Positions                       // Texture Coords
         ndcX, ndcY, 0.0f, 0.0f, 1.0f,                        // Top-left
         ndcX + ndcWidth, ndcY, 0.0f, 1.0f, 1.0f,             // Top-right
         ndcX + ndcWidth, ndcY + ndcHeight, 0.0f, 1.0f, 0.0f, // Bottom-right
@@ -1280,15 +1294,12 @@ void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    // Texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Use shader for textured quad
     static Shader *quadShader = nullptr;
     if (!quadShader)
     {
@@ -1298,16 +1309,15 @@ void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float 
     quadShader->use();
     quadShader->setInt("texture1", 0);
     quadShader->setFloat("brightness", brightness);
+    quadShader->setFloat("alpha", alpha);
 
     // Enable blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Bind texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    // Draw the quad
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

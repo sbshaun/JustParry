@@ -91,7 +91,7 @@ int main()
     renderer.initialize();
 
     WorldSystem worldSystem;
-    worldSystem.init(&renderer);
+
     PhysicsSystem physicsSystem;
     Bot botInstance;
 
@@ -123,9 +123,13 @@ int main()
 
         switch (game.getState())
         {
+        case GameState::INIT:
+            worldSystem.init(&renderer);
+            game.setState(GameState::MENU);
+            break;
         case GameState::MENU:
             game.renderMenu(renderer);
-            if (game.handleMenuInput(glWindow.window))
+            if (game.handleMenuInput(glWindow.window, renderer))
             {
                 game.setState(GameState::ROUND_START);
             }
@@ -158,11 +162,30 @@ int main()
 
             renderer.render();
             renderer.renderUI(timer);
+            game.renderPauseButton(renderer);
 
             if (!isLoading)
             {
                 game.setState(GameState::PLAYING);
             }
+            glWindow.windowSwapBuffers();
+            break;
+
+        case GameState::PAUSED:
+            // Continue rendering the game state in the background
+            renderer.drawUI();
+            renderer.render();
+            renderer.renderUI(timer);
+
+            // Render FPS counter if enabled
+            if (showFPS)
+            {
+                renderer.renderFPS(fpsCounter.getFPS(), showFPS);
+            }
+
+            // Render the pause menu on top
+            game.renderPauseButton(renderer);
+
             glWindow.windowSwapBuffers();
             break;
 
@@ -200,6 +223,7 @@ int main()
             physicsSystem.step();
             renderer.render();
             renderer.renderUI(timer);
+            game.renderPauseButton(renderer);
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
             worldSystem.handleInput();
