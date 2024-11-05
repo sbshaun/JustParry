@@ -143,7 +143,7 @@ private:
     float m_delayTimer = 0.0f;           // Timer to track delay
     bool m_animationStarted = false;     // Track if animation has started
     bool m_exitAnimationStarted = false; // Track if exit animation has started
-    float m_exitY = -650.0f;             // Changed from -600 to -650 pixels
+    float m_exitY = -750.0f;             // Changed from -600 to -750 pixels
     std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::steady_clock::now();
     bool m_animationComplete = false; // Track if exit animation is complete
 };

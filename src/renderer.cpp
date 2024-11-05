@@ -137,15 +137,30 @@ void GlRender::renderRoundOver(int count)
     float textRevealThreshold = m_targetY - 50.0f;
     if (m_roundOverY >= textRevealThreshold)
     {
-        // Create and render game over text
+        // Create and render game over/draw text
         over = gltCreateText();
         assert(over);
-        gltSetText(over, "GAME OVER!");
+
+        // Check if it's a draw (both players have same health)
+        Health &h1 = registry.healths.get(m_player1);
+        Health &h2 = registry.healths.get(m_player2);
+        if (h1.currentHealth == h2.currentHealth)
+        {
+            gltSetText(over, "DRAW!");
+        }
+        else
+        {
+            gltSetText(over, "GAME OVER!");
+        }
 
         // Create and render winner text
         won = gltCreateText();
         assert(won);
-        if (registry.healths.get(m_player1).currentHealth <= 0)
+        if (h1.currentHealth == h2.currentHealth)
+        {
+            gltSetText(won, "Both players tied!");
+        }
+        else if (h1.currentHealth <= 0)
         {
             gltSetText(won, "Player 2 Wins!");
         }
@@ -164,7 +179,7 @@ void GlRender::renderRoundOver(int count)
         float yscale = (float)frame_height / windowHeight;
 
         // Calculate text positions
-        float baseX = windowWidth * 0.51f;
+        float baseX = windowWidth * 0.49f;
         float baseY = windowHeight * 0.55f;
 
         // Render game over and winner text
@@ -172,8 +187,17 @@ void GlRender::renderRoundOver(int count)
         {
             gltBeginDraw();
             gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-            gltDrawText2D(over, baseX * xscale, baseY * yscale, 5.f * xscale);
-            gltDrawText2D(won, (baseX + 50.0f) * xscale, (baseY + 80.0f) * yscale, 2.5f * xscale);
+            if (strcmp(over->_text, "DRAW!") == 0)
+            {
+                gltDrawText2D(over, baseX * xscale + 140.f, baseY * yscale, 5.f * xscale);
+                gltDrawText2D(won, (baseX + 50.0f) * xscale, (baseY + 80.0f) * yscale, 2.5f * xscale);
+            }
+            else
+            {
+                gltDrawText2D(over, baseX * xscale + 60.f, baseY * yscale, 5.f * xscale);
+                gltDrawText2D(won, (baseX + 100.0f) * xscale, (baseY + 80.0f) * yscale, 2.5f * xscale);
+            }
+
             gltEndDraw();
         }
         else
@@ -191,7 +215,7 @@ void GlRender::renderRoundOver(int count)
 
         gltBeginDraw();
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-        gltDrawText2D(m_restart, (baseX + 25.0f) * xscale, (baseY + 160.0f) * yscale, 2.f * xscale);
+        gltDrawText2D(m_restart, (baseX + 10.0f) * xscale, (baseY + 140.0f) * yscale, 2.6f * xscale);
         gltEndDraw();
     }
 }
