@@ -36,14 +36,15 @@ void PhysicsSystem::step() {
 
 			if (rightCollision || leftCollision)
 			{
-				playerMotion.position.x = playerMotion.position.x - playerMotion.velocity.x;
 				if (rightCollision) {
+					playerMotion.position.x = playableAreaRight - config.NDC_WIDTH / 2.0f;
 					if (playerMotion.wasAbove) {
 						playerMotion.position.x -= MOVE_SPEED;
 						playerMotion.velocity.y += GRAVITY;
 					}
 				}
 				if (leftCollision) {
+					playerMotion.position.x = playableAreaLeft + config.NDC_WIDTH / 2.0f;
 					if (playerMotion.wasAbove) {
 						playerMotion.position.x += MOVE_SPEED;
 						playerMotion.velocity.y += GRAVITY;
