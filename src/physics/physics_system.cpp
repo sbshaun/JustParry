@@ -34,7 +34,7 @@ void PhysicsSystem::step() {
 			bool rightCollision = playerPosRight > playableAreaRight;
 			bool leftCollision = playerPosLeft < playableAreaLeft;
 
-			std::cout << playerPosLeft << std::endl;
+			// std::cout << playerPosLeft << std::endl;
 
 			if (rightCollision || leftCollision)
 			{
