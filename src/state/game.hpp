@@ -20,7 +20,9 @@ enum class GameState
     HELP,
     SETTINGS,
     ROUND_START,
-    ROUND_OVER
+    ROUND_OVER,
+    PAUSED,
+    INIT
 };
 
 class Game
@@ -33,10 +35,10 @@ public:
     GameState getState() const;
     bool isRunning() const;
     void update();
-    void render();
+    void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
-    bool handleMenuInput(GLFWwindow *window);
+    bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
     void handleSettingsButton();
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
@@ -53,12 +55,14 @@ public:
     void renderSettingsScreen(GlRender &renderer);
     bool handleSettingsInput(GLFWwindow *window);
     WorldSystem *getWorldSystem() { return worldSystem; }
+    void renderPauseButton(GlRender &renderer);
 
 private:
     GameState currentState;
     bool running;
     float loadingProgress;
     bool showHelpDialog;
+    bool isPaused;
     struct Button
     {
         float x, y, width, height;
@@ -68,8 +72,20 @@ private:
     Button helpButton;
     Button closeButton;
     Button newButton;
+    Button pauseButton;
+    Button resumeButton;
+    Button menuButton;
 
     int player1Score = 0;
     int player2Score = 0;
     WorldSystem *worldSystem = nullptr;
+
+    // Text objects
+    GLTtext *m_restart = nullptr;
+    GLTtext *over = nullptr;
+    GLTtext *won = nullptr;
+    GLTtext *score1 = nullptr;
+    GLTtext *score2 = nullptr;
+    GLTtext *score1Label = nullptr;
+    GLTtext *score2Label = nullptr;
 };
