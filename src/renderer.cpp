@@ -558,13 +558,25 @@ void GlRender::render()
     PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     renderTexturedQuadScaled(
-        m_backgroundTexture,
+        m_bg1Texture,
+        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.25, 0,
+        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        1.0f);
+
+    renderTexturedQuadScaled(
+        m_bg2Texture,
         -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5, 0,
         M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
         1.0f);
 
     renderTexturedQuadScaled(
-        m_foregroundTexture,
+        m_bg3Texture,
+        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.75, 0,
+        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        1.0f);
+
+    renderTexturedQuadScaled(
+        m_bg4Texture,
         -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0, 0,
         M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
         1.0f);
@@ -587,8 +599,10 @@ void GlRender::loadTextures()
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
     loadTexture(textures_path("help-screen.png"), m_helpTexture);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
-    loadTexture(textures_path("bg.png"), m_backgroundTexture);
-    loadTexture(textures_path("bg_parallax.png"), m_foregroundTexture);
+    loadTexture(textures_path("bg1.png"), m_bg1Texture);
+    loadTexture(textures_path("bg2.png"), m_bg2Texture);
+    loadTexture(textures_path("bg3.png"), m_bg3Texture);
+    loadTexture(textures_path("bg4.png"), m_bg4Texture);
     loadTexture(textures_path("round_over.png"), m_roundOverTexture);
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
 }
@@ -821,8 +835,10 @@ void GlRender::shutdown()
     glDeleteTextures(1, &m_menuTexture);
     glDeleteTextures(1, &m_helpTexture);
     glDeleteTextures(1, &m_settingsTexture);
-    glDeleteTextures(1, &m_backgroundTexture);
-    glDeleteTextures(1, &m_foregroundTexture);
+    glDeleteTextures(1, &m_bg1Texture);
+    glDeleteTextures(1, &m_bg2Texture);
+    glDeleteTextures(1, &m_bg3Texture);
+    glDeleteTextures(1, &m_bg4Texture);
     glDeleteTextures(1, &m_roundOverTexture);
     glDeleteTextures(1, &m_timerBackgroundTexture);
 
