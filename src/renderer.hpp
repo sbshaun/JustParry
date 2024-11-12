@@ -11,9 +11,6 @@
 #include <array>
 #include <chrono>
 
-#define GLT_IMPLEMENTATION
-#include <GLText.h>
-
 // fonts
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -40,7 +37,6 @@ public:
     void setGameInstance(Game *gameInstance) { game = gameInstance; }
 
     void initialize();
-    void drawUI();
     void render();
     void renderRoundOver(int count);
     void loadTextures();
@@ -54,7 +50,6 @@ public:
     void handleStaticRenders();
 
     void renderTexturedQuad(GLuint texture);
-    void renderLoadingText();
     void renderFPS(int fps, bool showFPS);
 
     void renderButton(float x, float y, float width, float height, const char *text,
@@ -127,7 +122,7 @@ public:
     GLuint m_font_VBO;
 
     bool fontInit(const std::string &font_filename, unsigned int font_default_size);
-    void renderInfoText(std::string text, float x, float y, float scale, const glm::vec3 &color, const glm::mat4 &trans);
+    void renderInfoText(std::string text, float x, float y, float scale, const glm::vec3 &color);
 
 private:
     Game *game = nullptr;
@@ -139,30 +134,6 @@ private:
     Shader *m_floorShader = nullptr;
     Shader *m_hitboxShader = nullptr;
     Shader *m_fontShader = nullptr;
-
-    // Place holders for timer and health subtexts
-    GLTtext *m_fps = nullptr;
-    GLTtext *m_loadingText = nullptr;
-    GLTtext *m_restart = nullptr;
-
-    GLTtext *m_leftText = nullptr;
-    GLTtext *m_rightText = nullptr;
-    GLTtext *m_roundOver = nullptr;
-
-    // actual values
-    GLTtext *h1 = nullptr;
-    GLTtext *h2 = nullptr;
-    GLTtext *time = nullptr;
-
-    // round over
-    GLTtext *over = nullptr;
-    GLTtext *won = nullptr;
-
-    // Add score text objects
-    GLTtext *score1 = nullptr;
-    GLTtext *score2 = nullptr;
-    GLTtext *score1Label = nullptr;
-    GLTtext *score2Label = nullptr;
 
     // Round over screen animation properties
     float m_roundOverY = -600.0f;        // Starting Y position (off screen)
@@ -176,7 +147,4 @@ private:
     float m_exitY = -750.0f;             // Changed from -600 to -750 pixels
     std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::steady_clock::now();
     bool m_animationComplete = false; // Track if exit animation is complete
-
-    // Add after line 140 with the other GLTtext declarations
-    GLTtext *m_pauseText = nullptr;
 };

@@ -49,7 +49,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         20.0f, // y position (10px from top)
         75.0f, // width
         75.0f, // height
-        ""     // pause symbol
+        "="    // pause symbol
     };
 
     // Initialize resume button (centered)
@@ -454,43 +454,6 @@ bool Game::handleSettingsInput(GLFWwindow *window)
 
 Game::~Game()
 {
-    // Clean up text objects
-    if (m_restart)
-    {
-        gltDeleteText(m_restart);
-        m_restart = nullptr;
-    }
-    if (over)
-    {
-        gltDeleteText(over);
-        over = nullptr;
-    }
-    if (won)
-    {
-        gltDeleteText(won);
-        won = nullptr;
-    }
-    if (score1)
-    {
-        gltDeleteText(score1);
-        score1 = nullptr;
-    }
-    if (score2)
-    {
-        gltDeleteText(score2);
-        score2 = nullptr;
-    }
-    if (score1Label)
-    {
-        gltDeleteText(score1Label);
-        score1Label = nullptr;
-    }
-    if (score2Label)
-    {
-        gltDeleteText(score2Label);
-        score2Label = nullptr;
-    }
-
     // Clean up world system pointer
     if (worldSystem)
     {
@@ -536,7 +499,7 @@ void Game::renderPauseButton(GlRender &renderer)
     renderer.renderButton(
         pauseButton.x, pauseButton.y,
         pauseButton.width, pauseButton.height,
-        "||",
+        "=",
         pauseHovered, pausePressed,
         glm::vec3(0.4f, 0.4f, 0.4f));
 

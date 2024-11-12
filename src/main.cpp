@@ -115,8 +115,8 @@ int main()
     //// END INITS ////
 
     // font setup and initialization.
-    std::string font_filename = "Kenney_Pixel_Square.ttf";
-    unsigned int font_default_size = 200;
+    std::string font_filename = "SpaceGrotesk-Bold.ttf";
+    unsigned int font_default_size = 100;
     if (!renderer.fontInit(font_filename, font_default_size))
     {
         std::cerr << "Failed to initialize fonts. Exiting." << std::endl;
@@ -142,15 +142,6 @@ int main()
             {
                 game.setState(GameState::ROUND_START);
             }
-
-            /* renderer.renderInfoText(
-                "NEW HIGH SCORE!",
-                100.f,
-                200.f,
-                1.f,
-                glm::vec3(1.0f, 0.843f, 0.0f),
-                glm::mat4(1.0f));
-            */
             glWindow.windowSwapBuffers();
 
             break;
@@ -175,8 +166,6 @@ int main()
             break;
 
         case GameState::ROUND_START:
-
-            renderer.drawUI();
             interp_moveEntitesToScreen(renderer); // Move players into position
 
             renderer.render();
@@ -192,7 +181,6 @@ int main()
 
         case GameState::PAUSED:
             // Continue rendering the game state in the background
-            renderer.drawUI();
             renderer.render();
             renderer.renderUI(timer);
 
@@ -214,7 +202,6 @@ int main()
             { // Only do certain checks each frame rather than every loop
                 // std::cout << "RENDER CALL" << std::endl;
                 loopsSinceLastFrame = 0;
-                renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
                 handleUtilityInputs(renderer, showFPS, botEnabled,
                                     fKeyPressed, bKeyPressed, hKeyPressed,
@@ -273,7 +260,6 @@ int main()
             break;
 
         case GameState::ROUND_OVER:
-            renderer.drawUI();
             renderer.render();
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);
