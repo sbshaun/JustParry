@@ -45,6 +45,9 @@ void GlRender::initialize()
         m_fontShader = new Shader("font");
         std::cout << "Font shader loaded" << std::endl;
 
+        m_buttonShader = new Shader("button");
+        std::cout << "Button shader loaded" << std::endl;
+
         std::cout << "All shaders initialized successfully\n"
                   << std::endl;
     }
@@ -186,18 +189,18 @@ void GlRender::renderRoundOver(int count)
         {
             if (strcmp(overText.c_str(), "DRAW!") == 0)
             {
-                renderInfoText(overText, (baseX + 80.f) * xscale, (baseY + 90.f) * yscale, (1.f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
-                renderInfoText(wonText, (baseX + 30.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(overText, (baseX + 80.f) * xscale, (baseY + 90.f) * yscale, (1.f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(wonText, (baseX + 30.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
             }
             else
             {
-                renderInfoText(overText, (baseX + 20.f) * xscale, (baseY + 90.f) * yscale, (0.8f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
-                renderInfoText(wonText, (baseX + 80.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(overText, (baseX + 20.f) * xscale, (baseY + 90.f) * yscale, (0.8f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(wonText, (baseX + 80.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
             }
         }
 
         // Create and render restart prompt
-        renderInfoText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -217,7 +220,7 @@ void GlRender::renderFPS(int fps, bool showFPS)
     if (showFPS)
     {
         std::string strH1 = std::to_string(fps);
-        renderInfoText(strH1, M_WINDOW_WIDTH_PX - 45.0f, 30.f, 0.3f, glm::vec3(0.0f, 1.f, 0.0f));
+        renderText(strH1, M_WINDOW_WIDTH_PX - 45.0f, 30.f, 0.3f, glm::vec3(0.0f, 1.f, 0.0f));
     }
 }
 
@@ -578,14 +581,14 @@ void GlRender::renderUI(int timer)
     float rightAvatarY = leftAvatarY;
 
     // Draw scores P1
-    renderInfoText("P1", (p1X - 20.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P1", (p1X - 20.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore1 = "SCORE: " + std::to_string(game->getPlayer1Score());
-    renderInfoText(strScore1.c_str(), (p1X - 105.f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore1.c_str(), (p1X - 105.f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Draw scores P2
-    renderInfoText("P2", (p2X - 15.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P2", (p2X - 15.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
-    renderInfoText(strScore2.c_str(), (p2X + 30.0f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore2.c_str(), (p2X + 30.0f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Disable depth testing for UI elements
     glDisable(GL_DEPTH_TEST);
@@ -626,13 +629,13 @@ void GlRender::renderUI(int timer)
         1.0f);
 
     // render health values
-    renderInfoText(std::to_string(p1Health), (p1X + 85.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
-    renderInfoText(std::to_string(p2Health), (p2X - 135.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
+    renderText(std::to_string(p1Health), (p1X + 85.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
+    renderText(std::to_string(p2Health), (p2X - 135.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
 
     // render timer
     float textWidth = std::to_string(timer).length() * 30.0f * xscale;
     float timerX = centerX - (textWidth / 2.0f);
-    renderInfoText(std::to_string(timer), (timerX - 0.f) * xscale, (valueY + 17.5f) * yscale, 0.5f * xscale, glm::vec3(0.1f, 0.3f, 0.2f));
+    renderText(std::to_string(timer), (timerX - 0.f) * xscale, (valueY + 17.5f) * yscale, 0.5f * xscale, glm::vec3(0.1f, 0.3f, 0.2f));
 
     // Restore depth testing
     glEnable(GL_DEPTH_TEST);
@@ -758,7 +761,9 @@ void GlRender::shutdown()
         m_roundOverTexture,
         m_timerBackgroundTexture,
         m_barTexture,
-        m_avatarTexture};
+        m_avatarTexture,
+        m_font_VAO,
+        m_font_VBO};
 
     // Delete all textures at once
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
@@ -777,6 +782,8 @@ void GlRender::shutdown()
     m_timerBackgroundTexture = 0;
     m_barTexture = 0;
     m_avatarTexture = 0;
+    m_font_VAO = 0;
+    m_font_VBO = 0;
 
     // Delete shaders
     delete m_debugShader;
@@ -792,6 +799,8 @@ void GlRender::shutdown()
     m_floorShader = nullptr;
     m_hitboxShader = nullptr;
     m_fontShader = nullptr;
+    m_buttonShader = nullptr;
+    m_ftCharacters.clear();
 
     std::cout << "Resources cleaned up." << std::endl;
 }
@@ -807,25 +816,11 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     // Disable depth testing for 2D rendering
     glDisable(GL_DEPTH_TEST);
 
-    static Shader *buttonShader = nullptr;
-    if (!buttonShader)
+    if (!m_buttonShader->m_shaderProgram)
     {
-        try
-        {
-            buttonShader = new Shader("button");
-            if (!buttonShader->m_shaderProgram)
-            {
-                std::cerr << "Failed to create button shader program" << std::endl;
-                return;
-            }
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Error creating button shader: " << e.what() << std::endl;
-            return;
-        }
+        std::cerr << "Failed to load button shader program" << std::endl;
+        return;
     }
-
     // Get the current window size
     int windowWidth, windowHeight;
     glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
@@ -873,11 +868,11 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    buttonShader->use();
+    m_buttonShader->use();
 
     // Set the button position and size uniforms
-    GLint posLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonPos");
-    GLint sizeLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonSize");
+    GLint posLocation = glGetUniformLocation(m_buttonShader->m_shaderProgram, "buttonPos");
+    GLint sizeLocation = glGetUniformLocation(m_buttonShader->m_shaderProgram, "buttonSize");
 
     if (posLocation != -1)
     {
@@ -888,7 +883,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         glUniform2f(sizeLocation, width * xscale, height * yscale);
     }
 
-    GLint colorLoc = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonColor");
+    GLint colorLoc = glGetUniformLocation(m_buttonShader->m_shaderProgram, "buttonColor");
     if (colorLoc != -1)
     {
         if (pressed)
@@ -969,7 +964,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     }
 
     float finalScale = scale * xscale;
-    renderInfoText(text, finalX, finalY, finalScale, finalColor);
+    renderText(text, finalX, finalY, finalScale, finalColor);
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
@@ -982,94 +977,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(currentDepthFunc);
     }
-}
-
-void GlRender::renderDialogBox(float x, float y, float width, float height, float alpha)
-{
-    static Shader *dialogShader = nullptr;
-    if (!dialogShader)
-    {
-        try
-        {
-            dialogShader = new Shader("button"); // Reuse button shader
-            if (!dialogShader->m_shaderProgram)
-            {
-                std::cerr << "Failed to create dialog shader program" << std::endl;
-                return;
-            }
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Error creating dialog shader: " << e.what() << std::endl;
-            return;
-        }
-    }
-
-    // Convert to NDC
-    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
-    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
-    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
-    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
-
-    float vertices[] = {
-        ndcX, ndcY, 0.0f,
-        ndcX + ndcWidth, ndcY, 0.0f,
-        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f,
-        ndcX, ndcY + ndcHeight, 0.0f};
-
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0};
-
-    GLuint VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    // Save current blend state
-    GLint blendSrc, blendDst;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
-    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
-    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
-
-    // Enable blending for transparency
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    dialogShader->use();
-    GLint colorLoc = glGetUniformLocation(dialogShader->m_shaderProgram, "buttonColor");
-    if (colorLoc != -1)
-    {
-        glUniform3f(colorLoc, 0.1f, 0.1f, 0.1f); // Dark gray background
-        GLint alphaLoc = glGetUniformLocation(dialogShader->m_shaderProgram, "alpha");
-        if (alphaLoc != -1)
-        {
-            glUniform1f(alphaLoc, alpha);
-        }
-    }
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    // Restore previous blend state
-    if (!blendEnabled)
-    {
-        glDisable(GL_BLEND);
-    }
-    glBlendFunc(blendSrc, blendDst);
-
-    // Cleanup
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 }
 
 void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
@@ -1421,13 +1328,10 @@ bool GlRender::fontInit(const std::string &font_filename, unsigned int font_defa
     return true;
 }
 
-void GlRender::renderInfoText(std::string text, float x, float y, float scale, const glm::vec3 &color)
+void GlRender::renderText(std::string text, float x, float y, float scale, const glm::vec3 &color)
 {
-    // Get window size for coordinate conversion
 
-    // activate the shader program
-    glUseProgram(m_fontShader->m_shaderProgram);
-    // m_fontShader->use();
+    m_fontShader->use();
     gl_has_errors();
 
     // Create orthographic projection matrix

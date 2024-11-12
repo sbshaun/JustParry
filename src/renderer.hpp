@@ -55,7 +55,6 @@ public:
     void renderButton(float x, float y, float width, float height, const char *text,
                       bool hovered = false, bool pressed = false,
                       glm::vec3 color = glm::vec3(0.4078f, 0.4549f, 0.5020f));
-    void renderDialogBox(float x, float y, float width, float height, float alpha = 0.8f);
 
     void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
                                   float brightness = 1.0f, float alpha = 1.0f);
@@ -89,6 +88,11 @@ public:
     GLuint m_avatarTexture;
     GLuint m_pauseMenuTexture;
 
+    // font elements
+    std::map<char, Character> m_ftCharacters;
+    GLuint m_font_VAO;
+    GLuint m_font_VBO;
+
     // Make sure these paths remain in sync with the associated enumerators.
     // Associated id with .obj path
     const std::vector<std::pair<GEOMETRY_BUFFER_ID, std::string>> mesh_paths =
@@ -116,13 +120,8 @@ public:
     void setAnimationComplete(bool value) { m_animationComplete = value; }
     void setExitAnimationStarted(bool value) { m_exitAnimationStarted = value; }
 
-    // font elements
-    std::map<char, Character> m_ftCharacters;
-    GLuint m_font_VAO;
-    GLuint m_font_VBO;
-
     bool fontInit(const std::string &font_filename, unsigned int font_default_size);
-    void renderInfoText(std::string text, float x, float y, float scale, const glm::vec3 &color);
+    void renderText(std::string text, float x, float y, float scale, const glm::vec3 &color);
 
 private:
     Game *game = nullptr;
@@ -134,6 +133,7 @@ private:
     Shader *m_floorShader = nullptr;
     Shader *m_hitboxShader = nullptr;
     Shader *m_fontShader = nullptr;
+    Shader *m_buttonShader = nullptr;
 
     // Round over screen animation properties
     float m_roundOverY = -600.0f;        // Starting Y position (off screen)
