@@ -7,14 +7,27 @@
 #include "ecs/ecs_registry.hpp"
 #include "ecs/components.hpp"
 #include "mesh.hpp"
+#include "window.hpp"
 #include <array>
 #include <chrono>
 
-#define GLT_IMPLEMENTATION
-#include <GLText.h>
+// fonts
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <map>
 
 // Forward declare Game class
 class Game;
+
+// font character structure
+struct Character
+{
+    unsigned int TextureID; // ID handle of the glyph texture
+    glm::ivec2 Size;        // Size of glyph
+    glm::ivec2 Bearing;     // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Offset to advance to next glyph
+    char character;
+};
 
 class GlRender
 {
@@ -24,7 +37,6 @@ public:
     void setGameInstance(Game *gameInstance) { game = gameInstance; }
 
     void initialize();
-    void drawUI();
     void render();
     void renderRoundOver(int count);
     void loadTextures();
@@ -38,13 +50,11 @@ public:
     void handleStaticRenders();
 
     void renderTexturedQuad(GLuint texture);
-    void renderLoadingText();
     void renderFPS(int fps, bool showFPS);
 
     void renderButton(float x, float y, float width, float height, const char *text,
                       bool hovered = false, bool pressed = false,
                       glm::vec3 color = glm::vec3(0.4078f, 0.4549f, 0.5020f));
-    void renderDialogBox(float x, float y, float width, float height, float alpha = 0.8f);
 
     void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
                                   float brightness = 1.0f, float alpha = 1.0f);
@@ -78,6 +88,11 @@ public:
     GLuint m_avatarTexture;
     GLuint m_pauseMenuTexture;
 
+    // font elements
+    std::map<char, Character> m_ftCharacters;
+    GLuint m_font_VAO;
+    GLuint m_font_VBO;
+
     // Make sure these paths remain in sync with the associated enumerators.
     // Associated id with .obj path
     const std::vector<std::pair<GEOMETRY_BUFFER_ID, std::string>> mesh_paths =
@@ -105,6 +120,9 @@ public:
     void setAnimationComplete(bool value) { m_animationComplete = value; }
     void setExitAnimationStarted(bool value) { m_exitAnimationStarted = value; }
 
+    bool fontInit(const std::string &font_filename, unsigned int font_default_size);
+    void renderText(std::string text, float x, float y, float scale, const glm::vec3 &color);
+
 private:
     Game *game = nullptr;
 
@@ -114,30 +132,8 @@ private:
     Shader *m_player2Shader = nullptr;
     Shader *m_floorShader = nullptr;
     Shader *m_hitboxShader = nullptr;
-
-    // Place holders for timer and health subtexts
-    GLTtext *m_fps = nullptr;
-    GLTtext *m_loadingText = nullptr;
-    GLTtext *m_restart = nullptr;
-
-    GLTtext *m_leftText = nullptr;
-    GLTtext *m_rightText = nullptr;
-    GLTtext *m_roundOver = nullptr;
-
-    // actual values
-    GLTtext *h1 = nullptr;
-    GLTtext *h2 = nullptr;
-    GLTtext *time = nullptr;
-
-    // round over
-    GLTtext *over = nullptr;
-    GLTtext *won = nullptr;
-
-    // Add score text objects
-    GLTtext *score1 = nullptr;
-    GLTtext *score2 = nullptr;
-    GLTtext *score1Label = nullptr;
-    GLTtext *score2Label = nullptr;
+    Shader *m_fontShader = nullptr;
+    Shader *m_buttonShader = nullptr;
 
     // Round over screen animation properties
     float m_roundOverY = -600.0f;        // Starting Y position (off screen)
@@ -151,7 +147,4 @@ private:
     float m_exitY = -750.0f;             // Changed from -600 to -750 pixels
     std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::steady_clock::now();
     bool m_animationComplete = false; // Track if exit animation is complete
-
-    // Add after line 140 with the other GLTtext declarations
-    GLTtext *m_pauseText = nullptr;
 };

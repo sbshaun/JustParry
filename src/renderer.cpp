@@ -19,7 +19,6 @@ void GlRender::initialize()
 
     // Load all textures
     loadTextures();
-    gltInit();
     initializeGlMeshes();
 
     // Preload all shaders at initialization
@@ -42,6 +41,12 @@ void GlRender::initialize()
 
         m_hitboxShader = new Shader("hitboxes");
         std::cout << "Hitbox shader loaded" << std::endl;
+
+        m_fontShader = new Shader("font");
+        std::cout << "Font shader loaded" << std::endl;
+
+        m_buttonShader = new Shader("button");
+        std::cout << "Button shader loaded" << std::endl;
 
         std::cout << "All shaders initialized successfully\n"
                   << std::endl;
@@ -137,36 +142,33 @@ void GlRender::renderRoundOver(int count)
     float textRevealThreshold = m_targetY - 50.0f;
     if (m_roundOverY >= textRevealThreshold)
     {
-        // Create and render game over/draw text
-        over = gltCreateText();
-        assert(over);
 
         // Check if it's a draw (both players have same health)
         Health &h1 = registry.healths.get(m_player1);
         Health &h2 = registry.healths.get(m_player2);
+        std::string overText = "";
         if (h1.currentHealth == h2.currentHealth)
         {
-            gltSetText(over, "DRAW!");
+            overText = "DRAW!";
         }
         else
         {
-            gltSetText(over, "GAME OVER!");
+            overText = "GAME OVER!";
         }
 
         // Create and render winner text
-        won = gltCreateText();
-        assert(won);
+        std::string wonText = "";
         if (h1.currentHealth == h2.currentHealth)
         {
-            gltSetText(won, "Both players tied!");
+            wonText = "Both players tied!";
         }
         else if (h1.currentHealth < h2.currentHealth)
         {
-            gltSetText(won, "Player 2 Wins!");
+            wonText = "Player 2 Wins!";
         }
         else
         {
-            gltSetText(won, "Player 1 Wins!");
+            wonText = "Player 1 Wins!";
         }
 
         // Get window size and calculate scaling factors
@@ -183,40 +185,22 @@ void GlRender::renderRoundOver(int count)
         float baseY = windowHeight * 0.55f;
 
         // Render game over and winner text
-        if (over && count == 1)
+        if (count == 1)
         {
-            gltBeginDraw();
-            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-            if (strcmp(over->_text, "DRAW!") == 0)
+            if (strcmp(overText.c_str(), "DRAW!") == 0)
             {
-                gltDrawText2D(over, baseX * xscale + 140.f, baseY * yscale, 5.f * xscale);
-                gltDrawText2D(won, (baseX + 50.0f) * xscale, (baseY + 80.0f) * yscale, 2.5f * xscale);
+                renderText(overText, (baseX + 80.f) * xscale, (baseY + 90.f) * yscale, (1.f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(wonText, (baseX + 30.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
             }
             else
             {
-                gltDrawText2D(over, baseX * xscale + 60.f, baseY * yscale, 5.f * xscale);
-                gltDrawText2D(won, (baseX + 100.0f) * xscale, (baseY + 80.0f) * yscale, 2.5f * xscale);
+                renderText(overText, (baseX + 20.f) * xscale, (baseY + 90.f) * yscale, (0.8f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(wonText, (baseX + 80.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
             }
-
-            gltEndDraw();
-        }
-        else
-        {
-            gltBeginDraw();
-            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-            gltDrawText2D(over, baseX * xscale, baseY * yscale, 5.f * xscale);
-            gltEndDraw();
         }
 
         // Create and render restart prompt
-        m_restart = gltCreateText();
-        assert(m_restart);
-        gltSetText(m_restart, "PRESS ENTER TO RESTART!");
-
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-        gltDrawText2D(m_restart, (baseX + 10.0f) * xscale, (baseY + 140.0f) * yscale, 2.6f * xscale);
-        gltEndDraw();
+        renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -231,93 +215,12 @@ void GlRender::resetRoundOverAnimation()
     m_lastUpdateTime = std::chrono::steady_clock::now();
 }
 
-void GlRender::drawUI()
-{
-    m_leftText = gltCreateText();
-    assert(m_leftText);
-    gltSetText(m_leftText, "P1");
-
-    m_rightText = gltCreateText();
-    assert(m_rightText);
-    gltSetText(m_rightText, "P2");
-
-    h1 = gltCreateText();
-    assert(h1);
-    gltSetText(h1, "100");
-
-    h2 = gltCreateText();
-    assert(h2);
-    gltSetText(h2, "100");
-
-    time = gltCreateText();
-    assert(time);
-    gltSetText(time, "100");
-
-    m_roundOver = gltCreateText();
-    assert(m_roundOver);
-    gltSetText(m_roundOver, "ROUND OVER (please press esc and reset)");
-
-    m_fps = gltCreateText();
-    assert(m_fps);
-    gltSetText(m_fps, "-1");
-
-    // Initialize score labels
-    score1Label = gltCreateText();
-    assert(score1Label);
-    gltSetText(score1Label, "SCORE: ");
-
-    score2Label = gltCreateText();
-    assert(score2Label);
-    gltSetText(score2Label, "SCORE: ");
-
-    score1 = gltCreateText();
-    assert(score1);
-    gltSetText(score1, "0");
-
-    score2 = gltCreateText();
-    assert(score2);
-    gltSetText(score2, "0");
-}
-void GlRender::renderLoadingText()
-{
-    // Create text if it hasn't been created yet
-    m_loadingText = gltCreateText();
-    assert(m_loadingText); // Check if it's not NULL
-    gltSetText(m_loadingText, "PRESS ENTER TO START!");
-
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    // Get the current time in seconds
-    auto currentTime = std::chrono::steady_clock::now();
-    auto timeInSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime.time_since_epoch()).count();
-
-    // Check if the text should be visible (alternates each second)
-    if (timeInSeconds % 2 == 0)
-    {
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f); // White text color
-
-        // Draw the loading text at the specified position and scale
-        gltDrawText2D(m_loadingText, 50, 600, 5.4f);
-
-        gltEndDraw();
-    }
-}
-
 void GlRender::renderFPS(int fps, bool showFPS)
 {
     if (showFPS)
     {
         std::string strH1 = std::to_string(fps);
-        gltSetText(m_fps, strH1.c_str());
-
-        gltBeginDraw();
-        gltColor(0.0f, 1.0f, 0.0f, 1.0f); // White text color
-
-        // Move FPS counter to top right corner
-        gltDrawText2D(m_fps, M_WINDOW_WIDTH_PX - 50.0f, 10.f, 2.f);
-
-        gltEndDraw();
+        renderText(strH1, M_WINDOW_WIDTH_PX - 45.0f, 30.f, 0.3f, glm::vec3(0.0f, 1.f, 0.0f));
     }
 }
 
@@ -352,10 +255,9 @@ void GlRender::handleTexturedRenders()
 
             PlayerCurrentState &player1State = registry.playerCurrentStates.get(entity);
             Renderable &player1Renders = registry.renderable.get(entity);
-            
-            Animation& animation = registry.animations.get(entity);
+
+            Animation &animation = registry.animations.get(entity);
             player1Renders.texture = animation.currentTexture;
-           
 
             // if parryBox is active, turn to transparent and green tint to show player is parrying
             if (registry.parryBoxes.get(m_player1).active)
@@ -407,9 +309,8 @@ void GlRender::handleTexturedRenders()
             }
             PlayerCurrentState &player2State = registry.playerCurrentStates.get(entity);
             Renderable &player2Renders = registry.renderable.get(entity);
-            Animation& animation = registry.animations.get(entity);
+            Animation &animation = registry.animations.get(entity);
             player2Renders.texture = animation.currentTexture;
-        
 
             if (registry.parryBoxes.get(m_player2).active)
             {
@@ -629,142 +530,115 @@ void GlRender::renderUI(int timer)
     const int p1Health = registry.healths.get(m_player1).currentHealth;
     const int p2Health = registry.healths.get(m_player2).currentHealth;
 
-    if (m_leftText && m_rightText && game)
-    {
-        // Get the current window size and scaling factors
-        int windowWidth, windowHeight;
-        glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
+    // Get the current window size and scaling factors
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
 
-        int framew_width, frame_height;
-        glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
-        float xscale = (float)framew_width / windowWidth;
-        float yscale = (float)frame_height / windowHeight;
+    int framew_width, frame_height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &framew_width, &frame_height);
+    float xscale = (float)framew_width / windowWidth;
+    float yscale = (float)frame_height / windowHeight;
 
-        // Calculate positions
-        float centerX = (windowWidth) / 2.0f;
-        float topY = (windowHeight) * 0.1f;
+    // Calculate positions
+    float centerX = (windowWidth) / 2.0f;
+    float topY = (windowHeight) * 0.1f;
 
-        float p1X = centerX * 0.4f;
-        float healthY = topY;
-        float valueY = topY + (35.0f * yscale);
-        float p2X = centerX * 1.6f;
-        float scoreY = topY + (75.0f * yscale);
+    float p1X = centerX * 0.4f;
+    float healthY = topY;
+    float valueY = topY + (35.0f * yscale);
+    float p2X = centerX * 1.6f;
+    float scoreY = topY + (75.0f * yscale);
 
-        // Timer background dimensions and position
-        float timerBgWidth = 115.0f;
-        float timerBgHeight = 92.0f;
-        float timerBgX = centerX - (timerBgWidth / 2.0f);
-        float timerBgY = topY - 10.0f;
+    // Timer background dimensions and position
+    float timerBgWidth = 115.0f;
+    float timerBgHeight = 92.0f;
+    float timerBgX = centerX - (timerBgWidth / 2.0f);
+    float timerBgY = topY - 10.0f;
 
-        // Bar dimensions and positions
-        float barWidth = 275.0f;
-        float barHeight = 40.0f;
-        float barPadding = -5.0f; // Space between timer and bars
+    // Bar dimensions and positions
+    float barWidth = 275.0f;
+    float barHeight = 40.0f;
+    float barPadding = -5.0f; // Space between timer and bars
 
-        // Avatar dimensions
-        float avatarSize = barHeight * 1.8f; // Increased from 1.2f to 1.8f for larger avatars
-        float avatarPadding = 10.0f * xscale;
+    // Avatar dimensions
+    float avatarSize = barHeight * 1.8f; // Increased from 1.2f to 1.8f for larger avatars
+    float avatarPadding = 10.0f * xscale;
 
-        // Left bar position
-        float leftBarX = timerBgX - barWidth - barPadding;
-        float leftBarY = timerBgY + (timerBgHeight - barHeight) / 2.0f;
+    // Left bar position
+    float leftBarX = timerBgX - barWidth - barPadding;
+    float leftBarY = timerBgY + (timerBgHeight - barHeight) / 2.0f;
 
-        // Left avatar position - adjust Y position to keep it centered with the bar
-        float leftAvatarX = leftBarX - avatarSize - avatarPadding;
-        float leftAvatarY = leftBarY - (avatarSize - barHeight) / 2.0f;
+    // Left avatar position - adjust Y position to keep it centered with the bar
+    float leftAvatarX = leftBarX - avatarSize - avatarPadding;
+    float leftAvatarY = leftBarY - (avatarSize - barHeight) / 2.0f;
 
-        // Right bar position
-        float rightBarX = timerBgX + timerBgWidth + barPadding;
-        float rightBarY = leftBarY;
+    // Right bar position
+    float rightBarX = timerBgX + timerBgWidth + barPadding;
+    float rightBarY = leftBarY;
 
-        // Right avatar position - adjust Y position to keep it centered with the bar
-        float rightAvatarX = rightBarX + barWidth + avatarPadding;
-        float rightAvatarY = leftAvatarY;
+    // Right avatar position - adjust Y position to keep it centered with the bar
+    float rightAvatarX = rightBarX + barWidth + avatarPadding;
+    float rightAvatarY = leftAvatarY;
 
-        // Set up text values
-        std::stringstream ss;
-        ss << timer;
-        gltSetText(time, ss.str().c_str());
+    // Draw scores P1
+    renderText("P1", (p1X - 20.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::string strScore1 = "SCORE: " + std::to_string(game->getPlayer1Score());
+    renderText(strScore1.c_str(), (p1X - 105.f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
 
-        std::string strH1 = std::to_string(p1Health);
-        gltSetText(h1, strH1.c_str());
+    // Draw scores P2
+    renderText("P2", (p2X - 15.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
+    renderText(strScore2.c_str(), (p2X + 30.0f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
 
-        std::string strH2 = std::to_string(p2Health);
-        gltSetText(h2, strH2.c_str());
+    // Disable depth testing for UI elements
+    glDisable(GL_DEPTH_TEST);
 
-        // Begin text rendering
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+    // Render left avatar
+    renderTexturedQuadScaled(
+        m_avatarTexture,
+        leftAvatarX, leftAvatarY,
+        avatarSize, avatarSize,
+        1.0f);
 
-        // Draw health and score text
+    // Render left bar
+    renderTexturedQuadScaled(
+        m_barTexture,
+        leftBarX, leftBarY,
+        barWidth, barHeight,
+        1.0f);
 
-        // Draw scores
-        gltDrawText2D(score1Label, (p1X - 15.f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
-        std::string strScore1 = std::to_string(game->getPlayer1Score());
-        gltSetText(score1, strScore1.c_str());
-        gltDrawText2D(score1, (p1X + 70.0f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
+    // Render right bar
+    renderTexturedQuadScaled(
+        m_barTexture,
+        rightBarX, rightBarY,
+        barWidth, barHeight,
+        1.0f);
 
-        gltDrawText2D(score2Label, (p2X - 85.f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
-        std::string strScore2 = std::to_string(game->getPlayer2Score());
-        gltSetText(score2, strScore2.c_str());
-        gltDrawText2D(score2, (p2X + 0.0f) * xscale, (scoreY - 15.f * yscale * yscale) * yscale, 1.5f * xscale);
-        gltEndDraw();
+    // Render right avatar
+    renderTexturedQuadScaled(
+        m_avatarTexture,
+        rightAvatarX, rightAvatarY,
+        avatarSize, avatarSize,
+        1.0f);
 
-        // Disable depth testing for UI elements
-        glDisable(GL_DEPTH_TEST);
+    // Render timer background
+    renderTexturedQuadScaled(
+        m_timerBackgroundTexture,
+        timerBgX, timerBgY,
+        timerBgWidth, timerBgHeight,
+        1.0f);
 
-        // Render left avatar
-        renderTexturedQuadScaled(
-            m_avatarTexture,
-            leftAvatarX, leftAvatarY,
-            avatarSize, avatarSize,
-            1.0f);
+    // render health values
+    renderText(std::to_string(p1Health), (p1X + 85.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
+    renderText(std::to_string(p2Health), (p2X - 135.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
 
-        // Render left bar
-        renderTexturedQuadScaled(
-            m_barTexture,
-            leftBarX, leftBarY,
-            barWidth, barHeight,
-            1.0f);
+    // render timer
+    float textWidth = std::to_string(timer).length() * 30.0f * xscale;
+    float timerX = centerX - (textWidth / 2.0f);
+    renderText(std::to_string(timer), (timerX - 0.f) * xscale, (valueY + 17.5f) * yscale, 0.5f * xscale, glm::vec3(0.1f, 0.3f, 0.2f));
 
-        // Render right bar
-        renderTexturedQuadScaled(
-            m_barTexture,
-            rightBarX, rightBarY,
-            barWidth, barHeight,
-            1.0f);
-
-        // Render right avatar
-        renderTexturedQuadScaled(
-            m_avatarTexture,
-            rightAvatarX, rightAvatarY,
-            avatarSize, avatarSize,
-            1.0f);
-
-        // Render timer background
-        renderTexturedQuadScaled(
-            m_timerBackgroundTexture,
-            timerBgX, timerBgY,
-            timerBgWidth, timerBgHeight,
-            1.0f);
-
-        // Draw timer text on top
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-        float textWidth = ss.str().length() * 20.0f * xscale;
-        float timerX = centerX - (textWidth / 2.0f);
-        gltDrawText2D(time, timerX * xscale - 2.f, (valueY - 19.f * yscale) * yscale, 2.5f * xscale);
-        gltEndDraw();
-
-        gltDrawText2D(m_leftText, (p1X - 15.f) * xscale, (healthY - 10.f) * yscale, 1.5f * xscale);
-        gltDrawText2D(h1, (p1X + 90.0f) * xscale, (valueY - 15.f * yscale * yscale) * yscale, 2.0f * xscale);
-
-        gltDrawText2D(m_rightText, (p2X - 10.f) * xscale, (healthY - 10.f) * yscale, 1.5f * xscale);
-        gltDrawText2D(h2, (p2X - 140.0f) * xscale, (valueY - 15.f * yscale * yscale) * yscale, 2.0f * xscale);
-
-        // Restore depth testing
-        glEnable(GL_DEPTH_TEST);
-    }
+    // Restore depth testing
+    glEnable(GL_DEPTH_TEST);
 }
 
 void GlRender::renderTexturedQuad(GLuint texture)
@@ -887,7 +761,9 @@ void GlRender::shutdown()
         m_roundOverTexture,
         m_timerBackgroundTexture,
         m_barTexture,
-        m_avatarTexture};
+        m_avatarTexture,
+        m_font_VAO,
+        m_font_VBO};
 
     // Delete all textures at once
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
@@ -906,73 +782,8 @@ void GlRender::shutdown()
     m_timerBackgroundTexture = 0;
     m_barTexture = 0;
     m_avatarTexture = 0;
-
-    // Delete text objects
-    if (m_fps)
-    {
-        gltDeleteText(m_fps);
-        m_fps = nullptr;
-    }
-    if (m_loadingText)
-    {
-        gltDeleteText(m_loadingText);
-        m_loadingText = nullptr;
-    }
-    if (m_restart)
-    {
-        gltDeleteText(m_restart);
-        m_restart = nullptr;
-    }
-    if (h1)
-    {
-        gltDeleteText(h1);
-        h1 = nullptr;
-    }
-    if (h2)
-    {
-        gltDeleteText(h2);
-        h2 = nullptr;
-    }
-    if (time)
-    {
-        gltDeleteText(time);
-        time = nullptr;
-    }
-    if (over)
-    {
-        gltDeleteText(over);
-        over = nullptr;
-    }
-    if (won)
-    {
-        gltDeleteText(won);
-        won = nullptr;
-    }
-    if (score1)
-    {
-        gltDeleteText(score1);
-        score1 = nullptr;
-    }
-    if (score2)
-    {
-        gltDeleteText(score2);
-        score2 = nullptr;
-    }
-    if (score1Label)
-    {
-        gltDeleteText(score1Label);
-        score1Label = nullptr;
-    }
-    if (score2Label)
-    {
-        gltDeleteText(score2Label);
-        score2Label = nullptr;
-    }
-
-    // Shutdown GLText last
-    gltTerminate();
-
-    std::cout << "Resources cleaned up." << std::endl;
+    m_font_VAO = 0;
+    m_font_VBO = 0;
 
     // Delete shaders
     delete m_debugShader;
@@ -980,12 +791,18 @@ void GlRender::shutdown()
     delete m_player2Shader;
     delete m_floorShader;
     delete m_hitboxShader;
+    delete m_fontShader;
 
     m_debugShader = nullptr;
     m_player1Shader = nullptr;
     m_player2Shader = nullptr;
     m_floorShader = nullptr;
     m_hitboxShader = nullptr;
+    m_fontShader = nullptr;
+    m_buttonShader = nullptr;
+    m_ftCharacters.clear();
+
+    std::cout << "Resources cleaned up." << std::endl;
 }
 
 void GlRender::renderButton(float x, float y, float width, float height, const char *text,
@@ -999,25 +816,11 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     // Disable depth testing for 2D rendering
     glDisable(GL_DEPTH_TEST);
 
-    static Shader *buttonShader = nullptr;
-    if (!buttonShader)
+    if (!m_buttonShader->m_shaderProgram)
     {
-        try
-        {
-            buttonShader = new Shader("button");
-            if (!buttonShader->m_shaderProgram)
-            {
-                std::cerr << "Failed to create button shader program" << std::endl;
-                return;
-            }
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Error creating button shader: " << e.what() << std::endl;
-            return;
-        }
+        std::cerr << "Failed to load button shader program" << std::endl;
+        return;
     }
-
     // Get the current window size
     int windowWidth, windowHeight;
     glfwGetWindowSize(glfwGetCurrentContext(), &windowWidth, &windowHeight);
@@ -1028,15 +831,15 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     float yscale = (float)frame_height / windowHeight;
 
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
-    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
-    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
-    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
-    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+    float ndcX = (2.0f * x / framew_width) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / frame_height);
+    float ndcWidth = 2.0f * width / framew_width;
+    float ndcHeight = -2.0f * height / frame_height;
 
     // Add a small offset when pressed
     if (pressed)
     {
-        ndcY -= 0.01f; // Slight downward shift when pressed
+        ndcY -= 0.1f; // Slight downward shift when pressed
     }
 
     float vertices[] = {
@@ -1065,11 +868,11 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    buttonShader->use();
+    m_buttonShader->use();
 
     // Set the button position and size uniforms
-    GLint posLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonPos");
-    GLint sizeLocation = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonSize");
+    GLint posLocation = glGetUniformLocation(m_buttonShader->m_shaderProgram, "buttonPos");
+    GLint sizeLocation = glGetUniformLocation(m_buttonShader->m_shaderProgram, "buttonSize");
 
     if (posLocation != -1)
     {
@@ -1080,7 +883,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         glUniform2f(sizeLocation, width * xscale, height * yscale);
     }
 
-    GLint colorLoc = glGetUniformLocation(buttonShader->m_shaderProgram, "buttonColor");
+    GLint colorLoc = glGetUniformLocation(m_buttonShader->m_shaderProgram, "buttonColor");
     if (colorLoc != -1)
     {
         if (pressed)
@@ -1108,48 +911,60 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    // Draw text with slight offset when pressed
-    GLTtext *buttonText = gltCreateText();
-    if (buttonText)
+    // Calculate text dimensions (approximate)
+    float textWidth = static_cast<float>(strlen(text)) * 20.0f;
+    float textHeight = 30.0f;
+    float textX = x + (width - textWidth) / 2.0f;
+    float textY = y + (height - textHeight) / 2.0f;
+
+    if (pressed)
     {
-        gltSetText(buttonText, text);
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-        // Calculate text dimensions (approximate)
-        float textWidth = strlen(text) * 20; // Increased from 15 to 20 for better spacing
-        float textHeight = 30;               // Approximate height of text
-
-        // Center both horizontally and vertically
-        float textX = x + (width - textWidth) / 2;
-        float textY = y + (height - textHeight) / 2;
-
-        if (pressed)
-        {
-            textY += 2; // Move text down slightly when pressed
-        }
-
-        // Different scale for X button vs other buttons
-        float scale;
-        if (strcmp(text, "X") == 0)
-        {
-            scale = 2.0f;
-        }
-        else if (strcmp(text, "||") == 0)
-        {
-            scale = 3.5f;    // Larger scale for pause symbol
-            textWidth = 15;  // Override the text width calculation for pause symbol
-            textHeight = 40; // Taller height for pause symbol
-        }
-        else
-        {
-            scale = 2.5f;
-        }
-        gltDrawText2D(buttonText, textX * xscale, textY * yscale, scale * xscale);
-
-        gltEndDraw();
-        gltDeleteText(buttonText);
+        textY += 2; // Move text down slightly when pressed
     }
+
+    // Different scale for X button vs other buttons
+    float scale;
+    float finalX;
+    float finalY;
+    glm::vec3 finalColor;
+    if (strcmp(text, "X") == 0)
+    {
+        scale = 0.25f;
+        finalColor = glm::vec3(1.0f, 1.0f, 1.0f);
+        finalX = textX * xscale + 1.f;
+        finalY = textY * yscale + 23.5f;
+    }
+    else if (strcmp(text, "=") == 0)
+    {
+        scale = 0.6f;
+        finalColor = glm::vec3(0.0f, 0.0f, 0.0f);
+        finalX = textX * xscale - 8.f;
+        finalY = textY * yscale + 35.f;
+    }
+    else if (strcmp(text, "MAIN MENU") == 0)
+    {
+        scale = 0.4f;
+        finalColor = glm::vec3(0.0f, 0.0f, 0.0f);
+        finalX = textX * xscale - 15.f;
+        finalY = textY * yscale + 27.5f;
+    }
+    else if (strcmp(text, "RESUME") == 0)
+    {
+        scale = 0.4f;
+        finalColor = glm::vec3(0.0f, 0.0f, 0.0f);
+        finalX = textX * xscale - 15.f;
+        finalY = textY * yscale + 27.5f;
+    }
+    else
+    {
+        scale = 0.4f;
+        finalColor = glm::vec3(0.0f, 0.0f, 0.0f);
+        finalX = textX * xscale - 7.f;
+        finalY = textY * yscale + 27.5f;
+    }
+
+    float finalScale = scale * xscale;
+    renderText(text, finalX, finalY, finalScale, finalColor);
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
@@ -1162,94 +977,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(currentDepthFunc);
     }
-}
-
-void GlRender::renderDialogBox(float x, float y, float width, float height, float alpha)
-{
-    static Shader *dialogShader = nullptr;
-    if (!dialogShader)
-    {
-        try
-        {
-            dialogShader = new Shader("button"); // Reuse button shader
-            if (!dialogShader->m_shaderProgram)
-            {
-                std::cerr << "Failed to create dialog shader program" << std::endl;
-                return;
-            }
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Error creating dialog shader: " << e.what() << std::endl;
-            return;
-        }
-    }
-
-    // Convert to NDC
-    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
-    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
-    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
-    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
-
-    float vertices[] = {
-        ndcX, ndcY, 0.0f,
-        ndcX + ndcWidth, ndcY, 0.0f,
-        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f,
-        ndcX, ndcY + ndcHeight, 0.0f};
-
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0};
-
-    GLuint VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    // Save current blend state
-    GLint blendSrc, blendDst;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
-    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
-    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
-
-    // Enable blending for transparency
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    dialogShader->use();
-    GLint colorLoc = glGetUniformLocation(dialogShader->m_shaderProgram, "buttonColor");
-    if (colorLoc != -1)
-    {
-        glUniform3f(colorLoc, 0.1f, 0.1f, 0.1f); // Dark gray background
-        GLint alphaLoc = glGetUniformLocation(dialogShader->m_shaderProgram, "alpha");
-        if (alphaLoc != -1)
-        {
-            glUniform1f(alphaLoc, alpha);
-        }
-    }
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    // Restore previous blend state
-    if (!blendEnabled)
-    {
-        glDisable(GL_BLEND);
-    }
-    glBlendFunc(blendSrc, blendDst);
-
-    // Cleanup
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 }
 
 void GlRender::renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
@@ -1501,4 +1228,198 @@ void GlRender::initializeGlMeshes()
                                     meshes[(int)geom_index].vertex_indices,
                                     meshes[(int)geom_index].original_size);
     }
+}
+
+bool GlRender::fontInit(const std::string &font_filename, unsigned int font_default_size)
+{
+    if (!m_fontShader)
+    {
+        std::cerr << "Failed to create font shader" << std::endl;
+        return false;
+    }
+
+    // Set up VAO/VBO for font rendering
+    glGenVertexArrays(1, &m_font_VAO);
+    glGenBuffers(1, &m_font_VBO);
+    glBindVertexArray(m_font_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+
+    gl_has_errors();
+    // Reserve space for 6 vertices with 4 components each (pos + tex coords)
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    gl_has_errors();
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    gl_has_errors();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    gl_has_errors();
+
+    // Initialize FreeType
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft))
+    {
+        std::cerr << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        return false;
+    }
+
+    gl_has_errors();
+    // Load font file
+    std::string font_filepath = PROJECT_SOURCE_DIR + std::string("/assets/fonts/") + font_filename;
+    FT_Face face;
+    if (FT_New_Face(ft, font_filepath.c_str(), 0, &face))
+    {
+        std::cerr << "ERROR::FREETYPE: Failed to load font: " << font_filepath << std::endl;
+        FT_Done_FreeType(ft);
+        return false;
+    }
+    gl_has_errors();
+    // Set font size
+    FT_Set_Pixel_Sizes(face, 0, font_default_size);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // Load ASCII characters
+    for (unsigned char c = 0; c < 128; c++)
+    {
+        if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+        {
+            std::cerr << "ERROR::FREETYPE: Failed to load Glyph: " << c << std::endl;
+            continue;
+        }
+
+        // Generate texture
+        GLuint texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            face->glyph->bitmap.width,
+            face->glyph->bitmap.rows,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            face->glyph->bitmap.buffer);
+
+        // Set texture parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Store character data
+        Character character = {
+            texture,
+            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            static_cast<unsigned int>(face->glyph->advance.x),
+            static_cast<char>(c)};
+        m_ftCharacters.insert(std::pair<char, Character>(c, character));
+    }
+    gl_has_errors();
+    // Cleanup FreeType resources
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
+
+    gl_has_errors();
+    std::cout << "Font initialization completed successfully" << std::endl;
+
+    return true;
+}
+
+void GlRender::renderText(std::string text, float x, float y, float scale, const glm::vec3 &color)
+{
+
+    m_fontShader->use();
+    gl_has_errors();
+
+    // Create orthographic projection matrix
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(M_WINDOW_WIDTH_PX),
+                                      static_cast<float>(M_WINDOW_HEIGHT_PX), 0.0f,
+                                      -1.0f, 1.0f);
+
+    glm::mat4 transform = glm::mat4(1.0f);
+
+    // Set uniforms
+    GLint textColor_location = glGetUniformLocation(m_fontShader->m_shaderProgram, "textColor");
+    GLint projectionLoc = glGetUniformLocation(m_fontShader->m_shaderProgram, "projection");
+    GLint transformLoc = glGetUniformLocation(m_fontShader->m_shaderProgram, "transform");
+
+    if (textColor_location < 0 || projectionLoc < 0 || transformLoc < 0)
+    {
+        std::cout << "Failed to get uniform locations" << std::endl;
+        return;
+    }
+
+    // Set shader uniforms
+    glUniform3f(textColor_location, color.x, color.y, color.z);
+    gl_has_errors();
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    gl_has_errors();
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+    gl_has_errors();
+
+    // Configure vertex attributes
+    glBindVertexArray(m_font_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+    gl_has_errors();
+
+    // Enable vertex attrib array for position+texture coords
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    gl_has_errors();
+
+    // Enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Bind texture unit
+    glActiveTexture(GL_TEXTURE0);
+    gl_has_errors();
+
+    float x_pos = x;
+    for (char c : text)
+    {
+        auto it = m_ftCharacters.find(c);
+        if (it == m_ftCharacters.end())
+        {
+            std::cout << "Character " << c << " not found in font atlas" << std::endl;
+            continue;
+        }
+
+        Character ch = it->second;
+
+        float xpos = x_pos + ch.Bearing.x * scale;
+        float ypos = y + (ch.Size.y - ch.Bearing.y) * scale;
+
+        float w = ch.Size.x * scale;
+        float h = ch.Size.y * scale;
+
+        float vertices[6][4] = {
+            {xpos, ypos - h, 0.0f, 0.0f},
+            {xpos, ypos, 0.0f, 1.0f},
+            {xpos + w, ypos, 1.0f, 1.0f},
+
+            {xpos, ypos - h, 0.0f, 0.0f},
+            {xpos + w, ypos, 1.0f, 1.0f},
+            {xpos + w, ypos - h, 1.0f, 0.0f}};
+
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        gl_has_errors();
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        gl_has_errors();
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        gl_has_errors();
+
+        x_pos += (ch.Advance >> 6) * scale;
+    }
+
+    // Cleanup
+    glDisableVertexAttribArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glUseProgram(0);
+    gl_has_errors();
 }

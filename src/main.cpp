@@ -114,6 +114,15 @@ int main()
     int loopsSinceLastFrame = 0;
     //// END INITS ////
 
+    // font setup and initialization.
+    std::string font_filename = "SpaceGrotesk-Bold.ttf";
+    unsigned int font_default_size = 100;
+    if (!renderer.fontInit(font_filename, font_default_size))
+    {
+        std::cerr << "Failed to initialize fonts. Exiting." << std::endl;
+        return EXIT_FAILURE;
+    }
+
     // Main loop
 
     while (!glWindow.shouldClose())
@@ -134,6 +143,7 @@ int main()
                 game.setState(GameState::ROUND_START);
             }
             glWindow.windowSwapBuffers();
+
             break;
 
         case GameState::HELP:
@@ -156,8 +166,6 @@ int main()
             break;
 
         case GameState::ROUND_START:
-
-            renderer.drawUI();
             interp_moveEntitesToScreen(renderer); // Move players into position
 
             renderer.render();
@@ -173,7 +181,6 @@ int main()
 
         case GameState::PAUSED:
             // Continue rendering the game state in the background
-            renderer.drawUI();
             renderer.render();
             renderer.renderUI(timer);
 
@@ -195,7 +202,6 @@ int main()
             { // Only do certain checks each frame rather than every loop
                 // std::cout << "RENDER CALL" << std::endl;
                 loopsSinceLastFrame = 0;
-                renderer.drawUI();
                 interp_moveEntitesToScreen(renderer);
                 handleUtilityInputs(renderer, showFPS, botEnabled,
                                     fKeyPressed, bKeyPressed, hKeyPressed,
@@ -254,7 +260,6 @@ int main()
             break;
 
         case GameState::ROUND_OVER:
-            renderer.drawUI();
             renderer.render();
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);

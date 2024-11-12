@@ -79,13 +79,4 @@ private:
     int player1Score = 0;
     int player2Score = 0;
     WorldSystem *worldSystem = nullptr;
-
-    // Text objects
-    GLTtext *m_restart = nullptr;
-    GLTtext *over = nullptr;
-    GLTtext *won = nullptr;
-    GLTtext *score1 = nullptr;
-    GLTtext *score2 = nullptr;
-    GLTtext *score1Label = nullptr;
-    GLTtext *score2Label = nullptr;
 };

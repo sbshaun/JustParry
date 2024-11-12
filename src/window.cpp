@@ -3,7 +3,8 @@
 #include "constants.hpp"
 #include "common.hpp"
 
-GLWindow::GLWindow() {
+GLWindow::GLWindow()
+{
     m_window_width_px = M_WINDOW_WIDTH_PX;
     m_window_height_px = M_WINDOW_HEIGHT_PX;
     window = create_window();
@@ -17,7 +18,8 @@ GLWindow::GLWindow(int window_width_px, int window_height_px)
 
 GLWindow::~GLWindow()
 {
-    if (window) {
+    if (window)
+    {
         // close and release the window
         glfwDestroyWindow(window);
     }
@@ -26,10 +28,12 @@ GLWindow::~GLWindow()
 int GLWindow::window_width_px() { return m_window_width_px; }
 int GLWindow::window_height_px() { return m_window_height_px; }
 
-GLFWwindow* GLWindow::create_window() {
+GLFWwindow *GLWindow::create_window()
+{
     // Initialize GLFWX
-    if (!glfwInit()) {
-        //glfw down
+    if (!glfwInit())
+    {
+        // glfw down
         exit(EXIT_FAILURE);
     }
 
@@ -47,7 +51,8 @@ GLFWwindow* GLWindow::create_window() {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(m_window_width_px, m_window_height_px, "Just Parry", NULL, NULL);
-    if (window == nullptr) {
+    if (window == nullptr)
+    {
         std::cerr << "ERROR: Failed to glfwCreateWindow" << std::endl;
         glfwTerminate();
         return nullptr;
@@ -58,8 +63,9 @@ GLFWwindow* GLWindow::create_window() {
     // Input is handled using GLFW, for more info see
     // http://www.glfw.org/docs/latest/input_guide.html
     glfwSetWindowUserPointer(window, this);
-    auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GLWindow*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
-    
+    auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3)
+    { ((GLWindow *)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
+
     glfwSetKeyCallback(window, key_redirect);
 
     glfwMakeContextCurrent(window);
@@ -67,24 +73,29 @@ GLFWwindow* GLWindow::create_window() {
     return window;
 }
 
-bool GLWindow::shouldClose() {
+bool GLWindow::shouldClose()
+{
     return bool(glfwWindowShouldClose(window)) || m_close_window;
 }
 
-void GLWindow::on_key(int key, int, int action, int mod) {
+void GLWindow::on_key(int key, int, int action, int mod)
+{
     // ESC key to exit
-    if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE) {
+    if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE)
+    {
         std::cout << "INFO: ESC key pressed, close window" << std::endl;
         m_close_window = true;
     }
 }
 
-void GLWindow::windowSwapBuffers() {
+void GLWindow::windowSwapBuffers()
+{
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
-void GLWindow::windowShutdown() {
-	glfwDestroyWindow(window);
-	glfwTerminate();
+void GLWindow::windowShutdown()
+{
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
