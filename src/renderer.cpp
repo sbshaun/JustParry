@@ -43,6 +43,9 @@ void GlRender::initialize()
         m_hitboxShader = new Shader("hitboxes");
         std::cout << "Hitbox shader loaded" << std::endl;
 
+        m_fontShader = new Shader("font");
+        std::cout << "Font shader loaded" << std::endl;
+
         std::cout << "All shaders initialized successfully\n"
                   << std::endl;
     }
@@ -352,10 +355,9 @@ void GlRender::handleTexturedRenders()
 
             PlayerCurrentState &player1State = registry.playerCurrentStates.get(entity);
             Renderable &player1Renders = registry.renderable.get(entity);
-            
-            Animation& animation = registry.animations.get(entity);
+
+            Animation &animation = registry.animations.get(entity);
             player1Renders.texture = animation.currentTexture;
-           
 
             // if parryBox is active, turn to transparent and green tint to show player is parrying
             if (registry.parryBoxes.get(m_player1).active)
@@ -407,9 +409,8 @@ void GlRender::handleTexturedRenders()
             }
             PlayerCurrentState &player2State = registry.playerCurrentStates.get(entity);
             Renderable &player2Renders = registry.renderable.get(entity);
-            Animation& animation = registry.animations.get(entity);
+            Animation &animation = registry.animations.get(entity);
             player2Renders.texture = animation.currentTexture;
-        
 
             if (registry.parryBoxes.get(m_player2).active)
             {
@@ -980,12 +981,14 @@ void GlRender::shutdown()
     delete m_player2Shader;
     delete m_floorShader;
     delete m_hitboxShader;
+    delete m_fontShader;
 
     m_debugShader = nullptr;
     m_player1Shader = nullptr;
     m_player2Shader = nullptr;
     m_floorShader = nullptr;
     m_hitboxShader = nullptr;
+    m_fontShader = nullptr;
 }
 
 void GlRender::renderButton(float x, float y, float width, float height, const char *text,
@@ -1501,4 +1504,214 @@ void GlRender::initializeGlMeshes()
                                     meshes[(int)geom_index].vertex_indices,
                                     meshes[(int)geom_index].original_size);
     }
+}
+
+bool GlRender::fontInit(const std::string &font_filename, unsigned int font_default_size)
+{
+
+    if (!m_fontShader)
+    {
+        std::cerr << "Failed to create font shader" << std::endl;
+        return false;
+    }
+
+    // glfwGetWindowSize(window.window, &width, &height);
+
+    // Set up VAO/VBO for font rendering
+    glGenVertexArrays(1, &m_font_VAO);
+    glGenBuffers(1, &m_font_VBO);
+    glBindVertexArray(m_font_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+
+    gl_has_errors();
+    // Reserve space for 6 vertices with 4 components each (pos + tex coords)
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    gl_has_errors();
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    gl_has_errors();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    gl_has_errors();
+
+    // Initialize FreeType
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft))
+    {
+        std::cerr << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        return false;
+    }
+
+    gl_has_errors();
+    // Load font file
+    std::string font_filepath = PROJECT_SOURCE_DIR + std::string("/assets/fonts/") + font_filename;
+    FT_Face face;
+    if (FT_New_Face(ft, font_filepath.c_str(), 0, &face))
+    {
+        std::cerr << "ERROR::FREETYPE: Failed to load font: " << font_filepath << std::endl;
+        FT_Done_FreeType(ft);
+        return false;
+    }
+    gl_has_errors();
+    // Set font size
+    FT_Set_Pixel_Sizes(face, 0, font_default_size);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // Load ASCII characters
+    for (unsigned char c = 0; c < 128; c++)
+    {
+        if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+        {
+            std::cerr << "ERROR::FREETYPE: Failed to load Glyph: " << c << std::endl;
+            continue;
+        }
+
+        // Generate texture
+        GLuint texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            face->glyph->bitmap.width,
+            face->glyph->bitmap.rows,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            face->glyph->bitmap.buffer);
+
+        // Set texture parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Store character data
+        Character character = {
+            texture,
+            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            static_cast<unsigned int>(face->glyph->advance.x),
+            static_cast<char>(c)};
+        m_ftCharacters.insert(std::pair<char, Character>(c, character));
+    }
+    gl_has_errors();
+    // Cleanup FreeType resources
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
+
+    // Set up shader uniforms
+    // m_fontShader->use();
+
+    // Create orthographic projection matrix
+    // glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(M_WINDOW_WIDTH_PX),
+    //                                  0.0f, static_cast<float>(M_WINDOW_HEIGHT_PX),
+    //                                  -1.0f, 1.0f);
+    // m_fontShader->setMat4("projection", projection);
+
+    // m_fontShader->setVec3("textColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    // m_fontShader->setMat4("transform", glm::mat4(1.0f));
+    //  m_fontShader->setInt("text", 0);
+    gl_has_errors();
+    std::cout << "Font initialization completed successfully" << std::endl;
+
+    return true;
+}
+
+void GlRender::renderInfoText(std::string text, float x, float y, float scale, const glm::vec3 &color, const glm::mat4 &trans)
+{
+    // Get window size for coordinate conversion
+
+    // activate the shader program
+    glUseProgram(m_fontShader->m_shaderProgram);
+    // m_fontShader->use();
+    gl_has_errors();
+
+    // Create orthographic projection matrix
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(M_WINDOW_WIDTH_PX),
+                                      static_cast<float>(M_WINDOW_HEIGHT_PX), 0.0f,
+                                      -1.0f, 1.0f);
+
+    // Set uniforms
+    GLint textColor_location = glGetUniformLocation(m_fontShader->m_shaderProgram, "textColor");
+    GLint projectionLoc = glGetUniformLocation(m_fontShader->m_shaderProgram, "projection");
+    GLint transformLoc = glGetUniformLocation(m_fontShader->m_shaderProgram, "transform");
+
+    if (textColor_location < 0 || projectionLoc < 0 || transformLoc < 0)
+    {
+        std::cout << "Failed to get uniform locations" << std::endl;
+        return;
+    }
+
+    // Set shader uniforms
+    glUniform3f(textColor_location, color.x, color.y, color.z);
+    gl_has_errors();
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    gl_has_errors();
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    gl_has_errors();
+
+    // Configure vertex attributes
+    glBindVertexArray(m_font_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+    gl_has_errors();
+
+    // Enable vertex attrib array for position+texture coords
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    gl_has_errors();
+
+    // Enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Bind texture unit
+    glActiveTexture(GL_TEXTURE0);
+    gl_has_errors();
+
+    float x_pos = x;
+    for (char c : text)
+    {
+        auto it = m_ftCharacters.find(c);
+        if (it == m_ftCharacters.end())
+        {
+            std::cout << "Character " << c << " not found in font atlas" << std::endl;
+            continue;
+        }
+
+        Character ch = it->second;
+
+        float xpos = x_pos + ch.Bearing.x * scale;
+        float ypos = y + (ch.Size.y - ch.Bearing.y) * scale;
+
+        float w = ch.Size.x * scale;
+        float h = ch.Size.y * scale;
+
+        float vertices[6][4] = {
+            {xpos, ypos - h, 0.0f, 0.0f},
+            {xpos, ypos, 0.0f, 1.0f},
+            {xpos + w, ypos, 1.0f, 1.0f},
+
+            {xpos, ypos - h, 0.0f, 0.0f},
+            {xpos + w, ypos, 1.0f, 1.0f},
+            {xpos + w, ypos - h, 1.0f, 0.0f}};
+
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        gl_has_errors();
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        gl_has_errors();
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        gl_has_errors();
+
+        x_pos += (ch.Advance >> 6) * scale;
+    }
+
+    // Cleanup
+    glDisableVertexAttribArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glUseProgram(0);
+    gl_has_errors();
 }

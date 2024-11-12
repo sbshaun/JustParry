@@ -7,14 +7,30 @@
 #include "ecs/ecs_registry.hpp"
 #include "ecs/components.hpp"
 #include "mesh.hpp"
+#include "window.hpp"
 #include <array>
 #include <chrono>
 
 #define GLT_IMPLEMENTATION
 #include <GLText.h>
 
+// fonts
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <map>
+
 // Forward declare Game class
 class Game;
+
+// font character structure
+struct Character
+{
+    unsigned int TextureID; // ID handle of the glyph texture
+    glm::ivec2 Size;        // Size of glyph
+    glm::ivec2 Bearing;     // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Offset to advance to next glyph
+    char character;
+};
 
 class GlRender
 {
@@ -105,6 +121,14 @@ public:
     void setAnimationComplete(bool value) { m_animationComplete = value; }
     void setExitAnimationStarted(bool value) { m_exitAnimationStarted = value; }
 
+    // font elements
+    std::map<char, Character> m_ftCharacters;
+    GLuint m_font_VAO;
+    GLuint m_font_VBO;
+
+    bool fontInit(const std::string &font_filename, unsigned int font_default_size);
+    void renderInfoText(std::string text, float x, float y, float scale, const glm::vec3 &color, const glm::mat4 &trans);
+
 private:
     Game *game = nullptr;
 
@@ -114,6 +138,7 @@ private:
     Shader *m_player2Shader = nullptr;
     Shader *m_floorShader = nullptr;
     Shader *m_hitboxShader = nullptr;
+    Shader *m_fontShader = nullptr;
 
     // Place holders for timer and health subtexts
     GLTtext *m_fps = nullptr;

@@ -114,6 +114,15 @@ int main()
     int loopsSinceLastFrame = 0;
     //// END INITS ////
 
+    // font setup and initialization.
+    std::string font_filename = "Kenney_Pixel_Square.ttf";
+    unsigned int font_default_size = 200;
+    if (!renderer.fontInit(font_filename, font_default_size))
+    {
+        std::cerr << "Failed to initialize fonts. Exiting." << std::endl;
+        return EXIT_FAILURE;
+    }
+
     // Main loop
 
     while (!glWindow.shouldClose())
@@ -133,7 +142,17 @@ int main()
             {
                 game.setState(GameState::ROUND_START);
             }
+
+            /* renderer.renderInfoText(
+                "NEW HIGH SCORE!",
+                100.f,
+                200.f,
+                1.f,
+                glm::vec3(1.0f, 0.843f, 0.0f),
+                glm::mat4(1.0f));
+            */
             glWindow.windowSwapBuffers();
+
             break;
 
         case GameState::HELP:
