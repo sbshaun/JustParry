@@ -571,10 +571,10 @@ void Game::renderSettingsScreen(GlRender &renderer)
 
     // Position and size the close button (make it square)
     closeButton = {
-        settingsBoxX + settingsBoxWidth - 75.f, // 10px padding from right
-        settingsBoxY + 10.0f,                   // 10px padding from top
-        65.0f,                                  // Square width
-        50.0f,                                  // Square height
+        settingsBoxX - 75.f,  // 10px padding from right
+        settingsBoxY + 10.0f, // 10px padding from top
+        65.0f,                // Square width
+        50.0f,                // Square height
         "X"};
 
     // Get mouse position and check hover/press state

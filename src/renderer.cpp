@@ -1068,7 +1068,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     unsigned int indices[] = {
         0, 1, 2, // first triangle
         2, 3, 0  // second triangle
-    }; 
+    };
 
     // Create and bind VAO
     GLuint VAO, VBO, EBO;
@@ -1713,17 +1713,8 @@ void GlRender::renderRedHealthRectangle(float x, float y, float width, float hei
     glUseProgram(m_redRectangleShader->m_shaderProgram);
 
     // Set uniform values
-    GLint borderColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderColor");
     GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
-    GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
-
-    glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
-    glUniform3f(fillColorLoc, 0.4f, 0.0f, 0.0f);   // Red fill
-
-    // Set border thickness as a fraction of the width
-
-    float borderThickness = 0.05f; // 5% of the rectangle's width
-    glUniform1f(borderThicknessLoc, borderThickness);
+    glUniform3f(fillColorLoc, 0.4f, 0.0f, 0.0f); // Red fill
 
     // Define vertices for the rectangle
     float vertices[] = {
