@@ -1,5 +1,4 @@
 #include "game.hpp"
-#include <iostream>
 #include "../linearinterp.hpp"
 
 Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0f),
@@ -213,6 +212,219 @@ bool isPressed(int key)
 {
     GLFWwindow *window = glfwGetCurrentContext();
     return glfwGetKey(window, key) == GLFW_PRESS;
+}
+
+void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+
+    // Render background
+    renderer.renderTexturedQuadScaled(
+        renderer.m_characterSelectTexture,
+        0, 0,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        1.0f // Full brightness
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_character1,
+        175, 360.0f,
+        225, 275,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_character1_flip,
+        625.f, 360.0f,
+        225, 275,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_p1SelectKey,
+        360.f, 245.0f + offset1,
+        30, 30,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_p2SelectKey,
+        620.f, 245.0f + offset2,
+        30, 30,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
+    renderer.renderSelectorTriangleP2(580, 245 + offset2, 30, 30, p2);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
+
+    glDepthFunc(GL_LESS);
+}
+
+void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
+                                 bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2)
+{
+    if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+        if (!p1KeyPressed) // Check if the key was not pressed before
+        {
+            p1Ready = !p1Ready;  // Toggle p1Ready
+            p1KeyPressed = true; // Mark the key as pressed
+            if (std::to_string(p1Ready) == "0")
+            {
+                std::cout << "Player 1 Not Ready" << std::endl;
+            }
+            else
+            {
+                std::cout << "Player 1 Ready" << std::endl;
+            }
+        }
+    }
+    else
+    {
+        p1KeyPressed = false; // Reset when the key is released
+    }
+
+    if (glfwGetKey(glWindow.window, GLFW_KEY_X) == GLFW_PRESS)
+    {
+        if (!p2KeyPressed) // Check if the key was not pressed before
+        {
+            p2Ready = !p2Ready;  // Toggle p2Ready
+            p2KeyPressed = true; // Mark the key as pressed
+            if (std::to_string(p2Ready) == "0")
+            {
+                std::cout << "Player 2 Not Ready" << std::endl;
+            }
+            else
+            {
+                std::cout << "Player 2 Ready" << std::endl;
+            }
+        }
+    }
+    else
+    {
+        p2KeyPressed = false; // Reset when the key is released
+    }
+
+    if (!p1Ready)
+    {
+        if (glfwGetKey(glWindow.window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            if (!goDown1)
+            {
+                goDown1 = true;
+                if (offsetY1 < 280.f)
+                {
+                    offsetY1 += 140.f;
+                }
+                else
+                {
+                    offsetY1 = 0;
+                }
+            }
+        }
+        else
+        {
+            goDown1 = false;
+        }
+
+        if (glfwGetKey(glWindow.window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            if (!goUp1)
+            {
+                goUp1 = true;
+                if (offsetY1 > 0.0f)
+                {
+                    offsetY1 -= 140.f;
+                }
+                else
+                {
+                    offsetY1 = 0;
+                }
+            }
+        }
+        else
+        {
+            goUp1 = false;
+        }
+    }
+
+    if (!p2Ready)
+    {
+        if (glfwGetKey(glWindow.window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        {
+            if (!goDown2)
+            {
+                goDown2 = true;
+                if (offsetY2 < 280.f)
+                {
+                    offsetY2 += 140.f;
+                }
+                else
+                {
+                    offsetY2 = 0;
+                }
+            }
+        }
+        else
+        {
+            goDown2 = false;
+        }
+
+        if (glfwGetKey(glWindow.window, GLFW_KEY_UP) == GLFW_PRESS)
+        {
+            if (!goUp2)
+            {
+                goUp2 = true;
+                if (offsetY2 > 0.0f)
+                {
+                    offsetY2 -= 140.f;
+                }
+                else
+                {
+                    offsetY2 = 0;
+                }
+            }
+        }
+        else
+        {
+            goUp2 = false;
+        }
+    }
+}
+
+void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game)
+{
+    if (p1Ready)
+    {
+        renderer.renderText("READY", 210, 350, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
+    }
+    else
+    {
+        renderer.renderText("NOT READY", 180, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+
+    if (p2Ready)
+    {
+        renderer.renderText("READY", 740, 350, 0.25f, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    else
+    {
+        renderer.renderText("NOT READY", 725, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+
+    if (p1Ready && p2Ready)
+    {
+        renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        {
+            game.setState(GameState::ROUND_START);
+        }
+    }
 }
 
 void Game::renderMenu(GlRender &renderer)
