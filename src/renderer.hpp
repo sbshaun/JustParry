@@ -88,6 +88,12 @@ public:
     GLuint m_avatarTexture;
     GLuint m_pauseMenuTexture;
 
+    GLuint m_characterSelectTexture;
+    GLuint m_character1;
+    GLuint m_character1_flip;
+    GLuint m_p1SelectKey;
+    GLuint m_p2SelectKey;
+
     // font elements
     std::map<char, Character> m_ftCharacters;
     GLuint m_font_VAO;
@@ -129,6 +135,9 @@ public:
     void renderRedHealthRectangle(float x, float y, float width, float height);
     void handleP1Health(int p1Health);
     void handleP2Health(int p2Health);
+
+    void renderSelectorTriangleP1(float x, float y, float width, float height, bool p1);
+    void renderSelectorTriangleP2(float x, float y, float width, float height, bool p2);
 
 private:
     Game *game = nullptr;

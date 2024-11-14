@@ -501,6 +501,11 @@ void GlRender::loadTextures()
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
+    loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
+    loadTexture(textures_path("bird_idle_f1.png"), m_character1);
+    loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
+    loadTexture(textures_path("key_R.png"), m_p1SelectKey);
+    loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     FighterManager::loadBirdTextures(*this);
 }
 
@@ -958,6 +963,11 @@ void GlRender::shutdown()
         m_timerBackgroundTexture,
         m_barTexture,
         m_avatarTexture,
+        m_characterSelectTexture,
+        m_character1,
+        m_character1_flip,
+        m_p1SelectKey,
+        m_p2SelectKey,
         m_font_VAO,
         m_font_VBO};
 
@@ -980,6 +990,11 @@ void GlRender::shutdown()
     m_avatarTexture = 0;
     m_font_VAO = 0;
     m_font_VBO = 0;
+    m_characterSelectTexture = 0;
+    m_character1 = 0;
+    m_character1_flip = 0;
+    m_p1SelectKey = 0;
+    m_p2SelectKey = 0;
 
     // Delete shaders
     delete m_debugShader;
@@ -1705,6 +1720,7 @@ void GlRender::renderRedHealthRectangle(float x, float y, float width, float hei
     glUniform3f(fillColorLoc, 0.4f, 0.0f, 0.0f);   // Red fill
 
     // Set border thickness as a fraction of the width
+
     float borderThickness = 0.05f; // 5% of the rectangle's width
     glUniform1f(borderThicknessLoc, borderThickness);
 
@@ -1739,6 +1755,136 @@ void GlRender::renderRedHealthRectangle(float x, float y, float width, float hei
 
     // Draw the rectangle
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void GlRender::renderSelectorTriangleP1(float x, float y, float width, float height, bool p1)
+{
+    // Convert screen coordinates (0, 1280) and (0, 720) to NDC (-1, 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    glUseProgram(m_redRectangleShader->m_shaderProgram);
+
+    // Set uniform values
+    GLint borderColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderColor");
+    GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
+    GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
+
+    glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
+    if (p1)
+    {
+        glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+    }
+    else
+    {
+        glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+    }
+
+    // Set border thickness as a fraction of the width
+
+    float borderThickness = 0.05f; // 5% of the rectangle's width
+    glUniform1f(borderThicknessLoc, borderThickness);
+
+    // Define vertices for the rectangle
+    float vertices[] = {
+        ndcX, ndcY, 0.0f,                            // Left-bottom (tip of the triangle)
+        ndcX + ndcWidth, ndcY + ndcHeight / 2, 0.0f, // Right-middle (base of the triangle)
+        ndcX, ndcY + ndcHeight, 0.0f                 // Left-top (tip of the triangle)
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw the rectangle
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void GlRender::renderSelectorTriangleP2(float x, float y, float width, float height, bool p2)
+{
+    // Convert screen coordinates (0, 1280) and (0, 720) to NDC (-1, 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    glUseProgram(m_redRectangleShader->m_shaderProgram);
+
+    // Set uniform values
+    GLint borderColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderColor");
+    GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
+    GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
+
+    glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
+    if (p2)
+    {
+        glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+    }
+    else
+    {
+        glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+    }
+
+    float borderThickness = 0.05f; // 5% of the rectangle's width
+    glUniform1f(borderThicknessLoc, borderThickness);
+
+    // Define vertices for the rectangle
+    float vertices[] = {
+        ndcX, ndcY + ndcHeight / 2, 0.0f,       // Left (base of the triangle)
+        ndcX + ndcWidth, ndcY, 0.0f,            // Right-bottom (tip of the triangle)
+        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f // Right-top (tip of the triangle)
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw the rectangle
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);

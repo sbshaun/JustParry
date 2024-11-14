@@ -6,6 +6,7 @@
 #include "stb_image/stb_image.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include "../window.hpp"
 #include "../world/world_system.hpp"
 #include "../world/world_init.hpp"
@@ -18,6 +19,7 @@ enum class GameState
     LOADING,
     PLAYING,
     HELP,
+    CHARACTER_SELECT,
     SETTINGS,
     ROUND_START,
     ROUND_OVER,
@@ -43,6 +45,12 @@ public:
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
     bool handleHelpInput(GLFWwindow *window);
+
+    bool handleCharacterInput(GLFWwindow *window);
+    void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
+    void handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
+                               bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2);
+    void renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game);
     void resetGame(GlRender &renderer, WorldSystem &worldSystem);
     void updateScores(const Health &h1, const Health &h2);
     int getPlayer1Score() const { return player1Score; }
