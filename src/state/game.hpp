@@ -75,8 +75,44 @@ private:
     Button pauseButton;
     Button resumeButton;
     Button menuButton;
+    Button generalButton;
+    Button controlsButton;
+    Button windowButton;
+    Button audioButton;
+    Button player1Button;
+    Button player2Button;
+    Button applyButton;
+    Button resetButton;
+    Button pauseSettingsButton;
+
+    Button windowButton1;
+    Button windowButton2;
+    Button windowButton3;
+    Button windowButton4;
+    Button windowButton5;
+
+    Button audioButton1;
+    Button audioButton2;
+    Button audioButton3;
+    Button audioButton4;
+
+    Button playerButton1;
+    Button playerButton2;
+    Button playerButton3;
+    Button playerButton4;
+    Button playerButton5;
+    Button playerButton6;
+    Button playerButton7;
 
     int player1Score = 0;
     int player2Score = 0;
     WorldSystem *worldSystem = nullptr;
+    bool isGeneralSelected = true;
+    bool isControlsSelected = false;
+    bool isWindowSelected = true;
+    bool isAudioSelected = false;
+    bool isPlayer1Selected = true;
+    bool isPlayer2Selected = false;
+
+    void cleanupButtons();
 };
