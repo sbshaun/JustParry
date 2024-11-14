@@ -114,6 +114,8 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
     motion.scale = {0.1, 0.1};
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
+
+    registry.knockbacks.emplace(entity);
 }
 
 /*
