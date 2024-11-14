@@ -592,14 +592,14 @@ void GlRender::renderUI(int timer)
     float rightAvatarY = leftAvatarY;
 
     // Draw scores P1
-    renderText("P1", (p1X - 20.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore1 = "SCORE: " + std::to_string(game->getPlayer1Score());
-    renderText(strScore1.c_str(), (p1X - 105.f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Draw scores P2
-    renderText("P2", (p2X - 15.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
-    renderText(strScore2.c_str(), (p2X + 30.0f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Disable depth testing for UI elements
     glDisable(GL_DEPTH_TEST);
@@ -647,7 +647,7 @@ void GlRender::renderUI(int timer)
     float textWidth = std::to_string(timer).length() * 30.0f * xscale;
     float timerX = centerX - (textWidth / 2.0f);
 
-    renderText(std::to_string(timer), (timerX - 0.f) * xscale, (valueY + 17.5f) * yscale, 0.5f * xscale, glm::vec3(0.1f, 0.3f, 0.2f));
+    renderText(std::to_string(timer), (timerX - 0.f) + 30 * (xscale - 1), (valueY + 17.5f) - 35 * (xscale - 1), 0.5f, glm::vec3(0.1f, 0.3f, 0.2f));
 
     // Restore depth testing
     glEnable(GL_DEPTH_TEST);
@@ -1047,10 +1047,10 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     float yscale = (float)frame_height / windowHeight;
 
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
-    float ndcX = (2.0f * x / framew_width) - 1.0f;
-    float ndcY = 1.0f - (2.0f * y / frame_height);
-    float ndcWidth = 2.0f * width / framew_width;
-    float ndcHeight = -2.0f * height / frame_height;
+    float ndcX = (2.0f * x * xscale / framew_width) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y * yscale / frame_height);
+    float ndcWidth = 2.0f * width * xscale / framew_width;
+    float ndcHeight = -2.0f * height * yscale / frame_height;
 
     // Add a small offset when pressed
     if (pressed)
@@ -1068,7 +1068,7 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     unsigned int indices[] = {
         0, 1, 2, // first triangle
         2, 3, 0  // second triangle
-    };
+    }; 
 
     // Create and bind VAO
     GLuint VAO, VBO, EBO;
@@ -1130,8 +1130,8 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     // Calculate text dimensions (approximate)
     float textWidth = static_cast<float>(strlen(text)) * 20.0f;
     float textHeight = 30.0f;
-    float textX = x + (width - textWidth) / 2.0f;
-    float textY = y + (height - textHeight) / 2.0f;
+    float textX = x + (width - textWidth) / 2.0f - 10 * (xscale - 1);
+    float textY = y + (height - textHeight) / 2.0f + 15 * (yscale - 1);
 
     if (pressed)
     {
@@ -1186,8 +1186,9 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         finalY = textY * yscale + 27.5f;
     }
 
-    float finalScale = scale * xscale;
-    renderText(text, finalX, finalY, finalScale, finalColor);
+    float finalScale = scale;
+    // std::cout << "finalX: " << finalX << " finalY: " << finalY << " finalScale: " << finalScale << std::endl;
+    renderText(text, finalX / xscale, finalY / yscale, finalScale, finalColor);
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
