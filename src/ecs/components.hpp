@@ -10,7 +10,7 @@ enum class PlayerState
 {
     IDLE,
     WALKING,
-    JUMPING,
+    //JUMPING,
     CROUCHING,
     ATTACKING,
     PARRYING,
@@ -29,8 +29,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
         return "IDLE";
     case PlayerState::WALKING:
         return "WALKING";
-    case PlayerState::JUMPING:
-        return "JUMPING";
+    /*case PlayerState::JUMPING:
+        return "JUMPING";*/
     case PlayerState::CROUCHING:
         return "CROUCHING";
     case PlayerState::ATTACKING:

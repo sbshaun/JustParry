@@ -145,7 +145,7 @@ void WorldSystem::initStateMachines()
 
     player1StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player1StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
-    player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    //player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
@@ -153,7 +153,7 @@ void WorldSystem::initStateMachines()
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
-    player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    //player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
@@ -180,8 +180,8 @@ void WorldSystem::handleInput()
         // Convert bot inputs to state machine transitions
         if (p2Input.left || p2Input.right)
             player2StateMachine->transition(renderer->m_player2, PlayerState::WALKING);
-        if (p2Input.up)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::JUMPING);
+        /*if (p2Input.up)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::JUMPING);*/
         if (p2Input.punch || p2Input.kick)
             player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
 
@@ -222,22 +222,6 @@ void WorldSystem::movementProcessing()
 
     PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
     PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
-
-    bool p1HasKnockback = registry.knockbacks.has(renderer->m_player1) &&
-                          registry.knockbacks.get(renderer->m_player1).active;
-
-    bool p2HasKnockback = registry.knockbacks.has(renderer->m_player2) &&
-                          registry.knockbacks.get(renderer->m_player2).active;
-
-    if (p1HasKnockback)
-    {
-        player1Motion->position += player1Motion->velocity;
-    }
-
-    if (p2HasKnockback)
-    {
-        player2Motion->position += player2Motion->velocity;
-    }
 
     if (canMove(player1State.currentState))
     {

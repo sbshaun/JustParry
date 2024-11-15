@@ -105,10 +105,8 @@ void PhysicsSystem::step() {
 			//std::cout << "Old Velocity: (" << motion.velocity.x << ", " << motion.velocity.y << ")" << std::endl;
 
 			// Apply knock-back force
-			motion.velocity = knockBack.force;
-
-			// Debug print after setting velocity
-			//std::cout << "New Velocity: (" << motion.velocity.x << ", " << motion.velocity.y << ")" << std::endl;
+			motion.position += knockBack.force;
+			//motion.velocity = knockBack.force;
 
 			// Reduce knock-back duration
 			knockBack.duration -= PLAYER_STATE_TIMER_STEP;
@@ -122,7 +120,7 @@ void PhysicsSystem::step() {
 
 			// Apply gravity during knock-back
 			if (motion.inAir) {
-				motion.velocity.y -= GRAVITY;
+				motion.position.y -= GRAVITY;
 			}
 		}
 	}
