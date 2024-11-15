@@ -1,10 +1,9 @@
 #include "linearinterp.hpp"
 
-float a = 0;
-float a2 = 0;
-
-float b = 0;
-float b2 = 0;
+double a = 0;
+double a2 = 0;
+double b = 0;
+double b2 = 0;
 
 int count = 0;
 bool isLoading = true;
@@ -19,16 +18,18 @@ void resetInterpVariables()
 	isLoading = true;
 }
 
-void interp_moveEntitesToScreen(GlRender& renderer) {
-	if (isLoading) {
+void interp_moveEntitesToScreen(GlRender &renderer)
+{
+	if (isLoading)
+	{
 		Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
 		Fighters current_char2 = registry.players.get(renderer.m_player2).current_char;
-		const FighterConfig& config1 = FighterManager::getFighterConfig(current_char1);
-		const FighterConfig& config2 = FighterManager::getFighterConfig(current_char2);
+		const FighterConfig &config1 = FighterManager::getFighterConfig(current_char1);
+		const FighterConfig &config2 = FighterManager::getFighterConfig(current_char2);
 
 		// stop entity movement when loading
-		Motion& m1 = registry.motions.get(renderer.m_player1);
-		Motion& m2 = registry.motions.get(renderer.m_player2);
+		Motion &m1 = registry.motions.get(renderer.m_player1);
+		Motion &m2 = registry.motions.get(renderer.m_player2);
 
 		PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
 		PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
@@ -37,24 +38,29 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 
 		if (m1.position[0] < -0.5)
 		{
-			m1.position[0] += 0.0089;
+			m1.position[0] = m1.position[0] + 0.0089f;
 		}
 		// move p1 to the ground
-		if (m1.position[1] > (FLOOR_Y + config1.NDC_HEIGHT / 2)) {
-			m1.position[1] -= 0.0047;
+		if (m1.position[1] > (FLOOR_Y + config1.NDC_HEIGHT / 2))
+		{
+			m1.position[1] = m1.position[1] - 0.0047f;
 		}
-		else {
+		else
+		{
 			m1.position[1] = (FLOOR_Y + config1.NDC_HEIGHT / 2);
 		}
 
 		if (m2.position[0] > 0.5)
 		{
-			m2.position[0] -= 0.0089;
+			m2.position[0] = m2.position[0] - 0.0089f;
 
 		} // move p2 to ground
-		if (m2.position[1] > (FLOOR_Y + config2.NDC_HEIGHT / 2)) {
-			m2.position[1] -= 0.0047;
-		} else {
+		if (m2.position[1] > (FLOOR_Y + config2.NDC_HEIGHT / 2))
+		{
+			m2.position[1] = m2.position[1] - 0.0047f;
+		}
+		else
+		{
 			m2.position[1] = (FLOOR_Y + config2.NDC_HEIGHT / 2);
 		}
 
@@ -62,8 +68,7 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		{
 			a = m1.scale[0] + 0.01;
 			a2 = m1.scale[1] + 0.01;
-			m1.scale[0] = a;
-			m1.scale[1] = a2;
+			m1.scale = {a, a2};
 		}
 		else
 		{
@@ -76,8 +81,7 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		{
 			b = m2.scale[0] + 0.01;
 			b2 = m2.scale[1] + 0.01;
-			m2.scale[0] = b;
-			m2.scale[1] = b2;
+			m2.scale = {b, b2};
 		}
 		else if ((m2.scale[0] > 1))
 		{
@@ -86,7 +90,8 @@ void interp_moveEntitesToScreen(GlRender& renderer) {
 		}
 
 		// stop once done, and change isLoading to false to avoid inteference w game.
-		if (m1.position[0] < 0.3 && m1.position[1] == (FLOOR_Y + config1.NDC_HEIGHT / 2) && m1.scale[0] == 1) {
+		if (m1.position[0] < 0.3 && m1.position[1] == (FLOOR_Y + config1.NDC_HEIGHT / 2) && m1.scale[0] == 1)
+		{
 			count = 1;
 		}
 		if (count == 1)

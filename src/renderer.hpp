@@ -133,8 +133,8 @@ public:
 
     // for rendering player health box
     void renderRedHealthRectangle(float x, float y, float width, float height);
-    void handleP1Health(int p1Health);
-    void handleP2Health(int p2Health);
+    void handleP1Health(float p1Health);
+    void handleP2Health(float p2Health);
 
     void renderSelectorTriangleP1(float x, float y, float width, float height, bool p1);
     void renderSelectorTriangleP2(float x, float y, float width, float height, bool p2);

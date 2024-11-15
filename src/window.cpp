@@ -18,13 +18,18 @@ GLWindow::GLWindow(int window_width_px, int window_height_px)
 
 GLWindow::~GLWindow()
 {
+    // Close the GLFW window if it exists
     if (window)
     {
-        // close and release the window
-        glfwDestroyWindow(window);
+        glfwDestroyWindow(window); // Properly destroy the GLFW window
+        window = nullptr;
     }
-}
 
+    // Terminate GLFW if this is the last window being destroyed
+    glfwTerminate();
+
+    std::cout << "GLWindow resources cleaned up." << std::endl;
+}
 int GLWindow::window_width_px() { return m_window_width_px; }
 int GLWindow::window_height_px() { return m_window_height_px; }
 
@@ -92,10 +97,4 @@ void GLWindow::windowSwapBuffers()
 {
     glfwSwapBuffers(window);
     glfwPollEvents();
-}
-
-void GLWindow::windowShutdown()
-{
-    glfwDestroyWindow(window);
-    glfwTerminate();
 }
