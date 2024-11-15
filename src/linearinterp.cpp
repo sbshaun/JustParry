@@ -68,8 +68,7 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 		{
 			a = m1.scale[0] + 0.01;
 			a2 = m1.scale[1] + 0.01;
-			m1.scale[0] = a;
-			m1.scale[1] = a2;
+			m1.scale = {a, a2};
 		}
 		else
 		{
@@ -82,8 +81,7 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 		{
 			b = m2.scale[0] + 0.01;
 			b2 = m2.scale[1] + 0.01;
-			m2.scale[0] = b;
-			m2.scale[1] = b2;
+			m2.scale = {b, b2};
 		}
 		else if ((m2.scale[0] > 1))
 		{

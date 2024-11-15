@@ -454,26 +454,26 @@ void GlRender::render()
 
     renderTexturedQuadScaled(
         m_bg1Texture,
-        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.25, 0,
-        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        (-M_WINDOW_WIDTH_PX / 2.0f) - (playableArea.position.x) * M_WINDOW_WIDTH_PX / 1.25f, 0.0f,
+        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
         1.0f);
 
     renderTexturedQuadScaled(
         m_bg2Texture,
-        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5, 0,
-        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5f, 0.0f,
+        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
         1.0f);
 
     renderTexturedQuadScaled(
         m_bg3Texture,
-        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.75, 0,
-        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.75f, 0.0f,
+        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
         1.0f);
 
     renderTexturedQuadScaled(
         m_bg4Texture,
-        -M_WINDOW_WIDTH_PX / 2 - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0, 0,
-        M_WINDOW_WIDTH_PX * 2, M_WINDOW_HEIGHT_PX,
+        -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0f, 0.0f,
+        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
         1.0f);
 
     // debugging wireframe
@@ -485,7 +485,6 @@ void GlRender::render()
 
     glDepthMask(GL_TRUE);
 }
-
 void GlRender::loadTextures()
 {
     // Load texture for player 1
@@ -538,8 +537,8 @@ void GlRender::loadTexture(const std::string &path, GLuint &textureID)
 void GlRender::renderUI(int timer)
 {
     const auto &playerhealths = registry.healths;
-    const int p1Health = registry.healths.get(m_player1).currentHealth;
-    const int p2Health = registry.healths.get(m_player2).currentHealth;
+    float p1Health = registry.healths.get(m_player1).currentHealth;
+    float p2Health = registry.healths.get(m_player2).currentHealth;
 
     // Get the current window size and scaling factors
     int windowWidth, windowHeight;
@@ -653,7 +652,7 @@ void GlRender::renderUI(int timer)
     glEnable(GL_DEPTH_TEST);
 }
 
-void GlRender::handleP1Health(int p1Health)
+void GlRender::handleP1Health(float p1Health)
 { // render health values
     float wx = 23.75f;
     float off = 2.35f;
@@ -747,7 +746,7 @@ void GlRender::handleP1Health(int p1Health)
         return;
     }
 }
-void GlRender::handleP2Health(int p2Health)
+void GlRender::handleP2Health(float p2Health)
 { // render health values
     float wx = 23.75f;
     float off = 2.35f;

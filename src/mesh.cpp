@@ -40,15 +40,14 @@ void Mesh::draw()
     gl_has_errors();
     if (this->textured)
     {
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 5);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size() / 5));
     }
     else
     {
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size() / 3));
     }
     glBindVertexArray(0);
 }
-
 void Mesh::setPosition(const glm::vec3 &pos)
 {
     modelMatrix = glm::translate(glm::mat4(1.0f), pos);

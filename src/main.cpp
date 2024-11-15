@@ -253,7 +253,7 @@ int main()
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
 
             // Calculate the remaining time to sleep
-            int sleepDuration = targetLogicDuration - static_cast<int>(FastLoopIterTime.count());
+            int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
             // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
             if (sleepDuration > 0)
             {

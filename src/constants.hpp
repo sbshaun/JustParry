@@ -4,6 +4,9 @@
 const int M_WINDOW_WIDTH_PX = 1024;
 const int M_WINDOW_HEIGHT_PX = 768;
 
+const float PLAYER_BB_WIDTH = 2.5f * 80.f;
+const float PLAYER_BB_HEIGHT = 2.5f * 100.f;
+
 const bool BOT_ENABLED = false;
 
 // LOOP LOGIC
