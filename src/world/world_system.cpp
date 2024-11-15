@@ -12,7 +12,10 @@
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED 
+        && state != PlayerState::RECOVERING && state != PlayerState::PARRYING 
+        && state != PlayerState::PERFECT_PARRYING 
+        && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
@@ -181,14 +184,28 @@ void WorldSystem::inputProcessing()
 
 void WorldSystem::movementProcessing()
 {
-    Motion &player1Motion = registry.motions.get(renderer->m_player1);
-    Motion &player2Motion = registry.motions.get(renderer->m_player2);
+    Motion& player1Motion = registry.motions.get(renderer->m_player1);
+    Motion& player2Motion = registry.motions.get(renderer->m_player2);
 
     player1Motion.lastPos = player1Motion.position;
     player2Motion.lastPos = player2Motion.position;
 
-    PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
-    PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
+    PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
+    PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
+
+    bool p1HasKnockback = registry.knockbacks.has(renderer->m_player1) &&
+        registry.knockbacks.get(renderer->m_player1).active;
+
+    bool p2HasKnockback = registry.knockbacks.has(renderer->m_player2) &&
+        registry.knockbacks.get(renderer->m_player2).active;
+
+    if (p1HasKnockback) {
+        player1Motion.position += player1Motion.velocity;
+    }
+
+    if (p2HasKnockback) {
+        player2Motion.position += player2Motion.velocity;
+    }   
 
     if (canMove(player1State.currentState))
     {
@@ -491,14 +508,52 @@ void WorldSystem::hitBoxCollisions()
     // check if player 1 hit player 2
     if (checkHitBoxCollisions(player1, player2))
     {
-        applyDamage(player2, FighterManager::getFighterConfig(current_char1).PUNCH_DAMAGE);
+        Fighters fighter1 = registry.players.get(player1).current_char;
+        const FighterConfig &config = FighterManager::getFighterConfig(fighter1);
+
+        // Player that is attacking
+        Motion& attacker_motion = registry.motions.get(player1);
+        // Player that got hit
+		Motion& victim_motion = registry.motions.get(player2);
+
+        applyDamage(player2, config.PUNCH_DAMAGE);
+
+        KnockBack& knockback = registry.knockbacks.get(player2);
+        knockback.active = true;
+        knockback.duration = config.KNOCKBACK_DURATION;
+
+        float direction = attacker_motion.direction ? 1.0f : -1.0f;
+        knockback.force = {
+            direction * config.KNOCKBACK_FORCE_X,
+            config.KNOCKBACK_FORCE_Y
+        };
+
         player2StateMachine->transition(player2, PlayerState::STUNNED); 
     }
 
     // check if player 2 hit player 1
     if (checkHitBoxCollisions(player2, player1))
     {
-        applyDamage(player1, FighterManager::getFighterConfig(current_char2).PUNCH_DAMAGE);
+        Fighters fighter2 = registry.players.get(player2).current_char;
+        const FighterConfig& config = FighterManager::getFighterConfig(fighter2);
+
+        // Player that is attacking
+        Motion& attacker_motion = registry.motions.get(player2);
+        // Player that got hit
+        Motion& victim_motion = registry.motions.get(player1);
+
+        applyDamage(player1, config.PUNCH_DAMAGE);
+
+        KnockBack& knockback = registry.knockbacks.get(player1);
+        knockback.active = true;
+        knockback.duration = config.KNOCKBACK_DURATION;
+
+        float direction = attacker_motion.direction ? 1.0f : -1.0f;
+        knockback.force = {
+            direction * config.KNOCKBACK_FORCE_X,
+            config.KNOCKBACK_FORCE_Y
+        };
+
         player1StateMachine->transition(player1, PlayerState::STUNNED);
     }
 }

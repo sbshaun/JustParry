@@ -230,9 +230,10 @@ int main()
 
             loopsSinceLastFrame++;
 
+            physicsSystem.step();
+            worldSystem.hitBoxCollisions();
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-            worldSystem.hitBoxCollisions();
             worldSystem.inputProcessing();
 
             // Update center for playable area
@@ -243,7 +244,7 @@ int main()
             playableArea.updateWorldModel(renderer.m_worldModel);
 
             worldSystem.playerCollisions(&renderer);
-            physicsSystem.step();
+            //physicsSystem.step();
             renderer.render();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);

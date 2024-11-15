@@ -92,5 +92,40 @@ void PhysicsSystem::step() {
 		}
 	}
 
+	// Handle knock-back physics
+	for (Entity entity : registry.knockbacks.entities) {
+		KnockBack& knockBack = registry.knockbacks.get(entity);
+		if (knockBack.active) {
+			std::cout << knockBack.active << std::endl;
+			Motion& motion = registry.motions.get(entity);
+
+			// Debug print before setting velocity
+			//std::cout << "Knockback Physics:" << std::endl;
+			//std::cout << "Force: (" << knockBack.force.x << ", " << knockBack.force.y << ")" << std::endl;
+			//std::cout << "Old Velocity: (" << motion.velocity.x << ", " << motion.velocity.y << ")" << std::endl;
+
+			// Apply knock-back force
+			motion.velocity = knockBack.force;
+
+			// Debug print after setting velocity
+			//std::cout << "New Velocity: (" << motion.velocity.x << ", " << motion.velocity.y << ")" << std::endl;
+
+			// Reduce knock-back duration
+			knockBack.duration -= PLAYER_STATE_TIMER_STEP;
+
+			// If knock-back duration is over, reset
+			if (knockBack.duration <= 0) {
+				knockBack.active = false;
+				knockBack.duration = 0;
+				motion.velocity = { 0.0f, 0.0f };
+			}
+
+			// Apply gravity during knock-back
+			if (motion.inAir) {
+				motion.velocity.y -= GRAVITY;
+			}
+		}
+	}
+
 }
 
