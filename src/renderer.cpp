@@ -78,7 +78,7 @@ void GlRender::renderRoundOver(int count)
     m_lastUpdateTime = currentTime;
 
     // Check if enter is pressed to start exit animation
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS && !m_exitAnimationStarted)
+    if (isKeyPressed(GLFW_KEY_ENTER) && !m_exitAnimationStarted)
     {
         m_exitAnimationStarted = true;
         m_animationProgress = 0.0f; // Reset progress for exit animation
