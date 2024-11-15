@@ -16,6 +16,7 @@
 #include "input_system/utility_inputs.hpp"
 #include "SDL.h"
 #include <SDL.h>
+#define SDL_MAIN_HANDLED
 
 int timer = timer_length;
 static bool roundEnded = false;
@@ -318,9 +319,6 @@ int main()
 
     // Cleanup in correct order
     SDL_Quit();
-    registry.clear_all_components(); // Clear ECS components first
-    renderer.shutdown();             // Then shutdown renderer
-    glWindow.windowShutdown();       // Finally close window
 
     return 0;
 }
