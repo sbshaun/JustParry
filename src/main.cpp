@@ -273,7 +273,7 @@ int main()
 
             // Only handle enter press if exit animation hasn't started
             if (!renderer.isExitAnimationStarted() &&
-                glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+                isKeyPressed(GLFW_KEY_ENTER))
             {
                 renderer.startExitAnimation();
             }

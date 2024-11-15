@@ -110,11 +110,11 @@ void Game::generateBackground(float val, GlRender &renderer)
 
 #include <GLFW/glfw3.h>
 
-bool isPressed(int key)
-{
-    GLFWwindow *window = glfwGetCurrentContext();
-    return glfwGetKey(window, key) == GLFW_PRESS;
-}
+// bool isPressed(int key) //REDUNDANT with isKeyPressed in input_utils.hpp
+// {
+//     GLFWwindow *window = glfwGetCurrentContext();
+//     return glfwGetKey(window, key) == GLFW_PRESS;
+// }
 
 void Game::renderMenu(GlRender &renderer)
 {
