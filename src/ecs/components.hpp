@@ -150,6 +150,12 @@ struct PlayerInput
     bool kick = false;
 };
 
+struct KnockBack {
+    bool active = false;
+    float duration = 0.0f;
+    vec2 force = {0.0f, 0.0f}; // both the x and y force of knockback.
+};
+
 struct Box
 {
     float xOffset, yOffset; // offsets relative to player's position

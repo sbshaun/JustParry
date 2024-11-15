@@ -131,6 +131,17 @@ int main()
     }
 
     // Main loop
+    bool p1Ready = false;
+    bool p2Ready = false;
+    static bool p1KeyPressed = false; // Track the state of the key for player 1
+    static bool p2KeyPressed = false; // Track the state of the key for player 2
+    bool goDown1 = false;
+    bool goUp1 = false;
+    bool goDown2 = false;
+    bool goUp2 = false;
+
+    float offsetY1 = 0.0f;
+    float offsetY2 = 0.0f;
 
     while (!glWindow.shouldClose())
     {
@@ -147,12 +158,12 @@ int main()
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window, renderer))
             {
-                game.setState(GameState::ROUND_START);
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::CHARACTER_SELECT);
             }
             glWindow.windowSwapBuffers();
 
             break;
-
         case GameState::HELP:
 
             game.renderHelpScreen(renderer);
@@ -171,7 +182,13 @@ int main()
             }
             glWindow.windowSwapBuffers();
             break;
+        case GameState::CHARACTER_SELECT:
+            game.handleCharacterInputs(glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
+            game.renderCharacterSelect(renderer, offsetY1, offsetY2, p1Ready, p2Ready);
+            game.renderReadyText(renderer, p1Ready, p2Ready, game);
 
+            glWindow.windowSwapBuffers();
+            break;
         case GameState::ROUND_START:
             interp_moveEntitesToScreen(renderer); // Move players into position
 
@@ -220,9 +237,10 @@ int main()
 
             loopsSinceLastFrame++;
 
+            physicsSystem.step();
+            worldSystem.hitBoxCollisions();
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-            worldSystem.hitBoxCollisions();
             worldSystem.inputProcessing();
 
             // Update center for playable area
@@ -233,7 +251,7 @@ int main()
             playableArea.updateWorldModel(renderer.m_worldModel);
 
             worldSystem.playerCollisions(&renderer);
-            physicsSystem.step();
+            //physicsSystem.step();
             renderer.render();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);

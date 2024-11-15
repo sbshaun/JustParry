@@ -40,6 +40,11 @@ struct FighterConfig {
 
     float PARRY_DURATION; // parry duration (parryBox active time)
 
+    // knock-back parameters
+    float KNOCKBACK_FORCE_X = 0.02f;
+	float KNOCKBACK_FORCE_Y = 0.0f;
+	float KNOCKBACK_DURATION = 300.f;
+
     GLuint m_bird_idle_f1_texture;
     GLuint m_bird_idle_f2_texture;
     GLuint m_bird_punch_f1_texture;

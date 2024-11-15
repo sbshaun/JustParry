@@ -88,6 +88,12 @@ public:
     GLuint m_avatarTexture;
     GLuint m_pauseMenuTexture;
 
+    GLuint m_characterSelectTexture;
+    GLuint m_character1;
+    GLuint m_character1_flip;
+    GLuint m_p1SelectKey;
+    GLuint m_p2SelectKey;
+
     // font elements
     std::map<char, Character> m_ftCharacters;
     GLuint m_font_VAO;
@@ -123,6 +129,16 @@ public:
     bool fontInit(const std::string &font_filename, unsigned int font_default_size);
     void renderText(std::string text, float x, float y, float scale, const glm::vec3 &color);
 
+    void renderSimpleButton(float x, float y, float width, float height, bool isSelected, bool isHovered = false, bool isPressed = false);
+
+    // for rendering player health box
+    void renderRedHealthRectangle(float x, float y, float width, float height);
+    void handleP1Health(int p1Health);
+    void handleP2Health(int p2Health);
+
+    void renderSelectorTriangleP1(float x, float y, float width, float height, bool p1);
+    void renderSelectorTriangleP2(float x, float y, float width, float height, bool p2);
+
 private:
     Game *game = nullptr;
 
@@ -134,6 +150,8 @@ private:
     Shader *m_hitboxShader = nullptr;
     Shader *m_fontShader = nullptr;
     Shader *m_buttonShader = nullptr;
+    Shader *m_simpleButtonShader = nullptr;
+    Shader *m_redRectangleShader = nullptr;
 
     // Round over screen animation properties
     float m_roundOverY = -600.0f;        // Starting Y position (off screen)
