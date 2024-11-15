@@ -6,6 +6,7 @@
 #include "stb_image/stb_image.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include "../window.hpp"
 #include "../world/world_system.hpp"
 #include "../world/world_init.hpp"
@@ -18,6 +19,7 @@ enum class GameState
     LOADING,
     PLAYING,
     HELP,
+    CHARACTER_SELECT,
     SETTINGS,
     ROUND_START,
     ROUND_OVER,
@@ -43,6 +45,12 @@ public:
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
     bool handleHelpInput(GLFWwindow *window);
+
+    bool handleCharacterInput(GLFWwindow *window);
+    void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
+    void handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
+                               bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2);
+    void renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game);
     void resetGame(GlRender &renderer, WorldSystem &worldSystem);
     void updateScores(const Health &h1, const Health &h2);
     int getPlayer1Score() const { return player1Score; }
@@ -75,8 +83,44 @@ private:
     Button pauseButton;
     Button resumeButton;
     Button menuButton;
+    Button generalButton;
+    Button controlsButton;
+    Button windowButton;
+    Button audioButton;
+    Button player1Button;
+    Button player2Button;
+    Button applyButton;
+    Button resetButton;
+    Button pauseSettingsButton;
+
+    Button windowButton1;
+    Button windowButton2;
+    Button windowButton3;
+    Button windowButton4;
+    Button windowButton5;
+
+    Button audioButton1;
+    Button audioButton2;
+    Button audioButton3;
+    Button audioButton4;
+
+    Button playerButton1;
+    Button playerButton2;
+    Button playerButton3;
+    Button playerButton4;
+    Button playerButton5;
+    Button playerButton6;
+    Button playerButton7;
 
     int player1Score = 0;
     int player2Score = 0;
     WorldSystem *worldSystem = nullptr;
+    bool isGeneralSelected = true;
+    bool isControlsSelected = false;
+    bool isWindowSelected = true;
+    bool isAudioSelected = false;
+    bool isPlayer1Selected = true;
+    bool isPlayer2Selected = false;
+
+    void cleanupButtons();
 };

@@ -48,6 +48,12 @@ void GlRender::initialize()
         m_buttonShader = new Shader("button");
         std::cout << "Button shader loaded" << std::endl;
 
+        m_simpleButtonShader = new Shader("simple_button");
+        std::cout << "Simple button shader loaded" << std::endl;
+
+        m_redRectangleShader = new Shader("red_rectangle");
+        std::cout << "Red rectangle shader loaded" << std::endl;
+
         std::cout << "All shaders initialized successfully\n"
                   << std::endl;
     }
@@ -495,6 +501,11 @@ void GlRender::loadTextures()
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
+    loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
+    loadTexture(textures_path("bird_idle_f1.png"), m_character1);
+    loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
+    loadTexture(textures_path("key_R.png"), m_p1SelectKey);
+    loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     FighterManager::loadBirdTextures(*this);
 }
 
@@ -581,14 +592,14 @@ void GlRender::renderUI(int timer)
     float rightAvatarY = leftAvatarY;
 
     // Draw scores P1
-    renderText("P1", (p1X - 20.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore1 = "SCORE: " + std::to_string(game->getPlayer1Score());
-    renderText(strScore1.c_str(), (p1X - 105.f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Draw scores P2
-    renderText("P2", (p2X - 15.f) * xscale, (scoreY - 65.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
-    renderText(strScore2.c_str(), (p2X + 30.0f) * xscale, (scoreY + 25.f) * yscale, 0.2f * xscale, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Disable depth testing for UI elements
     glDisable(GL_DEPTH_TEST);
@@ -628,17 +639,207 @@ void GlRender::renderUI(int timer)
         timerBgWidth, timerBgHeight,
         1.0f);
 
-    // render health values
-    renderText(std::to_string(p1Health), (p1X + 85.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
-    renderText(std::to_string(p2Health), (p2X - 135.f) * xscale, (scoreY - 28.f) * yscale, 0.3f * xscale, glm::vec3(0.4f, 0.f, 0.0f));
+    // draw health boxes according to player health
+    handleP1Health(p1Health);
+    handleP2Health(p2Health);
 
     // render timer
     float textWidth = std::to_string(timer).length() * 30.0f * xscale;
     float timerX = centerX - (textWidth / 2.0f);
-    renderText(std::to_string(timer), (timerX - 0.f) * xscale, (valueY + 17.5f) * yscale, 0.5f * xscale, glm::vec3(0.1f, 0.3f, 0.2f));
+
+    renderText(std::to_string(timer), (timerX - 0.f) + 30 * (xscale - 1), (valueY + 17.5f) - 35 * (xscale - 1), 0.5f, glm::vec3(0.1f, 0.3f, 0.2f));
 
     // Restore depth testing
     glEnable(GL_DEPTH_TEST);
+}
+
+void GlRender::handleP1Health(int p1Health)
+{ // render health values
+    float wx = 23.75f;
+    float off = 2.35f;
+    if (p1Health == 100)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 90)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 80)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 70)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 60)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 50)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 40)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 30)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 20)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 10)
+    {
+        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
+    }
+    else if (p1Health == 0)
+    {
+        return;
+    }
+}
+void GlRender::handleP2Health(int p2Health)
+{ // render health values
+    float wx = 23.75f;
+    float off = 2.35f;
+    if (p2Health == 100)
+    {
+        renderRedHealthRectangle(572.5f, 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 90)
+    {
+        renderRedHealthRectangle(575.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 80)
+    {
+        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 70)
+    {
+        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 60)
+    {
+        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 50)
+    {
+        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 40)
+    {
+        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 30)
+    {
+        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 20)
+    {
+        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 10)
+    {
+        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    }
+    else if (p2Health == 0)
+    {
+        return;
+    }
 }
 
 void GlRender::renderTexturedQuad(GLuint texture)
@@ -762,6 +963,11 @@ void GlRender::shutdown()
         m_timerBackgroundTexture,
         m_barTexture,
         m_avatarTexture,
+        m_characterSelectTexture,
+        m_character1,
+        m_character1_flip,
+        m_p1SelectKey,
+        m_p2SelectKey,
         m_font_VAO,
         m_font_VBO};
 
@@ -784,6 +990,11 @@ void GlRender::shutdown()
     m_avatarTexture = 0;
     m_font_VAO = 0;
     m_font_VBO = 0;
+    m_characterSelectTexture = 0;
+    m_character1 = 0;
+    m_character1_flip = 0;
+    m_p1SelectKey = 0;
+    m_p2SelectKey = 0;
 
     // Delete shaders
     delete m_debugShader;
@@ -792,6 +1003,9 @@ void GlRender::shutdown()
     delete m_floorShader;
     delete m_hitboxShader;
     delete m_fontShader;
+    delete m_buttonShader;
+    delete m_simpleButtonShader;
+    delete m_redRectangleShader;
 
     m_debugShader = nullptr;
     m_player1Shader = nullptr;
@@ -799,7 +1013,9 @@ void GlRender::shutdown()
     m_floorShader = nullptr;
     m_hitboxShader = nullptr;
     m_fontShader = nullptr;
+    m_simpleButtonShader = nullptr;
     m_buttonShader = nullptr;
+    m_redRectangleShader = nullptr;
     m_ftCharacters.clear();
 
     std::cout << "Resources cleaned up." << std::endl;
@@ -831,10 +1047,10 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     float yscale = (float)frame_height / windowHeight;
 
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
-    float ndcX = (2.0f * x / framew_width) - 1.0f;
-    float ndcY = 1.0f - (2.0f * y / frame_height);
-    float ndcWidth = 2.0f * width / framew_width;
-    float ndcHeight = -2.0f * height / frame_height;
+    float ndcX = (2.0f * x * xscale / framew_width) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y * yscale / frame_height);
+    float ndcWidth = 2.0f * width * xscale / framew_width;
+    float ndcHeight = -2.0f * height * yscale / frame_height;
 
     // Add a small offset when pressed
     if (pressed)
@@ -914,8 +1130,8 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     // Calculate text dimensions (approximate)
     float textWidth = static_cast<float>(strlen(text)) * 20.0f;
     float textHeight = 30.0f;
-    float textX = x + (width - textWidth) / 2.0f;
-    float textY = y + (height - textHeight) / 2.0f;
+    float textX = x + (width - textWidth) / 2.0f - 10 * (xscale - 1);
+    float textY = y + (height - textHeight) / 2.0f + 15 * (yscale - 1);
 
     if (pressed)
     {
@@ -955,6 +1171,13 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         finalX = textX * xscale - 15.f;
         finalY = textY * yscale + 27.5f;
     }
+    else if ((x == M_WINDOW_WIDTH_PX / 2.0f + 50.0f) && (y == M_WINDOW_HEIGHT_PX / 2.0f - 65.0f))
+    {
+        scale = 0.2f;
+        finalColor = glm::vec3(0.0f, 0.0f, 0.0f);
+        finalX = textX * xscale - 7.f;
+        finalY = textY * yscale + 27.5f;
+    }
     else
     {
         scale = 0.4f;
@@ -963,8 +1186,9 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
         finalY = textY * yscale + 27.5f;
     }
 
-    float finalScale = scale * xscale;
-    renderText(text, finalX, finalY, finalScale, finalColor);
+    float finalScale = scale;
+    // std::cout << "finalX: " << finalX << " finalY: " << finalY << " finalScale: " << finalScale << std::endl;
+    renderText(text, finalX / xscale, finalY / yscale, finalScale, finalColor);
 
     // Cleanup
     glDeleteVertexArrays(1, &VAO);
@@ -1330,9 +1554,17 @@ bool GlRender::fontInit(const std::string &font_filename, unsigned int font_defa
 
 void GlRender::renderText(std::string text, float x, float y, float scale, const glm::vec3 &color)
 {
-
     m_fontShader->use();
     gl_has_errors();
+
+    // Save current blend state
+    GLint blendSrc, blendDst;
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
+    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
+
+    // Enable blending for text
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Create orthographic projection matrix
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(M_WINDOW_WIDTH_PX),
@@ -1368,14 +1600,6 @@ void GlRender::renderText(std::string text, float x, float y, float scale, const
     // Enable vertex attrib array for position+texture coords
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    gl_has_errors();
-
-    // Enable blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Bind texture unit
-    glActiveTexture(GL_TEXTURE0);
     gl_has_errors();
 
     float x_pos = x;
@@ -1422,4 +1646,240 @@ void GlRender::renderText(std::string text, float x, float y, float scale, const
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
     gl_has_errors();
+
+    // Restore previous blend state
+    glBlendFunc(blendSrc, blendDst);
+}
+
+void GlRender::renderSimpleButton(float x, float y, float width, float height, bool isSelected, bool isHovered, bool isPressed)
+{
+    // Convert screen coordinates to normalized device coordinates (-1 to 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    float vertices[] = {
+        ndcX, ndcY, 0.0f,                        // top left
+        ndcX + ndcWidth, ndcY, 0.0f,             // top right
+        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f, // bottom right
+        ndcX, ndcY + ndcHeight, 0.0f             // bottom left
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // first triangle
+        2, 3, 0  // second triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    m_simpleButtonShader->use();
+    m_simpleButtonShader->setBool("isSelected", isSelected);
+    m_simpleButtonShader->setBool("isHovered", isHovered);
+    m_simpleButtonShader->setBool("isPressed", isPressed);
+
+    // Enable blending for transparency
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void GlRender::renderRedHealthRectangle(float x, float y, float width, float height)
+{
+    // Convert screen coordinates (0, 1280) and (0, 720) to NDC (-1, 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    glUseProgram(m_redRectangleShader->m_shaderProgram);
+
+    // Set uniform values
+    GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
+    glUniform3f(fillColorLoc, 0.4f, 0.0f, 0.0f); // Red fill
+
+    // Define vertices for the rectangle
+    float vertices[] = {
+        ndcX, ndcY + ndcHeight, 0.0f,           // Top-left
+        ndcX, ndcY, 0.0f,                       // Bottom-left
+        ndcX + ndcWidth, ndcY, 0.0f,            // Bottom-right
+        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f // Top-right
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+        2, 3, 0  // Second triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw the rectangle
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void GlRender::renderSelectorTriangleP1(float x, float y, float width, float height, bool p1)
+{
+    // Convert screen coordinates (0, 1280) and (0, 720) to NDC (-1, 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    glUseProgram(m_redRectangleShader->m_shaderProgram);
+
+    // Set uniform values
+    GLint borderColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderColor");
+    GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
+    GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
+
+    glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
+    if (p1)
+    {
+        glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+    }
+    else
+    {
+        glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+    }
+
+    // Set border thickness as a fraction of the width
+
+    float borderThickness = 0.05f; // 5% of the rectangle's width
+    glUniform1f(borderThicknessLoc, borderThickness);
+
+    // Define vertices for the rectangle
+    float vertices[] = {
+        ndcX, ndcY, 0.0f,                            // Left-bottom (tip of the triangle)
+        ndcX + ndcWidth, ndcY + ndcHeight / 2, 0.0f, // Right-middle (base of the triangle)
+        ndcX, ndcY + ndcHeight, 0.0f                 // Left-top (tip of the triangle)
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw the rectangle
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void GlRender::renderSelectorTriangleP2(float x, float y, float width, float height, bool p2)
+{
+    // Convert screen coordinates (0, 1280) and (0, 720) to NDC (-1, 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    glUseProgram(m_redRectangleShader->m_shaderProgram);
+
+    // Set uniform values
+    GLint borderColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderColor");
+    GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
+    GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
+
+    glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
+    if (p2)
+    {
+        glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+    }
+    else
+    {
+        glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+    }
+
+    float borderThickness = 0.05f; // 5% of the rectangle's width
+    glUniform1f(borderThicknessLoc, borderThickness);
+
+    // Define vertices for the rectangle
+    float vertices[] = {
+        ndcX, ndcY + ndcHeight / 2, 0.0f,       // Left (base of the triangle)
+        ndcX + ndcWidth, ndcY, 0.0f,            // Right-bottom (tip of the triangle)
+        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f // Right-top (tip of the triangle)
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw the rectangle
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }
