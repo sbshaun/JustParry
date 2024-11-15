@@ -57,24 +57,24 @@ public:
     }
 };
 
-class JumpCommand : public Command
-{
-public:
-    void execute(Entity entity, StateMachine &state_machine) override
-    {
-        if (!state_machine.transition(entity, PlayerState::JUMPING))
-            return;
-
-        Motion &motion = registry.motions.get(entity);
-        if (motion.inAir)
-            return;
-
-        Player &player = registry.players.get(entity);
-        std::cout << "Player " << player.id << " jumped!" << std::endl;
-        motion.inAir = true;
-        motion.velocity.y = JUMP_VELOCITY;
-    }
-};
+//class JumpCommand : public Command
+//{
+//public:
+//    void execute(Entity entity, StateMachine &state_machine) override
+//    {
+//        if (!state_machine.transition(entity, PlayerState::JUMPING))
+//            return;
+//
+//        Motion &motion = registry.motions.get(entity);
+//        if (motion.inAir)
+//            return;
+//
+//        Player &player = registry.players.get(entity);
+//        std::cout << "Player " << player.id << " jumped!" << std::endl;
+//        motion.inAir = true;
+//        motion.velocity.y = JUMP_VELOCITY;
+//    }
+//};
 
 class CrouchCommand : public Command
 {

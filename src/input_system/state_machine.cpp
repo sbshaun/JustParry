@@ -94,34 +94,34 @@ bool WalkingState::canTransitionTo(Entity entity, PlayerState newState)
     return newState != PlayerState::WALKING;
 }
 
-void JumpingState::enter(Entity entity, StateMachine &stateMachine)
-{
-    // Set initial jump velocity
-    Fighters fighter = registry.players.get(entity).current_char;
-    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
-    Animation& animation = registry.animations.get(entity);
-    animation.currentFrame = 0;
-    animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
-}
+//void JumpingState::enter(Entity entity, StateMachine &stateMachine)
+//{
+//    // Set initial jump velocity
+//    Fighters fighter = registry.players.get(entity).current_char;
+//    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+//    Animation& animation = registry.animations.get(entity);
+//    animation.currentFrame = 0;
+//    animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
+//}
 
-void JumpingState::exit(Entity entity, StateMachine &stateMachine)
-{
-}
-
-void JumpingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
-{
-    // add gravity, check for landing collision
-    Motion &motion = registry.motions.get(entity);
-    if (!motion.inAir)
-    {
-        stateMachine.transition(entity, PlayerState::IDLE);
-    }
-}
-
-bool JumpingState::canTransitionTo(Entity entity, PlayerState newState)
-{
-    return newState != PlayerState::JUMPING;
-}
+//void JumpingState::exit(Entity entity, StateMachine &stateMachine)
+//{
+//}
+//
+//void JumpingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
+//{
+//    // add gravity, check for landing collision
+//    Motion &motion = registry.motions.get(entity);
+//    if (!motion.inAir)
+//    {
+//        stateMachine.transition(entity, PlayerState::IDLE);
+//    }
+//}
+//
+//bool JumpingState::canTransitionTo(Entity entity, PlayerState newState)
+//{
+//    return newState != PlayerState::JUMPING;
+//}
 
 void AttackingState::enter(Entity entity, StateMachine &stateMachine)
 {

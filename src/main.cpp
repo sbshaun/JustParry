@@ -22,7 +22,7 @@ int timer = timer_length;
 static bool roundEnded = false;
 auto last_time = std::chrono::high_resolution_clock::now();
 
-int generateUI(GlRender &renderer)
+int generateUI(GlRender& renderer)
 {
     auto current_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = current_time - last_time;
@@ -42,12 +42,12 @@ int generateUI(GlRender &renderer)
     return 0;
 }
 
-void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
+void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSystem, Game& game, bool& botEnabled)
 {
-    Health &h1 = registry.healths.get(renderer.m_player1);
-    Health &h2 = registry.healths.get(renderer.m_player2);
-    PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
-    PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
+    Health& h1 = registry.healths.get(renderer.m_player1);
+    Health& h2 = registry.healths.get(renderer.m_player2);
+    PlayerInput& p1 = registry.playerInputs.get(renderer.m_player1);
+    PlayerInput& p2 = registry.playerInputs.get(renderer.m_player2);
 
     // Check if round is over due to health or timer
     if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || generateUI(renderer) == 1)
@@ -147,7 +147,7 @@ int main()
     while (!glWindow.shouldClose())
     {
         // start a timer for each loop
-        auto start = std::chrono::steady_clock ::now();
+        auto start = std::chrono::steady_clock::now();
 
         switch (game.getState())
         {
@@ -229,24 +229,24 @@ int main()
                 loopsSinceLastFrame = 0;
                 interp_moveEntitesToScreen(renderer);
                 handleUtilityInputs(renderer, showFPS, botEnabled,
-                                    fKeyPressed, bKeyPressed, hKeyPressed,
-                                    glWindow, fpsCounter, shouldExit,
-                                    worldSystem);
+                    fKeyPressed, bKeyPressed, hKeyPressed,
+                    glWindow, fpsCounter, shouldExit,
+                    worldSystem);
                 // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 glWindow.windowSwapBuffers();
             }
 
             loopsSinceLastFrame++;
 
-            physicsSystem.step();
-            worldSystem.hitBoxCollisions();
-            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
-            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-
             // Update center for playable area
-            worldSystem.updatePlayableArea();
-
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.playerCollisions(&renderer);
+
+            worldSystem.hitBoxCollisions();
+            worldSystem.updatePlayableArea();
+            physicsSystem.step();
+
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             renderer.render();
             renderer.renderUI(timer);
@@ -257,7 +257,7 @@ int main()
             // worldSystem.handleInput(); // this sets player inputs #2
 
             // time the next logic check
-            auto end = std::chrono::steady_clock ::now();
+            auto end = std::chrono::steady_clock::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
 
             // Calculate the remaining time to sleep

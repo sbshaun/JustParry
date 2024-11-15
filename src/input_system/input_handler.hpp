@@ -20,7 +20,7 @@ public:
     {
         bindActionToCommand(Action::MOVE_LEFT, std::make_unique<MoveLeftCommand>());
         bindActionToCommand(Action::MOVE_RIGHT, std::make_unique<MoveRightCommand>());
-        bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
+        //bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
         bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
         bindActionToCommand(Action::PUNCH, std::make_unique<PunchCommand>());
         bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());

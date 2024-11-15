@@ -20,20 +20,20 @@ BotState pickNextAction(float distance)
     else
     {
         int rng = rand() % 100;
-        if (rng < 40)
-        { // 40% chance to attack when in range (reduced from 60%)
+        if (rng < 50)
+        { // 50% chance to attack when in range (reduced from 60%)
             return BotState::ATTACK;
         }
-        else if (rng < 60)
+        else if (rng < 70)
         { // 20% chance to adjust position
             return (distance > IDEAL_ATTACK_DISTANCE) ? BotState::CHASE : BotState::RETREAT;
         }
-        else if (rng < 75)
-        { // 15% chance to jump
-            return BotState::JUMP;
-        }
+        //else if (rng < 75)
+        //{ // 15% chance to jump
+        //    return BotState::JUMP;
+        //}
         else
-        { // 25% chance to pause (increased from 10%)
+        { // 30% chance to pause (increased from 10%)
             return BotState::IDLE;
         }
     }
@@ -137,18 +137,18 @@ void Bot::pollBotRng(GlRender &renderer)
         }
         break;
 
-    case BotState::JUMP:
-        if (!player2Motion.inAir)
-        {
-            player2Input.up = true;
-            // Attack during jump if in range (reduced frequency)
-            if (distance <= IDEAL_ATTACK_DISTANCE && rand() % 3 == 0)
-            {
-                player2Input.punch = (rand() % 2 == 0);
-                player2Input.kick = !player2Input.punch;
-            }
-        }
-        break;
+    //case BotState::JUMP:
+    //    if (!player2Motion.inAir)
+    //    {
+    //        player2Input.up = true;
+    //        // Attack during jump if in range (reduced frequency)
+    //        if (distance <= IDEAL_ATTACK_DISTANCE && rand() % 3 == 0)
+    //        {
+    //            player2Input.punch = (rand() % 2 == 0);
+    //            player2Input.kick = !player2Input.punch;
+    //        }
+    //    }
+    //    break;
 
     case BotState::IDLE:
         // Longer idle periods
@@ -157,8 +157,9 @@ void Bot::pollBotRng(GlRender &renderer)
 
     // Emergency chase if player gets too far away (reduced urgency)
     if (distance > TOO_FAR_DISTANCE * 1.8f && // Increased from 1.5f
-        state.currentState != PlayerState::ATTACKING &&
-        state.currentState != PlayerState::JUMPING)
+        state.currentState != PlayerState::ATTACKING 
+        //&& state.currentState != PlayerState::JUMPING
+    )
     {
         player2Input.left = moveLeft;
         player2Input.right = !moveLeft;
