@@ -1,5 +1,4 @@
 #include "shader.hpp"
-#include <fstream>
 
 std::string Shader::readShaderFile(const std::string &filePath)
 {
@@ -103,8 +102,13 @@ void Shader::setVec3(const std::string &name, const glm::vec3 &value)
 
 Shader::~Shader()
 {
-    glDeleteProgram(m_shaderProgram);
-    std::cout << "Shader program deleted." << std::endl;
+    // Delete the shader program to free up memory
+    if (m_shaderProgram != 0)
+    {
+        glDeleteProgram(m_shaderProgram);
+        m_shaderProgram = 0; // Reset program ID to 0 to avoid dangling reference
+        std::cout << "Deleted shader." << std::endl;
+    }
 }
 
 void Shader::checkCompileErrors(unsigned int shader, const std::string &type)

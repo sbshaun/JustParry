@@ -12,10 +12,7 @@
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED 
-        && state != PlayerState::RECOVERING && state != PlayerState::PARRYING 
-        && state != PlayerState::PERFECT_PARRYING 
-        && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
@@ -42,10 +39,38 @@ WorldSystem::~WorldSystem()
     {
         cleanupShaders(renderer->m_player1);
         cleanupShaders(renderer->m_player2);
+        this->renderer = nullptr;
     }
+
+    if (player1Motion)
+    {
+        this->player1Motion = nullptr;
+    }
+    if (player2Motion)
+    {
+        this->player2Motion = nullptr;
+    }
+
+    if (player1CollisionBox)
+    {
+        this->player1CollisionBox = nullptr;
+    }
+
+    if (player2CollisionBox)
+    {
+        this->player2CollisionBox = nullptr;
+    }
+
+    // Clear the input handlers and state machines
+    player1InputHandler.reset(); // std::unique_ptr automatically frees memory, but it's good practice to reset
+    player2InputHandler.reset();
+    player1StateMachine.reset();
+    player2StateMachine.reset();
 
     // Clear all components
     registry.clear_all_components();
+
+    std::cout << "WorldSystem cleaned up." << std::endl;
 }
 
 void WorldSystem::init(GlRender *renderer)
@@ -66,14 +91,24 @@ void WorldSystem::init(GlRender *renderer)
     Entity boundaryFloor = createFloor(FLOOR_Y, FLOOR);
 
     // TODO: Figure out height dimensions correctly, floor_y value appears to shrink playable height too much
-    Entity playableArea = createPlayableArea({ 0, 0.125}, M_WINDOW_WIDTH_PX * 0.9f, M_WINDOW_HEIGHT_PX * 0.875);
+    Entity playableArea = createPlayableArea({0, 0.125}, M_WINDOW_WIDTH_PX * 0.9f, M_WINDOW_HEIGHT_PX * 0.875);
     renderer->m_playableArea = playableArea;
 
     // 1. init input handlers and state machines
     initInputHandlers();
     initStateMachines();
-}
 
+    Motion &p1 = registry.motions.get(renderer->m_player1);
+    Motion &p2 = registry.motions.get(renderer->m_player2);
+    this->player1Motion = &p1;
+    this->player2Motion = &p2;
+
+    CollisionBox &p1CollisionBox = registry.collisionBoxes.get(renderer->m_player1);
+    CollisionBox &p2CollisionBox = registry.collisionBoxes.get(renderer->m_player2);
+    this->player1CollisionBox = &p1CollisionBox;
+    this->player2CollisionBox = &p2CollisionBox;
+    ;
+}
 void WorldSystem::initInputHandlers()
 {
     // Player 1 controls
@@ -151,20 +186,18 @@ void WorldSystem::handleInput()
             player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
 
         // Update motion based on inputs
-        Motion &p2Motion = registry.motions.get(renderer->m_player2);
         if (p2Input.left)
-            p2Motion.velocity.x = -MOVE_SPEED;
+            player2Motion->velocity.x = -MOVE_SPEED;
         else if (p2Input.right)
-            p2Motion.velocity.x = MOVE_SPEED;
+            player2Motion->velocity.x = MOVE_SPEED;
         else
-            p2Motion.velocity.x = 0;
+            player2Motion->velocity.x = 0;
     }
 }
 
 void WorldSystem::inputProcessing()
 {
     // check input queue and resolve
-
     PlayerInput &player1Input = registry.playerInputs.get(renderer->m_player1);
     PlayerInput &player2Input = registry.playerInputs.get(renderer->m_player2);
 
@@ -184,60 +217,59 @@ void WorldSystem::inputProcessing()
 
 void WorldSystem::movementProcessing()
 {
-    Motion& player1Motion = registry.motions.get(renderer->m_player1);
-    Motion& player2Motion = registry.motions.get(renderer->m_player2);
+    player1Motion->lastPos = player1Motion->position;
+    player2Motion->lastPos = player2Motion->position;
 
-    player1Motion.lastPos = player1Motion.position;
-    player2Motion.lastPos = player2Motion.position;
-
-    PlayerCurrentState& player1State = registry.playerCurrentStates.get(renderer->m_player1);
-    PlayerCurrentState& player2State = registry.playerCurrentStates.get(renderer->m_player2);
+    PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
+    PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
 
     bool p1HasKnockback = registry.knockbacks.has(renderer->m_player1) &&
-        registry.knockbacks.get(renderer->m_player1).active;
+                          registry.knockbacks.get(renderer->m_player1).active;
 
     bool p2HasKnockback = registry.knockbacks.has(renderer->m_player2) &&
-        registry.knockbacks.get(renderer->m_player2).active;
+                          registry.knockbacks.get(renderer->m_player2).active;
 
-    if (p1HasKnockback) {
-        player1Motion.position += player1Motion.velocity;
+    if (p1HasKnockback)
+    {
+        player1Motion->position += player1Motion->velocity;
     }
 
-    if (p2HasKnockback) {
-        player2Motion.position += player2Motion.velocity;
-    }   
+    if (p2HasKnockback)
+    {
+        player2Motion->position += player2Motion->velocity;
+    }
 
     if (canMove(player1State.currentState))
     {
         // player can only move if not in these non-moveable states.
-        player1Motion.position += player1Motion.velocity;
+        player1Motion->position += player1Motion->velocity;
     }
     else
     {
-        player1Motion.position.y += player1Motion.velocity.y;
+        player1Motion->position.y += player1Motion->velocity.y;
         // std::cout << "Player 1 cannot move, current state: " << PlayerStateToString(player1State.currentState) << std::endl;
     }
 
     if (canMove(player2State.currentState))
     {
         // player can only move if not in these non-moveable states.
-        player2Motion.position += player2Motion.velocity;
+        player2Motion->position += player2Motion->velocity;
     }
     else
     {
-        player2Motion.position.y += player2Motion.velocity.y;
+        player2Motion->position.y += player2Motion->velocity.y;
         // std::cout << "Player 2 cannot move, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
     }
 
-    if (player1Motion.position.x > player2Motion.position.x)
+    if (player1Motion->position.x > player2Motion->position.x)
     {
-        player1Motion.direction = false; // Player 1 now facing left
-        player2Motion.direction = true;  // Player 2 now facing right
+        player1Motion->direction = false; // Player 1 now facing left
+        player2Motion->direction = true;  // Player 2 now facing right
     }
-    else if (player1Motion.position.x < player2Motion.position.x)
+    else if (player1Motion->position.x < player2Motion->position.x)
     {
-        player1Motion.direction = true;  // Player 1 now facing right
-        player2Motion.direction = false; // Player 2 now facing left
+        player1Motion->direction = true;  // Player 1 now facing right
+        player2Motion->direction = false; // Player 2 now facing left
     }
 }
 
@@ -261,30 +293,34 @@ mat3 createProjectionMatrix()
     float sy = 2.f / (top - bottom);
     float tx = -(right + left) / (right - left);
     float ty = -(top + bottom) / (top - bottom);
-    return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
+    return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
-bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, float hitBoxTop, 
-    float hitBoxBottom, ObjectMesh* mesh, Motion& hurtMotion) {
+bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, float hitBoxTop,
+                                           float hitBoxBottom, ObjectMesh *mesh, Motion &hurtMotion)
+{
 
     std::vector<vec3> originalPositions;
-    for (const ColoredVertex& vertex : mesh->vertices) {
+    for (const ColoredVertex &vertex : mesh->vertices)
+    {
         originalPositions.push_back(vertex.position);
     }
 
     mat3 projection = createProjectionMatrix();
-    
+
     Transform transform;
     transform.rotate(hurtMotion.angle);
-    if (hurtMotion.direction) {
-        transform.translate({ hurtMotion.position.x - 0.086637, hurtMotion.position.y });
+    if (hurtMotion.direction)
+    {
+        transform.translate({hurtMotion.position.x - 0.086637, hurtMotion.position.y});
         transform.rotate(hurtMotion.angle);
-        transform.scale(vec2{ 1, 1 });
+        transform.scale(vec2{1, 1});
     }
-    else {
-        transform.translate({ hurtMotion.position.x + 0.086637, hurtMotion.position.y });
+    else
+    {
+        transform.translate({hurtMotion.position.x + 0.086637, hurtMotion.position.y});
         transform.rotate(hurtMotion.angle);
-        transform.scale(vec2{ -1, 1 });
+        transform.scale(vec2{-1, 1});
     }
 
     vec3 transformedVertexFirst = projection * transform.mat * vec3(originalPositions[0].x, originalPositions[0].y, 1.0);
@@ -300,7 +336,8 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
     float farthestLeft = transformedVertexFirst.x;
     float farthestRight = transformedVertexFirst.x;
 
-    for (const vec3& originalPos : originalPositions) {
+    for (const vec3 &originalPos : originalPositions)
+    {
         vec3 transformedVertex = transform.mat * vec3(originalPos.x, originalPos.y, 1.0);
 
         // std::cout << "transformed vertex" << transformedVertex.x << transformedVertex.y << std::endl;
@@ -309,32 +346,36 @@ bool WorldSystem::checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, 
         bool leftCheck = transformedVertex.x > hitBoxLeft;
         bool topCheck = transformedVertex.y < hitBoxTop;
         bool bottomCheck = transformedVertex.y > hitBoxBottom;
-        
+
         // std::cout << rightCheck << leftCheck << topCheck << bottomCheck << std::endl;
 
-        if (transformedVertex.y > farthestUp) {
+        if (transformedVertex.y > farthestUp)
+        {
             farthestUp = transformedVertex.y;
         }
-        if (transformedVertex.y < farthestBot) {
+        if (transformedVertex.y < farthestBot)
+        {
             farthestBot = transformedVertex.y;
         }
-        if (transformedVertex.x < farthestLeft) {
+        if (transformedVertex.x < farthestLeft)
+        {
             farthestLeft = transformedVertex.x;
         }
-        if (transformedVertex.x > farthestRight) {
+        if (transformedVertex.x > farthestRight)
+        {
             farthestRight = transformedVertex.x;
         }
 
-
-		if (rightCheck && leftCheck && topCheck && bottomCheck) {
+        if (rightCheck && leftCheck && topCheck && bottomCheck)
+        {
             return true;
-		}
+        }
     }
 
-    //std::cout << "Mesh Left:" << farthestLeft << " Mesh Right:" << farthestRight << std::endl;
-    //std::cout << "Mesh Top:" << farthestUp << " Mesh Bot:" << farthestBot << std::endl;
-    //std::cout << "Middle: " << (farthestLeft + farthestRight) / 2 << "," << (farthestUp + farthestBot) / 2 << "," << std::endl;
-    //std::cout << "Middle: " << hurtMotion.position.x << "," << hurtMotion.position.y << std::endl;
+    // std::cout << "Mesh Left:" << farthestLeft << " Mesh Right:" << farthestRight << std::endl;
+    // std::cout << "Mesh Top:" << farthestUp << " Mesh Bot:" << farthestBot << std::endl;
+    // std::cout << "Middle: " << (farthestLeft + farthestRight) / 2 << "," << (farthestUp + farthestBot) / 2 << "," << std::endl;
+    // std::cout << "Middle: " << hurtMotion.position.x << "," << hurtMotion.position.y << std::endl;
 
     // temporary return
     return false;
@@ -364,16 +405,19 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
     bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
 
-    // check if the other player's parry box is active 
+    // check if the other player's parry box is active
     ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
-    
-    // if hitbox collides with parry box, the attack is parried 
-    if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox)) {
-        // parried the attack, transition the attacking player to stunned state using state machine 
-        if (playerWithHitBox == renderer->m_player1) {
+
+    // if hitbox collides with parry box, the attack is parried
+    if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox))
+    {
+        // parried the attack, transition the attacking player to stunned state using state machine
+        if (playerWithHitBox == renderer->m_player1)
+        {
             player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
         }
-        else {
+        else
+        {
             player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
         }
         return false;
@@ -384,13 +428,13 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // std::cout << "AABB Collision Detected" << std::endl;
         // Hitbox collided with the hurtbox of the other player
         // Check if the hitbox has collided with the mesh of the other player
-        ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
-        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
-            otherPlayerMeshPtr, hurtPlayerMotion)) 
+        ObjectMesh *otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
+        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
+                                     otherPlayerMeshPtr, hurtPlayerMotion))
         {
             // std::cout << "Mesh Collision Detected" << std::endl;
-            Player& attacker = registry.players.get(playerWithHitBox);
-            Player& defender = registry.players.get(playerWithHurtBox);
+            Player &attacker = registry.players.get(playerWithHitBox);
+            Player &defender = registry.players.get(playerWithHurtBox);
 
             auto otherPlayerVertices = otherPlayerMeshPtr->vertices;
             // std::cout << "Player " << attacker.id << " hits Player " << defender.id << std::endl;
@@ -403,17 +447,20 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     return false;
 }
 
-// check if parry box is active and if hitbox collides with it 
-bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox) {
+// check if parry box is active and if hitbox collides with it
+bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox)
+{
     ParryBox &parryBox = registry.parryBoxes.get(playerWithParryBox);
-    if (!parryBox.active) return false; 
-    
+    if (!parryBox.active)
+        return false;
+
     Motion &hitPlayerMotion = registry.motions.get(playerWithHitBox);
     Motion &parryPlayerMotion = registry.motions.get(playerWithParryBox);
     HitBox &hitBox = registry.hitBoxes.get(playerWithHitBox);
 
     // if hitbox is not active or has already hit, skip check
-    if (!hitBox.active || hitBox.hit) return false;
+    if (!hitBox.active || hitBox.hit)
+        return false;
 
     float hitBoxLeft = hitBox.getLeft(hitPlayerMotion.position, hitPlayerMotion.direction);
     float hitBoxRight = hitBox.getRight(hitPlayerMotion.position, hitPlayerMotion.direction);
@@ -423,7 +470,7 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
     float parryBoxLeft = parryBox.getLeft(parryPlayerMotion.position, parryPlayerMotion.direction);
     float parryBoxRight = parryBox.getRight(parryPlayerMotion.position, parryPlayerMotion.direction);
     float parryBoxTop = parryBox.getTop(parryPlayerMotion.position, parryPlayerMotion.direction);
-    float parryBoxBottom = parryBox.getBottom(parryPlayerMotion.position, parryPlayerMotion.direction);    
+    float parryBoxBottom = parryBox.getBottom(parryPlayerMotion.position, parryPlayerMotion.direction);
 
     bool x_collision = hitBoxLeft < parryBoxRight && hitBoxRight > parryBoxLeft;
     bool y_collision = hitBoxTop > parryBoxBottom && hitBoxBottom < parryBoxTop;
@@ -433,11 +480,11 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
         // std::cout << "AABB Collision Detected" << std::endl;
         // Hitbox collided with the hurtbox of the other player
         // Check if the hitbox has collided with the mesh of the other player
-        ObjectMesh* otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithParryBox);
-        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom, 
-            otherPlayerMeshPtr, parryPlayerMotion)) 
+        ObjectMesh *otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithParryBox);
+        if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
+                                     otherPlayerMeshPtr, parryPlayerMotion))
         {
-            // if parried successfully, reset state timer to 0 
+            // if parried successfully, reset state timer to 0
             StateTimer &playerStateTimer = registry.stateTimers.get(playerWithParryBox);
             playerStateTimer.reset(0);
             return true;
@@ -449,9 +496,9 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
 }
 
 // helper function for AABB Collision
-void WorldSystem::checkAABBCollision(bool& xCollision, bool& yCollision,
-    const Box& box1, Motion& motion1,
-    const Box& box2, Motion& motion2)
+void WorldSystem::checkAABBCollision(bool &xCollision, bool &yCollision,
+                                     const Box &box1, Motion &motion1,
+                                     const Box &box2, Motion &motion2)
 {
     vec2 position1 = motion1.position;
     bool facingRight1 = motion1.direction;
@@ -474,20 +521,23 @@ void WorldSystem::checkAABBCollision(bool& xCollision, bool& yCollision,
 
     xCollision = x_collision;
     yCollision = y_collision;
-    
+
     // keep track of whether the collision happened from above or the side
     motion1.wasAbove = motion1.above;
     motion2.wasAbove = motion2.above;
 
-    if (x_collision && box1Bottom > box2Top) {
+    if (x_collision && box1Bottom > box2Top)
+    {
         motion1.above = true;
         motion2.above = false;
     }
-    else if (x_collision && box2Bottom > box1Top) {
+    else if (x_collision && box2Bottom > box1Top)
+    {
         motion2.above = true;
         motion1.above = false;
     }
-    else if (box1Bottom < box2Top && box2Bottom < box1Top) {
+    else if (box1Bottom < box2Top && box2Bottom < box1Top)
+    {
         motion1.above = false;
         motion2.above = false;
     }
@@ -508,51 +558,48 @@ void WorldSystem::hitBoxCollisions()
     // check if player 1 hit player 2
     if (checkHitBoxCollisions(player1, player2))
     {
-        Fighters fighter1 = registry.players.get(player1).current_char;
-        const FighterConfig &config = FighterManager::getFighterConfig(fighter1);
+        // Fighters fighter1 = registry.players.get(player1).current_char;
+        const FighterConfig &config = FighterManager::getFighterConfig(current_char1);
 
-        // Player that is attacking
-        Motion& attacker_motion = registry.motions.get(player1);
         // Player that got hit
-		Motion& victim_motion = registry.motions.get(player2);
+        // Motion &victim_motion = registry.motions.get(player2);
 
         applyDamage(player2, config.PUNCH_DAMAGE);
 
-        KnockBack& knockback = registry.knockbacks.get(player2);
+        KnockBack &knockback = registry.knockbacks.get(player2);
         knockback.active = true;
         knockback.duration = config.KNOCKBACK_DURATION;
 
-        float direction = attacker_motion.direction ? 1.0f : -1.0f;
+        // Player that is attacking
+        float direction = player1Motion->direction ? 1.0f : -1.0f;
         knockback.force = {
             direction * config.KNOCKBACK_FORCE_X,
-            config.KNOCKBACK_FORCE_Y
-        };
+            config.KNOCKBACK_FORCE_Y};
 
-        player2StateMachine->transition(player2, PlayerState::STUNNED); 
+        player2StateMachine->transition(player2, PlayerState::STUNNED);
     }
 
     // check if player 2 hit player 1
     if (checkHitBoxCollisions(player2, player1))
     {
-        Fighters fighter2 = registry.players.get(player2).current_char;
-        const FighterConfig& config = FighterManager::getFighterConfig(fighter2);
+        // Fighters fighter2 = registry.players.get(player2).current_char;
+        const FighterConfig &config = FighterManager::getFighterConfig(current_char2);
 
-        // Player that is attacking
-        Motion& attacker_motion = registry.motions.get(player2);
         // Player that got hit
-        Motion& victim_motion = registry.motions.get(player1);
+        // Motion &victim_motion = registry.motions.get(player1);
 
         applyDamage(player1, config.PUNCH_DAMAGE);
 
-        KnockBack& knockback = registry.knockbacks.get(player1);
+        KnockBack &knockback = registry.knockbacks.get(player1);
         knockback.active = true;
         knockback.duration = config.KNOCKBACK_DURATION;
 
-        float direction = attacker_motion.direction ? 1.0f : -1.0f;
+        // Player that is attacking
+        // Motion &attacker_motion = registry.motions.get(player2);
+        float direction = player2Motion->direction ? 1.0f : -1.0f;
         knockback.force = {
             direction * config.KNOCKBACK_FORCE_X,
-            config.KNOCKBACK_FORCE_Y
-        };
+            config.KNOCKBACK_FORCE_Y};
 
         player1StateMachine->transition(player1, PlayerState::STUNNED);
     }
@@ -560,54 +607,61 @@ void WorldSystem::hitBoxCollisions()
 
 void WorldSystem::playerCollisions(GlRender *renderer)
 {
-    Motion &player1Motion = registry.motions.get(renderer->m_player1);
-    Motion &player2Motion = registry.motions.get(renderer->m_player2);
-
-    CollisionBox &player1CollisionBox = registry.collisionBoxes.get(renderer->m_player1);
-    CollisionBox &player2CollisionBox = registry.collisionBoxes.get(renderer->m_player2);
-
     bool xCollision;
     bool yCollision;
 
     checkAABBCollision(xCollision, yCollision,
-                       player1CollisionBox, player1Motion,
-                       player2CollisionBox, player2Motion);
+                       *player1CollisionBox, *player1Motion,
+                       *player2CollisionBox, *player2Motion);
 
     if (xCollision && yCollision)
     {
         // Neither player is on top of another
-        if (!player1Motion.wasAbove && !player2Motion.wasAbove) {
-            player1Motion.position.x = player1Motion.position.x - player1Motion.velocity.x;
-            player2Motion.position.x = player2Motion.position.x - player2Motion.velocity.x;
-            player1Motion.velocity.x = 0;
-            player2Motion.velocity.x = 0;
-           
+        if (!player1Motion->wasAbove && !player2Motion->wasAbove)
+        {
+            player1Motion->position.x = player1Motion->position.x - player1Motion->velocity.x;
+            player2Motion->position.x = player2Motion->position.x - player2Motion->velocity.x;
+            player1Motion->velocity.x = 0;
+            player2Motion->velocity.x = 0;
         }
         // Player one is on top
-        else if (player1Motion.wasAbove) {
-            if (player1Motion.direction) {
-                player1Motion.position = { player1Motion.lastPos.x - MOVE_SPEED, player1Motion.lastPos.y };
+        else if (player1Motion->wasAbove)
+        {
+            if (player1Motion->direction)
+            {
+                player1Motion->position = {player1Motion->lastPos.x - MOVE_SPEED, player1Motion->lastPos.y};
             }
-            else {
-                player1Motion.position = { player1Motion.lastPos.x + MOVE_SPEED, player1Motion.lastPos.y };
+            else
+            {
+                player1Motion->position = {player1Motion->lastPos.x + MOVE_SPEED, player1Motion->lastPos.y};
             }
-            player1Motion.above = true;
-            player1Motion.velocity.x = 0;
-            player2Motion.velocity.x = 0;
-            player2Motion.velocity.y = player1Motion.velocity.y - GRAVITY;
+            player1Motion->above = true;
+            player1Motion->velocity.x = 0;
+            player2Motion->velocity.x = 0;
+            player2Motion->velocity.y = player1Motion->velocity.y - GRAVITY;
         }
         // Player two is on top
-        else if (player2Motion.wasAbove) {
-            if (player2Motion.direction) {
-                player2Motion.position = { player2Motion.lastPos.x - MOVE_SPEED, player2Motion.lastPos.y };
+        else if (player2Motion->wasAbove)
+        {
+            if (player2Motion->direction)
+            {
+                player2Motion->position = {player2Motion->lastPos.x - MOVE_SPEED, player2Motion->lastPos.y};
             }
-            else {
-                player2Motion.position = { player2Motion.lastPos.x + MOVE_SPEED, player2Motion.lastPos.y };
+            else
+            {
+                player2Motion->position = {player2Motion->lastPos.x + MOVE_SPEED, player2Motion->lastPos.y};
             }
-            player1Motion.velocity.x = 0;
-            player1Motion.velocity.y = player2Motion.velocity.y - GRAVITY;
-            player2Motion.velocity.x = 0;
-            player2Motion.above = true;
+            player1Motion->velocity.x = 0;
+            player1Motion->velocity.y = player2Motion->velocity.y - GRAVITY;
+            player2Motion->velocity.x = 0;
+            player2Motion->above = true;
         }
     }
+}
+
+void WorldSystem::updatePlayableArea()
+{
+    PlayableArea &playableArea = registry.playableArea.get(renderer->m_playableArea);
+    playableArea.updatePosition(player1Motion->position, player2Motion->position);
+    playableArea.updateWorldModel(renderer->m_worldModel);
 }
