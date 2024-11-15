@@ -24,5 +24,9 @@ void FPSCounter::update(GlRender &renderer, bool showFPS)
 
 int FPSCounter::getFPS() const
 {
-    return (currentFPS > targetFPS ? targetFPS : currentFPS);
+    return currentFPS;
+}
+
+FPSCounter::~FPSCounter()
+{
 }

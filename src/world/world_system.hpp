@@ -28,10 +28,12 @@ public:
 	void updateStateTimers(float elapsed_ms);
 	bool checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWithHurtBox);
 	bool checkHitBoxMeshCollision(float hitBoxLeft, float hitBoxRight, float hitBoxTop,
-		float hitBoxBottom, ObjectMesh* mesh, Motion& hurtMotion);
+								  float hitBoxBottom, ObjectMesh *mesh, Motion &hurtMotion);
 	bool checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox);
-	void checkAABBCollision(bool& xCollision, bool& yCollision, const Box& box1, Motion& motion1, const Box& box2, Motion& motion2);
+	void checkAABBCollision(bool &xCollision, bool &yCollision, const Box &box1, Motion &motion1, const Box &box2, Motion &motion2);
 	void playerCollisions(GlRender *renderer);
+
+	void updatePlayableArea();
 	// bool step(float elapsed_ms);
 	bool botEnabled = false;
 
@@ -42,6 +44,13 @@ private:
 	std::unique_ptr<InputHandler> player2InputHandler;
 	std::unique_ptr<StateMachine> player1StateMachine;
 	std::unique_ptr<StateMachine> player2StateMachine;
+
+	Motion *player1Motion;
+	Motion *player2Motion;
+
+	CollisionBox *player1CollisionBox;
+	CollisionBox *player2CollisionBox;
+
 	void initInputHandlers();
 	void initStateMachines();
 	void updatePlayerState(float elapsed_ms);

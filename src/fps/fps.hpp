@@ -13,6 +13,7 @@ private:
 
 public:
     FPSCounter(int target = 60);
+    ~FPSCounter();
     void update(GlRender &renderer, bool showFPS);
     int getFPS() const;
 };

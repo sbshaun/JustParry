@@ -909,7 +909,7 @@ void GlRender::renderTexturedQuad(GLuint texture)
 
 void GlRender::shutdown()
 {
-    // Delete all shaders first
+    // Delete shaders associated with entities in the registry
     for (Entity entity : registry.debugRenders.entities)
     {
         if (registry.debugRenders.has(entity))
@@ -949,54 +949,39 @@ void GlRender::shutdown()
         }
     }
 
-    // Delete textures - make sure we include all textures
+    // Delete textures
     GLuint textures[] = {
-        m_menuTexture,
-        m_helpTexture,
-        m_settingsTexture,
-        m_pauseMenuTexture,
-        m_bg1Texture,
-        m_bg2Texture,
-        m_bg3Texture,
-        m_bg4Texture,
-        m_roundOverTexture,
-        m_timerBackgroundTexture,
-        m_barTexture,
-        m_avatarTexture,
-        m_characterSelectTexture,
-        m_character1,
-        m_character1_flip,
-        m_p1SelectKey,
-        m_p2SelectKey,
-        m_font_VAO,
-        m_font_VBO};
+        m_menuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
+        m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
+        m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
+        m_avatarTexture, m_characterSelectTexture, m_character1,
+        m_character1_flip, m_p1SelectKey, m_p2SelectKey};
 
-    // Delete all textures at once
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
-    FighterManager::deleteBirdTextures();
 
-    // Set texture IDs to 0 after deletion
-    m_menuTexture = 0;
-    m_helpTexture = 0;
-    m_settingsTexture = 0;
-    m_pauseMenuTexture = 0;
-    m_bg1Texture = 0;
-    m_bg2Texture = 0;
-    m_bg3Texture = 0;
-    m_bg4Texture = 0;
-    m_roundOverTexture = 0;
-    m_timerBackgroundTexture = 0;
-    m_barTexture = 0;
-    m_avatarTexture = 0;
-    m_font_VAO = 0;
-    m_font_VBO = 0;
-    m_characterSelectTexture = 0;
-    m_character1 = 0;
-    m_character1_flip = 0;
-    m_p1SelectKey = 0;
-    m_p2SelectKey = 0;
+    // Clear texture IDs after deletion to prevent dangling references
+    m_menuTexture = m_helpTexture = m_settingsTexture = m_pauseMenuTexture = 0;
+    m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
+    m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
+    m_avatarTexture = m_characterSelectTexture = m_character1 = 0;
+    m_character1_flip = m_p1SelectKey = m_p2SelectKey = 0;
 
-    // Delete shaders
+    // Free font resources
+    if (m_font_VAO)
+    {
+        glDeleteVertexArrays(1, &m_font_VAO);
+        m_font_VAO = 0;
+    }
+
+    if (m_font_VBO)
+    {
+        glDeleteBuffers(1, &m_font_VBO);
+        m_font_VBO = 0;
+    }
+
+    m_ftCharacters.clear(); // Clear character map for font
+
+    // Delete individual shaders used in the render
     delete m_debugShader;
     delete m_player1Shader;
     delete m_player2Shader;
@@ -1007,18 +992,12 @@ void GlRender::shutdown()
     delete m_simpleButtonShader;
     delete m_redRectangleShader;
 
-    m_debugShader = nullptr;
-    m_player1Shader = nullptr;
-    m_player2Shader = nullptr;
-    m_floorShader = nullptr;
-    m_hitboxShader = nullptr;
-    m_fontShader = nullptr;
-    m_simpleButtonShader = nullptr;
-    m_buttonShader = nullptr;
-    m_redRectangleShader = nullptr;
-    m_ftCharacters.clear();
+    // Nullify shader pointers to avoid dangling references
+    m_debugShader = m_player1Shader = m_player2Shader = nullptr;
+    m_floorShader = m_hitboxShader = m_fontShader = nullptr;
+    m_buttonShader = m_simpleButtonShader = m_redRectangleShader = nullptr;
 
-    std::cout << "Resources cleaned up." << std::endl;
+    std::cout << "Render resources cleaned up successfully." << std::endl;
 }
 
 void GlRender::renderButton(float x, float y, float width, float height, const char *text,

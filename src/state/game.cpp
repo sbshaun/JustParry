@@ -1190,7 +1190,7 @@ Game::~Game()
 
 void Game::cleanupButtons()
 {
-    // Clean up button objects
+    // Reset each button structure to its default state, clearing any existing values
     startButton = {};
     helpButton = {};
     newButton = {};
@@ -1214,7 +1214,7 @@ void Game::cleanupButtons()
     // Clean up pause settings button
     pauseSettingsButton = {};
 
-    // Clean up new buttons
+    // Clean up window and audio buttons
     windowButton1 = {};
     windowButton2 = {};
     windowButton3 = {};
@@ -1226,6 +1226,7 @@ void Game::cleanupButtons()
     audioButton3 = {};
     audioButton4 = {};
 
+    // Clean up player buttons
     playerButton1 = {};
     playerButton2 = {};
     playerButton3 = {};

@@ -234,24 +234,19 @@ int main()
             worldSystem.hitBoxCollisions();
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
-            worldSystem.inputProcessing();
 
             // Update center for playable area
-            PlayableArea &playableArea = registry.playableArea.get(renderer.m_playableArea);
-            Motion &player1Motion = registry.motions.get(renderer.m_player1);
-            Motion &player2Motion = registry.motions.get(renderer.m_player2);
-            playableArea.updatePosition(player1Motion.position, player2Motion.position);
-            playableArea.updateWorldModel(renderer.m_worldModel);
+            worldSystem.updatePlayableArea();
 
             worldSystem.playerCollisions(&renderer);
-            //physicsSystem.step();
+
             renderer.render();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
-            worldSystem.handleInput();
-            // toggleBot(botEnabled, bKeyPressed, glWindow);
+            // worldSystem.inputProcessing(); // this sets player inputs #1
+            // worldSystem.handleInput(); // this sets player inputs #2
 
             // time the next logic check
             auto end = std::chrono::steady_clock ::now();
@@ -265,7 +260,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput();
+                    worldSystem.handleInput(); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }
@@ -313,11 +308,6 @@ int main()
         if (shouldExit)
             break;
     }
-
-    // Cleanup in correct order
-    registry.clear_all_components(); // Clear ECS components first
-    renderer.shutdown();             // Then shutdown renderer
-    glWindow.windowShutdown();       // Finally close window
 
     return 0;
 }
