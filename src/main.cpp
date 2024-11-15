@@ -14,6 +14,9 @@
 #include "input_system/input_handler.hpp"
 #include "input_system/state_machine.hpp"
 #include "input_system/utility_inputs.hpp"
+#include "SDL.h"
+#include <SDL.h>
+#define SDL_MAIN_HANDLED
 
 int timer = timer_length;
 static bool roundEnded = false;
@@ -83,6 +86,11 @@ int main()
     // assert(is_fine == 0);
 
     // glfwSwapInterval(1); // Enable vsync
+     if (SDL_Init( SDL_INIT_AUDIO ) < 0) //Init SDL joystick
+    {
+        std::cerr << "Failed to init SDL joy handler" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // init fighters config
     FighterManager::init();
@@ -279,7 +287,7 @@ int main()
 
             // Only handle enter press if exit animation hasn't started
             if (!renderer.isExitAnimationStarted() &&
-                glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_ENTER) == GLFW_PRESS)
+                isKeyPressed(GLFW_KEY_ENTER))
             {
                 renderer.startExitAnimation();
             }
@@ -308,6 +316,9 @@ int main()
         if (shouldExit)
             break;
     }
+
+    // Cleanup in correct order
+    SDL_Quit();
 
     return 0;
 }

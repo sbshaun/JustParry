@@ -3,6 +3,7 @@
 #include "../renderer.hpp"
 #include "../fps/fps.hpp"
 #include "../window.hpp"
+#include "../common.hpp"
 
 // Forward declarations
 class WorldSystem;
@@ -13,7 +14,7 @@ struct UtilityKeys
     static constexpr int DEBUG_TOGGLE = GLFW_KEY_H; // Toggle debug visualization
     static constexpr int FPS_TOGGLE = GLFW_KEY_F;   // Toggle FPS display
     static constexpr int BOT_TOGGLE = GLFW_KEY_B;   // Toggle bot mode
-    static constexpr int EXIT = GLFW_KEY_ESCAPE;    // Exit game
+    static constexpr int EXIT = SDLK_ESCAPE;    // Exit game
     static constexpr int CONFIRM = GLFW_KEY_ENTER;  // Confirm/Restart
 };
 
@@ -24,7 +25,7 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
                                 WorldSystem &worldSystem)
 {
     // Debug mode toggle
-    if (glfwGetKey(glWindow.window, UtilityKeys::DEBUG_TOGGLE) == GLFW_PRESS)
+    if (isKeyPressed(UtilityKeys::DEBUG_TOGGLE))
     {
         if (!hKeyPressed)
         {
@@ -39,7 +40,7 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     }
 
     // FPS display toggle
-    if (glfwGetKey(glWindow.window, UtilityKeys::FPS_TOGGLE) == GLFW_PRESS)
+    if (isKeyPressed(UtilityKeys::FPS_TOGGLE))
     {
         if (!fKeyPressed)
         {
@@ -55,7 +56,7 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     fpsCounter.update(renderer, showFPS);
 
     // Bot mode toggle
-    if (glfwGetKey(glWindow.window, UtilityKeys::BOT_TOGGLE) == GLFW_PRESS)
+    if (isKeyPressed(UtilityKeys::BOT_TOGGLE))
     {
         if (!bKeyPressed)
         {
@@ -71,7 +72,7 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     }
 
     // Exit game
-    if (glfwGetKey(glWindow.window, UtilityKeys::EXIT) == GLFW_PRESS)
+    if (isKeyPressed(UtilityKeys::EXIT))
     {
         shouldExit = true;
     }
