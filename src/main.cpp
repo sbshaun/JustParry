@@ -14,6 +14,8 @@
 #include "input_system/input_handler.hpp"
 #include "input_system/state_machine.hpp"
 #include "input_system/utility_inputs.hpp"
+#include "SDL.h"
+#include <SDL.h>
 
 int timer = timer_length;
 static bool roundEnded = false;
@@ -83,6 +85,11 @@ int main()
     // assert(is_fine == 0);
 
     // glfwSwapInterval(1); // Enable vsync
+     if (SDL_Init( SDL_INIT_JOYSTICK ) < 0) //Init SDL joystick
+    {
+        std::cerr << "Failed to init SDL joy handler" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // init fighters config
     FighterManager::init();
@@ -297,9 +304,9 @@ int main()
     }
 
     // Cleanup in correct order
+    SDL_Quit();
     registry.clear_all_components(); // Clear ECS components first
     renderer.shutdown();             // Then shutdown renderer
     glWindow.windowShutdown();       // Finally close window
-
     return 0;
 }
