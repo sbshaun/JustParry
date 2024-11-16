@@ -389,9 +389,6 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
     bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
 
-    // check if the other player's parry box is active
-    ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
-
     // if hitbox collides with parry box, the attack is parried
     if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox))
     {

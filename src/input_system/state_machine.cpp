@@ -273,10 +273,20 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
 {
     // Check for successful parry, transition to counter or recovery 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
-    // std::cout << "Parrying State Timer: " << playerStateTimer.elapsedTime << std::endl;
+    //std::cout << "Parrying State Timer: " << playerStateTimer.elapsedTime << std::endl;
     if (playerStateTimer.isAlive())
     {
         playerStateTimer.update(elapsed_ms);
+
+        // While the parrying state is still active, check if the 
+        ParryBox& playerParryBox = registry.parryBoxes.get(entity);
+        if (playerStateTimer.elapsedTime < PERFECT_PARRY_TIME) {
+            playerParryBox.perfectParry = true;
+        }
+        else {
+            playerParryBox.perfectParry = false;
+        }
+        std::cout << "Perfect Parry State: " << playerParryBox.perfectParry << std::endl;
     }
     else
     {
