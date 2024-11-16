@@ -54,6 +54,7 @@ constexpr const char *PlayerStateToString(PlayerState state)
 struct Player
 {
     int id; // used to separate players, 1 and 2.
+    // int controller_id; //holds the player controller
     Fighters current_char;
 };
 

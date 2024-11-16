@@ -10,3 +10,4 @@ inline bool isKeyReleased(int key) {
     GLFWwindow* window = glfwGetCurrentContext();
     return glfwGetKey(window, key) == GLFW_RELEASE;
 }
+

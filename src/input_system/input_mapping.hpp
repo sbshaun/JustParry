@@ -7,6 +7,7 @@
 /*
 1. each player has an instance of this class, mapping key to action, 
 2. player can change the key binding. 
+//NEED TO UPDATE FOR CONTROLLER SUPPORT
 */
 class InputMapping {
     private:
