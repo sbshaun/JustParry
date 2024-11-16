@@ -17,6 +17,7 @@ enum class PlayerState
     PERFECT_PARRYING,
     COUNTER_ATTACKING,
     STUNNED,
+    BLOCKSTUNNED,
     RECOVERING
 };
 
@@ -43,6 +44,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
         return "COUNTER_ATTACKING";
     case PlayerState::STUNNED:
         return "STUNNED";
+    case PlayerState::BLOCKSTUNNED:
+        return "BLOCKSTUNNED";
     case PlayerState::RECOVERING:
         return "RECOVERING";
     default:

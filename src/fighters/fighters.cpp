@@ -21,11 +21,13 @@ FighterConfig &setUpBirdmanConfig()
     birdmanConfig.PUNCH_DAMAGE = 10.f;
     birdmanConfig.PUNCH_STUN_DURATION = 700.f;
     birdmanConfig.PARRY_STUN_DURATION = 3000.f;
+    birdmanConfig.BLOCK_STUN_DURATION = 5000.f;
 
     birdmanConfig.KNOCKBACK_FORCE_X = 0.02f;
     birdmanConfig.KNOCKBACK_FORCE_Y = 0.0f;
 
     birdmanConfig.PARRY_DURATION = 700.f;
+    birdmanConfig.PERFECT_PARRY_DURATION = 300.f;
     return birdmanConfig;
 }
 

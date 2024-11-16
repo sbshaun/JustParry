@@ -12,7 +12,7 @@
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
@@ -395,11 +395,23 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // parried the attack, transition the attacking player to stunned state using state machine
         if (playerWithHitBox == renderer->m_player1)
         {
-            player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+                player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            }
+            else {
+                player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
+                hitBox.active = false;
+            }
         }
         else
         {
-            player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+                player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            }
+            else {
+                player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
+                hitBox.active = false;
+            }
         }
         return false;
     }

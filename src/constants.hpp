@@ -9,7 +9,7 @@ const float PLAYER_BB_HEIGHT = 2.5f * 100.f;
 
 const bool BOT_ENABLED = false;
 
-const float PERFECT_PARRY_TIME = 200.0f;
+const float PERFECT_PARRY_TIME = 300.0f;
 
 // LOOP LOGIC
 // 1000hz = 1ms
