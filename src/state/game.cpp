@@ -244,6 +244,13 @@ void Game::update()
     // Existing game update logic
 }
 
+void Game::updateArcadeLevel()
+{
+    if (currentLevel > levelCompleted) {
+        levelCompleted = currentLevel;
+    }
+}
+
 void Game::render(GlRender &renderer)
 {
     // Existing game render logic
@@ -1494,13 +1501,7 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
     renderer.setAnimationComplete(false);
     renderer.setExitAnimationStarted(false);
 
-    // Set the level complete flags if Arcade mode is being played
-    if (currentLevel > levelCompleted) {
-        levelCompleted = currentLevel;
-    }
-
     isLoading = true;
-    this->setState(GameState::PLAYING);
 }
 
 void Game::updateScores(const Health &h1, const Health &h2)

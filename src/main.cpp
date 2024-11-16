@@ -177,7 +177,6 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_PREFIGHT:
-            std::cout << worldSystem.botEnabled << std::endl;
             botEnabled = true;
             worldSystem.botEnabled = true;
             game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
@@ -212,7 +211,6 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ROUND_START:
-            std::cout << worldSystem.botEnabled << std::endl;
             interp_moveEntitesToScreen(renderer); // Move players into position
 
             renderer.render();
@@ -307,6 +305,11 @@ int main()
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);
 
+            if (!renderer.isExitAnimationStarted()) 
+                if (registry.healths.get(renderer.m_player1).currentHealth > registry.healths.get(renderer.m_player2).currentHealth) {
+                    game.updateArcadeLevel();
+                }
+
             // Only handle enter press if exit animation hasn't started
             if (!renderer.isExitAnimationStarted() &&
                 isKeyPressed(GLFW_KEY_ENTER))
@@ -314,17 +317,24 @@ int main()
                 renderer.startExitAnimation();
             }
 
+            if (!renderer.isExitAnimationStarted() &&
+                isKeyPressed(GLFW_KEY_BACKSPACE))
+            {
+                roundEnded = false;
+                game.resetGame(renderer, worldSystem);
+                game.setState(GameState::MENU);
+            }
+
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
             {
-                
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
+                game.setState(GameState::PLAYING);
             }
 
             glWindow.windowSwapBuffers();
             break;
-
         default:
             std::cerr << "unhandled game state" << std::endl;
             /*handleUtilityInputs(renderer, showFPS, botEnabled,
