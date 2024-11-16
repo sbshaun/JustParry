@@ -89,7 +89,9 @@ public:
     // NEED A WAY TO DETERMINE P1 OR P2 INPUTS OR ACCEPT SOME AMOUNT OF EACH PER LOGIC LOOP
     // Deal with predetermined jump arc by allowing you to hold up but change directions on landing
 
-    //NEED TO UPDATE FOR CONTROLLER SUPPORT
+    //NEED TO UPDATE FOR CONTROLLER SUPPORT OR MAKE A CHECK TO HAVE A SEPERATE CONTROLLER IMPLEMENTATION CAUSE THIS IS PER PLAYER
+    // Let a controllers key be represented as the index of the button from glfwGetJoystickButtons. includes the HAT
+    // also need to some how support axis
     void handleInput(Entity entity, StateMachine &state_machine)
     {
         Motion &motion = registry.motions.get(entity);

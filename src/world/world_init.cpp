@@ -115,6 +115,8 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
 
+    registry.players.get(entity).controller_id = -1; //Represents no controller
+
     registry.knockbacks.emplace(entity);
 }
 
@@ -130,6 +132,9 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
     // set current_char to BIRDMAN by default
     // registry.players.get(entity).current_char = fighter;
+    if(glfwJoystickPresent(GLFW_JOYSTICK_1)){ //TODO make this assign dynamically
+        registry.players.get(entity).controller_id = GLFW_JOYSTICK_1;
+    }
     std::cout << "player 1 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;
 };
@@ -144,6 +149,9 @@ Entity createPlayer2(GlRender* renderer, vec2 pos, Fighters fighter)
     Shader *rectShader = new Shader(std::string("player2"));
     createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
     // registry.players.get(entity).current_char = fighter;
+    if(glfwJoystickPresent(GLFW_JOYSTICK_2)){ //TODO make this assign dynamically
+        registry.players.get(entity).controller_id = GLFW_JOYSTICK_2;
+    }
     std::cout << "player 2 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;
 };
