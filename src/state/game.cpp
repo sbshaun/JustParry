@@ -14,26 +14,70 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
 
     // Position start button (moved left and up)
     startButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 210.0f - leftShift, // x position
-        425.0f - upShift,                              // y position
+        M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
+        375.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "START"                                        // button text
     };
 
+    arcadeButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
+        475.0f - upShift,                              // y position
+        260.0f,                                        // width
+        80.0f,                                         // height
+        "ARCADE"                                       // button text
+    };
+
+    arcadeLevelOneButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
+        250.0f - upShift,                              // y position
+        500.0f,                                        // width
+        80.0f,                                         // height
+        "Level One"                                       // button text
+    };
+
+    arcadeLevelTwoButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
+        350.0f - upShift,                              // y position
+        500.0f,                                        // width
+        80.0f,                                         // height
+        "Level Two"                                       // button text
+    };
+    arcadeLevelThreeButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
+        450.0f - upShift,                              // y position
+        500.0f,                                        // width
+        80.0f,                                         // height
+        "Level Three"                                       // button text
+    };
+    arcadeLevelFourButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
+        550.0f - upShift,                              // y position
+        500.0f,                                        // width
+        80.0f,                                         // height
+        "Level Four"                                       // button text
+    };
+    arcadeLevelFiveButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
+        650.0f - upShift,                              // y position
+        500.0f,                                        // width
+        80.0f,                                         // height
+        "Level Five"                                       // button text
+    };
     // Position help button below start button
     helpButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 210.0f - leftShift, // x position
-        525.0f - upShift,                              // y position
+        M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
+        575.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "HELP"                                         // button text
     };
 
     // Add settings button below help button
-    newButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 210.0f - leftShift, // x position
-        625.0f - upShift,                              // y position
+    settingsButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
+        675.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "SETTINGS"                                     // renamed from "NEW BUTTON"
@@ -452,15 +496,19 @@ void Game::renderMenu(GlRender &renderer)
     bool startHovered = mouseX >= startButton.x && mouseX <= startButton.x + startButton.width &&
                         mouseY >= startButton.y && mouseY <= startButton.y + startButton.height;
 
+    bool arcadeHovered = mouseX >= arcadeButton.x && mouseX <= arcadeButton.x + arcadeButton.width &&
+                        mouseY >= arcadeButton.y && mouseY <= arcadeButton.y + arcadeButton.height;
+
     bool helpHovered = mouseX >= helpButton.x && mouseX <= helpButton.x + helpButton.width &&
                        mouseY >= helpButton.y && mouseY <= helpButton.y + helpButton.height;
 
-    bool newButtonHovered = mouseX >= newButton.x && mouseX <= newButton.x + newButton.width &&
-                            mouseY >= newButton.y && mouseY <= newButton.y + newButton.height;
+    bool settingsHovered = mouseX >= settingsButton.x && mouseX <= settingsButton.x + settingsButton.width &&
+                            mouseY >= settingsButton.y && mouseY <= settingsButton.y + settingsButton.height;
 
     bool startPressed = startHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool helpPressed = helpHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool newButtonPressed = newButtonHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool arcadePressed = arcadeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool settingsPressed = settingsHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     // Render all buttons
     renderer.renderButton(startButton.x, startButton.y,
@@ -468,21 +516,98 @@ void Game::renderMenu(GlRender &renderer)
                           startButton.text,
                           startHovered, startPressed);
 
+    renderer.renderButton(arcadeButton.x, arcadeButton.y,
+                          arcadeButton.width, arcadeButton.height,
+                          arcadeButton.text,
+                          arcadeHovered, arcadePressed);
+
     renderer.renderButton(helpButton.x, helpButton.y,
                           helpButton.width, helpButton.height,
                           helpButton.text,
                           helpHovered, helpPressed);
 
-    renderer.renderButton(newButton.x, newButton.y,
-                          newButton.width, newButton.height,
-                          newButton.text,
-                          newButtonHovered, newButtonPressed);
+    renderer.renderButton(settingsButton.x, settingsButton.y,
+                          settingsButton.width, settingsButton.height,
+                          settingsButton.text,
+                          settingsHovered, settingsPressed);
 
     // If help dialog is shown, render it
     if (currentState == GameState::HELP)
     {
         renderHelpScreen(renderer);
     }
+
+    glDepthFunc(GL_LESS);
+}
+
+void Game::renderArcadeMenu(GlRender& renderer) 
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+
+    // Render background with full brightness
+    renderer.renderTexturedQuadScaled(
+        renderer.m_arcadeMenuTexture,
+        0, 0,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        1.0f // Full brightness for main menu
+    );
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
+
+    // Get mouse position for hover effects
+    GLFWwindow* window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Check button states
+    bool levelOneHovered = mouseX >= arcadeLevelOneButton.x && mouseX <= arcadeLevelOneButton.x + arcadeLevelOneButton.width &&
+        mouseY >= arcadeLevelOneButton.y && mouseY <= arcadeLevelOneButton.y + arcadeLevelOneButton.height;
+
+    bool levelTwoHovered = mouseX >= arcadeLevelTwoButton.x && mouseX <= arcadeLevelTwoButton.x + arcadeLevelTwoButton.width &&
+        mouseY >= arcadeLevelTwoButton.y && mouseY <= arcadeLevelTwoButton.y + arcadeLevelTwoButton.height;
+
+    bool levelThreeHovered = mouseX >= arcadeLevelThreeButton.x && mouseX <= arcadeLevelThreeButton.x + arcadeLevelThreeButton.width &&
+        mouseY >= arcadeLevelThreeButton.y && mouseY <= arcadeLevelThreeButton.y + arcadeLevelThreeButton.height;
+
+    bool levelFourHovered = mouseX >= arcadeLevelFourButton.x && mouseX <= arcadeLevelFourButton.x + arcadeLevelFourButton.width &&
+        mouseY >= arcadeLevelFourButton.y && mouseY <= arcadeLevelFourButton.y + arcadeLevelFourButton.height;
+
+    bool levelFiveHovered = mouseX >= arcadeLevelFiveButton.x && mouseX <= arcadeLevelFiveButton.x + arcadeLevelFiveButton.width &&
+        mouseY >= arcadeLevelFiveButton.y && mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
+
+    bool LevelOnePressed = levelOneHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelTwoPressed = levelThreeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelThreePressed = levelTwoHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelFourPressed = levelFourHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelFivePressed = levelFiveHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    // Render all buttons
+    renderer.renderButton(arcadeLevelOneButton.x, arcadeLevelOneButton.y,
+        arcadeLevelOneButton.width, arcadeLevelOneButton.height,
+        arcadeLevelOneButton.text,
+        levelOneHovered, LevelOnePressed);
+
+    renderer.renderButton(arcadeLevelTwoButton.x, arcadeLevelTwoButton.y,
+        arcadeLevelTwoButton.width, arcadeLevelTwoButton.height,
+        arcadeLevelTwoButton.text,
+        levelTwoHovered, LevelThreePressed);
+
+    renderer.renderButton(arcadeLevelThreeButton.x, arcadeLevelThreeButton.y,
+        arcadeLevelThreeButton.width, arcadeLevelThreeButton.height,
+        arcadeLevelThreeButton.text,
+        levelThreeHovered, LevelTwoPressed);
+
+    renderer.renderButton(arcadeLevelFourButton.x, arcadeLevelFourButton.y,
+        arcadeLevelFourButton.width, arcadeLevelFourButton.height,
+        arcadeLevelFourButton.text,
+        levelFourHovered, LevelFourPressed);
+
+    renderer.renderButton(arcadeLevelFiveButton.x, arcadeLevelFiveButton.y,
+        arcadeLevelFiveButton.width, arcadeLevelFiveButton.height,
+        arcadeLevelFiveButton.text,
+        levelFiveHovered, LevelFivePressed);
 
     glDepthFunc(GL_LESS);
 }
@@ -1034,14 +1159,23 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
         mouseY >= startButton.y &&
         mouseY <= startButton.y + startButton.height;
 
+    bool mouseOverArcade = 
+        mouseX >= arcadeButton.x && 
+        mouseX <= arcadeButton.x + arcadeButton.width &&
+        mouseY >= arcadeButton.y && 
+        mouseY <= arcadeButton.y + arcadeButton.height;
+
     bool mouseOverHelp =
         mouseX >= helpButton.x &&
         mouseX <= helpButton.x + helpButton.width &&
         mouseY >= helpButton.y &&
         mouseY <= helpButton.y + helpButton.height;
 
-    bool mouseOverNewButton = mouseX >= newButton.x && mouseX <= newButton.x + newButton.width &&
-                              mouseY >= newButton.y && mouseY <= newButton.y + newButton.height;
+    bool mouseOverSettings = 
+        mouseX >= settingsButton.x && 
+        mouseX <= settingsButton.x + settingsButton.width &&
+        mouseY >= settingsButton.y && 
+        mouseY <= settingsButton.y + settingsButton.height;
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
@@ -1058,15 +1192,32 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
             this->setState(GameState::ROUND_START);
             return true;
         }
+        else if (mouseOverArcade) {
+            this->handleArcadeButton();
+        }
         else if (mouseOverHelp)
         {
             this->handleHelpButton();
         }
-        else if (mouseOverNewButton)
+        else if (mouseOverSettings)
         {
             this->handleSettingsButton();
         }
     }
+
+    return false;
+}
+
+void Game::handleArcadeButton()
+{
+    this->setState(GameState::ARCADEMENU);
+    std::cout << "Arcade menu screen opened!" << std::endl;
+}
+
+bool Game::handleArcadeMenuInput(GLFWwindow* window)
+{
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
 
     return false;
 }
@@ -1193,7 +1344,7 @@ void Game::cleanupButtons()
     // Reset each button structure to its default state, clearing any existing values
     startButton = {};
     helpButton = {};
-    newButton = {};
+    settingsButton = {};
     closeButton = {};
     pauseButton = {};
     resumeButton = {};

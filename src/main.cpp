@@ -165,6 +165,13 @@ int main()
             glWindow.windowSwapBuffers();
 
             break;
+        case GameState::ARCADEMENU:
+            game.renderArcadeMenu(renderer);
+            if (game.handleArcadeMenuInput(glWindow.window)) {
+
+            }
+            glWindow.windowSwapBuffers();
+            break;
         case GameState::HELP:
 
             game.renderHelpScreen(renderer);

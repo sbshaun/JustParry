@@ -16,6 +16,7 @@
 enum class GameState
 {
     MENU,
+    ARCADEMENU,
     LOADING,
     PLAYING,
     HELP,
@@ -40,7 +41,10 @@ public:
     void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
+    void renderArcadeMenu(GlRender& renderer);
     bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
+    void handleArcadeButton();
+    bool handleArcadeMenuInput(GLFWwindow* window);
     void handleSettingsButton();
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
@@ -77,9 +81,10 @@ private:
         const char *text;
     };
     Button startButton;
+    Button arcadeButton;
     Button helpButton;
     Button closeButton;
-    Button newButton;
+    Button settingsButton;
     Button pauseButton;
     Button resumeButton;
     Button menuButton;
@@ -92,6 +97,12 @@ private:
     Button applyButton;
     Button resetButton;
     Button pauseSettingsButton;
+
+    Button arcadeLevelOneButton;
+    Button arcadeLevelTwoButton;
+    Button arcadeLevelThreeButton;
+    Button arcadeLevelFourButton;
+    Button arcadeLevelFiveButton;
 
     Button windowButton1;
     Button windowButton2;
