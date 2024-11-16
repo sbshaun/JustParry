@@ -92,6 +92,15 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         "X"                                 // button text
     };
 
+    // Position close button for help dialog
+    backButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 470.0f,  // Dialog will be 400px wide
+        M_WINDOW_HEIGHT_PX / 2.0f - 355.0f, // Dialog will be 300px tall
+        85.0f,                              // width
+        85.0f,                              // height
+        "<-"                                 // button text
+    };
+
     // Position pause button in top left corner
     pauseButton = {
         20.0f, // x position (10px from left edge)
@@ -307,6 +316,125 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
 
     glDepthFunc(GL_LESS);
 }
+
+void Game::renderArcadePrefight(GlRender& renderer, float offset1, bool p1)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+
+    // Render background
+    renderer.renderTexturedQuadScaled(
+        renderer.m_characterSelectTexture,
+        0, 0,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        1.0f // Full brightness
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_character1,
+        175, 360.0f,
+        225, 275,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_character1_flip,
+        625.f, 360.0f,
+        225, 275,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_p1SelectKey,
+        360.f, 245.0f + offset1,
+        30, 30,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderTexturedQuadScaled(
+        renderer.m_p2SelectKey,
+        620.f, 245.0f,
+        30, 30,
+        1.0f // Full brightness for main menu
+    );
+
+    renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
+    renderer.renderSelectorTriangleP2(580, 245, 30, 30, true);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
+
+    glDepthFunc(GL_LESS);
+}
+
+void Game::handleArcadePrefightInputs(GLWindow& glWindow, bool& p1KeyPressed, bool& p1Ready, 
+    bool& goDown1, bool& goUp1, float& offsetY1)
+{
+    if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+        if (!p1KeyPressed) // Check if the key was not pressed before
+        {
+            p1Ready = !p1Ready;  // Toggle p1Ready
+            p1KeyPressed = true; // Mark the key as pressed
+            if (std::to_string(p1Ready) == "0")
+            {
+                std::cout << "Player 1 Not Ready" << std::endl;
+            }
+            else
+            {
+                std::cout << "Player 1 Ready" << std::endl;
+            }
+        }
+    }
+    else
+    {
+        p1KeyPressed = false; // Reset when the key is released
+    }
+
+    if (!p1Ready)
+    {
+        if (glfwGetKey(glWindow.window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            if (!goDown1)
+            {
+                goDown1 = true;
+                if (offsetY1 < 280.f)
+                {
+                    offsetY1 += 140.f;
+                }
+                else
+                {
+                    offsetY1 = 0;
+                }
+            }
+        }
+        else
+        {
+            goDown1 = false;
+        }
+
+        if (glfwGetKey(glWindow.window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            if (!goUp1)
+            {
+                goUp1 = true;
+                if (offsetY1 > 0.0f)
+                {
+                    offsetY1 -= 140.f;
+                }
+                else
+                {
+                    offsetY1 = 0;
+                }
+            }
+        }
+        else
+        {
+            goUp1 = false;
+        }
+    }
+}
+
 
 void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
                                  bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2)
@@ -562,6 +690,9 @@ void Game::renderArcadeMenu(GlRender& renderer)
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
     // Check button states
+    bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
+        mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
+
     bool levelOneHovered = mouseX >= arcadeLevelOneButton.x && mouseX <= arcadeLevelOneButton.x + arcadeLevelOneButton.width &&
         mouseY >= arcadeLevelOneButton.y && mouseY <= arcadeLevelOneButton.y + arcadeLevelOneButton.height;
 
@@ -577,6 +708,7 @@ void Game::renderArcadeMenu(GlRender& renderer)
     bool levelFiveHovered = mouseX >= arcadeLevelFiveButton.x && mouseX <= arcadeLevelFiveButton.x + arcadeLevelFiveButton.width &&
         mouseY >= arcadeLevelFiveButton.y && mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
+    bool backPressed = backHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool LevelOnePressed = levelOneHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool LevelTwoPressed = levelThreeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool LevelThreePressed = levelTwoHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
@@ -584,30 +716,43 @@ void Game::renderArcadeMenu(GlRender& renderer)
     bool LevelFivePressed = levelFiveHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     // Render all buttons
+    renderer.renderButton(backButton.x, backButton.y,
+        backButton.width, backButton.height,
+        backButton.text,
+        backHovered, backPressed);
+
     renderer.renderButton(arcadeLevelOneButton.x, arcadeLevelOneButton.y,
         arcadeLevelOneButton.width, arcadeLevelOneButton.height,
         arcadeLevelOneButton.text,
         levelOneHovered, LevelOnePressed);
 
-    renderer.renderButton(arcadeLevelTwoButton.x, arcadeLevelTwoButton.y,
-        arcadeLevelTwoButton.width, arcadeLevelTwoButton.height,
-        arcadeLevelTwoButton.text,
-        levelTwoHovered, LevelThreePressed);
+    if (levelCompleted >= 1) {
+        renderer.renderButton(arcadeLevelTwoButton.x, arcadeLevelTwoButton.y,
+            arcadeLevelTwoButton.width, arcadeLevelTwoButton.height,
+            arcadeLevelTwoButton.text,
+            levelTwoHovered, LevelThreePressed);
+    }
 
-    renderer.renderButton(arcadeLevelThreeButton.x, arcadeLevelThreeButton.y,
-        arcadeLevelThreeButton.width, arcadeLevelThreeButton.height,
-        arcadeLevelThreeButton.text,
-        levelThreeHovered, LevelTwoPressed);
+    if (levelCompleted >= 2) {
+        renderer.renderButton(arcadeLevelThreeButton.x, arcadeLevelThreeButton.y,
+            arcadeLevelThreeButton.width, arcadeLevelThreeButton.height,
+            arcadeLevelThreeButton.text,
+            levelThreeHovered, LevelTwoPressed);
+    }
 
-    renderer.renderButton(arcadeLevelFourButton.x, arcadeLevelFourButton.y,
-        arcadeLevelFourButton.width, arcadeLevelFourButton.height,
-        arcadeLevelFourButton.text,
-        levelFourHovered, LevelFourPressed);
+    if (levelCompleted >= 3) {
+        renderer.renderButton(arcadeLevelFourButton.x, arcadeLevelFourButton.y,
+            arcadeLevelFourButton.width, arcadeLevelFourButton.height,
+            arcadeLevelFourButton.text,
+            levelFourHovered, LevelFourPressed);
+    }
 
-    renderer.renderButton(arcadeLevelFiveButton.x, arcadeLevelFiveButton.y,
-        arcadeLevelFiveButton.width, arcadeLevelFiveButton.height,
-        arcadeLevelFiveButton.text,
-        levelFiveHovered, LevelFivePressed);
+    if (levelCompleted >= 4) {
+        renderer.renderButton(arcadeLevelFiveButton.x, arcadeLevelFiveButton.y,
+            arcadeLevelFiveButton.width, arcadeLevelFiveButton.height,
+            arcadeLevelFiveButton.text,
+            levelFiveHovered, LevelFivePressed);
+    }
 
     glDepthFunc(GL_LESS);
 }
@@ -1210,7 +1355,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
 
 void Game::handleArcadeButton()
 {
-    this->setState(GameState::ARCADEMENU);
+    this->setState(GameState::ARCADE_MENU);
     std::cout << "Arcade menu screen opened!" << std::endl;
 }
 
@@ -1220,6 +1365,12 @@ bool Game::handleArcadeMenuInput(GLFWwindow* window)
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
     // Check button states
+    bool mouseOverBack = 
+        mouseX >= backButton.x && 
+        mouseX <= backButton.x + backButton.width &&
+        mouseY >= backButton.y && 
+        mouseY <= backButton.y + backButton.height;
+
     bool mouseOverLevelOne = 
         mouseX >= arcadeLevelOneButton.x && 
         mouseX <= arcadeLevelOneButton.x + arcadeLevelOneButton.width &&
@@ -1250,31 +1401,50 @@ bool Game::handleArcadeMenuInput(GLFWwindow* window)
         mouseY >= arcadeLevelFiveButton.y && 
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
+    // reset the arcade level when going back to the menu
+    currentLevel = 0;
+
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
+        if (mouseOverBack)
+        {
+            handleBackButton();
+        }
         if (mouseOverLevelOne)
         {
+
+            currentLevel = 1;
             return true;
         }
-        else if (mouseOverLevelTwo) 
+        else if (mouseOverLevelTwo && levelCompleted >= 1) 
         {
+            currentLevel = 2;
             return true;
         }
-        else if (mouseOverLevelThree)
+        else if (mouseOverLevelThree && levelCompleted >= 2)
         {
+            currentLevel = 3;
             return true;
         }
-        else if (mouseOverLevelFour)
+        else if (mouseOverLevelFour && levelCompleted >= 3)
         {
+            currentLevel = 4;
             return true;
         }
-        else if (mouseOverLevelFive)
+        else if (mouseOverLevelFive && levelCompleted >= 4)
         {
+            currentLevel = 5;
             return true;
         }
     }
 
     return false;
+}
+
+void Game::handleBackButton()
+{
+    this->setState(GameState::MENU);
+    std::cout << "Going to Menu Screen" << std::endl;
 }
 
 void Game::handleHelpButton()
@@ -1323,6 +1493,11 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
     // Reset animation flags using the setter methods
     renderer.setAnimationComplete(false);
     renderer.setExitAnimationStarted(false);
+
+    // Set the level complete flags if Arcade mode is being played
+    if (currentLevel > levelCompleted) {
+        levelCompleted = currentLevel;
+    }
 
     isLoading = true;
     this->setState(GameState::PLAYING);

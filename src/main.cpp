@@ -156,6 +156,8 @@ int main()
             game.setState(GameState::MENU);
             break;
         case GameState::MENU:
+            p1Ready = false;
+            p2Ready = false;
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window, renderer))
             {
@@ -165,13 +167,23 @@ int main()
             glWindow.windowSwapBuffers();
 
             break;
-        case GameState::ARCADEMENU:
+        case GameState::ARCADE_MENU:
             game.renderArcadeMenu(renderer);
             if (game.handleArcadeMenuInput(glWindow.window)) 
             {
                 std::cout << "Entered Character Select Stage" << std::endl;
-                game.setState(GameState::CHARACTER_SELECT);
+                game.setState(GameState::ARCADE_PREFIGHT);
             }
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::ARCADE_PREFIGHT:
+            std::cout << worldSystem.botEnabled << std::endl;
+            botEnabled = true;
+            worldSystem.botEnabled = true;
+            game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
+            game.renderArcadePrefight(renderer, offsetY1, p1Ready);
+            game.renderReadyText(renderer, p1Ready, true, game);
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::HELP:
@@ -200,6 +212,7 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ROUND_START:
+            std::cout << worldSystem.botEnabled << std::endl;
             interp_moveEntitesToScreen(renderer); // Move players into position
 
             renderer.render();
@@ -304,6 +317,7 @@ int main()
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
             {
+                
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
             }
