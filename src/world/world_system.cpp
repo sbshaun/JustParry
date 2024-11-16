@@ -12,7 +12,7 @@
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
@@ -150,6 +150,7 @@ void WorldSystem::initStateMachines()
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player1StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    player1StateMachine->addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
@@ -158,6 +159,7 @@ void WorldSystem::initStateMachines()
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player2StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    player2StateMachine->addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 }
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
@@ -389,20 +391,29 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
     bool x_collision = hitBoxLeft < hurtBoxRight && hitBoxRight > hurtBoxLeft;
     bool y_collision = hitBoxTop > hurtBoxBottom && hitBoxBottom < hurtBoxTop;
 
-    // check if the other player's parry box is active
-    ParryBox &parryBox = registry.parryBoxes.get(playerWithHurtBox);
-
     // if hitbox collides with parry box, the attack is parried
     if (checkParryBoxCollisions(playerWithHitBox, playerWithHurtBox))
     {
         // parried the attack, transition the attacking player to stunned state using state machine
         if (playerWithHitBox == renderer->m_player1)
         {
-            player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+                player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            }
+            else {
+                player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
+                hitBox.active = false;
+            }
         }
         else
         {
-            player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+                player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+            }
+            else {
+                player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
+                hitBox.active = false;
+            }
         }
         return false;
     }

@@ -17,6 +17,7 @@ enum class PlayerState
     PERFECT_PARRYING,
     COUNTER_ATTACKING,
     STUNNED,
+    BLOCKSTUNNED,
     RECOVERING
 };
 
@@ -43,6 +44,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
         return "COUNTER_ATTACKING";
     case PlayerState::STUNNED:
         return "STUNNED";
+    case PlayerState::BLOCKSTUNNED:
+        return "BLOCKSTUNNED";
     case PlayerState::RECOVERING:
         return "RECOVERING";
     default:
@@ -281,6 +284,9 @@ struct ParryBox : public Box
 {
     // if hitbox collides ParryBox, the attack is parried.
     bool active = false; // active for 12 frames
+
+    // if true, any parry that occurs is a perfect parry
+    bool perfectParry = false;
 
     // parry is just same as player's size. TODO
     float getLeft(const vec2 &playerPosition, bool facingRight = true) const override

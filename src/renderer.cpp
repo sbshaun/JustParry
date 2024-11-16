@@ -284,6 +284,15 @@ void GlRender::handleTexturedRenders()
                 shader->setBool("stunned", false);
             }
 
+            if (registry.playerCurrentStates.get(m_player1).currentState == PlayerState::BLOCKSTUNNED) 
+            {
+                shader->setBool("isBlockStunned", true);
+            }
+            else
+            {
+                shader->setBool("isBlockStunned", false);
+            }
+
             if (registry.hitBoxes.get(m_player2).hit)
             {
                 shader->setBool("takenDamage", true);
@@ -334,6 +343,15 @@ void GlRender::handleTexturedRenders()
             else
             {
                 shader->setBool("stunned", false);
+            }
+
+            if (registry.playerCurrentStates.get(m_player2).currentState == PlayerState::BLOCKSTUNNED)
+            {
+                shader->setBool("isBlockStunned", true);
+            }
+            else
+            {
+                shader->setBool("isBlockStunned", false);
             }
 
             if (registry.hitBoxes.get(m_player1).hit)

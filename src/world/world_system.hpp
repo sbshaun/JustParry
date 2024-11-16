@@ -46,9 +46,9 @@ private:
 	std::unique_ptr<StateMachine> player2StateMachine;
 
 	Motion *player1Motion;
-	Motion *player2Motion;
+	Motion* player2Motion;
 
-	CollisionBox *player1CollisionBox;
+	CollisionBox* player1CollisionBox;
 	CollisionBox *player2CollisionBox;
 
 	void initInputHandlers();

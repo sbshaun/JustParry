@@ -38,9 +38,12 @@ struct FighterConfig
     float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;
     float PUNCH_STUN_DURATION; // time of how long the player itself is stunned after being hit by a punch, not to the other player
-    float PARRY_STUN_DURATION; // if a hit is parried, the player is stunned longer than being punched, heavy panelty on failed attack, this prevent abuse of attacking
+    float PARRY_STUN_DURATION; // if a hit is perfect parried, the player is stunned longer than being punched, heavy panelty on failed attack, this prevent abuse of attacking
+    float BLOCK_STUN_DURATION; // if a hit is block, the player that blocked will be stunned for a period of time
 
     float PARRY_DURATION; // parry duration (parryBox active time)
+    float PERFECT_PARRY_DURATION;
+
 
     // knock-back parameters
     float KNOCKBACK_FORCE_X = 0.02f;

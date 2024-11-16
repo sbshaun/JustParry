@@ -273,10 +273,23 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
 {
     // Check for successful parry, transition to counter or recovery 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
-    // std::cout << "Parrying State Timer: " << playerStateTimer.elapsedTime << std::endl;
+
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    //std::cout << "Parrying State Timer: " << playerStateTimer.elapsedTime << std::endl;
     if (playerStateTimer.isAlive())
     {
         playerStateTimer.update(elapsed_ms);
+
+        // While the parrying state is still active, check if the 
+        ParryBox& playerParryBox = registry.parryBoxes.get(entity);
+        if (playerStateTimer.elapsedTime < fighterConfig.PERFECT_PARRY_DURATION) {
+            playerParryBox.perfectParry = true;
+        }
+        else {
+            playerParryBox.perfectParry = false;
+        }
+        // std::cout << "Perfect Parry State: " << playerParryBox.perfectParry << std::endl;
     }
     else
     {
@@ -288,6 +301,9 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
 
 bool ParryingState::canTransitionTo(Entity entity, PlayerState newState)
 {
+    if (newState == PlayerState::BLOCKSTUNNED)
+        return true; //if being parried during outside of perfect parry window, override and transition to BLOCKSTUNNED 
+
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())
         return false; // still in current state
@@ -348,4 +364,58 @@ bool StunnedState::canTransitionTo(Entity entity, PlayerState newState)
     if (playerStateTimer.isAlive())
         return false; // still in current state
     return newState != PlayerState::STUNNED;
+}
+
+void BlockStunnedState::enter(Entity entity, StateMachine& stateMachine)
+{
+    Player& player = registry.players.get(entity);
+    std::cout << "Player " << player.id << " is block stunned!" << std::endl;
+
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    Animation& animation = registry.animations.get(entity);
+
+    float STUN_DURATION;
+    if (stateMachine.getPreviousState() == PlayerState::PARRYING)
+    {
+        STUN_DURATION = FighterManager::getFighterConfig(fighter).BLOCK_STUN_DURATION;
+    }
+    else
+    {
+        STUN_DURATION = FighterManager::getFighterConfig(fighter).BLOCK_STUN_DURATION;
+    }
+
+    // 1. register a state timer
+    PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::BLOCKSTUNNED;
+    StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(STUN_DURATION);
+}
+
+void BlockStunnedState::exit(Entity entity, StateMachine& stateMachine)
+{
+    std::cout << "Exiting Stunned State" << std::endl;
+}
+
+void BlockStunnedState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine)
+{
+    StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive())
+    {
+        playerStateTimer.update(elapsed_ms);
+    }
+    else
+    {
+        PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+        playerState.currentState = PlayerState::IDLE;
+        stateMachine.transition(entity, PlayerState::IDLE);
+    }
+}
+
+bool BlockStunnedState::canTransitionTo(Entity entity, PlayerState newState)
+{
+    StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive())
+        return false; // still in current state
+    return newState != PlayerState::BLOCKSTUNNED;
 }
