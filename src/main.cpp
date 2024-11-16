@@ -156,6 +156,8 @@ int main()
             game.setState(GameState::MENU);
             break;
         case GameState::MENU:
+            p1Ready = false;
+            p2Ready = false;
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window, renderer))
             {
@@ -164,6 +166,24 @@ int main()
             }
             glWindow.windowSwapBuffers();
 
+            break;
+        case GameState::ARCADE_MENU:
+            game.renderArcadeMenu(renderer);
+            if (game.handleArcadeMenuInput(glWindow.window)) 
+            {
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::ARCADE_PREFIGHT);
+            }
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::ARCADE_PREFIGHT:
+            botEnabled = true;
+            worldSystem.botEnabled = true;
+            game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
+            game.renderArcadePrefight(renderer, offsetY1, p1Ready);
+            game.renderReadyText(renderer, p1Ready, true, game);
+
+            glWindow.windowSwapBuffers();
             break;
         case GameState::HELP:
 
@@ -285,6 +305,11 @@ int main()
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);
 
+            if (!renderer.isExitAnimationStarted()) 
+                if (registry.healths.get(renderer.m_player1).currentHealth > registry.healths.get(renderer.m_player2).currentHealth) {
+                    game.updateArcadeLevel();
+                }
+
             // Only handle enter press if exit animation hasn't started
             if (!renderer.isExitAnimationStarted() &&
                 isKeyPressed(GLFW_KEY_ENTER))
@@ -292,16 +317,24 @@ int main()
                 renderer.startExitAnimation();
             }
 
+            if (!renderer.isExitAnimationStarted() &&
+                isKeyPressed(GLFW_KEY_BACKSPACE))
+            {
+                roundEnded = false;
+                game.resetGame(renderer, worldSystem);
+                game.setState(GameState::MENU);
+            }
+
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
+                game.setState(GameState::PLAYING);
             }
 
             glWindow.windowSwapBuffers();
             break;
-
         default:
             std::cerr << "unhandled game state" << std::endl;
             /*handleUtilityInputs(renderer, showFPS, botEnabled,

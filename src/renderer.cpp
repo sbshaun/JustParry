@@ -207,6 +207,7 @@ void GlRender::renderRoundOver(int count)
 
         // Create and render restart prompt
         renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10)* xscale, (baseY + 250.0f)* yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -507,6 +508,7 @@ void GlRender::loadTextures()
 {
     // Load texture for player 1
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
+    loadTexture(textures_path("arcade_menu.png"), m_arcadeMenuTexture);
     loadTexture(textures_path("help-screen.png"), m_helpTexture);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
     loadTexture(textures_path("paused.png"), m_pauseMenuTexture);
@@ -968,7 +970,7 @@ void GlRender::shutdown()
 
     // Delete textures
     GLuint textures[] = {
-        m_menuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
+        m_menuTexture, m_arcadeMenuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_character1,

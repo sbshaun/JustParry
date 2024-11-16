@@ -16,10 +16,12 @@
 enum class GameState
 {
     MENU,
+    ARCADE_MENU,
     LOADING,
     PLAYING,
     HELP,
     CHARACTER_SELECT,
+    ARCADE_PREFIGHT,
     SETTINGS,
     ROUND_START,
     ROUND_OVER,
@@ -37,10 +39,15 @@ public:
     GameState getState() const;
     bool isRunning() const;
     void update();
+    void updateArcadeLevel();
     void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
+    void renderArcadeMenu(GlRender& renderer);
     bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
+    void handleArcadeButton();
+    bool handleArcadeMenuInput(GLFWwindow* window);
+    void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
@@ -48,6 +55,8 @@ public:
 
     bool handleCharacterInput(GLFWwindow *window);
     void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
+    void renderArcadePrefight(GlRender& renderer, float offset1, bool p1);
+    void handleArcadePrefightInputs(GLWindow& glWindow, bool& p1KeyPressed, bool& p1Ready, bool& goDown1, bool& goUp1, float& offsetY1);
     void handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
                                bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2);
     void renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game);
@@ -77,9 +86,11 @@ private:
         const char *text;
     };
     Button startButton;
+    Button arcadeButton;
     Button helpButton;
     Button closeButton;
-    Button newButton;
+    Button backButton;
+    Button settingsButton;
     Button pauseButton;
     Button resumeButton;
     Button menuButton;
@@ -92,6 +103,12 @@ private:
     Button applyButton;
     Button resetButton;
     Button pauseSettingsButton;
+
+    Button arcadeLevelOneButton;
+    Button arcadeLevelTwoButton;
+    Button arcadeLevelThreeButton;
+    Button arcadeLevelFourButton;
+    Button arcadeLevelFiveButton;
 
     Button windowButton1;
     Button windowButton2;
@@ -121,6 +138,9 @@ private:
     bool isAudioSelected = false;
     bool isPlayer1Selected = true;
     bool isPlayer2Selected = false;
+
+    int levelCompleted = 0;
+    int currentLevel = 0;
 
     void cleanupButtons();
 };
