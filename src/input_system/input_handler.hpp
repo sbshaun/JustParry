@@ -93,7 +93,10 @@ public:
     // Let a controllers key be represented as the index of the button from glfwGetJoystickButtons. includes the HAT
     // also need to some how support axis
     void handleInput(Entity entity, StateMachine &state_machine)
-    {
+    {   
+        if(registry.players.get(entity).controller_id != -1){
+            //CALL A CONTROLLER VERSION OF handleInput
+        }
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
 
