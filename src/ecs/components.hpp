@@ -13,6 +13,7 @@ enum class PlayerState
     //JUMPING,
     CROUCHING,
     ATTACKING,
+    KICKING,
     PARRYING,
     PERFECT_PARRYING,
     COUNTER_ATTACKING,
@@ -36,6 +37,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
         return "CROUCHING";
     case PlayerState::ATTACKING:
         return "ATTACKING";
+    case PlayerState::KICKING:
+        return "KICKING";
     case PlayerState::PARRYING:
         return "PARRYING";
     case PlayerState::PERFECT_PARRYING:
