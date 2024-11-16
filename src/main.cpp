@@ -167,8 +167,10 @@ int main()
             break;
         case GameState::ARCADEMENU:
             game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window)) {
-
+            if (game.handleArcadeMenuInput(glWindow.window)) 
+            {
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::CHARACTER_SELECT);
             }
             glWindow.windowSwapBuffers();
             break;

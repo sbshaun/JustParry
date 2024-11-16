@@ -969,7 +969,7 @@ void GlRender::shutdown()
 
     // Delete textures
     GLuint textures[] = {
-        m_menuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
+        m_menuTexture, m_arcadeMenuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_character1,

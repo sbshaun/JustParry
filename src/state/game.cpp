@@ -1219,6 +1219,61 @@ bool Game::handleArcadeMenuInput(GLFWwindow* window)
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
+    // Check button states
+    bool mouseOverLevelOne = 
+        mouseX >= arcadeLevelOneButton.x && 
+        mouseX <= arcadeLevelOneButton.x + arcadeLevelOneButton.width &&
+        mouseY >= arcadeLevelOneButton.y && 
+        mouseY <= arcadeLevelOneButton.y + arcadeLevelOneButton.height;
+
+    bool mouseOverLevelTwo = 
+        mouseX >= arcadeLevelTwoButton.x && 
+        mouseX <= arcadeLevelTwoButton.x + arcadeLevelTwoButton.width &&
+        mouseY >= arcadeLevelTwoButton.y && 
+        mouseY <= arcadeLevelTwoButton.y + arcadeLevelTwoButton.height;
+
+    bool mouseOverLevelThree =
+        mouseX >= arcadeLevelThreeButton.x && 
+        mouseX <= arcadeLevelThreeButton.x + arcadeLevelThreeButton.width &&
+        mouseY >= arcadeLevelThreeButton.y && 
+        mouseY <= arcadeLevelThreeButton.y + arcadeLevelThreeButton.height;
+
+    bool mouseOverLevelFour =
+        mouseX >= arcadeLevelFourButton.x && 
+        mouseX <= arcadeLevelFourButton.x + arcadeLevelFourButton.width &&
+        mouseY >= arcadeLevelFourButton.y && 
+        mouseY <= arcadeLevelFourButton.y + arcadeLevelFourButton.height;
+
+    bool mouseOverLevelFive = 
+        mouseX >= arcadeLevelFiveButton.x && 
+        mouseX <= arcadeLevelFiveButton.x + arcadeLevelFiveButton.width &&
+        mouseY >= arcadeLevelFiveButton.y && 
+        mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    {
+        if (mouseOverLevelOne)
+        {
+            return true;
+        }
+        else if (mouseOverLevelTwo) 
+        {
+            return true;
+        }
+        else if (mouseOverLevelThree)
+        {
+            return true;
+        }
+        else if (mouseOverLevelFour)
+        {
+            return true;
+        }
+        else if (mouseOverLevelFive)
+        {
+            return true;
+        }
+    }
+
     return false;
 }
 
