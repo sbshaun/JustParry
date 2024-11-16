@@ -91,7 +91,7 @@ public:
 
     //NEED TO UPDATE FOR CONTROLLER SUPPORT OR MAKE A CHECK TO HAVE A SEPERATE CONTROLLER IMPLEMENTATION CAUSE THIS IS PER PLAYER
     // Let a controllers key be represented as the index of the button from glfwGetJoystickButtons. includes the HAT
-    // also need to some how support axis
+    // also need to some how support axis (for a future goal honestly)
     void handleInput(Entity entity, StateMachine &state_machine)
     {   
         if(registry.players.get(entity).controller_id != -1){
@@ -123,6 +123,58 @@ public:
         for (const auto &pair : inputMapping->getKeyToActionMap())
         {
             if (isKeyReleased(pair.first))
+            {
+                Action action = pair.second;
+                if (action == Action::PUNCH)
+                {
+                    punchReleased = true;
+                }
+                if (action == Action::KICK)
+                {
+                    kickReleased = true;
+                }
+                if (action == Action::PARRY)
+                {
+                    parryReleased = true;
+                }
+            }
+        }
+
+        // chek release key
+
+        processActionBuffer(entity, state_machine);
+    }
+
+    void handleControllerInput(Entity entity, StateMachine &state_machine, int cid)
+    {   
+
+        Motion &motion = registry.motions.get(entity);
+        bool moving = false;
+        int size;
+
+        for (const auto &pair : inputMapping->getKeyToActionMap())
+        {
+            // check if any key is pressed
+            if (isControllerKeyPressed(cid, pair.first))
+            {
+                // get the corresponded action from the key
+                Action action = pair.second;
+
+                if (!actionBuffer.empty() && actionBuffer.back().action == action)
+                    continue;
+                if (actionBuffer.size() >= MAX_BUFFER_SIZE)
+                    continue;
+
+                if (!shouldAddActionToBuffer(action))
+                    continue;
+                actionBuffer.push_back({action, TTL});
+            }
+        }
+
+        // loop to see key release action
+        for (const auto &pair : inputMapping->getKeyToActionMap())
+        {
+            if (isControllerKeyReleased(cid, pair.first))
             {
                 Action action = pair.second;
                 if (action == Action::PUNCH)

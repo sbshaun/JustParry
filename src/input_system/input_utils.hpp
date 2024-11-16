@@ -11,3 +11,14 @@ inline bool isKeyReleased(int key) {
     return glfwGetKey(window, key) == GLFW_RELEASE;
 }
 
+inline bool isControllerKeyPressed(int cid, int key) {
+    GLFWwindow* window = glfwGetCurrentContext();
+    int size;
+    return glfwGetJoystickButtons(cid, &size)[key] == GLFW_PRESS;
+}
+
+inline bool isControllerKeyReleased(int cid, int key) {
+    GLFWwindow* window = glfwGetCurrentContext();
+    int size;
+    return glfwGetJoystickButtons(cid, &size)[key] == GLFW_RELEASE;
+}
