@@ -7,16 +7,18 @@
 /*
 1. each player has an instance of this class, mapping key to action, 
 2. player can change the key binding. 
- //NEED TO UPDATE FOR CONTROLLER SUPPORT OR MAKE A CHECK TO HAVE A SEPERATE CONTROLLER IMPLEMENTATION ALSO PER PLAYERS
+ //Keys are respresented as the index of the button when glfwGetJoystickButtons is called (needs to dynamically defined)
 */
-class InputMapping {
+class ControllerMapping {
     private:
         std::unordered_map<int, Action> keyToActionMap; // key to action mapping 
         std::unordered_map<Action, int> actionToKeyMap; // action to key mapping, used for easy reverse lookup 
 
     public:
-        InputMapping() {
+        int CONTROLLER_ID;
+        ControllerMapping(int id) { //WHENEVER A MAPPING IS CREATED PASS IN THE CONTROLLER ID OF THIS PLAYER
             // Initialize key mapping
+            CONTROLLER_ID = id;
         };
 
         void bindKeyToAction(int key, Action action) {
