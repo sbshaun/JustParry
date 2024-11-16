@@ -1287,6 +1287,8 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
+    currentLevel = 0;
+
     if (currentState == GameState::HELP)
     {
         // When help dialog is shown, only handle close button
