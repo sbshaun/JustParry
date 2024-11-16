@@ -289,7 +289,7 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
         else {
             playerParryBox.perfectParry = false;
         }
-        std::cout << "Perfect Parry State: " << playerParryBox.perfectParry << std::endl;
+        // std::cout << "Perfect Parry State: " << playerParryBox.perfectParry << std::endl;
     }
     else
     {
@@ -301,9 +301,9 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine &stateM
 
 bool ParryingState::canTransitionTo(Entity entity, PlayerState newState)
 {
-    if (newState == PlayerState::BLOCKSTUNNED) {
-        return true;
-    }
+    if (newState == PlayerState::BLOCKSTUNNED)
+        return true; //if being parried during outside of perfect parry window, override and transition to BLOCKSTUNNED 
+
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())
         return false; // still in current state
@@ -366,7 +366,7 @@ bool StunnedState::canTransitionTo(Entity entity, PlayerState newState)
     return newState != PlayerState::STUNNED;
 }
 
-void BlockStunState::enter(Entity entity, StateMachine& stateMachine)
+void BlockStunnedState::enter(Entity entity, StateMachine& stateMachine)
 {
     Player& player = registry.players.get(entity);
     std::cout << "Player " << player.id << " is block stunned!" << std::endl;
@@ -392,12 +392,12 @@ void BlockStunState::enter(Entity entity, StateMachine& stateMachine)
     playerStateTimer.reset(STUN_DURATION);
 }
 
-void BlockStunState::exit(Entity entity, StateMachine& stateMachine)
+void BlockStunnedState::exit(Entity entity, StateMachine& stateMachine)
 {
     std::cout << "Exiting Stunned State" << std::endl;
 }
 
-void BlockStunState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine)
+void BlockStunnedState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine)
 {
     StateTimer& playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())
@@ -412,7 +412,7 @@ void BlockStunState::update(Entity entity, float elapsed_ms, StateMachine& state
     }
 }
 
-bool BlockStunState::canTransitionTo(Entity entity, PlayerState newState)
+bool BlockStunnedState::canTransitionTo(Entity entity, PlayerState newState)
 {
     StateTimer& playerStateTimer = registry.stateTimers.get(entity);
     if (playerStateTimer.isAlive())

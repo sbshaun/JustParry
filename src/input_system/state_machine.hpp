@@ -113,7 +113,7 @@ public:
     bool canTransitionTo(Entity entity, PlayerState newState) override;
 };
 
-class BlockStunState : public State
+class BlockStunnedState : public State
 {
 public:
     void enter(Entity entity, StateMachine& stateMachine) override;

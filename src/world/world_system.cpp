@@ -150,6 +150,7 @@ void WorldSystem::initStateMachines()
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player1StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    player1StateMachine->addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
@@ -158,6 +159,7 @@ void WorldSystem::initStateMachines()
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player2StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    player2StateMachine->addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 }
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
