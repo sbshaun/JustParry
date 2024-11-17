@@ -412,7 +412,8 @@ void StunnedState::enter(Entity entity, StateMachine &stateMachine)
     animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
     
     float STUN_DURATION;
-    if (stateMachine.getPreviousState() == PlayerState::ATTACKING)
+    if (stateMachine.getPreviousState() == PlayerState::ATTACKING || 
+        stateMachine.getPreviousState() == PlayerState::KICKING)
     {
         STUN_DURATION = FighterManager::getFighterConfig(fighter).PARRY_STUN_DURATION;
     }

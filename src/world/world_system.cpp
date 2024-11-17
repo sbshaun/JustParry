@@ -12,7 +12,7 @@
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::KICKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
