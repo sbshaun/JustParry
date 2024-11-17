@@ -5,6 +5,12 @@
 #include "../constants.hpp"
 #include "../input_system/input_utils.hpp"
 
+Mix_Music* WorldSystem::background_music = nullptr;
+Mix_Chunk* WorldSystem::punch_sound = nullptr;
+Mix_Chunk* WorldSystem::walk_sound = nullptr; 
+bool WorldSystem::isPlayerWalking = false;
+float WorldSystem::walkStopTimer = 0.f;
+
 /* notes:
 1. a helper function to check if player is movable.
 2. static: scoped to this file, since it's just a small helper function
@@ -70,12 +76,55 @@ WorldSystem::~WorldSystem()
     // Clear all components
     registry.clear_all_components();
 
+    if (background_music != nullptr)
+    {
+        Mix_FreeMusic(background_music);
+        background_music = nullptr;
+    }
+    if (punch_sound != nullptr)
+    {
+        Mix_FreeChunk(punch_sound);
+        punch_sound = nullptr;
+    }
+    if (walk_sound != nullptr)
+    {
+        Mix_FreeChunk(walk_sound);
+        walk_sound = nullptr;
+    }
+
     std::cout << "WorldSystem cleaned up." << std::endl;
 }
 
 void WorldSystem::init(GlRender *renderer)
 {
     this->renderer = renderer;
+
+    ////////////////////////////////////// 
+	// Loading music and sounds with SDL
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+		fprintf(stderr, "Failed to initialize SDL Audio");
+		// exit early 
+        exit(1); 
+	}
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
+		fprintf(stderr, "Failed to open audio device");
+		exit(1); 
+	}
+
+    // Load background music
+    background_music = Mix_LoadMUS(audio_path("background_music.wav").c_str());
+    punch_sound = Mix_LoadWAV(audio_path("punch_sound.wav").c_str());
+    walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
+
+	if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr) {
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
+			audio_path("background_music.wav").c_str(),
+			audio_path("punch_sound.wav").c_str()),
+            audio_path("walk_sound.wav").c_str();
+		exit(1); 
+	} else {
+        std::cout << "Sounds loaded" << std::endl; 
+    }
 
     // Create entities
     FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
@@ -234,6 +283,22 @@ void WorldSystem::movementProcessing()
 
     PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
     PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
+
+    bool isPlayerMoving = player1Motion->velocity.x != 0 || player2Motion->velocity.x != 0; 
+    if (isPlayerMoving) {
+        walkStopTimer = 0.f; 
+        if (!isPlayerWalking) {
+            std::cout << "Playing walk sound" << std::endl;
+            Mix_PlayChannel(WALK_SOUND_CHANNEL, walk_sound, -1);
+            isPlayerWalking = true; 
+        }
+    } else {
+        walkStopTimer += PLAYER_STATE_TIMER_STEP; 
+        if (walkStopTimer >= WALK_SOUND_TIMEOUT && isPlayerWalking) {
+            Mix_HaltChannel(WALK_SOUND_CHANNEL);
+            isPlayerWalking = false; 
+        }
+    }
 
     if (canMove(player1State.currentState))
     {
