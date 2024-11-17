@@ -180,6 +180,12 @@ void AttackingState::update(Entity entity, float elapsed_ms, StateMachine &state
         hitBox.width += fighterConfig.PUNCH_WIDTH / (fighterConfig.HITBOX_DURATION / 4) * elapsed_ms;
     }
 
+    // if width is max, disable hitbox, the rest of the time doesn't apply damage (simulate a recovery time) 
+    if (hitBox.width >= fighterConfig.PUNCH_WIDTH)
+    {
+        hitBox.active = false;
+    }
+
     Animation& animation = registry.animations.get(entity);
     if (animation.currentFrame < 4) {
         animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
@@ -270,6 +276,12 @@ void KickingState::update(Entity entity, float elapsed_ms, StateMachine &stateMa
         hitBox.width += fighterConfig.KICK_WIDTH / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms;
     }
 
+    // if width is max, disable hitbox, the rest of the time doesn't apply damage (simulate a recovery time) 
+    if (hitBox.width >= fighterConfig.KICK_WIDTH)
+    {
+        hitBox.active = false;
+    }
+
     Animation& animation = registry.animations.get(entity);
     if (animation.currentFrame < 4) {
         animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
@@ -328,10 +340,6 @@ void CrouchingState::enter(Entity entity, StateMachine &stateMachine)
 void CrouchingState::exit(Entity entity, StateMachine &stateMachine)
 {
     std::cout << "Player exiting Crouching State" << std::endl;
-    // print out hurtbox stats 
-    HurtBox &hurtBox = registry.hurtBoxes.get(entity);
-    std::cout << "HurtBox Height: " << hurtBox.height << std::endl;
-    std::cout << "HurtBox yOffset: " << hurtBox.yOffset << std::endl;
 
     // make sure the state timer is not alive 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
@@ -341,7 +349,7 @@ void CrouchingState::exit(Entity entity, StateMachine &stateMachine)
     playerState = PlayerState::IDLE;
 
     // recover player's hurtbox to normal size 
-    // HurtBox &hurtBox = registry.hurtBoxes.get(entity);
+    HurtBox &hurtBox = registry.hurtBoxes.get(entity);
     Fighters fighter = registry.players.get(entity).current_char;
     const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
     hurtBox.height = fighterConfig.NDC_HEIGHT / 2.0f;
@@ -374,10 +382,13 @@ void CrouchingState::update(Entity entity, float elapsed_ms, StateMachine &state
 
 bool CrouchingState::canTransitionTo(Entity entity, PlayerState newState)
 {
-    // check timer 
+    // you can transition to any state from crouching, including attacking. 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
-    if (playerStateTimer.isAlive())
-        return false; // still in current state
+    // if (playerStateTimer.isAlive())
+    //     return false; // still in current state
+    if (newState == PlayerState::IDLE) {
+        return !playerStateTimer.isAlive(); 
+    }
 
     return newState != PlayerState::CROUCHING;
     // && newState != PlayerState::JUMPING;
