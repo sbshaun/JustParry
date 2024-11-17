@@ -276,19 +276,23 @@ int main()
 
             loopsSinceLastFrame++;
 
+            // Commented out. Need to make the smoke look more realistic.
+            //worldSystem.emitSmokeParticles(0.0f, 0.0f, 0.0f);
+
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.playerCollisions(&renderer);
 
             worldSystem.hitBoxCollisions();
-            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updatePlayableArea();
             physicsSystem.step();
 
+            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             renderer.render();
-            worldSystem.particleSystem.render();
+            // worldSystem.particleSystem.render(renderer.m_worldModel);
+            worldSystem.renderParticles();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
 

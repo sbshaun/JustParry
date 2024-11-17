@@ -157,15 +157,26 @@ void WorldSystem::init(GlRender *renderer)
     this->player1CollisionBox = &p1CollisionBox;
     this->player2CollisionBox = &p2CollisionBox;
 
-    particleSystem = ParticleSystem();
+    bloodSystem = BloodParticleSystem();
+    smokeSystem = SmokeParticleSystem();
 }
 
 void WorldSystem::step(float elapsed_ms) {
-    particleSystem.update(elapsed_ms);
+    bloodSystem.update(elapsed_ms);
+	smokeSystem.update(elapsed_ms);
 }
 
-void WorldSystem::emitParticles(float x, float y, float z, bool direction) {
-    particleSystem.emit(x, y, z, direction);
+void WorldSystem::emitBloodParticles(float x, float y, float z, bool direction) {
+    bloodSystem.emit(x, y, z, direction);
+}
+
+void WorldSystem::emitSmokeParticles(float x, float y, float z) {
+	smokeSystem.emit(x, y, z, false);
+}
+
+void WorldSystem::renderParticles() {
+    bloodSystem.render(renderer->m_worldModel);
+	smokeSystem.render(renderer->m_worldModel);
 }
 
 void WorldSystem::initInputHandlers()
@@ -638,7 +649,7 @@ void WorldSystem::hitBoxCollisions()
         // Get victim (player2) motion for particle emission
         Motion& victimMotion = registry.motions.get(player2);
         applyDamage(player2, config.PUNCH_DAMAGE);
-        emitParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
+        emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack& knockback = registry.knockbacks.get(player2);
         knockback.active = true;
@@ -660,7 +671,7 @@ void WorldSystem::hitBoxCollisions()
         // Get victim (player1) motion for particle emission
         Motion& victimMotion = registry.motions.get(player1);
         applyDamage(player1, config.PUNCH_DAMAGE);
-        emitParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
+        emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack& knockback = registry.knockbacks.get(player1);
         knockback.active = true;
