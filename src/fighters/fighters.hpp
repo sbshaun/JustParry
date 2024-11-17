@@ -67,6 +67,11 @@ struct FighterConfig
     GLuint m_bird_idle_f4_texture;
     GLuint m_bird_punch_f1_texture;
     GLuint m_bird_punch_f2_texture;
+    GLuint m_bird_punch_f3_texture;
+    GLuint m_bird_kick_f1_texture;
+    GLuint m_bird_kick_f2_texture;
+    GLuint m_bird_kick_f3_texture;
+    GLuint m_bird_kick_f4_texture;
     GLuint m_bird_walk_f1_texture;
     GLuint m_bird_walk_f2_texture;
     GLuint m_bird_walk_f3_texture;

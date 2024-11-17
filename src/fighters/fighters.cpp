@@ -67,6 +67,11 @@ void FighterManager::loadBirdTextures(GlRender &renderer)
     renderer.loadTexture(textures_path("bird_idle_f4.png"), birdConfig.m_bird_idle_f4_texture);
     renderer.loadTexture(textures_path("bird_punch_f1.png"), birdConfig.m_bird_punch_f1_texture);
     renderer.loadTexture(textures_path("bird_punch_f2.png"), birdConfig.m_bird_punch_f2_texture);
+    renderer.loadTexture(textures_path("bird_punch_f3.png"), birdConfig.m_bird_punch_f3_texture);
+    renderer.loadTexture(textures_path("bird_kick_f1.png"), birdConfig.m_bird_kick_f1_texture);
+    renderer.loadTexture(textures_path("bird_kick_f2.png"), birdConfig.m_bird_kick_f2_texture);
+    renderer.loadTexture(textures_path("bird_kick_f3.png"), birdConfig.m_bird_kick_f3_texture);
+    renderer.loadTexture(textures_path("bird_kick_f4.png"), birdConfig.m_bird_kick_f4_texture);
     renderer.loadTexture(textures_path("bird_walk_f1.png"), birdConfig.m_bird_walk_f1_texture);
     renderer.loadTexture(textures_path("bird_walk_f2.png"), birdConfig.m_bird_walk_f2_texture);
     renderer.loadTexture(textures_path("bird_walk_f3.png"), birdConfig.m_bird_walk_f3_texture);
@@ -84,6 +89,11 @@ void FighterManager::deleteBirdTextures()
     glDeleteTextures(1, &birdConfig.m_bird_idle_f4_texture);
     glDeleteTextures(1, &birdConfig.m_bird_punch_f1_texture);
     glDeleteTextures(1, &birdConfig.m_bird_punch_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_punch_f3_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f3_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f4_texture);
     glDeleteTextures(1, &birdConfig.m_bird_walk_f1_texture);
     glDeleteTextures(1, &birdConfig.m_bird_walk_f2_texture);
     glDeleteTextures(1, &birdConfig.m_bird_walk_f3_texture);

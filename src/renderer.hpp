@@ -92,6 +92,8 @@ public:
     GLuint m_characterSelectTexture;
     GLuint m_character1;
     GLuint m_character1_flip;
+    GLuint m_character1_ready;
+    GLuint m_character1_flip_ready;
     GLuint m_p1SelectKey;
     GLuint m_p2SelectKey;
 

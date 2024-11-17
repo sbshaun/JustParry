@@ -511,6 +511,8 @@ void GlRender::loadTextures()
     loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
     loadTexture(textures_path("bird_idle_f1.png"), m_character1);
     loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
+    loadTexture(textures_path("bird_parry_f1.png"), m_character1_ready);
+    loadTexture(textures_path("bird_parry_f1_flipped.png"), m_character1_flip_ready);
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     FighterManager::loadBirdTextures(*this);
@@ -521,8 +523,8 @@ void GlRender::loadTexture(const std::string &path, GLuint &textureID)
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
@@ -962,7 +964,7 @@ void GlRender::shutdown()
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_character1,
-        m_character1_flip, m_p1SelectKey, m_p2SelectKey};
+        m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
@@ -971,6 +973,7 @@ void GlRender::shutdown()
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
     m_avatarTexture = m_characterSelectTexture = m_character1 = 0;
+    m_character1_ready = m_character1_flip_ready = 0;
     m_character1_flip = m_p1SelectKey = m_p2SelectKey = 0;
 
     // Free font resources
