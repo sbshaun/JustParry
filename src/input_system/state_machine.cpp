@@ -36,9 +36,11 @@ void StateMachine::update(Entity entity, float elapsed_ms)
 void IdleState::enter(Entity entity, StateMachine& stateMachine)
 {
 	Fighters fighter = registry.players.get(entity).current_char;
+	PostureBar& posture = registry.postureBars.get(entity);
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
 	Animation& animation = registry.animations.get(entity);
 	animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
+	posture.recoverBar = 0;
 }
 
 void IdleState::exit(Entity entity, StateMachine& stateMachine)
@@ -48,8 +50,18 @@ void IdleState::exit(Entity entity, StateMachine& stateMachine)
 
 void IdleState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine)
 {
+ 
 	Fighters fighter = registry.players.get(entity).current_char;
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+	PostureBar& posture = registry.postureBars.get(entity);
+
+	posture.recoverBar += elapsed_ms;
+	if (posture.recoverBar >= posture.recoverRate) {
+		if (posture.currentBar < posture.maxBar) {
+			posture.currentBar++;
+			posture.recoverBar = 0.f;
+		}
+	}
 	Animation& animation = registry.animations.get(entity);
 	int frameIndex = (animation.currentFrame / 12) % 4;
 	switch (frameIndex) {
@@ -442,8 +454,12 @@ void ParryingState::enter(Entity entity, StateMachine& stateMachine)
 	ParryBox& playerParryBox = registry.parryBoxes.get(entity);
 	playerParryBox.active = true;
 
-	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
-	playerStateTimer.reset(PARRY_BOX_DURATION);
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(PARRY_BOX_DURATION);
+
+    if (registry.postureBars.get(entity).currentBar > 0) {
+        registry.postureBars.get(entity).currentBar--;
+    }
 }
 
 void ParryingState::exit(Entity entity, StateMachine& stateMachine)

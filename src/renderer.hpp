@@ -136,8 +136,12 @@ public:
 
     // for rendering player health box
     void renderRedHealthRectangle(float x, float y, float width, float height);
+    void renderBlueHealthRectangle(float x, float y, float width, float height);
     void handleP1Health(float p1Health);
     void handleP2Health(float p2Health);
+
+    void handleP1Posture(float p1Posture);
+    void handleP2Posture(float p2Posture);
 
     void renderSelectorTriangleP1(float x, float y, float width, float height, bool p1);
     void renderSelectorTriangleP2(float x, float y, float width, float height, bool p2);
