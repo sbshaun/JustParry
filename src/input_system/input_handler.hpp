@@ -137,6 +137,10 @@ public:
                 {
                     parryReleased = true;
                 }
+                if (action == Action::CROUCH)
+                {
+                    crouchReleased = true;
+                }
             }
         }
 
@@ -189,6 +193,10 @@ public:
                 {
                     parryReleased = true;
                 }
+                if (action == Action::CROUCH)
+                {
+                    crouchReleased = true;
+                }
             }
         }
 
@@ -238,6 +246,18 @@ public:
                 return true;
             }
         }
+        if (action == Action::CROUCH)
+        {
+            if (!crouchReleased)
+            {
+                return false;
+            }
+            else
+            {
+                crouchReleased = false;
+                return true;
+            }
+        }
         return true;
     }
 
@@ -267,4 +287,5 @@ private:
     bool punchReleased = true; // one action per press, next action requires to release the key first
     bool kickReleased = true;
     bool parryReleased = true;
+    bool crouchReleased = true;
 };

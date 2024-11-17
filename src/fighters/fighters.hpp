@@ -50,6 +50,7 @@ struct FighterConfig
     float KICK_DAMAGE = 10.f; 
     float KICK_STUN_DURATION; 
 
+    float CROUCH_TIMER = 1500.f; // crouching period 
 
     float PARRY_DURATION; // parry duration (parryBox active time)
     float PERFECT_PARRY_DURATION;

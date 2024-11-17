@@ -274,12 +274,12 @@ struct HurtBox : public Box
 
     float getTop(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y + height;
+        return playerPosition.y + height + yOffset; 
     }
 
     float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y - height;
+        return playerPosition.y - height + yOffset;
     }
 };
 
