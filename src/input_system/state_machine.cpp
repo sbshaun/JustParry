@@ -1,6 +1,7 @@
 #include "state_machine.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../constants.hpp"
+#include "../world/world_system.hpp"
 
 bool StateMachine::transition(Entity entity, PlayerState newState)
 {
@@ -164,6 +165,8 @@ void AttackingState::enter(Entity entity, StateMachine &stateMachine)
     Animation& animation = registry.animations.get(entity);
     animation.currentFrame = 0;
     animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+
+    WorldSystem::playPunchSound();
 }
 
 void AttackingState::exit(Entity entity, StateMachine &stateMachine)
