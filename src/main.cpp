@@ -109,6 +109,8 @@ int main()
     renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60);
 
+    game.getPreviousState();
+
     // Toggle states
     bool showFPS = false;
     bool fKeyPressed = false;
@@ -191,6 +193,14 @@ int main()
             game.renderReadyText(renderer, p1Ready, true, game);
 
             glWindow.windowSwapBuffers();
+            break;
+        case GameState::ARCADE_WIN:
+            // Win/Loss screen for winning/losing in arcade mode
+
+            break;
+        case GameState::ARCADE_LOSE:
+            // Win/Loss screen for winning/losing in arcade mode
+
             break;
         case GameState::HELP:
 
@@ -365,6 +375,7 @@ int main()
             break;
     }
 
+    game.saveCurrentState();
     // Cleanup in correct order
     SDL_Quit();
 

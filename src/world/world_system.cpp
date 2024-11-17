@@ -18,7 +18,7 @@ float WorldSystem::walkStopTimer = 0.f;
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::KICKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
@@ -217,6 +217,8 @@ void WorldSystem::initStateMachines()
     player1StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
     //player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    player1StateMachine->addState(PlayerState::KICKING, std::make_unique<KickingState>());
+
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player1StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
@@ -226,6 +228,8 @@ void WorldSystem::initStateMachines()
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
     //player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    player2StateMachine->addState(PlayerState::KICKING, std::make_unique<KickingState>());
+
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player2StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
@@ -485,6 +489,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+                registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else {
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
@@ -495,6 +500,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+                registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else {
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);

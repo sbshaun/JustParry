@@ -110,19 +110,8 @@ class KickCommand : public Command
 public:
     void execute(Entity entity, StateMachine &state_machine) override
     {
-        if (!state_machine.transition(entity, PlayerState::ATTACKING))
+        if (!state_machine.transition(entity, PlayerState::KICKING))
             return;
-        PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
-        HitBox &hitBox = registry.hitBoxes.get(entity);
-        StateTimer &stateTimer = registry.stateTimers.get(entity);
-        Fighters fighter = registry.players.get(entity).current_char;
-
-        if (canPunch(playerState.currentState))
-        {
-            hitBox.active = true;
-            playerState.currentState = PlayerState::ATTACKING;
-            stateTimer.reset(FighterManager::getFighterConfig(fighter).HITBOX_DURATION);
-        }
     }
 };
 
