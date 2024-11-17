@@ -42,6 +42,8 @@ public:
     bool isRunning() const;
     void update();
     void updateArcadeLevel();
+    void getPreviousState();
+    void saveCurrentState();
     void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);

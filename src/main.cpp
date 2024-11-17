@@ -108,6 +108,8 @@ int main()
     renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60);
 
+    game.getPreviousState();
+
     // Toggle states
     bool showFPS = false;
     bool fKeyPressed = false;
@@ -358,6 +360,7 @@ int main()
             break;
     }
 
+    game.saveCurrentState();
     // Cleanup in correct order
     SDL_Quit();
 

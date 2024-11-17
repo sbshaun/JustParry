@@ -399,12 +399,10 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+                registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else {
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
-                if (registry.postureBars.get(playerWithHurtBox).currentBar > 0) {
-                    registry.postureBars.get(playerWithHurtBox).currentBar--;
-                }
                 hitBox.active = false;
             }
         }
@@ -412,12 +410,10 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+                registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else {
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
-                if (registry.postureBars.get(playerWithHurtBox).currentBar > 0) {
-                    registry.postureBars.get(playerWithHurtBox).currentBar--;
-                }
                 hitBox.active = false;
             }
         }

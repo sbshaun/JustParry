@@ -53,6 +53,7 @@ void IdleState::update(Entity entity, float elapsed_ms, StateMachine &stateMachi
     if (posture.recoverBar >= posture.recoverRate) {
         if (posture.currentBar < posture.maxBar) {
             posture.currentBar++;
+            posture.recoverBar = 0.f;
         }
     }
     const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
@@ -268,6 +269,10 @@ void ParryingState::enter(Entity entity, StateMachine &stateMachine)
 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     playerStateTimer.reset(PARRY_BOX_DURATION);
+
+    if (registry.postureBars.get(entity).currentBar > 0) {
+        registry.postureBars.get(entity).currentBar--;
+    }
 }
 
 void ParryingState::exit(Entity entity, StateMachine &stateMachine)
