@@ -3,6 +3,7 @@
 #include "../renderer.hpp"
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
+#include "../particle_system/particle_system.hpp"
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -21,7 +22,8 @@ public:
 	void init(GlRender *renderer);
 	void hitBoxCollisions();
 	// Steps the game ahead by ms milliseconds
-	bool step(float elapsed_ms);
+	void step(float elapsed_ms);
+	void emitParticles(float x, float y, float z, bool direction);
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
@@ -62,6 +64,8 @@ public:
     static const int WALK_SOUND_CHANNEL = 5; 
     static constexpr float WALK_SOUND_TIMEOUT = 50.f;  // time to wait before stopping walk_sound 
     static float walkStopTimer;  // Timer of how long the player has stopped walking 
+
+	ParticleSystem particleSystem;
 
 private:
 	GlRender *renderer;
