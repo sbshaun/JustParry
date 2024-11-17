@@ -7,23 +7,51 @@ ParticleSystem::ParticleSystem() {
 }
 
 void ParticleSystem::init() {
-    std::cout << "Particle size: " << sizeof(Particle) << std::endl;
-    std::cout << "Position offset: " << offsetof(Particle, x) << std::endl;
-    std::cout << "Color offset: " << offsetof(Particle, r) << std::endl;
+    // Base particle quad vertices
+    float quadVertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f
+    };
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
 
+    // Create buffers
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &instanceVBO);
+
     glBindVertexArray(VAO);
+
+    // Set up vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    // Set up element buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Vertex positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    // Instance data buffer
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * 1000, nullptr, GL_DYNAMIC_DRAW);
 
-    // Set position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, x));
-    glEnableVertexAttribArray(0);
-
-    // Set color attribute
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, r));
+    // Position attribute (per instance)
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, x));
+    glVertexAttribDivisor(1, 1);
+
+    // Color attribute (per instance)
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, r));
+    glVertexAttribDivisor(2, 1);
 
     glBindVertexArray(0);
 }
@@ -61,31 +89,22 @@ void ParticleSystem::update(float deltaTime) {
 
 void ParticleSystem::render() {
     if (particles.empty()) {
-        return;  // Skip rendering if no particles
+        return;
     }
 
     shader->use();
-
-    GLint program;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &program);
-    std::cout << "Active shader: " << program << std::endl;
-
-    glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle) * particles.size(), particles.data());
 
-    std::cout << "Drawing " << particles.size() << " particles at position ("
-        << particles[0].x << "," << particles[0].y << ")" << std::endl;
+    // Draw particles using instancing
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, particles.size());
 
-    glDrawArrays(GL_POINTS, 0, particles.size());
     glBindVertexArray(0);
-
     glDisable(GL_BLEND);
-    glDisable(GL_PROGRAM_POINT_SIZE);
 }
 
 void ParticleSystem::emit(float x, float y, float z, bool direction) {
@@ -93,8 +112,8 @@ void ParticleSystem::emit(float x, float y, float z, bool direction) {
     const float SPRAY_ANGLE = 90.0f;
     const float MIN_VELOCITY = 1.0f;
     const float MAX_VELOCITY = 3.0f;
-    const float SPAWN_RADIUS = 0.02f;    // Reduced from 0.05f
-    const float VERTICAL_OFFSET = 0.1f;   // Reduced from 0.2f
+    const float SPAWN_RADIUS = 0.001f;
+    const float VERTICAL_OFFSET = 0.1f;
 
     float baseAngle = direction ? 180.0f : 0.0f;
     float centerY = y + VERTICAL_OFFSET;

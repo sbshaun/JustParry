@@ -1,11 +1,12 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec4 aColor;
+layout (location = 1) in vec3 aOffset;
+layout (location = 2) in vec4 aColor;
 
 out vec4 particleColor;
 
 void main() {
-    gl_Position = vec4(aPos, 1.0);
+    vec3 pos = aPos * 0.02 + aOffset; // Scale quad size
+    gl_Position = vec4(pos, 1.0);
     particleColor = aColor;
-    gl_PointSize = 8.0;  // Increased from 5.0
 }

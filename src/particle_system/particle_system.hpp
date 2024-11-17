@@ -7,6 +7,8 @@ struct Particle {
     float vx, vy, vz;
     float life;
     float r, g, b, a; // Color and alpha
+    float size;
+    float rotation;
 };
 
 class ParticleSystem {
@@ -17,8 +19,9 @@ public:
     void emit(float x, float y, float z, bool direction);
 
 private:
+
     std::vector<Particle> particles;
-    unsigned int VAO, VBO;
+    unsigned int VAO, VBO, EBO, instanceVBO;
     Shader* shader;
     void init();
 };
