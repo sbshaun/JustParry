@@ -5,6 +5,12 @@
 #include "../input_system/state_machine.hpp"
 #include "../settings.hpp"
 #include "../default_config.hpp"
+#include "../particle_system/particle_system.hpp"
+
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 // Forward declarations
 class GlRender;
 class InputHandler;
@@ -18,7 +24,8 @@ public:
 	void init(GlRender *renderer);
 	void hitBoxCollisions();
 	// Steps the game ahead by ms milliseconds
-	bool step(float elapsed_ms);
+	void step(float elapsed_ms);
+	void emitParticles(float x, float y, float z, bool direction);
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
@@ -33,11 +40,38 @@ public:
 	bool checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox);
 	void checkAABBCollision(bool &xCollision, bool &yCollision, const Box &box1, Motion &motion1, const Box &box2, Motion &motion2);
 	void playerCollisions(GlRender *renderer);
+	static void playPunchSound() { Mix_PlayChannel(-1, punch_sound, 0); }
+
+	static void playBackgroundMusic()
+	{
+		// Playing background music indefinitely
+		Mix_PlayMusic(background_music, -1);
+		fprintf(stderr, "Background music played\n");
+		Mix_VolumeMusic(MIX_MAX_VOLUME / 4); // set volume to 1/4
+	}
+
+	static void stopBackgroundMusic()
+	{
+		Mix_HaltMusic();
+		fprintf(stderr, "Background music stopped\n");
+	}
+
+	static void stopAllSounds()
+	{
+		Mix_HaltChannel(-1);
+		fprintf(stderr, "All sounds stopped\n");
+	}
 
 	void updatePlayableArea();
 	// bool step(float elapsed_ms);
 	bool botEnabled = false;
 	void initInputHandlers();
+	static bool isPlayerWalking;
+	static const int WALK_SOUND_CHANNEL = 5;
+	static constexpr float WALK_SOUND_TIMEOUT = 50.f; // time to wait before stopping walk_sound
+	static float walkStopTimer;						  // Timer of how long the player has stopped walking
+
+	ParticleSystem particleSystem;
 
 private:
 	GlRender *renderer;
@@ -55,4 +89,7 @@ private:
 
 	void initStateMachines();
 	void updatePlayerState(float elapsed_ms);
+	static Mix_Music *background_music;
+	static Mix_Chunk *punch_sound;
+	static Mix_Chunk *walk_sound;
 };

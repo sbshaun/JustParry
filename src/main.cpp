@@ -66,6 +66,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
 
         // Always render round over animation with winner text
         renderer.renderRoundOver(1);
+        WorldSystem::stopAllSounds();
     }
     else
     {
@@ -149,10 +150,16 @@ int main()
     float offsetY1 = 0.0f;
     float offsetY2 = 0.0f;
 
+    auto t = std::chrono::high_resolution_clock::now();
     while (!glWindow.shouldClose())
     {
         // start a timer for each loop
         auto start = std::chrono::steady_clock::now();
+
+        auto now = std::chrono::high_resolution_clock::now();
+        float elapsed_ms =
+            (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+        t = now;
 
         switch (game.getState())
         {
@@ -229,6 +236,7 @@ int main()
 
             if (!isLoading)
             {
+                WorldSystem::playBackgroundMusic();
                 game.setState(GameState::PLAYING);
             }
             glWindow.windowSwapBuffers();
@@ -288,12 +296,14 @@ int main()
             worldSystem.playerCollisions(&renderer);
 
             worldSystem.hitBoxCollisions();
+            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updatePlayableArea();
             physicsSystem.step();
 
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             renderer.render();
+            worldSystem.particleSystem.render();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
 
@@ -348,6 +358,7 @@ int main()
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
+                WorldSystem::stopBackgroundMusic();
                 game.setState(GameState::MENU);
             }
 

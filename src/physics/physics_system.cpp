@@ -96,7 +96,7 @@ void PhysicsSystem::step() {
 	for (Entity entity : registry.knockbacks.entities) {
 		KnockBack& knockBack = registry.knockbacks.get(entity);
 		if (knockBack.active) {
-			std::cout << knockBack.active << std::endl;
+			// std::cout << knockBack.active << std::endl;
 			Motion& motion = registry.motions.get(entity);
 
 			// Debug print before setting velocity
