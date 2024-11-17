@@ -91,6 +91,7 @@ struct Animation
 {
     GLuint currentTexture;
     int currentFrame;
+    bool playedOnce = false;
 };
 
 struct Motion

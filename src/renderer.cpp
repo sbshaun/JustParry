@@ -472,12 +472,6 @@ void GlRender::render()
     PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     renderTexturedQuadScaled(
-        m_bg1Texture,
-        (-M_WINDOW_WIDTH_PX / 2.0f) - (playableArea.position.x) * M_WINDOW_WIDTH_PX / 1.25f, 0.0f,
-        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
-        1.0f);
-
-    renderTexturedQuadScaled(
         m_bg2Texture,
         -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5f, 0.0f,
         M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
@@ -485,12 +479,6 @@ void GlRender::render()
 
     renderTexturedQuadScaled(
         m_bg3Texture,
-        -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.75f, 0.0f,
-        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
-        1.0f);
-
-    renderTexturedQuadScaled(
-        m_bg4Texture,
         -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0f, 0.0f,
         M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
         1.0f);
