@@ -87,12 +87,14 @@ void ParticleSystem::update(float deltaTime) {
     );
 }
 
-void ParticleSystem::render() {
+void ParticleSystem::render(const glm::mat4& worldModel) {
     if (particles.empty()) {
         return;
     }
 
     shader->use();
+    shader->setMat4("worldModel", worldModel);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -108,6 +110,7 @@ void ParticleSystem::render() {
 }
 
 void ParticleSystem::emit(float x, float y, float z, bool direction) {
+	std::cout << "Emitting particles at (x , y, z): " << x << ", " << y << ", " << z << std::endl;
     const int NUM_PARTICLES = 20;
     const float SPRAY_ANGLE = 90.0f;
     const float MIN_VELOCITY = 1.0f;

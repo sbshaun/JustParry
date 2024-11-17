@@ -271,14 +271,14 @@ int main()
             worldSystem.playerCollisions(&renderer);
 
             worldSystem.hitBoxCollisions();
-            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updatePlayableArea();
             physicsSystem.step();
 
+            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             renderer.render();
-            worldSystem.particleSystem.render();
+            worldSystem.particleSystem.render(renderer.m_worldModel);
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
 
