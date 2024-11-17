@@ -260,6 +260,7 @@ void ParryingState::enter(Entity entity, StateMachine &stateMachine)
 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     playerStateTimer.reset(PARRY_BOX_DURATION);
+    WorldSystem::playParrySound();
 }
 
 void ParryingState::exit(Entity entity, StateMachine &stateMachine)

@@ -8,6 +8,11 @@
 Mix_Music* WorldSystem::background_music = nullptr;
 Mix_Chunk* WorldSystem::punch_sound = nullptr;
 Mix_Chunk* WorldSystem::walk_sound = nullptr; 
+Mix_Chunk* WorldSystem::parry_sound = nullptr;
+Mix_Chunk* WorldSystem::kick_sound = nullptr;
+Mix_Chunk* WorldSystem::menu_select_sound = nullptr;
+Mix_Chunk* WorldSystem::menu_confirm_sound = nullptr;
+Mix_Chunk* WorldSystem::game_count_down_sound = nullptr;
 bool WorldSystem::isPlayerWalking = false;
 float WorldSystem::walkStopTimer = 0.f;
 
@@ -91,6 +96,31 @@ WorldSystem::~WorldSystem()
         Mix_FreeChunk(walk_sound);
         walk_sound = nullptr;
     }
+    if (parry_sound != nullptr)
+    {
+        Mix_FreeChunk(parry_sound);
+        parry_sound = nullptr;
+    }
+    if (kick_sound != nullptr)
+    {
+        Mix_FreeChunk(kick_sound);
+        kick_sound = nullptr;
+    }
+    if (menu_select_sound != nullptr)
+    {
+        Mix_FreeChunk(menu_select_sound);
+        menu_select_sound = nullptr;
+    }
+    if (menu_confirm_sound != nullptr)
+    {
+        Mix_FreeChunk(menu_confirm_sound);
+        menu_confirm_sound = nullptr;
+    }
+    if (game_count_down_sound != nullptr)
+    {
+        Mix_FreeChunk(game_count_down_sound);
+        game_count_down_sound = nullptr;
+    }
 
     std::cout << "WorldSystem cleaned up." << std::endl;
 }
@@ -115,12 +145,24 @@ void WorldSystem::init(GlRender *renderer)
     background_music = Mix_LoadMUS(audio_path("background_music.wav").c_str());
     punch_sound = Mix_LoadWAV(audio_path("punch_sound.wav").c_str());
     walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
+    parry_sound = Mix_LoadWAV(audio_path("parry_sound.wav").c_str());
+    kick_sound = Mix_LoadWAV(audio_path("kick_sound.wav").c_str());
+    menu_select_sound = Mix_LoadWAV(audio_path("menu_select_sound.wav").c_str());
+    menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
+    game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
-	if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr) {
+	if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
+        parry_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
+        menu_confirm_sound == nullptr || game_count_down_sound == nullptr) {
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
 			audio_path("background_music.wav").c_str(),
 			audio_path("punch_sound.wav").c_str()),
-            audio_path("walk_sound.wav").c_str();
+            audio_path("walk_sound.wav").c_str(),
+            audio_path("parry_sound.wav").c_str(),
+            audio_path("kick_sound.wav").c_str(),
+            audio_path("menu_select_sound.wav").c_str(),
+            audio_path("menu_confirm_sound.wav").c_str(),
+            audio_path("game_count_down_sound.wav").c_str();
 		exit(1); 
 	} else {
         std::cout << "Sounds loaded" << std::endl; 
