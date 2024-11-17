@@ -113,7 +113,7 @@ public:
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)
                     continue;
 
-                if (!shouldAddActionToBuffer(action))
+                if (!shouldAddActionToBuffer(entity, action))
                     continue;
                 actionBuffer.push_back({action, TTL});
             }
@@ -139,6 +139,8 @@ public:
                 }
                 if (action == Action::CROUCH)
                 {
+                    PlayerInput &input = registry.playerInputs.get(entity);
+                    input.down = false;
                     crouchReleased = true;
                 }
             }
@@ -169,7 +171,7 @@ public:
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)
                     continue;
 
-                if (!shouldAddActionToBuffer(action))
+                if (!shouldAddActionToBuffer(entity, action))
                     continue;
                 actionBuffer.push_back({action, TTL});
             }
@@ -206,7 +208,7 @@ public:
     }
 
     // functioin to determine if a key should be added: only add one action per press
-    bool shouldAddActionToBuffer(Action action)
+    bool shouldAddActionToBuffer(Entity entity,Action action)
     {
         if (action == Action::PUNCH)
         {
@@ -254,6 +256,8 @@ public:
             }
             else
             {
+                PlayerInput &input = registry.playerInputs.get(entity);
+                input.down = true;
                 crouchReleased = false;
                 return true;
             }

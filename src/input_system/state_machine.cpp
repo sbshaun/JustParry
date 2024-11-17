@@ -80,7 +80,7 @@ void WalkingState::exit(Entity entity, StateMachine &stateMachine)
 
 void WalkingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-   // TODO: DONT RENTER WALK STATE EVERY TIME BUTTON IS PRESSED
+    // TODO: DONT RENTER WALK STATE EVERY TIME BUTTON IS PRESSED
     Motion& motion = registry.motions.get(entity);
     if (motion.velocity.x == 0)
     {
@@ -364,8 +364,8 @@ void CrouchingState::update(Entity entity, float elapsed_ms, StateMachine &state
     const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
     if (hurtBox.height > fighterConfig.NDC_HEIGHT / 6.0f)
     {
-        hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms;
-        hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms;
+        hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * 2;
+        hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * 2;
     }
 
     // when state timer is expired, transition to idle
@@ -376,7 +376,11 @@ void CrouchingState::update(Entity entity, float elapsed_ms, StateMachine &state
     }
     else
     {
-        stateMachine.transition(entity, PlayerState::IDLE);
+        PlayerInput& input = registry.playerInputs.get(entity);
+        // check if crouch key is still held 
+        if (!input.down) {
+            stateMachine.transition(entity, PlayerState::IDLE);
+        } 
     }
 }
 
@@ -387,7 +391,9 @@ bool CrouchingState::canTransitionTo(Entity entity, PlayerState newState)
     // if (playerStateTimer.isAlive())
     //     return false; // still in current state
     if (newState == PlayerState::IDLE) {
-        return !playerStateTimer.isAlive(); 
+        // if crouch key is pressed, don't transition to idle 
+        PlayerInput& input = registry.playerInputs.get(entity);
+        return !input.down && !playerStateTimer.isAlive(); 
     }
 
     return newState != PlayerState::CROUCHING;
