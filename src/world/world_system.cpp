@@ -111,31 +111,56 @@ void WorldSystem::init(GlRender *renderer)
 }
 void WorldSystem::initInputHandlers()
 {
-    // Player 1 controls
+    std::cout << "\nInitializing controls:" << std::endl;
+
+    // Print Player 1 controls
+    std::cout << "\nPlayer 1 Controls:" << std::endl;
+    std::cout << "Jump: " << Settings::getKeyName(Settings::p1Controls.up) << std::endl;
+    std::cout << "Crouch: " << Settings::getKeyName(Settings::p1Controls.down) << std::endl;
+    std::cout << "Move Left: " << Settings::getKeyName(Settings::p1Controls.left) << std::endl;
+    std::cout << "Move Right: " << Settings::getKeyName(Settings::p1Controls.right) << std::endl;
+    std::cout << "Punch: " << Settings::getKeyName(Settings::p1Controls.punch) << std::endl;
+    std::cout << "Kick: " << Settings::getKeyName(Settings::p1Controls.kick) << std::endl;
+    std::cout << "Parry: " << Settings::getKeyName(Settings::p1Controls.parry) << std::endl;
+
+    // Print Player 2 controls
+    std::cout << "\nPlayer 2 Controls:" << std::endl;
+    std::cout << "Jump: " << Settings::getKeyName(Settings::p2Controls.up) << std::endl;
+    std::cout << "Crouch: " << Settings::getKeyName(Settings::p2Controls.down) << std::endl;
+    std::cout << "Move Left: " << Settings::getKeyName(Settings::p2Controls.left) << std::endl;
+    std::cout << "Move Right: " << Settings::getKeyName(Settings::p2Controls.right) << std::endl;
+    std::cout << "Punch: " << Settings::getKeyName(Settings::p2Controls.punch) << std::endl;
+    std::cout << "Kick: " << Settings::getKeyName(Settings::p2Controls.kick) << std::endl;
+    std::cout << "Parry: " << Settings::getKeyName(Settings::p2Controls.parry) << std::endl;
+
+    // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
-    player1InputMapping->bindKeyToAction(GLFW_KEY_A, Action::MOVE_LEFT);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_D, Action::MOVE_RIGHT);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_W, Action::JUMP);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_R, Action::PUNCH);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_T, Action::KICK);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_G, Action::PARRY);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
-    // Player 2 controls
+    // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
-    player2InputMapping->bindKeyToAction(GLFW_KEY_LEFT, Action::MOVE_LEFT);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_RIGHT, Action::MOVE_RIGHT);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_UP, Action::JUMP);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_DOWN, Action::CROUCH);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_M, Action::PARRY);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
-    // 3. player 1 and player 2 init <action -> command> mapping
+    // Initialize input handlers with the mappings
     player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
     player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping));
     player1InputHandler->initDefaultActionToCommandMapping();
     player2InputHandler->initDefaultActionToCommandMapping();
+
+    std::cout << "\nControls initialized successfully\n"
+              << std::endl;
 }
 
 void WorldSystem::initStateMachines()
@@ -145,7 +170,7 @@ void WorldSystem::initStateMachines()
 
     player1StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player1StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
-    //player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    // player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
@@ -154,7 +179,7 @@ void WorldSystem::initStateMachines()
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
-    //player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    // player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
@@ -397,20 +422,24 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // parried the attack, transition the attacking player to stunned state using state machine
         if (playerWithHitBox == renderer->m_player1)
         {
-            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
+            {
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
             }
-            else {
+            else
+            {
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
         }
         else
         {
-            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
+            {
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
             }
-            else {
+            else
+            {
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }

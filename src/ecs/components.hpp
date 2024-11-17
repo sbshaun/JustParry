@@ -10,7 +10,7 @@ enum class PlayerState
 {
     IDLE,
     WALKING,
-    //JUMPING,
+    // JUMPING,
     CROUCHING,
     ATTACKING,
     PARRYING,
@@ -56,8 +56,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
 // Player component, from A1
 struct Player
 {
-    int id; // used to separate players, 1 and 2.
-    int controller_id; //holds the player controller
+    int id;            // used to separate players, 1 and 2.
+    int controller_id; // holds the player controller
     Fighters current_char;
 };
 
@@ -154,7 +154,8 @@ struct PlayerInput
     bool kick = false;
 };
 
-struct KnockBack {
+struct KnockBack
+{
     bool active = false;
     float duration = 0.0f;
     vec2 force = {0.0f, 0.0f}; // both the x and y force of knockback.
@@ -195,26 +196,28 @@ struct CollisionBox : public Box
     bool active = true;
 
     // hurtbox is just same as player's size. TODO
-    float getLeft(const vec2& playerPosition, bool facingRight = true) const override
+    float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        if (!facingRight)
+            return playerPosition.x - width / 2 - xOffset;
         return playerPosition.x - width / 2 + xOffset;
         // return playerPosition.x - width - xOffset;
     }
 
-    float getRight(const vec2& playerPosition, bool facingRight = true) const override
+    float getRight(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        if (!facingRight)
+            return playerPosition.x + width / 2 - xOffset;
         return playerPosition.x + width / 2 + xOffset;
         // return playerPosition.x + width + xOffset;
     }
 
-    float getTop(const vec2& playerPosition, bool facingRight = true) const override
+    float getTop(const vec2 &playerPosition, bool facingRight = true) const override
     {
         return playerPosition.y + height;
     }
 
-    float getBottom(const vec2& playerPosition, bool facingRight = true) const override
+    float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
     {
         return playerPosition.y - height;
     }
@@ -227,26 +230,26 @@ struct HitBox : public Box
     // if the current attack already caused damage
     bool hit = false; // flag to check before applying damage.
 
-    float getLeft(const vec2& playerPosition, bool facingRight) const override
+    float getLeft(const vec2 &playerPosition, bool facingRight) const override
     {
         // When facing right: hitbox starts at position + xOffset
         // When facing left: hitbox starts at position - xOffset - width
         return facingRight ? playerPosition.x + xOffset : playerPosition.x - xOffset - width;
     }
 
-    float getRight(const vec2& playerPosition, bool facingRight) const override
+    float getRight(const vec2 &playerPosition, bool facingRight) const override
     {
         // When facing right: hitbox ends at position + xOffset + width
         // When facing left: hitbox ends at position - xOffset
         return facingRight ? playerPosition.x + xOffset + width : playerPosition.x - xOffset;
     }
 
-    float getTop(const vec2& playerPosition, bool facingRight) const override
+    float getTop(const vec2 &playerPosition, bool facingRight) const override
     {
         return playerPosition.y + yOffset + height / 2;
     }
 
-    float getBottom(const vec2& playerPosition, bool facingRight) const override
+    float getBottom(const vec2 &playerPosition, bool facingRight) const override
     {
         return playerPosition.y + yOffset - height / 2;
     }
@@ -257,14 +260,16 @@ struct HurtBox : public Box
     // hurtbox is just same as player's size. TODO
     float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        if (!facingRight)
+            return playerPosition.x - width / 2 - xOffset;
         return playerPosition.x - width / 2 + xOffset;
         // return playerPosition.x - width - xOffset;
     }
 
     float getRight(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        if (!facingRight)
+            return playerPosition.x + width / 2 - xOffset;
         return playerPosition.x + width / 2 + xOffset;
         // return playerPosition.x + width + xOffset;
     }
@@ -291,14 +296,16 @@ struct ParryBox : public Box
     // parry is just same as player's size. TODO
     float getLeft(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        if (!facingRight) return playerPosition.x - width / 2 - xOffset;
+        if (!facingRight)
+            return playerPosition.x - width / 2 - xOffset;
         return playerPosition.x - width / 2 + xOffset;
         // return playerPosition.x - width - xOffset;
     }
 
     float getRight(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        if (!facingRight) return playerPosition.x + width / 2 - xOffset;
+        if (!facingRight)
+            return playerPosition.x + width / 2 - xOffset;
         return playerPosition.x + width / 2 + xOffset;
         // return playerPosition.x + width + xOffset;
     }
@@ -332,13 +339,15 @@ struct Boundary
 
 struct PlayableArea
 {
-    vec2 position = vec2(0,0);
+    vec2 position = vec2(0, 0);
     float width;
     float height;
-    void updatePosition(const vec2& player1Position, const vec2& player2Position) {
+    void updatePosition(const vec2 &player1Position, const vec2 &player2Position)
+    {
         position.x = clamp((player1Position.x + player2Position.x) / 2.0f, -0.5f, 0.5f);
     }
-    void updateWorldModel(mat4& worldModel) {
+    void updateWorldModel(mat4 &worldModel)
+    {
         worldModel = mat4(1);
         worldModel = glm::translate(worldModel, vec3(-position.x, 0.0f, 0.0f));
     }
@@ -386,9 +395,10 @@ struct TexturedVertex
     vec2 texcoord;
 };
 
-struct ObjectMesh {
-    static bool loadFromOBJFile(std::string obj_path, std::vector<ColoredVertex>& out_vertices, std::vector<uint16_t>& out_vertex_indices, vec2& out_size);
-    vec2 original_size = { 1,1 };
+struct ObjectMesh
+{
+    static bool loadFromOBJFile(std::string obj_path, std::vector<ColoredVertex> &out_vertices, std::vector<uint16_t> &out_vertex_indices, vec2 &out_size);
+    vec2 original_size = {1, 1};
     std::vector<ColoredVertex> vertices;
     std::vector<uint16_t> vertex_indices;
 };

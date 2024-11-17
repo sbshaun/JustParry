@@ -22,7 +22,7 @@ int timer = timer_length;
 static bool roundEnded = false;
 auto last_time = std::chrono::high_resolution_clock::now();
 
-int generateUI(GlRender& renderer)
+int generateUI(GlRender &renderer)
 {
     auto current_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = current_time - last_time;
@@ -42,12 +42,12 @@ int generateUI(GlRender& renderer)
     return 0;
 }
 
-void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSystem, Game& game, bool& botEnabled)
+void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
 {
-    Health& h1 = registry.healths.get(renderer.m_player1);
-    Health& h2 = registry.healths.get(renderer.m_player2);
-    PlayerInput& p1 = registry.playerInputs.get(renderer.m_player1);
-    PlayerInput& p2 = registry.playerInputs.get(renderer.m_player2);
+    Health &h1 = registry.healths.get(renderer.m_player1);
+    Health &h2 = registry.healths.get(renderer.m_player2);
+    PlayerInput &p1 = registry.playerInputs.get(renderer.m_player1);
+    PlayerInput &p2 = registry.playerInputs.get(renderer.m_player2);
 
     // Check if round is over due to health or timer
     if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || generateUI(renderer) == 1)
@@ -86,7 +86,7 @@ int main()
     // assert(is_fine == 0);
 
     // glfwSwapInterval(1); // Enable vsync
-     if (SDL_Init( SDL_INIT_AUDIO ) < 0) //Init SDL joystick
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) // Init SDL joystick
     {
         std::cerr << "Failed to init SDL joy handler" << std::endl;
         return EXIT_FAILURE;
@@ -98,7 +98,10 @@ int main()
     GlRender renderer;
     renderer.initialize();
 
-    WorldSystem worldSystem;
+    // Load settings before initializing world system
+    Settings::loadSettings();
+
+    WorldSystem worldSystem; // This will now use the loaded settings
 
     PhysicsSystem physicsSystem;
     Bot botInstance;
@@ -169,7 +172,7 @@ int main()
             break;
         case GameState::ARCADE_MENU:
             game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window)) 
+            if (game.handleArcadeMenuInput(glWindow.window))
             {
                 std::cout << "Entered Character Select Stage" << std::endl;
                 game.setState(GameState::ARCADE_PREFIGHT);
@@ -199,9 +202,14 @@ int main()
             game.renderSettingsScreen(renderer);
             if (game.handleSettingsInput(glWindow.window))
             {
-                game.setState(GameState::MENU);
+                game.setState(GameState::SETTINGS_EXIT);
             }
             glWindow.windowSwapBuffers();
+            break;
+        case GameState::SETTINGS_EXIT:
+            // Reinitialize input handlers after updating settings
+            worldSystem.initInputHandlers();
+            game.setState(GameState::MENU);
             break;
         case GameState::CHARACTER_SELECT:
             game.handleCharacterInputs(glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
@@ -249,9 +257,9 @@ int main()
                 loopsSinceLastFrame = 0;
                 interp_moveEntitesToScreen(renderer);
                 handleUtilityInputs(renderer, showFPS, botEnabled,
-                    fKeyPressed, bKeyPressed, hKeyPressed,
-                    glWindow, fpsCounter, shouldExit,
-                    worldSystem);
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
                 // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
                 glWindow.windowSwapBuffers();
             }
@@ -305,8 +313,9 @@ int main()
             renderer.renderUI(timer);
             renderer.renderRoundOver(1);
 
-            if (!renderer.isExitAnimationStarted()) 
-                if (registry.healths.get(renderer.m_player1).currentHealth > registry.healths.get(renderer.m_player2).currentHealth) {
+            if (!renderer.isExitAnimationStarted())
+                if (registry.healths.get(renderer.m_player1).currentHealth > registry.healths.get(renderer.m_player2).currentHealth)
+                {
                     game.updateArcadeLevel();
                 }
 
@@ -352,6 +361,5 @@ int main()
 
     // Cleanup in correct order
     SDL_Quit();
-
     return 0;
 }

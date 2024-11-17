@@ -3,7 +3,8 @@
 #include "../renderer.hpp"
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
-
+#include "../settings.hpp"
+#include "../default_config.hpp"
 // Forward declarations
 class GlRender;
 class InputHandler;
@@ -36,6 +37,7 @@ public:
 	void updatePlayableArea();
 	// bool step(float elapsed_ms);
 	bool botEnabled = false;
+	void initInputHandlers();
 
 private:
 	GlRender *renderer;
@@ -46,12 +48,11 @@ private:
 	std::unique_ptr<StateMachine> player2StateMachine;
 
 	Motion *player1Motion;
-	Motion* player2Motion;
+	Motion *player2Motion;
 
-	CollisionBox* player1CollisionBox;
+	CollisionBox *player1CollisionBox;
 	CollisionBox *player2CollisionBox;
 
-	void initInputHandlers();
 	void initStateMachines();
 	void updatePlayerState(float elapsed_ms);
 };

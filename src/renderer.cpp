@@ -207,7 +207,7 @@ void GlRender::renderRoundOver(int count)
 
         // Create and render restart prompt
         renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10)* xscale, (baseY + 250.0f)* yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10) * xscale, (baseY + 250.0f) * yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -285,7 +285,7 @@ void GlRender::handleTexturedRenders()
                 shader->setBool("stunned", false);
             }
 
-            if (registry.playerCurrentStates.get(m_player1).currentState == PlayerState::BLOCKSTUNNED) 
+            if (registry.playerCurrentStates.get(m_player1).currentState == PlayerState::BLOCKSTUNNED)
             {
                 shader->setBool("isBlockStunned", true);
             }
@@ -1649,7 +1649,9 @@ void GlRender::renderText(std::string text, float x, float y, float scale, const
     glBlendFunc(blendSrc, blendDst);
 }
 
-void GlRender::renderSimpleButton(float x, float y, float width, float height, bool isSelected, bool isHovered, bool isPressed)
+void GlRender::renderSimpleButton(float x, float y, float width, float height,
+                                  bool isSelected, bool isHovered, bool isPressed,
+                                  glm::vec3 tintColor)
 {
     // Convert screen coordinates to normalized device coordinates (-1 to 1)
     float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
@@ -1686,6 +1688,7 @@ void GlRender::renderSimpleButton(float x, float y, float width, float height, b
     m_simpleButtonShader->setBool("isSelected", isSelected);
     m_simpleButtonShader->setBool("isHovered", isHovered);
     m_simpleButtonShader->setBool("isPressed", isPressed);
+    m_simpleButtonShader->setVec3("tintColor", tintColor); // Add tint color uniform
 
     // Enable blending for transparency
     glEnable(GL_BLEND);

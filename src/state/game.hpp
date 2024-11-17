@@ -12,6 +12,7 @@
 #include "../world/world_init.hpp"
 #include <string>
 #include <GLFW/glfw3.h>
+#include "../settings.hpp"
 
 enum class GameState
 {
@@ -23,6 +24,7 @@ enum class GameState
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
     SETTINGS,
+    SETTINGS_EXIT,
     ROUND_START,
     ROUND_OVER,
     PAUSED,
@@ -43,10 +45,10 @@ public:
     void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
-    void renderArcadeMenu(GlRender& renderer);
+    void renderArcadeMenu(GlRender &renderer);
     bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
     void handleArcadeButton();
-    bool handleArcadeMenuInput(GLFWwindow* window);
+    bool handleArcadeMenuInput(GLFWwindow *window);
     void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
@@ -55,8 +57,8 @@ public:
 
     bool handleCharacterInput(GLFWwindow *window);
     void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
-    void renderArcadePrefight(GlRender& renderer, float offset1, bool p1);
-    void handleArcadePrefightInputs(GLWindow& glWindow, bool& p1KeyPressed, bool& p1Ready, bool& goDown1, bool& goUp1, float& offsetY1);
+    void renderArcadePrefight(GlRender &renderer, float offset1, bool p1);
+    void handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &goDown1, bool &goUp1, float &offsetY1);
     void handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
                                bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2);
     void renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game);
@@ -73,6 +75,8 @@ public:
     bool handleSettingsInput(GLFWwindow *window);
     WorldSystem *getWorldSystem() { return worldSystem; }
     void renderPauseButton(GlRender &renderer);
+    void renderControlsSettings(GlRender &renderer, bool isPlayer1Selected, bool isPlayer2Selected);
+    void handleControlsSettingsInput(GLFWwindow *window);
 
 private:
     GameState currentState;
@@ -100,7 +104,6 @@ private:
     Button audioButton;
     Button player1Button;
     Button player2Button;
-    Button applyButton;
     Button resetButton;
     Button pauseSettingsButton;
 
@@ -141,6 +144,13 @@ private:
 
     int levelCompleted = 0;
     int currentLevel = 0;
+
+    bool isRebinding = false;
+    int *currentlyRebindingKey = nullptr;
+
+    float errorMessageTimer = 0.0f;
+    int errorButtonIndex = -1; // Which button showed error
+    bool showErrorMessage = false;
 
     void cleanupButtons();
 };
