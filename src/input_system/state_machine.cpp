@@ -81,7 +81,7 @@ void WalkingState::exit(Entity entity, StateMachine &stateMachine)
 
 void WalkingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-   // TODO: DONT RENTER WALK STATE EVERY TIME BUTTON IS PRESSED
+    // TODO: DONT RENTER WALK STATE EVERY TIME BUTTON IS PRESSED
     Motion& motion = registry.motions.get(entity);
     if (motion.velocity.x == 0)
     {
@@ -183,6 +183,12 @@ void AttackingState::update(Entity entity, float elapsed_ms, StateMachine &state
         hitBox.width += fighterConfig.PUNCH_WIDTH / (fighterConfig.HITBOX_DURATION / 4) * elapsed_ms;
     }
 
+    // if width is max, disable hitbox, the rest of the time doesn't apply damage (simulate a recovery time) 
+    if (hitBox.width >= fighterConfig.PUNCH_WIDTH)
+    {
+        hitBox.active = false;
+    }
+
     Animation& animation = registry.animations.get(entity);
     if (animation.currentFrame < 4) {
         animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
@@ -217,22 +223,182 @@ bool AttackingState::canTransitionTo(Entity entity, PlayerState newState)
     return newState != PlayerState::ATTACKING;
 }
 
+void KickingState::enter(Entity entity, StateMachine &stateMachine)
+{
+    Player &player = registry.players.get(entity);
+    std::cout << "Player " << player.id << " kicks!" << std::endl;
+
+    // add attack animation 
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+
+    // 1. register a state timer
+    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::KICKING;
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(fighterConfig.KICK_HITBOX_DURATION);
+
+    Motion &motion = registry.motions.get(entity);
+    
+    HitBox &hitBox = registry.hitBoxes.get(entity);
+    hitBox.active = true;
+    hitBox.hit = false;
+    hitBox.width = 0; // fighterConfig.KICK_WIDTH;
+    hitBox.height = fighterConfig.KICK_HEIGHT;
+    hitBox.yOffset = fighterConfig.KICK_Y_OFFSET;
+    float baseOffset = fighterConfig.KICK_X_OFFSET; // set base offset and adjust based on player direction
+    hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;
+
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+}
+
+void KickingState::exit(Entity entity, StateMachine &stateMachine)
+{
+    // make sure the state timer is not alive
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(0);
+
+    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::IDLE;
+
+    HitBox &playerHitBox = registry.hitBoxes.get(entity);
+    playerHitBox.active = false;
+    playerHitBox.hit = false;
+}
+
+void KickingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
+{
+    HitBox &hitBox = registry.hitBoxes.get(entity);
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+
+    if (hitBox.width < fighterConfig.KICK_WIDTH)
+    {
+        hitBox.width += fighterConfig.KICK_WIDTH / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms;
+    }
+
+    // if width is max, disable hitbox, the rest of the time doesn't apply damage (simulate a recovery time) 
+    if (hitBox.width >= fighterConfig.KICK_WIDTH)
+    {
+        hitBox.active = false;
+    }
+
+    Animation& animation = registry.animations.get(entity);
+    if (animation.currentFrame < 4) {
+        animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+    } else {
+        animation.currentTexture = fighterConfig.m_bird_punch_f2_texture;
+    }
+
+    animation.currentFrame = animation.currentFrame + 1;
+
+    // when state timer is expired, transition to idle
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive())
+    {
+        playerStateTimer.update(elapsed_ms);
+    }
+    else
+    {
+        stateMachine.transition(entity, PlayerState::IDLE);
+    }
+}
+
+bool KickingState::canTransitionTo(Entity entity, PlayerState newState)
+{
+    if (newState == PlayerState::STUNNED)
+        return true; // if being parried during kick, override and transition to STUNNED
+    
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+
+    if (playerStateTimer.isAlive())
+        return false; // still in current state 
+
+    return newState != PlayerState::KICKING;
+}
+
 void CrouchingState::enter(Entity entity, StateMachine &stateMachine)
 {
-    // add crouch animation
+    std::cout << "Player crouches!" << std::endl; 
+
+    // register timer 
+    PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+    playerState.currentState = PlayerState::CROUCHING;
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(fighterConfig.CROUCH_TIMER);
+
+    // TODO: change animation 
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
+    animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+
+    // print out hurtbox stats 
+    HurtBox &hurtBox = registry.hurtBoxes.get(entity);
 }
 
 void CrouchingState::exit(Entity entity, StateMachine &stateMachine)
 {
+    std::cout << "Player exiting Crouching State" << std::endl;
+
+    // make sure the state timer is not alive 
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    playerStateTimer.reset(0); 
+
+    PlayerState &playerState = registry.playerCurrentStates.get(entity).currentState;
+    playerState = PlayerState::IDLE;
+
+    // recover player's hurtbox to normal size 
+    HurtBox &hurtBox = registry.hurtBoxes.get(entity);
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    hurtBox.height = fighterConfig.NDC_HEIGHT / 2.0f;
+    hurtBox.yOffset = 0;
 }
 
 void CrouchingState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
-    // Check for input to transition to other states
+    // shrink hurtbox height to 1/3, same as kicking 
+    HurtBox &hurtBox = registry.hurtBoxes.get(entity);
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    if (hurtBox.height > fighterConfig.NDC_HEIGHT / 6.0f)
+    {
+        hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * 2;
+        hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * 2;
+    }
+
+    // when state timer is expired, transition to idle
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    if (playerStateTimer.isAlive())
+    {
+        playerStateTimer.update(elapsed_ms);
+    }
+    else
+    {
+        PlayerInput& input = registry.playerInputs.get(entity);
+        // check if crouch key is still held 
+        if (!input.down) {
+            stateMachine.transition(entity, PlayerState::IDLE);
+        } 
+    }
 }
 
 bool CrouchingState::canTransitionTo(Entity entity, PlayerState newState)
 {
+    // you can transition to any state from crouching, including attacking. 
+    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+    // if (playerStateTimer.isAlive())
+    //     return false; // still in current state
+    if (newState == PlayerState::IDLE) {
+        // if crouch key is pressed, don't transition to idle 
+        PlayerInput& input = registry.playerInputs.get(entity);
+        return !input.down && !playerStateTimer.isAlive(); 
+    }
+
     return newState != PlayerState::CROUCHING;
     // && newState != PlayerState::JUMPING;
 }
@@ -325,7 +491,8 @@ void StunnedState::enter(Entity entity, StateMachine &stateMachine)
     animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
     
     float STUN_DURATION;
-    if (stateMachine.getPreviousState() == PlayerState::ATTACKING)
+    if (stateMachine.getPreviousState() == PlayerState::ATTACKING || 
+        stateMachine.getPreviousState() == PlayerState::KICKING)
     {
         STUN_DURATION = FighterManager::getFighterConfig(fighter).PARRY_STUN_DURATION;
     }

@@ -41,6 +41,17 @@ struct FighterConfig
     float PARRY_STUN_DURATION; // if a hit is perfect parried, the player is stunned longer than being punched, heavy panelty on failed attack, this prevent abuse of attacking
     float BLOCK_STUN_DURATION; // if a hit is block, the player that blocked will be stunned for a period of time
 
+    // attack 2 (kick) 
+    float KICK_HITBOX_DURATION; 
+    float KICK_X_OFFSET = 0.f;  
+    float KICK_Y_OFFSET; 
+    float KICK_WIDTH; 
+    float KICK_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f); 
+    float KICK_DAMAGE = 10.f; 
+    float KICK_STUN_DURATION; 
+
+    float CROUCH_TIMER = 1500.f; // crouching period 
+
     float PARRY_DURATION; // parry duration (parryBox active time)
     float PERFECT_PARRY_DURATION;
 
@@ -61,7 +72,8 @@ struct FighterConfig
           NDC_HEIGHT(BB_HEIGHT / window_height_px * 2.0f),
           PUNCH_Y_OFFSET(0.20f * (BB_HEIGHT / window_height_px * 2.0f)),
           PUNCH_WIDTH(0.50f * (BB_WIDTH / window_width_px * 2.0f)),
-          PUNCH_HEIGHT(0.15f * (BB_HEIGHT / window_height_px * 2.0f)) {};
+          KICK_WIDTH(0.50f * (BB_WIDTH / window_width_px * 2.0f)),
+          KICK_Y_OFFSET(-0.40f * (BB_HEIGHT / window_height_px * 2.0f)) {};
 };
 
 // 3. fighter manager, this stores configs for all fighters

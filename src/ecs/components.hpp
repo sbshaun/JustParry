@@ -13,6 +13,7 @@ enum class PlayerState
     //JUMPING,
     CROUCHING,
     ATTACKING,
+    KICKING,
     PARRYING,
     PERFECT_PARRYING,
     COUNTER_ATTACKING,
@@ -36,6 +37,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
         return "CROUCHING";
     case PlayerState::ATTACKING:
         return "ATTACKING";
+    case PlayerState::KICKING:
+        return "KICKING";
     case PlayerState::PARRYING:
         return "PARRYING";
     case PlayerState::PERFECT_PARRYING:
@@ -271,12 +274,12 @@ struct HurtBox : public Box
 
     float getTop(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y + height;
+        return playerPosition.y + height + yOffset; 
     }
 
     float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y - height;
+        return playerPosition.y - height + yOffset;
     }
 };
 

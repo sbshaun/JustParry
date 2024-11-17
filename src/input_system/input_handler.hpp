@@ -21,7 +21,7 @@ public:
         bindActionToCommand(Action::MOVE_LEFT, std::make_unique<MoveLeftCommand>());
         bindActionToCommand(Action::MOVE_RIGHT, std::make_unique<MoveRightCommand>());
         //bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
-        bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
+        // bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
         bindActionToCommand(Action::PUNCH, std::make_unique<PunchCommand>());
         bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());
         bindActionToCommand(Action::PARRY, std::make_unique<ParryCommand>());
@@ -113,7 +113,7 @@ public:
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)
                     continue;
 
-                if (!shouldAddActionToBuffer(action))
+                if (!shouldAddActionToBuffer(entity, action))
                     continue;
                 actionBuffer.push_back({action, TTL});
             }
@@ -136,6 +136,12 @@ public:
                 if (action == Action::PARRY)
                 {
                     parryReleased = true;
+                }
+                if (action == Action::CROUCH)
+                {
+                    PlayerInput &input = registry.playerInputs.get(entity);
+                    input.down = false;
+                    crouchReleased = true;
                 }
             }
         }
@@ -165,7 +171,7 @@ public:
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)
                     continue;
 
-                if (!shouldAddActionToBuffer(action))
+                if (!shouldAddActionToBuffer(entity, action))
                     continue;
                 actionBuffer.push_back({action, TTL});
             }
@@ -189,6 +195,10 @@ public:
                 {
                     parryReleased = true;
                 }
+                if (action == Action::CROUCH)
+                {
+                    crouchReleased = true;
+                }
             }
         }
 
@@ -198,7 +208,7 @@ public:
     }
 
     // functioin to determine if a key should be added: only add one action per press
-    bool shouldAddActionToBuffer(Action action)
+    bool shouldAddActionToBuffer(Entity entity,Action action)
     {
         if (action == Action::PUNCH)
         {
@@ -238,6 +248,20 @@ public:
                 return true;
             }
         }
+        if (action == Action::CROUCH)
+        {
+            if (!crouchReleased)
+            {
+                return false;
+            }
+            else
+            {
+                PlayerInput &input = registry.playerInputs.get(entity);
+                input.down = true;
+                crouchReleased = false;
+                return true;
+            }
+        }
         return true;
     }
 
@@ -267,4 +291,5 @@ private:
     bool punchReleased = true; // one action per press, next action requires to release the key first
     bool kickReleased = true;
     bool parryReleased = true;
+    bool crouchReleased = true;
 };
