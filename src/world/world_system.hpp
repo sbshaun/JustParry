@@ -4,6 +4,10 @@
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 // Forward declarations
 class GlRender;
 class InputHandler;
@@ -32,6 +36,7 @@ public:
 	bool checkParryBoxCollisions(Entity playerWithHitBox, Entity playerWithParryBox);
 	void checkAABBCollision(bool &xCollision, bool &yCollision, const Box &box1, Motion &motion1, const Box &box2, Motion &motion2);
 	void playerCollisions(GlRender *renderer);
+	static void playPunchSound() { Mix_PlayChannel(-1, punch_sound, 0); }
 
 	void updatePlayableArea();
 	// bool step(float elapsed_ms);
@@ -54,4 +59,6 @@ private:
 	void initInputHandlers();
 	void initStateMachines();
 	void updatePlayerState(float elapsed_ms);
+	static Mix_Music* background_music; 
+	static Mix_Chunk* punch_sound; 
 };
