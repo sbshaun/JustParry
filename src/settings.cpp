@@ -82,7 +82,6 @@ namespace Settings
             file << "music_volume=" << audioSettings.music_volume << "\n";
 
             file.close();
-            std::cout << "Settings saved to " << getConfigPath() << std::endl;
         }
         else
         {
@@ -585,12 +584,40 @@ namespace Settings
 
     bool areSettingsDefault()
     {
+        // Check window settings separately first
+        bool windowMatches =
+            // Compare window mode strings properly
+            windowSettings.window_mode == DefaultConfig::WINDOW_SETTINGS.window_mode &&
+            // Compare resolution
+            windowSettings.resolution.width == DefaultConfig::WINDOW_SETTINGS.resolution.width &&
+            windowSettings.resolution.height == DefaultConfig::WINDOW_SETTINGS.resolution.height &&
+            // Compare boolean flags
+            windowSettings.show_fps == DefaultConfig::WINDOW_SETTINGS.show_fps &&
+            windowSettings.enable_bot == DefaultConfig::WINDOW_SETTINGS.enable_bot &&
+            windowSettings.enable_debug == DefaultConfig::WINDOW_SETTINGS.enable_debug;
+
+        // For debugging
+        if (!windowMatches)
+        {
+            std::cout << "Window settings mismatch:" << std::endl;
+            std::cout << "Mode: current=" << windowSettings.window_mode
+                      << " default=" << DefaultConfig::WINDOW_SETTINGS.window_mode << std::endl;
+            std::cout << "Resolution: current=" << windowSettings.resolution.width << "x" << windowSettings.resolution.height
+                      << " default=" << DefaultConfig::WINDOW_SETTINGS.resolution.width << "x" << DefaultConfig::WINDOW_SETTINGS.resolution.height << std::endl;
+            std::cout << "Show FPS: current=" << windowSettings.show_fps
+                      << " default=" << DefaultConfig::WINDOW_SETTINGS.show_fps << std::endl;
+            std::cout << "Enable Bot: current=" << windowSettings.enable_bot
+                      << " default=" << DefaultConfig::WINDOW_SETTINGS.enable_bot << std::endl;
+            std::cout << "Enable Debug: current=" << windowSettings.enable_debug
+                      << " default=" << DefaultConfig::WINDOW_SETTINGS.enable_debug << std::endl;
+        }
+
         return (
+            // Check window settings
+            windowMatches &&
             // Check controls
             memcmp(&p1Controls, &DefaultConfig::P1_CONTROLS, sizeof(PlayerControls)) == 0 &&
             memcmp(&p2Controls, &DefaultConfig::P2_CONTROLS, sizeof(PlayerControls)) == 0 &&
-            // Check window settings
-            memcmp(&windowSettings, &DefaultConfig::WINDOW_SETTINGS, sizeof(WindowSettings)) == 0 &&
             // Check audio settings
             memcmp(&audioSettings, &DefaultConfig::AUDIO_SETTINGS, sizeof(AudioSettings)) == 0);
     }

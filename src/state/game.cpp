@@ -7,7 +7,10 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
                isWindowSelected(true),
                isAudioSelected(false),
                isPlayer1Selected(true),
-               isPlayer2Selected(false)
+               isPlayer2Selected(false),
+               // Initialize these from settings
+               showFPS(Settings::windowSettings.show_fps),
+               botEnabled(Settings::windowSettings.enable_bot)
 {
     float leftShift = M_WINDOW_WIDTH_PX * (0.05f + 0.015f + 0.02f + 0.03f); // 5% + 1.5% + 2% + 3% of window width
     float upShift = M_WINDOW_HEIGHT_PX * 0.05f;                             // 5% of window height
@@ -1045,154 +1048,273 @@ void Game::renderSettingsScreen(GlRender &renderer)
 
         if (isWindowSelected)
         {
-            // Window settings
-            renderer.renderText("WINDOW MODE", 215, 350, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("RESOLUTION", 215, 400, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("SHOW FPS COUNTER [F]", 215, 450, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("ENABLE BOT [B]", 215, 500, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("ENABLE DEBUG MODE [D]", 215, 550, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            // Window settings labels and buttons
+            float labelX = 215;
+            float buttonX = M_WINDOW_WIDTH_PX / 2.0f + 60.0f;
+            float startY = 350;
+            float spacing = 50;
+            float buttonWidth = 210.0f;
+            float buttonHeight = 40.0f;
 
-            // Update button texts with actual settings
-            windowButton1.text = Settings::windowSettings.window_mode.c_str();
+            // Labels - gray out the disabled options
+            renderer.renderText("WINDOW MODE", labelX, startY, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f));          // Grayed out
+            renderer.renderText("RESOLUTION", labelX, startY + spacing, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f)); // Grayed out
+            renderer.renderText("SHOW FPS COUNTER [F]", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("ENABLE BOT [B]", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("ENABLE DEBUG MODE [D]", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-            // Format resolution as string
-            std::string resText = std::to_string(Settings::windowSettings.resolution.width) +
-                                  " x " +
-                                  std::to_string(Settings::windowSettings.resolution.height);
-            windowButton2.text = resText.c_str();
+            // Update button positions
+            float buttonY = startY - 22;
+            windowButton1 = {buttonX, buttonY, buttonWidth, buttonHeight, "WINDOWED"};             // Fixed text
+            windowButton2 = {buttonX, buttonY + spacing, buttonWidth, buttonHeight, "1024 x 768"}; // Fixed text
+            windowButton3 = {buttonX, buttonY + spacing * 2, buttonWidth, buttonHeight, Settings::windowSettings.show_fps ? "ON" : "OFF"};
+            windowButton4 = {buttonX, buttonY + spacing * 3, buttonWidth, buttonHeight, Settings::windowSettings.enable_bot ? "ON" : "OFF"};
+            windowButton5 = {buttonX, buttonY + spacing * 4, buttonWidth, buttonHeight, Settings::windowSettings.enable_debug ? "ON" : "OFF"};
 
-            windowButton3.text = Settings::windowSettings.show_fps ? "ON" : "OFF";
-            windowButton4.text = Settings::windowSettings.enable_bot ? "ON" : "OFF";
-            windowButton5.text = Settings::windowSettings.enable_debug ? "ON" : "OFF";
+            // Check hover states (only for enabled buttons)
+            bool wButton1Hovered = false; // Disabled
+            bool wButton2Hovered = false; // Disabled
+            bool wButton3Hovered = mouseX >= windowButton3.x && mouseX <= windowButton3.x + windowButton3.width &&
+                                   mouseY >= windowButton3.y && mouseY <= windowButton3.y + windowButton3.height;
+            bool wButton4Hovered = mouseX >= windowButton4.x && mouseX <= windowButton4.x + windowButton4.width &&
+                                   mouseY >= windowButton4.y && mouseY <= windowButton4.y + windowButton4.height;
+            bool wButton5Hovered = mouseX >= windowButton5.x && mouseX <= windowButton5.x + windowButton5.width &&
+                                   mouseY >= windowButton5.y && mouseY <= windowButton5.y + windowButton5.height;
 
-            bool wButton1Hovered = mouseX >= windowButton1.x &&
-                                   mouseX <= windowButton1.x + windowButton1.width &&
-                                   mouseY >= windowButton1.y &&
-                                   mouseY <= windowButton1.y + windowButton1.height;
+            // Handle clicks (only for enabled buttons)
+            static bool wasPressed = false;
+            bool isPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-            bool wButton2Hovered = mouseX >= windowButton2.x &&
-                                   mouseX <= windowButton2.x + windowButton2.width &&
-                                   mouseY >= windowButton2.y &&
-                                   mouseY <= windowButton2.y + windowButton2.height;
+            if (isPressed && !wasPressed)
+            {
+                // Remove window mode and resolution handlers
+                if (wButton3Hovered) // FPS Counter
+                {
+                    Settings::windowSettings.show_fps = !Settings::windowSettings.show_fps;
+                    showFPS = Settings::windowSettings.show_fps;
+                    Settings::saveSettings();
+                    std::cout << "FPS display " << (showFPS ? "enabled" : "disabled") << std::endl;
+                }
+                else if (wButton4Hovered) // Bot Mode
+                {
+                    Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
+                    botEnabled = Settings::windowSettings.enable_bot;
+                    if (worldSystem != nullptr)
+                    {
+                        worldSystem->botEnabled = botEnabled;
+                    }
+                    Settings::saveSettings();
+                    std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
+                }
+                else if (wButton5Hovered) // Debug Mode
+                {
+                    Settings::windowSettings.enable_debug = !Settings::windowSettings.enable_debug;
+                    renderer.debugMode = Settings::windowSettings.enable_debug;
+                    Settings::saveSettings();
+                    std::cout << "Debug mode " << (renderer.debugMode ? "enabled" : "disabled") << std::endl;
+                }
+            }
+            wasPressed = isPressed;
 
-            bool wButton3Hovered = mouseX >= windowButton3.x &&
-                                   mouseX <= windowButton3.x + windowButton3.width &&
-                                   mouseY >= windowButton3.y &&
-                                   mouseY <= windowButton3.y + windowButton3.height;
+            // Render buttons with hover effect
+            const glm::vec3 disabledColor(0.4f, 0.4f, 0.4f); // Darker gray for disabled buttons
+            const glm::vec3 placeholderColor(0.6f, 0.6f, 0.6f);
+            const glm::vec3 white(1.0f, 1.0f, 1.0f);
+            const glm::vec3 grayText(0.7f, 0.7f, 0.7f); // Gray text for disabled buttons
 
-            bool wButton4Hovered = mouseX >= windowButton4.x &&
-                                   mouseX <= windowButton4.x + windowButton4.width &&
-                                   mouseY >= windowButton4.y &&
-                                   mouseY <= windowButton4.y + windowButton4.height;
+            // Render disabled buttons with gray color
+            renderer.renderSimpleButton(windowButton1.x, windowButton1.y, windowButton1.width, windowButton1.height,
+                                        true, false, false, disabledColor);
+            renderer.renderSimpleButton(windowButton2.x, windowButton2.y, windowButton2.width, windowButton2.height,
+                                        true, false, false, disabledColor);
 
-            bool wButton5Hovered = mouseX >= windowButton5.x &&
-                                   mouseX <= windowButton5.x + windowButton5.width &&
-                                   mouseY >= windowButton5.y &&
-                                   mouseY <= windowButton5.y + windowButton5.height;
+            // Render enabled buttons normally
+            renderer.renderSimpleButton(windowButton3.x, windowButton3.y, windowButton3.width, windowButton3.height,
+                                        true, wButton3Hovered, false, placeholderColor);
+            renderer.renderSimpleButton(windowButton4.x, windowButton4.y, windowButton4.width, windowButton4.height,
+                                        true, wButton4Hovered, false, placeholderColor);
+            renderer.renderSimpleButton(windowButton5.x, windowButton5.y, windowButton5.width, windowButton5.height,
+                                        true, wButton5Hovered, false, placeholderColor);
 
-            renderer.renderSimpleButton(
-                windowButton1.x, windowButton1.y,
-                windowButton1.width, windowButton1.height,
-                true, wButton1Hovered, false,
-                placeholderColor);
+            // Render button text (grayed out for disabled buttons)
+            renderer.renderText(windowButton1.text, windowButton1.x + 40.f, windowButton1.y + 30.f, 0.25f, grayText);
+            renderer.renderText(windowButton2.text, windowButton2.x + 40.f, windowButton2.y + 30.f, 0.25f, grayText);
+            if (strcmp(windowButton3.text, "ON") == 0)
+            {
+                renderer.renderText(windowButton3.text, windowButton3.x + 85.f, windowButton3.y + 30.f, 0.25f, white);
+            }
+            else
+            {
+                renderer.renderText(windowButton3.text, windowButton3.x + 80.f, windowButton3.y + 30.f, 0.25f, white);
+            }
 
-            renderer.renderSimpleButton(
-                windowButton2.x, windowButton2.y,
-                windowButton2.width, windowButton2.height,
-                true, wButton2Hovered, false,
-                placeholderColor);
+            if (strcmp(windowButton4.text, "ON") == 0)
+            {
+                renderer.renderText(windowButton4.text, windowButton4.x + 85.f, windowButton4.y + 30.f, 0.25f, white);
+            }
+            else
+            {
+                renderer.renderText(windowButton4.text, windowButton4.x + 80.f, windowButton4.y + 30.f, 0.25f, white);
+            }
 
-            renderer.renderSimpleButton(
-                windowButton3.x, windowButton3.y,
-                windowButton3.width, windowButton3.height,
-                true, wButton3Hovered, false,
-                placeholderColor);
-
-            renderer.renderSimpleButton(
-                windowButton4.x, windowButton4.y,
-                windowButton4.width, windowButton4.height,
-                true, wButton4Hovered, false,
-                placeholderColor);
-
-            renderer.renderSimpleButton(
-                windowButton5.x, windowButton5.y,
-                windowButton5.width, windowButton5.height,
-                true, wButton5Hovered, false,
-                placeholderColor);
-
-            renderer.renderText(windowButton1.text, windowButton1.x + 40.f, windowButton1.y - 170.f, 0.25f, white);
-            renderer.renderText(windowButton2.text, windowButton1.x + 40.f, windowButton1.y - 120.f, 0.25f, white);
-            renderer.renderText(windowButton3.text, windowButton1.x + 75.f, windowButton1.y - 70.f, 0.25f, white);
-            renderer.renderText(windowButton4.text, windowButton1.x + 75.f, windowButton1.y - 20.f, 0.25f, white);
-            renderer.renderText(windowButton5.text, windowButton1.x + 75.f, windowButton1.y + 30.f, 0.25f, white);
+            if (strcmp(windowButton5.text, "ON") == 0)
+            {
+                renderer.renderText(windowButton5.text, windowButton5.x + 85.f, windowButton5.y + 30.f, 0.25f, white);
+            }
+            else
+            {
+                renderer.renderText(windowButton5.text, windowButton5.x + 80.f, windowButton5.y + 30.f, 0.25f, white);
+            }
         }
         else if (isAudioSelected)
         {
-            // Update button texts with actual settings
-            audioButton1.text = Settings::audioSettings.enable_sound_effects ? "ON" : "OFF";
-            audioButton2.text = Settings::audioSettings.enable_music ? "ON" : "OFF";
+            // Audio settings labels and buttons
+            float labelX = 215;
+            float buttonX = M_WINDOW_WIDTH_PX / 2.0f + 60.0f;
+            float startY = 350;
+            float spacing = 50;
+            float buttonWidth = 210.0f;
+            float buttonHeight = 40.0f;
 
-            // Format volume as percentage
+            // Labels
+            renderer.renderText("ENABLE SOUND EFFECTS", labelX, startY, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("ENABLE MUSIC", labelX, startY + spacing, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("OVERALL VOLUME", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("MUSIC VOLUME", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+            // Update button positions and texts
+            float buttonY = startY - 22;
+            audioButton1 = {buttonX, buttonY, buttonWidth, buttonHeight,
+                            Settings::audioSettings.enable_sound_effects ? "ON" : "OFF"};
+            audioButton2 = {buttonX, buttonY + spacing, buttonWidth, buttonHeight,
+                            Settings::audioSettings.enable_music ? "ON" : "OFF"};
+            audioButton3 = {buttonX, buttonY + spacing * 2, buttonWidth, buttonHeight,
+                            (std::to_string(int(Settings::audioSettings.overall_volume * 100)) + "%").c_str()};
+            audioButton4 = {buttonX, buttonY + spacing * 3, buttonWidth, buttonHeight,
+                            (std::to_string(int(Settings::audioSettings.music_volume * 100)) + "%").c_str()};
+
+            // Check hover states
+            bool aButton1Hovered = mouseX >= audioButton1.x && mouseX <= audioButton1.x + audioButton1.width &&
+                                   mouseY >= audioButton1.y && mouseY <= audioButton1.y + audioButton1.height;
+            bool aButton2Hovered = mouseX >= audioButton2.x && mouseX <= audioButton2.x + audioButton2.width &&
+                                   mouseY >= audioButton2.y && mouseY <= audioButton2.y + audioButton2.height;
+            bool aButton3Hovered = mouseX >= audioButton3.x && mouseX <= audioButton3.x + audioButton3.width &&
+                                   mouseY >= audioButton3.y && mouseY <= audioButton3.y + audioButton3.height;
+            bool aButton4Hovered = mouseX >= audioButton4.x && mouseX <= audioButton4.x + audioButton4.width &&
+                                   mouseY >= audioButton4.y && mouseY <= audioButton4.y + audioButton4.height;
+
+            static bool isDraggingOverall = false;
+            static bool isDraggingMusic = false;
+
+            // Handle clicks and drags
+            bool isPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+            static bool wasPressed = false;
+
+            if (isPressed)
+            {
+                if (!wasPressed)
+                {
+                    // Initial click
+                    if (aButton1Hovered)
+                    {
+                        Settings::audioSettings.enable_sound_effects = !Settings::audioSettings.enable_sound_effects;
+                        Settings::saveSettings();
+                    }
+                    else if (aButton2Hovered)
+                    {
+                        Settings::audioSettings.enable_music = !Settings::audioSettings.enable_music;
+                        Settings::saveSettings();
+                    }
+                    else if (aButton3Hovered)
+                    {
+                        isDraggingOverall = true;
+                    }
+                    else if (aButton4Hovered)
+                    {
+                        isDraggingMusic = true;
+                    }
+                }
+
+                // Handle dragging for volume sliders
+                if (isDraggingOverall)
+                {
+                    float relativeX = std::max(0.0f, std::min(1.0f, (float)(mouseX - audioButton3.x) / audioButton3.width));
+                    Settings::audioSettings.overall_volume = relativeX;
+                    Settings::saveSettings();
+                }
+                else if (isDraggingMusic)
+                {
+                    float relativeX = std::max(0.0f, std::min(1.0f, (float)(mouseX - audioButton4.x) / audioButton4.width));
+                    Settings::audioSettings.music_volume = relativeX;
+                    Settings::saveSettings();
+                }
+            }
+            else
+            {
+                isDraggingOverall = false;
+                isDraggingMusic = false;
+            }
+            wasPressed = isPressed;
+
+            // Render buttons
+            const glm::vec3 placeholderColor(0.6f, 0.6f, 0.6f);
+            // Use the theme color for sliders
+            const glm::vec3 sliderColor(139.0f / 255.0f, 169.0f / 255.0f, 174.0f / 255.0f);
+            const glm::vec3 white(1.0f, 1.0f, 1.0f);
+
+            // Render ON/OFF buttons
+            renderer.renderSimpleButton(audioButton1.x, audioButton1.y, audioButton1.width, audioButton1.height,
+                                        true, aButton1Hovered, false, placeholderColor);
+            renderer.renderSimpleButton(audioButton2.x, audioButton2.y, audioButton2.width, audioButton2.height,
+                                        true, aButton2Hovered, false, placeholderColor);
+
+            // Render volume sliders
+            // Background
+            renderer.renderSimpleButton(audioButton3.x, audioButton3.y, audioButton3.width, audioButton3.height,
+                                        true, aButton3Hovered, false, placeholderColor);
+            renderer.renderSimpleButton(audioButton4.x, audioButton4.y, audioButton4.width, audioButton4.height,
+                                        true, aButton4Hovered, false, placeholderColor);
+
+            // Filled portion for overall volume
+            float fillWidth3 = audioButton3.width * Settings::audioSettings.overall_volume;
+            renderer.renderSimpleButton(audioButton3.x, audioButton3.y, fillWidth3, audioButton3.height,
+                                        false, false, false, sliderColor);
+
+            // Filled portion for music volume
+            float fillWidth4 = audioButton4.width * Settings::audioSettings.music_volume;
+            renderer.renderSimpleButton(audioButton4.x, audioButton4.y, fillWidth4, audioButton4.height,
+                                        false, false, false, sliderColor);
+
+            // Render button text
+            if (strcmp(audioButton1.text, "ON") == 0)
+            {
+                renderer.renderText(audioButton1.text, audioButton1.x + 85.f, audioButton1.y + 30.f, 0.25f, white);
+            }
+            else
+            {
+                renderer.renderText(audioButton1.text, audioButton1.x + 80.f, audioButton1.y + 30.f, 0.25f, white);
+            }
+
+            if (strcmp(audioButton2.text, "ON") == 0)
+            {
+                renderer.renderText(audioButton2.text, audioButton2.x + 85.f, audioButton2.y + 30.f, 0.25f, white);
+            }
+            else
+            {
+                renderer.renderText(audioButton2.text, audioButton2.x + 80.f, audioButton2.y + 30.f, 0.25f, white);
+            }
+
+            // Render volume percentages centered on the sliders
             std::string overallVolText = std::to_string(int(Settings::audioSettings.overall_volume * 100)) + "%";
-            audioButton3.text = overallVolText.c_str();
-
             std::string musicVolText = std::to_string(int(Settings::audioSettings.music_volume * 100)) + "%";
-            audioButton4.text = musicVolText.c_str();
 
-            // Audio settings labels
-            renderer.renderText("ENABLE SOUND EFFECTS", 215, 350, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("ENABLE MUSIC", 215, 400, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("OVERALL VOLUME", 215, 450, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("MUSIC VOLUME", 215, 500, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(overallVolText.c_str(),
+                                audioButton3.x + (audioButton3.width - overallVolText.length() * 15) / 2,
+                                audioButton3.y + 30.f, 0.25f, white);
 
-            bool aButton1Hovered = mouseX >= audioButton1.x &&
-                                   mouseX <= audioButton1.x + audioButton1.width &&
-                                   mouseY >= audioButton1.y &&
-                                   mouseY <= audioButton1.y + audioButton1.height;
-
-            bool aButton2Hovered = mouseX >= audioButton2.x &&
-                                   mouseX <= audioButton2.x + audioButton2.width &&
-                                   mouseY >= audioButton2.y &&
-                                   mouseY <= audioButton2.y + audioButton2.height;
-
-            bool aButton3Hovered = mouseX >= audioButton3.x &&
-                                   mouseX <= audioButton3.x + audioButton3.width &&
-                                   mouseY >= audioButton3.y &&
-                                   mouseY <= audioButton3.y + audioButton3.height;
-
-            bool aButton4Hovered = mouseX >= audioButton4.x &&
-                                   mouseX <= audioButton4.x + audioButton4.width &&
-                                   mouseY >= audioButton4.y &&
-                                   mouseY <= audioButton4.y + audioButton4.height;
-
-            renderer.renderSimpleButton(
-                audioButton1.x, audioButton1.y,
-                audioButton1.width, audioButton1.height,
-                true, aButton1Hovered, false,
-                placeholderColor);
-
-            renderer.renderSimpleButton(
-                audioButton2.x, audioButton2.y,
-                audioButton2.width, audioButton2.height,
-                true, aButton2Hovered, false,
-                placeholderColor);
-
-            renderer.renderSimpleButton(
-                audioButton3.x, audioButton3.y,
-                audioButton3.width, audioButton3.height,
-                true, aButton3Hovered, false,
-                placeholderColor);
-
-            renderer.renderSimpleButton(
-                audioButton4.x, audioButton4.y,
-                audioButton4.width, audioButton4.height,
-                true, aButton4Hovered, false,
-                placeholderColor);
-
-            renderer.renderText(audioButton1.text, audioButton1.x + 80.f, audioButton1.y + 30.f, 0.25f, white);
-            renderer.renderText(audioButton2.text, audioButton2.x + 80.f, audioButton2.y + 30.f, 0.25f, white);
-            renderer.renderText(audioButton3.text, audioButton3.x + 75.f, audioButton3.y + 30.f, 0.25f, white);
-            renderer.renderText(audioButton4.text, audioButton4.x + 80.f, audioButton4.y + 30.f, 0.25f, white);
+            renderer.renderText(musicVolText.c_str(),
+                                audioButton4.x + (audioButton4.width - musicVolText.length() * 15) / 2,
+                                audioButton4.y + 30.f, 0.25f, white);
         }
     }
     else if (isControlsSelected)
@@ -1259,10 +1381,70 @@ void Game::renderSettingsScreen(GlRender &renderer)
                 resetButton.width, resetButton.height,
                 resetButton.text,
                 resetHovered,
-                false,
+                resetPressed,
                 glm::vec3(0.6f, 0.2f, 0.2f) // Normal red color
             );
         }
+    }
+
+    // Restore previous OpenGL state
+    if (depthTestEnabled)
+        glEnable(GL_DEPTH_TEST);
+    glBlendFunc(blendSrc, blendDst);
+
+    // Check if settings are at default values
+    bool isDefaultSettings = Settings::areSettingsDefault();
+
+    // Get mouse position for reset button
+    bool resetHovered = mouseX >= resetButton.x &&
+                        mouseX <= resetButton.x + resetButton.width &&
+                        mouseY >= resetButton.y &&
+                        mouseY <= resetButton.y + resetButton.height;
+
+    bool resetPressed = resetHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    // Handle reset button click
+    static bool wasResetPressed = false;
+    if (resetPressed && !wasResetPressed && !isDefaultSettings)
+    {
+        Settings::resetToDefaults();
+        // Update local state
+        showFPS = Settings::windowSettings.show_fps;
+        botEnabled = Settings::windowSettings.enable_bot;
+        if (worldSystem != nullptr)
+        {
+            worldSystem->botEnabled = botEnabled;
+            worldSystem->initInputHandlers();
+        }
+        renderer.debugMode = Settings::windowSettings.enable_debug;
+        std::cout << "Settings reset to defaults" << std::endl;
+    }
+    wasResetPressed = resetPressed;
+
+    // Render the reset button based on current settings state
+    if (isDefaultSettings)
+    {
+        // Render disabled reset button (grayed out)
+        renderer.renderButton(
+            resetButton.x, resetButton.y,
+            resetButton.width, resetButton.height,
+            resetButton.text,
+            false,                      // Not hoverable
+            false,                      // Not pressable
+            glm::vec3(0.4f, 0.4f, 0.4f) // Gray color for disabled state
+        );
+    }
+    else
+    {
+        // Render normal reset button
+        renderer.renderButton(
+            resetButton.x, resetButton.y,
+            resetButton.width, resetButton.height,
+            resetButton.text,
+            resetHovered,
+            resetPressed,
+            glm::vec3(0.6f, 0.2f, 0.2f) // Normal red color
+        );
     }
 }
 bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)

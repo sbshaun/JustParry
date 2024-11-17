@@ -111,12 +111,14 @@ int main()
     renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60);
 
-    // Toggle states
-    bool showFPS = false;
+    // Initialize states from game instance instead of directly from settings
+    bool showFPS = game.getShowFPS();
+    bool botEnabled = game.getBotEnabled();
+    renderer.debugMode = Settings::windowSettings.enable_debug;
+
     bool fKeyPressed = false;
     bool bKeyPressed = false;
     bool hKeyPressed = false;
-    bool botEnabled = false;
     bool shouldExit = false;
 
     const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE;      // denominator is logic+input checks per second
@@ -252,15 +254,30 @@ int main()
         case GameState::PLAYING:
         {
             if (loopsSinceLastFrame == FramesPerLogicLoop)
-            { // Only do certain checks each frame rather than every loop
-                // std::cout << "RENDER CALL" << std::endl;
+            {
                 loopsSinceLastFrame = 0;
                 interp_moveEntitesToScreen(renderer);
+
+                // Update game state from utility inputs
                 handleUtilityInputs(renderer, showFPS, botEnabled,
                                     fKeyPressed, bKeyPressed, hKeyPressed,
                                     glWindow, fpsCounter, shouldExit,
                                     worldSystem);
-                // toggleFPS(renderer, showFPS, fKeyPressed, glWindow, fpsCounter);
+
+                // Sync game state with current settings
+                game.setShowFPS(showFPS);
+                game.setBotEnabled(botEnabled);
+
+                // Only render FPS if enabled in settings
+                if (Settings::windowSettings.show_fps)
+                {
+                    renderer.renderFPS(fpsCounter.getFPS(), true);
+                }
+
+                // Update bot state
+                botEnabled = Settings::windowSettings.enable_bot;
+                worldSystem.botEnabled = botEnabled;
+
                 glWindow.windowSwapBuffers();
             }
 
@@ -280,7 +297,7 @@ int main()
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
 
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, Settings::windowSettings.enable_bot);
             // worldSystem.inputProcessing(); // this sets player inputs #1
             // worldSystem.handleInput(); // this sets player inputs #2
 

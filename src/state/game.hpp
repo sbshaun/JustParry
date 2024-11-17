@@ -78,6 +78,11 @@ public:
     void renderControlsSettings(GlRender &renderer, bool isPlayer1Selected, bool isPlayer2Selected);
     void handleControlsSettingsInput(GLFWwindow *window);
 
+    bool getShowFPS() const { return showFPS; }
+    void setShowFPS(bool show) { showFPS = show; }
+    bool getBotEnabled() const { return botEnabled; }
+    void setBotEnabled(bool enabled) { botEnabled = enabled; }
+
 private:
     GameState currentState;
     bool running;
@@ -151,6 +156,9 @@ private:
     float errorMessageTimer = 0.0f;
     int errorButtonIndex = -1; // Which button showed error
     bool showErrorMessage = false;
+
+    bool showFPS;
+    bool botEnabled;
 
     void cleanupButtons();
 };
