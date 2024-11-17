@@ -30,7 +30,7 @@ void main() {
     }
 
     if (isBlockStunned) {
-        tint = vec4(0.8, 1.0, 0.8, .2);  // Slight green tint (0.8 in red, 1.0 in green, 0.8 in blue)
+        tint = vec4(0.8, 1.0, 1.0, 1.0);  // Slight blue tint (0.8 in red, 1.0 in green, 0.8 in blue)
         fragColor = texture(m_bird_texture, TexCoord) * tint;  // Apply the green tint to the texture
         return;
     }

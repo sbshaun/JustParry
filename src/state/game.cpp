@@ -251,6 +251,34 @@ void Game::updateArcadeLevel()
     }
 }
 
+void Game::getPreviousState()
+{
+    FILE* file = fopen(saves_path("arcadeLevelState.txt").c_str(), "r");  // Open file for reading
+
+    if (file != nullptr) {  // Check if the file opened successfully
+        fscanf(file, "%d", &levelCompleted);  // Read the integer from the file
+        fclose(file);  // Close the file
+        printf("Integer read from file: %d\n", levelCompleted);
+    }
+    else {
+        printf("Unable to open file for reading.\n");
+    }
+}
+
+void Game::saveCurrentState() 
+{
+    FILE* file = fopen(saves_path("arcadeLevelState.txt").c_str(), "w");  // Open file for reading
+
+    if (file != nullptr) {  // Check if the file opened successfully
+        fprintf(file, "%d", levelCompleted);  // Write the integer to the file
+        fclose(file);  // Close the file
+        printf("Integer written to file successfully.\n");
+    }
+    else {
+        printf("Unable to open file for writing.\n");
+    }
+}
+
 void Game::render(GlRender &renderer)
 {
     // Existing game render logic
