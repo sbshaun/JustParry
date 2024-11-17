@@ -66,7 +66,7 @@ void checkIsRoundOver(GlRender& renderer, Bot& botInstance, WorldSystem& worldSy
 
         // Always render round over animation with winner text
         renderer.renderRoundOver(1);
-        WorldSystem::stopBackgroundMusic();
+        WorldSystem::stopAllSounds();
     }
     else
     {
@@ -324,6 +324,7 @@ int main()
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
+                WorldSystem::stopBackgroundMusic();
                 game.setState(GameState::MENU);
             }
 

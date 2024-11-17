@@ -50,6 +50,10 @@ public:
 		fprintf(stderr, "Background music stopped\n");
 	}
 	
+	static void stopAllSounds() { 
+		Mix_HaltChannel(-1); 
+		fprintf(stderr, "All sounds stopped\n");
+	}
 
 	void updatePlayableArea();
 	// bool step(float elapsed_ms);
