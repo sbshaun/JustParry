@@ -37,6 +37,8 @@ void IdleState::enter(Entity entity, StateMachine& stateMachine)
 {
 	Fighters fighter = registry.players.get(entity).current_char;
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+	Animation& animation = registry.animations.get(entity);
+	animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
 }
 
 void IdleState::exit(Entity entity, StateMachine& stateMachine)
@@ -252,7 +254,7 @@ void ParryingState::enter(Entity entity, StateMachine& stateMachine)
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
-	animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+	animation.currentTexture = fighterConfig.m_bird_parry_f1_texture;
 
 	float PARRY_BOX_DURATION = fighterConfig.PARRY_DURATION;
 

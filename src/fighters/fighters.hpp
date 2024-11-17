@@ -61,6 +61,7 @@ struct FighterConfig
     GLuint m_bird_walk_f3_texture;
     GLuint m_bird_walk_f4_texture;
     GLuint m_bird_stun_f1_texture;
+    GLuint m_bird_parry_f1_texture;
 
     // default constructor
     FighterConfig(int window_width_px = 1024, int window_height_px = 768)
