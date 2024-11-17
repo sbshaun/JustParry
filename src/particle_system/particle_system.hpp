@@ -1,14 +1,15 @@
+#pragma once
+
 #include <vector>
 #include <algorithm>
 #include "../shader.hpp"
-// #include "../common.hpp"
 #include "../ecs/ecs_registry.hpp"
 
 struct Particle {
     float x, y, z;
     float vx, vy, vz;
     float life;
-    float r, g, b, a; // Color and alpha
+    float r, g, b, a;
     float size;
     float rotation;
 };
@@ -16,11 +17,12 @@ struct Particle {
 class ParticleSystem {
 public:
     ParticleSystem();
-    void update(float deltaTime);
+    virtual ~ParticleSystem() = default;
+    virtual void update(float deltaTime) = 0;
     void render(const glm::mat4& worldModel);
-    void emit(float x, float y, float z, bool direction);
+    virtual void emit(float x, float y, float z, bool direction) = 0;
 
-private:
+protected:
     std::vector<Particle> particles;
     unsigned int VAO, VBO, EBO, instanceVBO;
     Shader* shader;
