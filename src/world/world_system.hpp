@@ -3,6 +3,7 @@
 #include "../renderer.hpp"
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
+#include "../particle_system/particle_system.hpp"
 
 // Forward declarations
 class GlRender;
@@ -17,7 +18,8 @@ public:
 	void init(GlRender *renderer);
 	void hitBoxCollisions();
 	// Steps the game ahead by ms milliseconds
-	bool step(float elapsed_ms);
+	void step(float elapsed_ms);
+	void emitParticles(float x, float y, float z, bool direction);
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
@@ -36,6 +38,8 @@ public:
 	void updatePlayableArea();
 	// bool step(float elapsed_ms);
 	bool botEnabled = false;
+
+	ParticleSystem particleSystem;
 
 private:
 	GlRender *renderer;
