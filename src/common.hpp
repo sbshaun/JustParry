@@ -39,6 +39,7 @@ using namespace glm;
 inline std::string asset_path() { return std::string(PROJECT_SOURCE_DIR) + "assets"; };
 inline std::string textures_path(const std::string &name) { return asset_path() + "/textures/" + std::string(name); };
 inline std::string mesh_path(const std::string &name) { return asset_path() + "/meshes/" + std::string(name); };
+inline std::string audio_path(const std::string& name) {return asset_path() + "/audio/" + std::string(name);};
 
 struct Transform
 {

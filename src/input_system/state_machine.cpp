@@ -1,6 +1,7 @@
 #include "state_machine.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../constants.hpp"
+#include "../world/world_system.hpp"
 
 bool StateMachine::transition(Entity entity, PlayerState newState)
 {
@@ -152,8 +153,8 @@ void AttackingState::enter(Entity entity, StateMachine& stateMachine)
 	float baseOffset = fighterConfig.PUNCH_X_OFFSET; // set base offset and adjust based on player direction 
 	hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;
 
-	Animation& animation = registry.animations.get(entity);
-	animation.currentFrame = 0;
+    Animation& animation = registry.animations.get(entity);
+    animation.currentFrame = 0;
 }
 
 void AttackingState::exit(Entity entity, StateMachine& stateMachine)
