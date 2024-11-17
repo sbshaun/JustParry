@@ -87,6 +87,15 @@ struct Health
     // float recoverRate; // optional, health recover after x seconds of not being hit.
 };
 
+
+struct PostureBar
+{
+    float maxBar;      // max number of bars.
+    float currentBar;  // remaining bars.
+    float recoverRate; // how many seconds to recover 1 bar
+    float recoverBar;
+};
+
 struct Animation
 {
     GLuint currentTexture;
@@ -113,13 +122,6 @@ struct Motion
 struct StationaryTimer
 {
     float counter_ms = 0.f; // period of time of a player can't move because of stun, or recovery time after actions (e.g. an attack)...
-};
-
-struct PostureBar
-{
-    int maxBar;      // max number of bars.
-    int currentBar;  // remaining bars.
-    int recoverRate; // how many seconds to recover 1 bar. use int for implicity.
 };
 
 struct StateTimer

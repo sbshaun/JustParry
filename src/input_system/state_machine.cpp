@@ -30,10 +30,12 @@ void StateMachine::update(Entity entity, float elapsed_ms)
 void IdleState::enter(Entity entity, StateMachine &stateMachine)
 {
     Fighters fighter = registry.players.get(entity).current_char;
+    PostureBar& posture = registry.postureBars.get(entity);
     const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
     Animation& animation = registry.animations.get(entity);
     animation.currentFrame = 0;
     animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
+    posture.recoverBar = 0;
 }
 
 void IdleState::exit(Entity entity, StateMachine &stateMachine)
@@ -43,7 +45,16 @@ void IdleState::exit(Entity entity, StateMachine &stateMachine)
 
 void IdleState::update(Entity entity, float elapsed_ms, StateMachine &stateMachine)
 {
+
     Fighters fighter = registry.players.get(entity).current_char;
+    PostureBar& posture = registry.postureBars.get(entity);
+
+    posture.recoverBar += elapsed_ms;
+    if (posture.recoverBar >= posture.recoverRate) {
+        if (posture.currentBar < posture.maxBar) {
+            posture.currentBar++;
+        }
+    }
     const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
     Animation& animation = registry.animations.get(entity);
     if ((animation.currentFrame  / 10 ) % 2 == 0) {

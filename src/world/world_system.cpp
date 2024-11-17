@@ -402,6 +402,9 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             }
             else {
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
+                if (registry.postureBars.get(playerWithHurtBox).currentBar > 0) {
+                    registry.postureBars.get(playerWithHurtBox).currentBar--;
+                }
                 hitBox.active = false;
             }
         }
@@ -412,6 +415,9 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             }
             else {
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
+                if (registry.postureBars.get(playerWithHurtBox).currentBar > 0) {
+                    registry.postureBars.get(playerWithHurtBox).currentBar--;
+                }
                 hitBox.active = false;
             }
         }

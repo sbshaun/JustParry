@@ -185,6 +185,14 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
+        case GameState::ARCADE_WIN:
+            // Win/Loss screen for winning/losing in arcade mode
+
+            break;
+        case GameState::ARCADE_LOSE:
+            // Win/Loss screen for winning/losing in arcade mode
+
+            break;
         case GameState::HELP:
 
             game.renderHelpScreen(renderer);

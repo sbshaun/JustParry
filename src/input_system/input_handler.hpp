@@ -108,6 +108,14 @@ public:
                 // get the corresponded action from the key
                 Action action = pair.second;
 
+                if (action == Action::PARRY) 
+                {
+                    if(registry.postureBars.get(entity).currentBar <= 0) 
+                    {
+                        continue;
+                    }
+                }
+
                 if (!actionBuffer.empty() && actionBuffer.back().action == action)
                     continue;
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)

@@ -22,6 +22,8 @@ enum class GameState
     HELP,
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
+    ARCADE_WIN,
+    ARCADE_LOSE,
     SETTINGS,
     ROUND_START,
     ROUND_OVER,
