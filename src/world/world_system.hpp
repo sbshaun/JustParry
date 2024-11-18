@@ -112,7 +112,6 @@ public:
 	static void stopBackgroundMusic()
 	{
 		Mix_HaltMusic();
-		fprintf(stderr, "Background music stopped\n");
 	}
 
 	static void stopAllSounds()

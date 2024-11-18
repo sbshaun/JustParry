@@ -25,6 +25,6 @@ enable_debug=false
 
 [AudioSettings]
 enable_sound_effects=true
-enable_music=false
-overall_volume=1
-music_volume=0.104762
+enable_music=true
+overall_volume=0.104762
+music_volume=1

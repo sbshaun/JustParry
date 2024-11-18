@@ -182,6 +182,6 @@ private:
     bool isRPressed = false;
     bool isEnterPressed = false;
     bool isReturnPressed = false;
-    bool buttonAlreadyHovered = false; // prevent sound spam 
-    bool isMenuSelectedSoundPlaying = false; 
+    bool buttonAlreadyHovered = false; // prevent sound spam
+    bool isMenuSelectedSoundPlaying = false;
 };
