@@ -64,7 +64,6 @@ public:
 	static void stopAllSounds()
 	{
 		Mix_HaltChannel(-1);
-		// fprintf(stderr, "All sounds stopped\n");
 	}
 
 	static void resumeSounds()
