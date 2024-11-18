@@ -171,6 +171,8 @@ void AttackingState::enter(Entity entity, StateMachine& stateMachine)
 
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
+    
+    WorldSystem::playPunchSound();
 }
 
 void AttackingState::exit(Entity entity, StateMachine& stateMachine)
@@ -276,6 +278,8 @@ void KickingState::enter(Entity entity, StateMachine& stateMachine)
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
 	animation.currentTexture = fighterConfig.m_bird_kick_f1_texture;
+
+    WorldSystem::playKickSound();
 }
 
 void KickingState::exit(Entity entity, StateMachine& stateMachine)

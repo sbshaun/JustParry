@@ -37,7 +37,10 @@ public:
 	void checkAABBCollision(bool &xCollision, bool &yCollision, const Box &box1, Motion &motion1, const Box &box2, Motion &motion2);
 	void playerCollisions(GlRender *renderer);
 	static void playPunchSound() { Mix_PlayChannel(-1, punch_sound, 0); }
-	static void playKickSound() { Mix_PlayChannel(-1, kick_sound, 0); }
+	static void playKickSound() { 
+		Mix_PlayChannel(-1, kick_sound, 0); 
+		Mix_Volume(-1, MIX_MAX_VOLUME);
+	}
 	static void playParrySound() { Mix_PlayChannel(-1, parry_sound, 0); }
 	static void playMenuSelectSound() { Mix_PlayChannel(-1, menu_select_sound, 0); }
 	static void playMenuConfirmSound() { Mix_PlayChannel(-1, menu_confirm_sound, 0); }
