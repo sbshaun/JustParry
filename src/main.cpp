@@ -277,7 +277,7 @@ int main()
             loopsSinceLastFrame++;
 
             // Commented out. Need to make the smoke look more realistic.
-            //worldSystem.emitSmokeParticles(0.0f, 0.0f, 0.0f);
+            worldSystem.emitSmokeParticles(0.0f, 0.0f, 0.0f);
 
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
