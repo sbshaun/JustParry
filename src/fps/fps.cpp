@@ -19,7 +19,6 @@ void FPSCounter::update(GlRender &renderer, bool showFPS)
         frameCount = 0;
         startTime = now;
     }
-    renderer.renderFPS(currentFPS, showFPS);
 }
 
 int FPSCounter::getFPS() const

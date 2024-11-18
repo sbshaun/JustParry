@@ -14,7 +14,7 @@ struct UtilityKeys
     static constexpr int DEBUG_TOGGLE = GLFW_KEY_H; // Toggle debug visualization
     static constexpr int FPS_TOGGLE = GLFW_KEY_F;   // Toggle FPS display
     static constexpr int BOT_TOGGLE = GLFW_KEY_B;   // Toggle bot mode
-    static constexpr int EXIT = SDLK_ESCAPE;    // Exit game
+    static constexpr int EXIT = SDLK_ESCAPE;        // Exit game
     static constexpr int CONFIRM = GLFW_KEY_ENTER;  // Confirm/Restart
 };
 
@@ -29,7 +29,9 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     {
         if (!hKeyPressed)
         {
-            renderer.debugMode = !renderer.debugMode;
+            Settings::windowSettings.enable_debug = !Settings::windowSettings.enable_debug;
+            renderer.debugMode = Settings::windowSettings.enable_debug;
+            Settings::saveSettings();
             hKeyPressed = true;
             std::cout << "Debug mode " << (renderer.debugMode ? "enabled" : "disabled") << std::endl;
         }
@@ -44,7 +46,9 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     {
         if (!fKeyPressed)
         {
-            showFPS = !showFPS;
+            Settings::windowSettings.show_fps = !Settings::windowSettings.show_fps;
+            showFPS = Settings::windowSettings.show_fps;
+            Settings::saveSettings();
             fKeyPressed = true;
             std::cout << "FPS display " << (showFPS ? "enabled" : "disabled") << std::endl;
         }
@@ -53,15 +57,17 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     {
         fKeyPressed = false;
     }
-    fpsCounter.update(renderer, showFPS);
+    fpsCounter.update(renderer, Settings::windowSettings.show_fps);
 
     // Bot mode toggle
     if (isKeyPressed(UtilityKeys::BOT_TOGGLE))
     {
         if (!bKeyPressed)
         {
-            botEnabled = !botEnabled;
+            Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
+            botEnabled = Settings::windowSettings.enable_bot;
             worldSystem.botEnabled = botEnabled;
+            Settings::saveSettings();
             bKeyPressed = true;
             std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
         }

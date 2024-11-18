@@ -20,8 +20,9 @@ public:
     {
         bindActionToCommand(Action::MOVE_LEFT, std::make_unique<MoveLeftCommand>());
         bindActionToCommand(Action::MOVE_RIGHT, std::make_unique<MoveRightCommand>());
-        //bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
-        // bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
+        bindActionToCommand(Action::CROUCH, std::make_unique<CrouchCommand>());
+        // bindActionToCommand(Action::JUMP, std::make_unique<JumpCommand>());
+
         bindActionToCommand(Action::PUNCH, std::make_unique<PunchCommand>());
         bindActionToCommand(Action::KICK, std::make_unique<KickCommand>());
         bindActionToCommand(Action::PARRY, std::make_unique<ParryCommand>());
@@ -89,13 +90,14 @@ public:
     // NEED A WAY TO DETERMINE P1 OR P2 INPUTS OR ACCEPT SOME AMOUNT OF EACH PER LOGIC LOOP
     // Deal with predetermined jump arc by allowing you to hold up but change directions on landing
 
-    //NEED TO UPDATE FOR CONTROLLER SUPPORT OR MAKE A CHECK TO HAVE A SEPERATE CONTROLLER IMPLEMENTATION CAUSE THIS IS PER PLAYER
-    // Let a controllers key be represented as the index of the button from glfwGetJoystickButtons. includes the HAT
-    // also need to some how support axis (for a future goal honestly)
+    // NEED TO UPDATE FOR CONTROLLER SUPPORT OR MAKE A CHECK TO HAVE A SEPERATE CONTROLLER IMPLEMENTATION CAUSE THIS IS PER PLAYER
+    //  Let a controllers key be represented as the index of the button from glfwGetJoystickButtons. includes the HAT
+    //  also need to some how support axis (for a future goal honestly)
     void handleInput(Entity entity, StateMachine &state_machine)
-    {   
-        if(registry.players.get(entity).controller_id != -1){
-            //CALL A CONTROLLER VERSION OF handleInput
+    {
+        if (registry.players.get(entity).controller_id != -1)
+        {
+            // CALL A CONTROLLER VERSION OF handleInput
         }
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
@@ -108,9 +110,9 @@ public:
                 // get the corresponded action from the key
                 Action action = pair.second;
 
-                if (action == Action::PARRY) 
+                if (action == Action::PARRY)
                 {
-                    if(registry.postureBars.get(entity).currentBar <= 0) 
+                    if (registry.postureBars.get(entity).currentBar <= 0)
                     {
                         continue;
                     }
@@ -160,7 +162,7 @@ public:
     }
 
     void handleControllerInput(Entity entity, StateMachine &state_machine, int cid)
-    {   
+    {
 
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
@@ -216,7 +218,7 @@ public:
     }
 
     // functioin to determine if a key should be added: only add one action per press
-    bool shouldAddActionToBuffer(Entity entity,Action action)
+    bool shouldAddActionToBuffer(Entity entity, Action action)
     {
         if (action == Action::PUNCH)
         {

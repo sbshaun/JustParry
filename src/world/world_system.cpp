@@ -5,14 +5,14 @@
 #include "../constants.hpp"
 #include "../input_system/input_utils.hpp"
 
-Mix_Music* WorldSystem::background_music = nullptr;
-Mix_Chunk* WorldSystem::punch_sound = nullptr;
-Mix_Chunk* WorldSystem::walk_sound = nullptr; 
-Mix_Chunk* WorldSystem::parry_sound = nullptr;
-Mix_Chunk* WorldSystem::kick_sound = nullptr;
-Mix_Chunk* WorldSystem::menu_select_sound = nullptr;
-Mix_Chunk* WorldSystem::menu_confirm_sound = nullptr;
-Mix_Chunk* WorldSystem::game_count_down_sound = nullptr;
+Mix_Music *WorldSystem::background_music = nullptr;
+Mix_Chunk *WorldSystem::punch_sound = nullptr;
+Mix_Chunk *WorldSystem::walk_sound = nullptr;
+Mix_Chunk *WorldSystem::parry_sound = nullptr;
+Mix_Chunk *WorldSystem::kick_sound = nullptr;
+Mix_Chunk *WorldSystem::menu_select_sound = nullptr;
+Mix_Chunk *WorldSystem::menu_confirm_sound = nullptr;
+Mix_Chunk *WorldSystem::game_count_down_sound = nullptr;
 bool WorldSystem::isPlayerWalking = false;
 float WorldSystem::walkStopTimer = 0.f;
 
@@ -129,17 +129,18 @@ void WorldSystem::init(GlRender *renderer)
 {
     this->renderer = renderer;
 
-    ////////////////////////////////////// 
-	// Loading music and sounds with SDL
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		fprintf(stderr, "Failed to initialize SDL Audio");
-		// exit early 
-        exit(1); 
-	}
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		fprintf(stderr, "Failed to open audio device");
-		exit(1); 
-	}
+    //////////////////////////////////////
+    // Loading music and sounds with SDL
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        fprintf(stderr, "Failed to initialize SDL Audio");
+        exit(1);
+    }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+    {
+        fprintf(stderr, "Failed to open audio device");
+        exit(1);
+    }
 
     // Load background music
     background_music = Mix_LoadMUS(audio_path("background_music.wav").c_str());
@@ -151,22 +152,29 @@ void WorldSystem::init(GlRender *renderer)
     menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
     game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
-	if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
+    if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
         parry_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
-        menu_confirm_sound == nullptr || game_count_down_sound == nullptr) {
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
-			audio_path("background_music.wav").c_str(),
-			audio_path("punch_sound.wav").c_str()),
+        menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
+                audio_path("background_music.wav").c_str(),
+                audio_path("punch_sound.wav").c_str()),
             audio_path("walk_sound.wav").c_str(),
             audio_path("parry_sound.wav").c_str(),
             audio_path("kick_sound.wav").c_str(),
             audio_path("menu_select_sound.wav").c_str(),
             audio_path("menu_confirm_sound.wav").c_str(),
             audio_path("game_count_down_sound.wav").c_str();
-		exit(1); 
-	} else {
-        std::cout << "Sounds loaded" << std::endl; 
+        exit(1);
     }
+    else
+    {
+        std::cout << "Sounds loaded" << std::endl;
+    }
+
+    // Initialize audio state based on settings
+    updateVolume();
+    updateAudioState();
 
     // Create entities
     FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
@@ -203,51 +211,80 @@ void WorldSystem::init(GlRender *renderer)
     smokeSystem = SmokeParticleSystem();
 }
 
-void WorldSystem::step(float elapsed_ms) {
+void WorldSystem::step(float elapsed_ms)
+{
     bloodSystem.update(elapsed_ms);
-	smokeSystem.update(elapsed_ms);
+    smokeSystem.update(elapsed_ms);
 }
 
-void WorldSystem::emitBloodParticles(float x, float y, float z, bool direction) {
+void WorldSystem::emitBloodParticles(float x, float y, float z, bool direction)
+{
     bloodSystem.emit(x, y, z, direction);
 }
 
-void WorldSystem::emitSmokeParticles(float x, float y, float z) {
-	smokeSystem.emit(x, y, z, false);
+void WorldSystem::emitSmokeParticles(float x, float y, float z)
+{
+    smokeSystem.emit(x, y, z, false);
 }
 
-void WorldSystem::renderParticles() {
+void WorldSystem::renderParticles()
+{
     bloodSystem.render(renderer->m_worldModel);
-	smokeSystem.render(renderer->m_worldModel);
+    smokeSystem.render(renderer->m_worldModel);
 }
 
 void WorldSystem::initInputHandlers()
 {
-    // Player 1 controls
+    std::cout << "\nInitializing controls:" << std::endl;
+
+    // Print Player 1 controls
+    std::cout << "\nPlayer 1 Controls:" << std::endl;
+    std::cout << "Jump: " << Settings::getKeyName(Settings::p1Controls.up) << std::endl;
+    std::cout << "Crouch: " << Settings::getKeyName(Settings::p1Controls.down) << std::endl;
+    std::cout << "Move Left: " << Settings::getKeyName(Settings::p1Controls.left) << std::endl;
+    std::cout << "Move Right: " << Settings::getKeyName(Settings::p1Controls.right) << std::endl;
+    std::cout << "Punch: " << Settings::getKeyName(Settings::p1Controls.punch) << std::endl;
+    std::cout << "Kick: " << Settings::getKeyName(Settings::p1Controls.kick) << std::endl;
+    std::cout << "Parry: " << Settings::getKeyName(Settings::p1Controls.parry) << std::endl;
+
+    // Print Player 2 controls
+    std::cout << "\nPlayer 2 Controls:" << std::endl;
+    std::cout << "Jump: " << Settings::getKeyName(Settings::p2Controls.up) << std::endl;
+    std::cout << "Crouch: " << Settings::getKeyName(Settings::p2Controls.down) << std::endl;
+    std::cout << "Move Left: " << Settings::getKeyName(Settings::p2Controls.left) << std::endl;
+    std::cout << "Move Right: " << Settings::getKeyName(Settings::p2Controls.right) << std::endl;
+    std::cout << "Punch: " << Settings::getKeyName(Settings::p2Controls.punch) << std::endl;
+    std::cout << "Kick: " << Settings::getKeyName(Settings::p2Controls.kick) << std::endl;
+    std::cout << "Parry: " << Settings::getKeyName(Settings::p2Controls.parry) << std::endl;
+
+    // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
-    player1InputMapping->bindKeyToAction(GLFW_KEY_A, Action::MOVE_LEFT);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_D, Action::MOVE_RIGHT);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_W, Action::JUMP);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_S, Action::CROUCH);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_R, Action::PUNCH);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_T, Action::KICK);
-    player1InputMapping->bindKeyToAction(GLFW_KEY_G, Action::PARRY);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
+    // player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
-    // Player 2 controls
+    // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
-    player2InputMapping->bindKeyToAction(GLFW_KEY_LEFT, Action::MOVE_LEFT);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_RIGHT, Action::MOVE_RIGHT);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_UP, Action::JUMP);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_DOWN, Action::CROUCH);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_COMMA, Action::PUNCH);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_PERIOD, Action::KICK);
-    player2InputMapping->bindKeyToAction(GLFW_KEY_M, Action::PARRY);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
+    // player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
-    // 3. player 1 and player 2 init <action -> command> mapping
+    // Initialize input handlers with the mappings
     player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
     player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping));
     player1InputHandler->initDefaultActionToCommandMapping();
     player2InputHandler->initDefaultActionToCommandMapping();
+
+    std::cout << "\nControls initialized successfully\n"
+              << std::endl;
 }
 
 void WorldSystem::initStateMachines()
@@ -257,7 +294,7 @@ void WorldSystem::initStateMachines()
 
     player1StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player1StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
-    //player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    // player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player1StateMachine->addState(PlayerState::KICKING, std::make_unique<KickingState>());
 
@@ -268,7 +305,7 @@ void WorldSystem::initStateMachines()
 
     player2StateMachine->addState(PlayerState::IDLE, std::make_unique<IdleState>());
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
-    //player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
+    // player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
     player2StateMachine->addState(PlayerState::KICKING, std::make_unique<KickingState>());
 
@@ -341,19 +378,24 @@ void WorldSystem::movementProcessing()
     PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
     PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
 
-    bool isPlayerMoving = player1Motion->velocity.x != 0 || player2Motion->velocity.x != 0; 
-    if (isPlayerMoving) {
-        walkStopTimer = 0.f; 
-        if (!isPlayerWalking) {
+    bool isPlayerMoving = player1Motion->velocity.x != 0 || player2Motion->velocity.x != 0;
+    if (isPlayerMoving)
+    {
+        walkStopTimer = 0.f;
+        if (!isPlayerWalking && Settings::audioSettings.enable_sound_effects)
+        {
             std::cout << "Playing walk sound" << std::endl;
             Mix_PlayChannel(WALK_SOUND_CHANNEL, walk_sound, -1);
-            isPlayerWalking = true; 
+            isPlayerWalking = true;
         }
-    } else {
-        walkStopTimer += PLAYER_STATE_TIMER_STEP; 
-        if (walkStopTimer >= WALK_SOUND_TIMEOUT && isPlayerWalking) {
+    }
+    else
+    {
+        walkStopTimer += PLAYER_STATE_TIMER_STEP;
+        if (walkStopTimer >= WALK_SOUND_TIMEOUT && isPlayerWalking)
+        {
             Mix_HaltChannel(WALK_SOUND_CHANNEL);
-            isPlayerWalking = false; 
+            isPlayerWalking = false;
         }
     }
 
@@ -529,22 +571,26 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // parried the attack, transition the attacking player to stunned state using state machine
         if (playerWithHitBox == renderer->m_player1)
         {
-            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
+            {
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
-            else {
+            else
+            {
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
         }
         else
         {
-            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry) {
+            if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
+            {
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
-            else {
+            else
+            {
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -685,15 +731,16 @@ void WorldSystem::hitBoxCollisions()
     Fighters current_char2 = registry.players.get(player2).current_char;
 
     // check if player 1 hit player 2
-    if (checkHitBoxCollisions(player1, player2)) {
-        const FighterConfig& config = FighterManager::getFighterConfig(current_char1);
+    if (checkHitBoxCollisions(player1, player2))
+    {
+        const FighterConfig &config = FighterManager::getFighterConfig(current_char1);
 
         // Get victim (player2) motion for particle emission
-        Motion& victimMotion = registry.motions.get(player2);
+        Motion &victimMotion = registry.motions.get(player2);
         applyDamage(player2, config.PUNCH_DAMAGE);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
-        KnockBack& knockback = registry.knockbacks.get(player2);
+        KnockBack &knockback = registry.knockbacks.get(player2);
         knockback.active = true;
         knockback.duration = config.KNOCKBACK_DURATION;
 
@@ -701,21 +748,22 @@ void WorldSystem::hitBoxCollisions()
         float direction = player1Motion->direction ? 1.0f : -1.0f;
         knockback.force = {
             direction * config.KNOCKBACK_FORCE_X,
-            config.KNOCKBACK_FORCE_Y };
+            config.KNOCKBACK_FORCE_Y};
 
         player2StateMachine->transition(player2, PlayerState::STUNNED);
     }
 
     // check if player 2 hit player 1
-    if (checkHitBoxCollisions(player2, player1)) {
-        const FighterConfig& config = FighterManager::getFighterConfig(current_char2);
+    if (checkHitBoxCollisions(player2, player1))
+    {
+        const FighterConfig &config = FighterManager::getFighterConfig(current_char2);
 
         // Get victim (player1) motion for particle emission
-        Motion& victimMotion = registry.motions.get(player1);
+        Motion &victimMotion = registry.motions.get(player1);
         applyDamage(player1, config.PUNCH_DAMAGE);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
-        KnockBack& knockback = registry.knockbacks.get(player1);
+        KnockBack &knockback = registry.knockbacks.get(player1);
         knockback.active = true;
         knockback.duration = config.KNOCKBACK_DURATION;
 
@@ -723,7 +771,7 @@ void WorldSystem::hitBoxCollisions()
         float direction = player2Motion->direction ? 1.0f : -1.0f;
         knockback.force = {
             direction * config.KNOCKBACK_FORCE_X,
-            config.KNOCKBACK_FORCE_Y };
+            config.KNOCKBACK_FORCE_Y};
 
         player1StateMachine->transition(player1, PlayerState::STUNNED);
     }

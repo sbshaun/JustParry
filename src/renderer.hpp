@@ -132,7 +132,9 @@ public:
     bool fontInit(const std::string &font_filename, unsigned int font_default_size);
     void renderText(std::string text, float x, float y, float scale, const glm::vec3 &color);
 
-    void renderSimpleButton(float x, float y, float width, float height, bool isSelected, bool isHovered = false, bool isPressed = false);
+    void renderSimpleButton(float x, float y, float width, float height,
+                            bool isSelected, bool isHovered, bool isPressed,
+                            glm::vec3 tintColor = glm::vec3(0.6f, 0.6f, 0.6f));
 
     // for rendering player health box
     void renderRedHealthRectangle(float x, float y, float width, float height);
