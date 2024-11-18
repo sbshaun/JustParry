@@ -4,7 +4,15 @@
 #include <iostream>
 #include <string>
 #include "../external/project_path.hpp"
-#include <direct.h>
+// #include <direct.h>
+#ifdef _WIN32
+    #include <direct.h>
+    #define MKDIR(dir) _mkdir(dir)
+#else
+    #include <sys/stat.h>
+    #include <errno.h>
+    #define MKDIR(dir) mkdir(dir, 0777)
+#endif
 
 namespace Settings
 {
@@ -24,7 +32,7 @@ namespace Settings
     void ensureConfigDirectory()
     {
         std::string configDir = std::string(PROJECT_SOURCE_DIR) + "/config";
-        _mkdir(configDir.c_str());
+        MKDIR(configDir.c_str());
     }
 
     void resetToDefaults()
