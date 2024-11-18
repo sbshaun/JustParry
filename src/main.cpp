@@ -109,6 +109,8 @@ int main()
     renderer.setGameInstance(&game);
     FPSCounter fpsCounter(60);
 
+    game.getPreviousState();
+
     // Toggle states
     bool showFPS = false;
     bool fKeyPressed = false;
@@ -193,6 +195,14 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
+        case GameState::ARCADE_WIN:
+            // Win/Loss screen for winning/losing in arcade mode
+
+            break;
+        case GameState::ARCADE_LOSE:
+            // Win/Loss screen for winning/losing in arcade mode
+
+            break;
         case GameState::HELP:
 
             game.renderHelpScreen(renderer);
@@ -267,19 +277,23 @@ int main()
 
             loopsSinceLastFrame++;
 
+            // Commented out. Need to make the smoke look more realistic.
+            worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.playerCollisions(&renderer);
 
             worldSystem.hitBoxCollisions();
-            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updatePlayableArea();
             physicsSystem.step();
 
+            worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             renderer.render();
-            worldSystem.particleSystem.render();
+            // worldSystem.particleSystem.render(renderer.m_worldModel);
+            worldSystem.renderParticles();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
 
@@ -362,6 +376,7 @@ int main()
             break;
     }
 
+    game.saveCurrentState();
     // Cleanup in correct order
     SDL_Quit();
 

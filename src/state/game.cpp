@@ -251,6 +251,34 @@ void Game::updateArcadeLevel()
     }
 }
 
+void Game::getPreviousState()
+{
+    FILE* file = fopen(saves_path("arcadeLevelState.txt").c_str(), "r");  // Open file for reading
+
+    if (file != nullptr) {  // Check if the file opened successfully
+        fscanf(file, "%d", &levelCompleted);  // Read the integer from the file
+        fclose(file);  // Close the file
+        printf("Integer read from file: %d\n", levelCompleted);
+    }
+    else {
+        printf("Unable to open file for reading.\n");
+    }
+}
+
+void Game::saveCurrentState() 
+{
+    FILE* file = fopen(saves_path("arcadeLevelState.txt").c_str(), "w");  // Open file for reading
+
+    if (file != nullptr) {  // Check if the file opened successfully
+        fprintf(file, "%d", levelCompleted);  // Write the integer to the file
+        fclose(file);  // Close the file
+        printf("Integer written to file successfully.\n");
+    }
+    else {
+        printf("Unable to open file for writing.\n");
+    }
+}
+
 void Game::render(GlRender &renderer)
 {
     // Existing game render logic
@@ -287,16 +315,17 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness
     );
 
+
     renderer.renderTexturedQuadScaled(
-        renderer.m_character1,
-        175, 360.0f,
+        p1 ? renderer.m_character1_ready : renderer.m_character1,
+        200.f, 360.f,
         225, 275,
         1.0f // Full brightness for main menu
     );
 
     renderer.renderTexturedQuadScaled(
-        renderer.m_character1_flip,
-        625.f, 360.0f,
+        p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
+        600.f, 360.f,
         225, 275,
         1.0f // Full brightness for main menu
     );

@@ -22,6 +22,8 @@ enum class GameState
     HELP,
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
+    ARCADE_WIN,
+    ARCADE_LOSE,
     SETTINGS,
     ROUND_START,
     ROUND_OVER,
@@ -40,6 +42,8 @@ public:
     bool isRunning() const;
     void update();
     void updateArcadeLevel();
+    void getPreviousState();
+    void saveCurrentState();
     void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
