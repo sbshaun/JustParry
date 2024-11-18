@@ -171,6 +171,8 @@ void AttackingState::enter(Entity entity, StateMachine& stateMachine)
 
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
+    
+    WorldSystem::playPunchSound();
 }
 
 void AttackingState::exit(Entity entity, StateMachine& stateMachine)
@@ -276,6 +278,8 @@ void KickingState::enter(Entity entity, StateMachine& stateMachine)
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
 	animation.currentTexture = fighterConfig.m_bird_kick_f1_texture;
+
+    WorldSystem::playKickSound();
 }
 
 void KickingState::exit(Entity entity, StateMachine& stateMachine)
@@ -458,6 +462,7 @@ void ParryingState::enter(Entity entity, StateMachine& stateMachine)
 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     playerStateTimer.reset(PARRY_BOX_DURATION);
+    WorldSystem::playParrySound();
 
     if (registry.postureBars.get(entity).currentBar > 0) {
         registry.postureBars.get(entity).currentBar--;

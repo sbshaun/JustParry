@@ -520,6 +520,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
+            WorldSystem::playMenuConfirmSound(); 
             p1Ready = !p1Ready;  // Toggle p1Ready
             p1KeyPressed = true; // Mark the key as pressed
             if (std::to_string(p1Ready) == "0")
@@ -541,6 +542,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
     {
         if (!p2KeyPressed) // Check if the key was not pressed before
         {
+            WorldSystem::playMenuConfirmSound(); 
             p2Ready = !p2Ready;  // Toggle p2Ready
             p2KeyPressed = true; // Mark the key as pressed
             if (std::to_string(p2Ready) == "0")
@@ -564,6 +566,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         {
             if (!goDown1)
             {
+                WorldSystem::playMenuSelectSound();
                 goDown1 = true;
                 if (offsetY1 < 280.f)
                 {
@@ -584,6 +587,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         {
             if (!goUp1)
             {
+                WorldSystem::playMenuSelectSound();
                 goUp1 = true;
                 if (offsetY1 > 0.0f)
                 {
@@ -607,6 +611,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         {
             if (!goDown2)
             {
+                WorldSystem::playMenuSelectSound();
                 goDown2 = true;
                 if (offsetY2 < 280.f)
                 {
@@ -627,6 +632,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         {
             if (!goUp2)
             {
+                WorldSystem::playMenuSelectSound();
                 goUp2 = true;
                 if (offsetY2 > 0.0f)
                 {
@@ -671,6 +677,7 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
         renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
         if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
+            WorldSystem::playGameCountDownSound(); 
             game.setState(GameState::ROUND_START);
         }
     }
@@ -1884,6 +1891,7 @@ void Game::renderPauseButton(GlRender &renderer)
     {
         if (currentState == GameState::PLAYING || currentState == GameState::ROUND_START)
         {
+            WorldSystem::stopAllSounds();
             currentState = GameState::PAUSED;
         }
     }

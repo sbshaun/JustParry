@@ -43,16 +43,70 @@ public:
 	{
 		if (Settings::audioSettings.enable_sound_effects)
 		{
-			Mix_PlayChannel(-1, punch_sound, 0);
+			int channel = Mix_PlayChannel(-1, punch_sound, 0);
+			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+		}
+	}
+	static void playKickSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, kick_sound, 0);
+			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+		}
+	}
+	static void playParrySound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, parry_sound, 0);
+			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+		}
+	}
+	static void playMenuSelectSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, menu_select_sound, 0);
+			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+		}
+	}
+	static void playMenuConfirmSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, menu_confirm_sound, 0);
+			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+		}
+	}
+	static void playGameCountDownSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, game_count_down_sound, 0);
+			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
 		}
 	}
 
 	static void playBackgroundMusic()
 	{
-		// Playing background music indefinitely
-		Mix_PlayMusic(background_music, -1);
-		fprintf(stderr, "Background music played\n");
-		Mix_VolumeMusic(MIX_MAX_VOLUME / 4); // set volume to 1/4
+		if (Settings::audioSettings.enable_music)
+		{
+			// Stop any existing music first
+			Mix_HaltMusic();
+
+			// Playing background music indefinitely
+			if (Mix_PlayMusic(background_music, -1) == -1)
+			{
+				fprintf(stderr, "Failed to play background music: %s\n", Mix_GetError());
+			}
+			else
+			{
+				fprintf(stderr, "Background music started\n");
+				// Set the correct volume based on settings
+				Mix_VolumeMusic(MIX_MAX_VOLUME * Settings::audioSettings.music_volume * Settings::audioSettings.overall_volume);
+			}
+		}
 	}
 
 	static void stopBackgroundMusic()
@@ -96,7 +150,7 @@ public:
 
 	static void updateVolume()
 	{
-		// Update music volume
+		// Update music volume independently of sound effects
 		if (Settings::audioSettings.enable_music)
 		{
 			Mix_VolumeMusic(MIX_MAX_VOLUME * Settings::audioSettings.music_volume * Settings::audioSettings.overall_volume);
@@ -106,19 +160,31 @@ public:
 			Mix_VolumeMusic(0);
 		}
 
-		// Update sound effects volume
+		// Update sound effects volume separately
 		if (Settings::audioSettings.enable_sound_effects)
 		{
-			Mix_Volume(-1, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			// Only update non-music channels
+			for (int i = 0; i < Mix_AllocateChannels(-1); i++)
+			{
+				if (i != WALK_SOUND_CHANNEL) // Skip walk sound channel if needed
+				{
+					Mix_Volume(i, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+				}
+			}
 		}
 		else
 		{
-			Mix_Volume(-1, 0);
+			// Mute all non-music channels
+			for (int i = 0; i < Mix_AllocateChannels(-1); i++)
+			{
+				Mix_Volume(i, 0);
+			}
 		}
 	}
 
 	static void updateAudioState()
 	{
+		// Handle music state
 		if (!Settings::audioSettings.enable_music)
 		{
 			stopBackgroundMusic();
@@ -127,6 +193,9 @@ public:
 		{
 			playBackgroundMusic();
 		}
+
+		// Always update volumes
+		updateVolume();
 	}
 
 private:
@@ -145,7 +214,14 @@ private:
 
 	void initStateMachines();
 	void updatePlayerState(float elapsed_ms);
+
 	static Mix_Music *background_music;
 	static Mix_Chunk *punch_sound;
 	static Mix_Chunk *walk_sound;
+
+	static Mix_Chunk *parry_sound;
+	static Mix_Chunk *kick_sound;
+	static Mix_Chunk *menu_select_sound;
+	static Mix_Chunk *menu_confirm_sound;
+	static Mix_Chunk *game_count_down_sound;
 };

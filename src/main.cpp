@@ -174,6 +174,7 @@ int main()
             p1Ready = false;
             p2Ready = false;
             WorldSystem::stopAllSounds(); // Stop sounds in menu
+            WorldSystem::stopBackgroundMusic();
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window, renderer))
             {
@@ -312,10 +313,12 @@ int main()
 
             if (!isLoading)
             {
-                // Only play music if it's enabled in settings AND sound effects are enabled
-                if (Settings::audioSettings.enable_music && Settings::audioSettings.enable_sound_effects)
+                // Only play music if it's enabled in settings
+                if (Settings::audioSettings.enable_music)
                 {
-                    WorldSystem::playBackgroundMusic();
+                    WorldSystem::stopBackgroundMusic(); // Stop any existing music first
+                    WorldSystem::playBackgroundMusic(); // Start fresh
+                    WorldSystem::updateAudioState();    // Make sure volume is correct
                 }
                 game.setState(GameState::PLAYING);
             }
@@ -351,11 +354,12 @@ int main()
             {
                 loopsSinceLastFrame = 0;
 
-                // Resume sounds when returning to playing state
+                // Resume sounds and check music when returning to playing state
                 if (game.getPreviousState() == GameState::PAUSED ||
                     game.getPreviousState() == GameState::SETTINGS)
                 {
-                    WorldSystem::resumeSounds(); // Add this method to WorldSystem
+                    WorldSystem::resumeSounds();
+                    WorldSystem::updateAudioState(); // Make sure music is playing if enabled
                 }
 
                 // Handle bot toggle differently based on game mode
@@ -400,8 +404,11 @@ int main()
 
             loopsSinceLastFrame++;
 
-            // Game logic updates
-            worldSystem.movementProcessing();
+            // Commented out. Need to make the smoke look more realistic.
+            worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+
+            // Update center for playable area
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.playerCollisions(&renderer);
             worldSystem.hitBoxCollisions();
             worldSystem.updatePlayableArea();

@@ -173,4 +173,15 @@ private:
     bool botEnabled;
 
     void cleanupButtons();
+
+    bool isUpPressed = false;
+    bool isDownPressed = false;
+    bool isWPressed = false;
+    bool isSPressed = false;
+    bool isXPressed = false;
+    bool isRPressed = false;
+    bool isEnterPressed = false;
+    bool isReturnPressed = false;
+    bool buttonAlreadyHovered = false; // prevent sound spam 
+    bool isMenuSelectedSoundPlaying = false; 
 };

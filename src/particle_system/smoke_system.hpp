@@ -5,4 +5,7 @@ public:
     SmokeParticleSystem();
     void update(float deltaTime) override;
     void emit(float x, float y, float z, bool direction) override;
+
+private:
+	static const int MAX_PARTICLES = 100;
 };
