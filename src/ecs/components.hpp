@@ -74,6 +74,7 @@ p.s. when the state timer expires, the player will be transitioned to IDLE
 struct PlayerCurrentState
 {
     PlayerState currentState = PlayerState::IDLE;
+    PlayerState previousState = PlayerState::IDLE;
 };
 
 // AI opponent
@@ -103,6 +104,7 @@ struct Animation
 {
     GLuint currentTexture;
     int currentFrame;
+    bool playedOnce = false;
 };
 
 struct Motion

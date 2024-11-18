@@ -33,7 +33,8 @@ struct FighterConfig
     // attack 1 (punch)
     float HITBOX_DURATION; // this is the time the hitbox is active
     float PUNCH_X_OFFSET = 0.f;
-    float PUNCH_Y_OFFSET = 0.20f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+    //float PUNCH_Y_OFFSET = 0.10f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+	float PUNCH_Y_OFFSET = 0.0f;
     float PUNCH_WIDTH;
     float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;
@@ -63,8 +64,21 @@ struct FighterConfig
 
     GLuint m_bird_idle_f1_texture;
     GLuint m_bird_idle_f2_texture;
+    GLuint m_bird_idle_f3_texture;
+    GLuint m_bird_idle_f4_texture;
     GLuint m_bird_punch_f1_texture;
     GLuint m_bird_punch_f2_texture;
+    GLuint m_bird_punch_f3_texture;
+    GLuint m_bird_kick_f1_texture;
+    GLuint m_bird_kick_f2_texture;
+    GLuint m_bird_kick_f3_texture;
+    GLuint m_bird_kick_f4_texture;
+    GLuint m_bird_walk_f1_texture;
+    GLuint m_bird_walk_f2_texture;
+    GLuint m_bird_walk_f3_texture;
+    GLuint m_bird_walk_f4_texture;
+    GLuint m_bird_stun_f1_texture;
+    GLuint m_bird_parry_f1_texture;
 
     // default constructor
     FighterConfig(int window_width_px = 1024, int window_height_px = 768)

@@ -315,16 +315,17 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness
     );
 
+
     renderer.renderTexturedQuadScaled(
-        renderer.m_character1,
-        175, 360.0f,
+        p1 ? renderer.m_character1_ready : renderer.m_character1,
+        200.f, 360.f,
         225, 275,
         1.0f // Full brightness for main menu
     );
 
     renderer.renderTexturedQuadScaled(
-        renderer.m_character1_flip,
-        625.f, 360.0f,
+        p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
+        600.f, 360.f,
         225, 275,
         1.0f // Full brightness for main menu
     );
