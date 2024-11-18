@@ -34,8 +34,8 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
 
     CollisionBox &collisionBox = registry.collisionBoxes.emplace(entity);
     // apparently this is the width, height, and offset calculation of the collision box
-    collisionBox.width = config.NDC_WIDTH / 1.6f; 
-    collisionBox.height = config.NDC_HEIGHT / 2.0f;
+    collisionBox.width = config.NDC_WIDTH / 2.2f; 
+    collisionBox.height = config.NDC_HEIGHT / 2.7f;
     collisionBox.xOffset = -config.NDC_WIDTH / 5.7f;
     collisionBox.yOffset = 0;
 
