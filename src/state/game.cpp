@@ -360,9 +360,10 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     );
 
     // Add back button (moved after background render)
+
     renderer.renderButton(
         25.0f, 15.0f,        // x, y position
-        90.0f, 70.0f,        // width, height
+        80.0f, 70.0f,        // width, height
         "<-",                // text
         isBackButtonHovered, // Add this member variable to Game class
         isBackButtonPressed  // Add this member variable to Game class

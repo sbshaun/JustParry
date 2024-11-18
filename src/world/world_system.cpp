@@ -421,16 +421,17 @@ void WorldSystem::movementProcessing()
         // std::cout << "Player 2 cannot move, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
     }
 
-    if (player1Motion->position.x > player2Motion->position.x)
-    {
-        player1Motion->direction = false; // Player 1 now facing left
-        player2Motion->direction = true;  // Player 2 now facing right
-    }
-    else if (player1Motion->position.x < player2Motion->position.x)
-    {
-        player1Motion->direction = true;  // Player 1 now facing right
-        player2Motion->direction = false; // Player 2 now facing left
-    }
+    // if (player1Motion->position.x > player2Motion->position.x)
+    // {
+    //     player1Motion->direction = false; // Player 1 now facing left
+    //     player2Motion->direction = true;  // Player 2 now facing right
+    // }
+    // else if (player1Motion->position.x < player2Motion->position.x)
+    // {
+    //     player1Motion->direction = true;  // Player 1 now facing right
+    //     player2Motion->direction = false; // Player 2 now facing left
+    // }
+    // player1Motion->direction = true;
 }
 
 void WorldSystem::updateStateTimers(float elapsed_ms)

@@ -253,7 +253,7 @@ void GlRender::handleTexturedRenders()
             // If player 1 is facing left, flip the model
             if (!registry.motions.get(entity).direction)
             {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(-motion.scale.x, motion.scale.y, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
             }
             else
             {
@@ -316,7 +316,7 @@ void GlRender::handleTexturedRenders()
             }
             else
             {
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(motion.scale.x, motion.scale.y, 1.0f));
+                modelMatrix = glm::scale(modelMatrix, glm::vec3(-motion.scale.x, motion.scale.y, 1.0f));
             }
 
             if (registry.motions.get(entity).angle != 0)
