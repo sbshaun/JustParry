@@ -165,6 +165,7 @@ int main()
         case GameState::MENU:
             p1Ready = false;
             p2Ready = false;
+            WorldSystem::stopBackgroundMusic();
             game.renderMenu(renderer);
             if (game.handleMenuInput(glWindow.window, renderer))
             {
