@@ -21,7 +21,7 @@ window_mode=Windowed
 resolution=1024x768
 show_fps=true
 enable_bot=false
-enable_debug=true
+enable_debug=false
 
 [AudioSettings]
 enable_sound_effects=true
