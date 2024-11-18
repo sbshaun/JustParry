@@ -966,7 +966,7 @@ void GlRender::handleP2Posture(int p2Posture)
 { // render health values
     float wx = 23.75f;
     float off = 2.35f;
-    std::cout << "p2Posture: " << p2Posture << std::endl;
+
     if (p2Posture == 7)
     {
         renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
