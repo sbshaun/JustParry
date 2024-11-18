@@ -305,12 +305,11 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ROUND_START:
-            interp_moveEntitesToScreen(renderer);
-
             renderer.render();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
-
+            worldSystem.updatePlayableArea();
+            interp_moveEntitesToScreen(renderer);
             if (!isLoading)
             {
                 // Only play music if it's enabled in settings
@@ -322,11 +321,13 @@ int main()
                 }
                 game.setState(GameState::PLAYING);
             }
+
             if (Settings::windowSettings.show_fps)
             {
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
             glWindow.windowSwapBuffers();
             break;
 
@@ -487,7 +488,7 @@ int main()
                 {
                     WorldSystem::playBackgroundMusic();
                 }
-                game.setState(GameState::PLAYING);
+                game.setState(GameState::ROUND_START);
             }
 
             if (Settings::windowSettings.show_fps)

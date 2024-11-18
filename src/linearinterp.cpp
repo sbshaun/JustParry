@@ -7,8 +7,8 @@ double b2 = 0;
 
 int count = 0;
 bool isLoading = true;
-float count_down_timer = 3.0f; // 3 seconds of timer for the count down sound effect 
-float time_last_updated = 0.0f; 
+float count_down_timer = 2.0f; // 2 seconds of timer for the count down sound effect
+float time_last_updated = 0.0f;
 
 void resetInterpVariables()
 {
@@ -97,7 +97,7 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 			count = 1;
 		}
 
-		count_down_timer -= 0.01; 
+		count_down_timer -= 0.01;
 
 		if (count == 1 && count_down_timer <= 0)
 		{
