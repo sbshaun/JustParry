@@ -17,6 +17,8 @@ bool StateMachine::transition(Entity entity, PlayerState newState)
 
 	states[playerState.currentState]->exit(entity, *this);  // 1. exit the current state
 	previousState = currentState;               // 2. set previous to current
+	playerState.previousState = currentState;
+	currentState = newState;
 	playerState.currentState = newState;                    // 2. set current to new state
 	states[playerState.currentState]->enter(entity, *this); // 3. enter new state
 	return true;
@@ -496,8 +498,6 @@ void ParryingState::update(Entity entity, float elapsed_ms, StateMachine& stateM
 	}
 	else
 	{
-		PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-		playerState.currentState = PlayerState::IDLE;
 		stateMachine.transition(entity, PlayerState::IDLE);
 	}
 }
