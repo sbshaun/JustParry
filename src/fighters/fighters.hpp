@@ -33,7 +33,8 @@ struct FighterConfig
     // attack 1 (punch)
     float HITBOX_DURATION; // this is the time the hitbox is active
     float PUNCH_X_OFFSET = 0.f;
-    float PUNCH_Y_OFFSET = 0.20f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+    //float PUNCH_Y_OFFSET = 0.10f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+	float PUNCH_Y_OFFSET = 0.0f;
     float PUNCH_WIDTH;
     float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;

@@ -18,6 +18,7 @@ FighterConfig &setUpBirdmanConfig()
 
     birdmanConfig.HITBOX_DURATION = 1000.f;
     birdmanConfig.PUNCH_X_OFFSET = 0.f;
+    birdmanConfig.PUNCH_Y_OFFSET = 0.0f;
     birdmanConfig.PUNCH_DAMAGE = 10.f;
     birdmanConfig.PUNCH_STUN_DURATION = 700.f;
     birdmanConfig.PARRY_STUN_DURATION = 3000.f;
