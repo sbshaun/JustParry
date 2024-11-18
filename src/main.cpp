@@ -310,6 +310,7 @@ int main()
             game.renderPauseButton(renderer);
             worldSystem.updatePlayableArea();
             interp_moveEntitesToScreen(renderer);
+
             if (!isLoading)
             {
                 // Only play music if it's enabled in settings
