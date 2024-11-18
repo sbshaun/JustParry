@@ -122,22 +122,22 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         "RESUME"                           // button text
     };
 
-    // Initialize menu button (below resume)
-    menuButton = {
+    // Initialize settings button (below resume)
+    pauseSettingsButton = {
         M_WINDOW_WIDTH_PX / 2.0f - 130.0f, // x position
-        M_WINDOW_HEIGHT_PX / 2.0f + 40.0f, // y position
+        M_WINDOW_HEIGHT_PX / 2.0f + 40.0f, // y position (below resume)
         260.0f,                            // width
         80.0f,                             // height
-        "MAIN MENU"                        // button text
+        "SETTINGS"                         // button text
     };
 
-    // Initialize settings button for pause menu (below menu button)
-    pauseSettingsButton = {
+    // Initialize menu button (below settings)
+    menuButton = {
         M_WINDOW_WIDTH_PX / 2.0f - 130.0f,  // x position
-        M_WINDOW_HEIGHT_PX / 2.0f + 140.0f, // y position (below menu button)
+        M_WINDOW_HEIGHT_PX / 2.0f + 140.0f, // y position (below settings)
         260.0f,                             // width
         80.0f,                              // height
-        "SETTINGS"                          // button text
+        "MAIN MENU"                         // button text
     };
 
     // Add two new buttons for settings navigation
@@ -219,6 +219,24 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
 
 void Game::setState(GameState newState)
 {
+    // Don't store previous state for certain transitions
+    if (currentState != GameState::SETTINGS &&
+        currentState != GameState::SETTINGS_EXIT)
+    {
+        previousState = currentState;
+    }
+
+    // Special handling for settings transitions
+    if (newState == GameState::SETTINGS)
+    {
+        // If we're not already in settings-related states, store the previous state
+        if (currentState != GameState::SETTINGS &&
+            currentState != GameState::SETTINGS_EXIT)
+        {
+            previousState = currentState;
+        }
+    }
+
     // If transitioning from settings to menu or gameplay
     if (currentState == GameState::SETTINGS &&
         (newState == GameState::MENU || newState == GameState::PLAYING))
@@ -230,7 +248,7 @@ void Game::setState(GameState newState)
             worldSystem->initInputHandlers();
         }
     }
-    // Add this: When transitioning from character select to gameplay
+    // When transitioning from character select to gameplay
     else if (currentState == GameState::CHARACTER_SELECT &&
              newState == GameState::ROUND_START)
     {
@@ -242,6 +260,11 @@ void Game::setState(GameState newState)
             std::cout << "Reinitialized controls for gameplay" << std::endl;
         }
     }
+
+    // Debug output to track state transitions
+    std::cout << "State transition: " << static_cast<int>(currentState)
+              << " -> " << static_cast<int>(newState)
+              << " (Previous: " << static_cast<int>(previousState) << ")" << std::endl;
 
     currentState = newState;
 }
@@ -266,6 +289,36 @@ void Game::updateArcadeLevel()
     if (currentLevel > levelCompleted)
     {
         levelCompleted = currentLevel;
+    }
+}
+
+void Game::loadArcadeState()
+{
+    FILE *file = fopen(saves_path("arcadeLevelState.txt").c_str(), "r");
+    if (file != nullptr)
+    {
+        fscanf(file, "%d", &this->levelCompleted);
+        fclose(file);
+        printf("Integer read from file: %d\n", this->levelCompleted);
+    }
+    else
+    {
+        printf("Unable to open file for reading.\n");
+    }
+}
+
+void Game::saveCurrentState()
+{
+    FILE *file = fopen(saves_path("arcadeLevelState.txt").c_str(), "w");
+    if (file != nullptr)
+    {
+        fprintf(file, "%d", this->levelCompleted);
+        fclose(file);
+        printf("Integer written to file successfully.\n");
+    }
+    else
+    {
+        printf("Unable to open file for writing.\n");
     }
 }
 
@@ -306,15 +359,15 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     );
 
     renderer.renderTexturedQuadScaled(
-        renderer.m_character1,
-        175, 360.0f,
+        p1 ? renderer.m_character1_ready : renderer.m_character1,
+        200.f, 360.f,
         225, 275,
         1.0f // Full brightness for main menu
     );
 
     renderer.renderTexturedQuadScaled(
-        renderer.m_character1_flip,
-        625.f, 360.0f,
+        p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
+        600.f, 360.f,
         225, 275,
         1.0f // Full brightness for main menu
     );
@@ -841,18 +894,34 @@ void Game::renderHelpScreen(GlRender &renderer)
 
 void Game::renderSettingsScreen(GlRender &renderer)
 {
-    // Add at the beginning of the function
-    const glm::vec3 placeholderColor(0.6f, 0.6f, 0.6f); // Darker gray for placeholder buttons
-    const glm::vec3 white(1.0f, 1.0f, 1.0f);
+    // First render the appropriate background based on where we came from
+    if (getPreviousState() == GameState::PAUSED)
+    {
+        // If from pause menu, render the game state
+        renderer.render();
+        extern int timer;
+        renderer.renderUI(timer);
+        this->renderPauseButton(renderer);
+    }
+    else if (getPreviousState() == GameState::MENU)
+    {
+        // If from main menu, render the menu background first
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderer.renderTexturedQuadScaled(
+            renderer.m_menuTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f // Full brightness
+        );
+    }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
+    // Then render the semi-transparent black overlay
     renderer.renderTexturedQuadScaled(
-        renderer.m_menuTexture,
+        renderer.m_menuTexture, // Use any texture
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-        0.3f // 30% opacity for the black overlay
+        0.0f, // Set brightness to 0 to make it black
+        0.5f  // 50% opacity for the black overlay
     );
 
     // Calculate dimensions for the settings screen image
@@ -868,8 +937,13 @@ void Game::renderSettingsScreen(GlRender &renderer)
             renderer.m_settingsTexture,
             settingsBoxX, settingsBoxY,
             settingsBoxWidth, settingsBoxHeight,
-            1.0f);
+            1.0f, // Full brightness
+            1.0f  // Full opacity
+        );
     }
+
+    // Always render the SETTINGS text on top
+    renderer.renderText("SETTINGS", 410, 140, 0.55f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Position and size the close button (make it square)
     closeButton = {
@@ -898,8 +972,6 @@ void Game::renderSettingsScreen(GlRender &renderer)
         closeHovered, closePressed,
         glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
     );
-
-    renderer.renderText("SETTINGS", 410, 140, 0.55f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Get mouse position and check hover/press states
     bool generalHovered = mouseX >= generalButton.x &&
@@ -1219,11 +1291,13 @@ void Game::renderSettingsScreen(GlRender &renderer)
                     {
                         Settings::audioSettings.enable_sound_effects = !Settings::audioSettings.enable_sound_effects;
                         Settings::saveSettings();
+                        WorldSystem::updateVolume(); // Add this line
                     }
                     else if (aButton2Hovered)
                     {
                         Settings::audioSettings.enable_music = !Settings::audioSettings.enable_music;
                         Settings::saveSettings();
+                        WorldSystem::updateAudioState(); // Add this line
                     }
                     else if (aButton3Hovered)
                     {
@@ -1241,12 +1315,14 @@ void Game::renderSettingsScreen(GlRender &renderer)
                     float relativeX = std::max(0.0f, std::min(1.0f, (float)(mouseX - audioButton3.x) / audioButton3.width));
                     Settings::audioSettings.overall_volume = relativeX;
                     Settings::saveSettings();
+                    WorldSystem::updateVolume(); // Add this line
                 }
                 else if (isDraggingMusic)
                 {
                     float relativeX = std::max(0.0f, std::min(1.0f, (float)(mouseX - audioButton4.x) / audioButton4.width));
                     Settings::audioSettings.music_volume = relativeX;
                     Settings::saveSettings();
+                    WorldSystem::updateVolume(); // Add this line
                 }
             }
             else
@@ -1937,6 +2013,7 @@ void Game::renderPauseButton(GlRender &renderer)
         else if (settingsPressed && !wasSettingsPressed)
         {
             currentState = GameState::SETTINGS;
+            previousState = GameState::PAUSED;
         }
 
         // Render all pause menu buttons

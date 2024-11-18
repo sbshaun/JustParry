@@ -5,9 +5,9 @@
 #include "../constants.hpp"
 #include "../input_system/input_utils.hpp"
 
-Mix_Music* WorldSystem::background_music = nullptr;
-Mix_Chunk* WorldSystem::punch_sound = nullptr;
-Mix_Chunk* WorldSystem::walk_sound = nullptr; 
+Mix_Music *WorldSystem::background_music = nullptr;
+Mix_Chunk *WorldSystem::punch_sound = nullptr;
+Mix_Chunk *WorldSystem::walk_sound = nullptr;
 bool WorldSystem::isPlayerWalking = false;
 float WorldSystem::walkStopTimer = 0.f;
 
@@ -18,7 +18,7 @@ float WorldSystem::walkStopTimer = 0.f;
 */
 static bool canMove(PlayerState state)
 {
-    return state != PlayerState::ATTACKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
+    return state != PlayerState::ATTACKING && state != PlayerState::KICKING && state != PlayerState::STUNNED && state != PlayerState::BLOCKSTUNNED && state != PlayerState::RECOVERING && state != PlayerState::PARRYING && state != PlayerState::PERFECT_PARRYING && state != PlayerState::COUNTER_ATTACKING;
 }
 
 /*
@@ -99,32 +99,40 @@ void WorldSystem::init(GlRender *renderer)
 {
     this->renderer = renderer;
 
-    ////////////////////////////////////// 
-	// Loading music and sounds with SDL
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		fprintf(stderr, "Failed to initialize SDL Audio");
-		// exit early 
-        exit(1); 
-	}
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		fprintf(stderr, "Failed to open audio device");
-		exit(1); 
-	}
+    //////////////////////////////////////
+    // Loading music and sounds with SDL
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        fprintf(stderr, "Failed to initialize SDL Audio");
+        exit(1);
+    }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+    {
+        fprintf(stderr, "Failed to open audio device");
+        exit(1);
+    }
 
     // Load background music
     background_music = Mix_LoadMUS(audio_path("background_music.wav").c_str());
     punch_sound = Mix_LoadWAV(audio_path("punch_sound.wav").c_str());
     walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
 
-	if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr) {
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
-			audio_path("background_music.wav").c_str(),
-			audio_path("punch_sound.wav").c_str()),
+    if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
+                audio_path("background_music.wav").c_str(),
+                audio_path("punch_sound.wav").c_str()),
             audio_path("walk_sound.wav").c_str();
-		exit(1); 
-	} else {
-        std::cout << "Sounds loaded" << std::endl; 
+        exit(1);
     }
+    else
+    {
+        std::cout << "Sounds loaded" << std::endl;
+    }
+
+    // Initialize audio state based on settings
+    updateVolume();
+    updateAudioState();
 
     // Create entities
     FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
@@ -157,15 +165,30 @@ void WorldSystem::init(GlRender *renderer)
     this->player1CollisionBox = &p1CollisionBox;
     this->player2CollisionBox = &p2CollisionBox;
 
-    particleSystem = ParticleSystem();
+    bloodSystem = BloodParticleSystem();
+    smokeSystem = SmokeParticleSystem();
 }
 
-void WorldSystem::step(float elapsed_ms) {
-    particleSystem.update(elapsed_ms);
+void WorldSystem::step(float elapsed_ms)
+{
+    bloodSystem.update(elapsed_ms);
+    smokeSystem.update(elapsed_ms);
 }
 
-void WorldSystem::emitParticles(float x, float y, float z, bool direction) {
-    particleSystem.emit(x, y, z, direction);
+void WorldSystem::emitBloodParticles(float x, float y, float z, bool direction)
+{
+    bloodSystem.emit(x, y, z, direction);
+}
+
+void WorldSystem::emitSmokeParticles(float x, float y, float z)
+{
+    smokeSystem.emit(x, y, z, false);
+}
+
+void WorldSystem::renderParticles()
+{
+    bloodSystem.render(renderer->m_worldModel);
+    smokeSystem.render(renderer->m_worldModel);
 }
 
 void WorldSystem::initInputHandlers()
@@ -231,6 +254,8 @@ void WorldSystem::initStateMachines()
     player1StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
     // player1StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player1StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    player1StateMachine->addState(PlayerState::KICKING, std::make_unique<KickingState>());
+
     player1StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player1StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player1StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
@@ -240,6 +265,8 @@ void WorldSystem::initStateMachines()
     player2StateMachine->addState(PlayerState::WALKING, std::make_unique<WalkingState>());
     // player2StateMachine->addState(PlayerState::JUMPING, std::make_unique<JumpingState>());
     player2StateMachine->addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    player2StateMachine->addState(PlayerState::KICKING, std::make_unique<KickingState>());
+
     player2StateMachine->addState(PlayerState::CROUCHING, std::make_unique<CrouchingState>());
     player2StateMachine->addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
     player2StateMachine->addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
@@ -309,19 +336,24 @@ void WorldSystem::movementProcessing()
     PlayerCurrentState &player1State = registry.playerCurrentStates.get(renderer->m_player1);
     PlayerCurrentState &player2State = registry.playerCurrentStates.get(renderer->m_player2);
 
-    bool isPlayerMoving = player1Motion->velocity.x != 0 || player2Motion->velocity.x != 0; 
-    if (isPlayerMoving) {
-        walkStopTimer = 0.f; 
-        if (!isPlayerWalking) {
+    bool isPlayerMoving = player1Motion->velocity.x != 0 || player2Motion->velocity.x != 0;
+    if (isPlayerMoving)
+    {
+        walkStopTimer = 0.f;
+        if (!isPlayerWalking && Settings::audioSettings.enable_sound_effects)
+        {
             std::cout << "Playing walk sound" << std::endl;
             Mix_PlayChannel(WALK_SOUND_CHANNEL, walk_sound, -1);
-            isPlayerWalking = true; 
+            isPlayerWalking = true;
         }
-    } else {
-        walkStopTimer += PLAYER_STATE_TIMER_STEP; 
-        if (walkStopTimer >= WALK_SOUND_TIMEOUT && isPlayerWalking) {
+    }
+    else
+    {
+        walkStopTimer += PLAYER_STATE_TIMER_STEP;
+        if (walkStopTimer >= WALK_SOUND_TIMEOUT && isPlayerWalking)
+        {
             Mix_HaltChannel(WALK_SOUND_CHANNEL);
-            isPlayerWalking = false; 
+            isPlayerWalking = false;
         }
     }
 
@@ -500,6 +532,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+                registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
@@ -512,6 +545,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
+                registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
@@ -655,15 +689,16 @@ void WorldSystem::hitBoxCollisions()
     Fighters current_char2 = registry.players.get(player2).current_char;
 
     // check if player 1 hit player 2
-    if (checkHitBoxCollisions(player1, player2)) {
-        const FighterConfig& config = FighterManager::getFighterConfig(current_char1);
+    if (checkHitBoxCollisions(player1, player2))
+    {
+        const FighterConfig &config = FighterManager::getFighterConfig(current_char1);
 
         // Get victim (player2) motion for particle emission
-        Motion& victimMotion = registry.motions.get(player2);
+        Motion &victimMotion = registry.motions.get(player2);
         applyDamage(player2, config.PUNCH_DAMAGE);
-        emitParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
+        emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
-        KnockBack& knockback = registry.knockbacks.get(player2);
+        KnockBack &knockback = registry.knockbacks.get(player2);
         knockback.active = true;
         knockback.duration = config.KNOCKBACK_DURATION;
 
@@ -671,21 +706,22 @@ void WorldSystem::hitBoxCollisions()
         float direction = player1Motion->direction ? 1.0f : -1.0f;
         knockback.force = {
             direction * config.KNOCKBACK_FORCE_X,
-            config.KNOCKBACK_FORCE_Y };
+            config.KNOCKBACK_FORCE_Y};
 
         player2StateMachine->transition(player2, PlayerState::STUNNED);
     }
 
     // check if player 2 hit player 1
-    if (checkHitBoxCollisions(player2, player1)) {
-        const FighterConfig& config = FighterManager::getFighterConfig(current_char2);
+    if (checkHitBoxCollisions(player2, player1))
+    {
+        const FighterConfig &config = FighterManager::getFighterConfig(current_char2);
 
         // Get victim (player1) motion for particle emission
-        Motion& victimMotion = registry.motions.get(player1);
+        Motion &victimMotion = registry.motions.get(player1);
         applyDamage(player1, config.PUNCH_DAMAGE);
-        emitParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
+        emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
-        KnockBack& knockback = registry.knockbacks.get(player1);
+        KnockBack &knockback = registry.knockbacks.get(player1);
         knockback.active = true;
         knockback.duration = config.KNOCKBACK_DURATION;
 
@@ -693,7 +729,7 @@ void WorldSystem::hitBoxCollisions()
         float direction = player2Motion->direction ? 1.0f : -1.0f;
         knockback.force = {
             direction * config.KNOCKBACK_FORCE_X,
-            config.KNOCKBACK_FORCE_Y };
+            config.KNOCKBACK_FORCE_Y};
 
         player1StateMachine->transition(player1, PlayerState::STUNNED);
     }

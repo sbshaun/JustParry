@@ -23,6 +23,8 @@ enum class GameState
     HELP,
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
+    ARCADE_WIN,
+    ARCADE_LOSE,
     SETTINGS,
     SETTINGS_EXIT,
     ROUND_START,
@@ -42,6 +44,8 @@ public:
     bool isRunning() const;
     void update();
     void updateArcadeLevel();
+    void loadArcadeState();
+    void saveCurrentState();
     void render(GlRender &renderer);
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
@@ -82,9 +86,17 @@ public:
     void setShowFPS(bool show) { showFPS = show; }
     bool getBotEnabled() const { return botEnabled; }
     void setBotEnabled(bool enabled) { botEnabled = enabled; }
+    GameState getPreviousState() const { return previousState; }
+    bool isArcadeMode() const
+    {
+        return currentState == GameState::ARCADE_PREFIGHT ||
+               currentState == GameState::ARCADE_MENU ||
+               (currentState == GameState::PLAYING && previousState == GameState::ARCADE_PREFIGHT);
+    }
 
 private:
     GameState currentState;
+    GameState previousState = GameState::MENU;
     bool running;
     float loadingProgress;
     bool showHelpDialog;

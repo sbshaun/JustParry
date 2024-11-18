@@ -472,12 +472,6 @@ void GlRender::render()
     PlayableArea &playableArea = registry.playableArea.get(m_playableArea);
 
     renderTexturedQuadScaled(
-        m_bg1Texture,
-        (-M_WINDOW_WIDTH_PX / 2.0f) - (playableArea.position.x) * M_WINDOW_WIDTH_PX / 1.25f, 0.0f,
-        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
-        1.0f);
-
-    renderTexturedQuadScaled(
         m_bg2Texture,
         -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.5f, 0.0f,
         M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
@@ -485,12 +479,6 @@ void GlRender::render()
 
     renderTexturedQuadScaled(
         m_bg3Texture,
-        -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 1.75f, 0.0f,
-        M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
-        1.0f);
-
-    renderTexturedQuadScaled(
-        m_bg4Texture,
         -M_WINDOW_WIDTH_PX / 2.0f - playableArea.position.x * M_WINDOW_WIDTH_PX / 2.0f, 0.0f,
         M_WINDOW_WIDTH_PX * 2.0f, M_WINDOW_HEIGHT_PX,
         1.0f);
@@ -523,6 +511,8 @@ void GlRender::loadTextures()
     loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
     loadTexture(textures_path("bird_idle_f1.png"), m_character1);
     loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
+    loadTexture(textures_path("bird_parry_f1.png"), m_character1_ready);
+    loadTexture(textures_path("bird_parry_f1_flipped.png"), m_character1_flip_ready);
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     FighterManager::loadBirdTextures(*this);
@@ -533,8 +523,8 @@ void GlRender::loadTexture(const std::string &path, GLuint &textureID)
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
@@ -559,6 +549,9 @@ void GlRender::renderUI(int timer)
     const auto &playerhealths = registry.healths;
     float p1Health = registry.healths.get(m_player1).currentHealth;
     float p2Health = registry.healths.get(m_player2).currentHealth;
+
+    float p1Posture = registry.postureBars.get(m_player1).currentBar;
+    float p2Posture = registry.postureBars.get(m_player2).currentBar;
 
     // Get the current window size and scaling factors
     int windowWidth, windowHeight;
@@ -661,6 +654,9 @@ void GlRender::renderUI(int timer)
     // draw health boxes according to player health
     handleP1Health(p1Health);
     handleP2Health(p2Health);
+
+    handleP1Posture(p1Posture);
+    handleP2Posture(p2Posture);
 
     // render timer
     float textWidth = std::to_string(timer).length() * 30.0f * xscale;
@@ -861,6 +857,196 @@ void GlRender::handleP2Health(float p2Health)
     }
 }
 
+void GlRender::handleP1Posture(float p1Posture)
+{ // render health values
+    float wx = 23.75f;
+    float off = 2.35f;
+    if (p1Posture == 10)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 9)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 8)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 7)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 6)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 5)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 4)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 3)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 2)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 1)
+    {
+        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+    }
+    else if (p1Posture == 0)
+    {
+        return;
+    }
+}
+
+void GlRender::handleP2Posture(float p2Posture)
+{ // render health values
+    float wx = 23.75f;
+    float off = 2.35f;
+    if (p2Posture == 10)
+    {
+        renderBlueHealthRectangle(572.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 9)
+    {
+        renderBlueHealthRectangle(575.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 8)
+    {
+        renderBlueHealthRectangle(575.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 7)
+    {
+        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 6)
+    {
+        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 5)
+    {
+        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 4)
+    {
+        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 3)
+    {
+        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 2)
+    {
+        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 1)
+    {
+        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+    }
+    else if (p2Posture == 0)
+    {
+        return;
+    }
+}
+
 void GlRender::renderTexturedQuad(GLuint texture)
 {
     // Define vertices for a full-screen quad (x, y, z, u, v)
@@ -974,7 +1160,7 @@ void GlRender::shutdown()
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_character1,
-        m_character1_flip, m_p1SelectKey, m_p2SelectKey};
+        m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
@@ -983,6 +1169,7 @@ void GlRender::shutdown()
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
     m_avatarTexture = m_characterSelectTexture = m_character1 = 0;
+    m_character1_ready = m_character1_flip_ready = 0;
     m_character1_flip = m_p1SelectKey = m_p2SelectKey = 0;
 
     // Free font resources
@@ -1716,6 +1903,58 @@ void GlRender::renderRedHealthRectangle(float x, float y, float width, float hei
     // Set uniform values
     GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
     glUniform3f(fillColorLoc, 0.4f, 0.0f, 0.0f); // Red fill
+
+    // Define vertices for the rectangle
+    float vertices[] = {
+        ndcX, ndcY + ndcHeight, 0.0f,           // Top-left
+        ndcX, ndcY, 0.0f,                       // Bottom-left
+        ndcX + ndcWidth, ndcY, 0.0f,            // Bottom-right
+        ndcX + ndcWidth, ndcY + ndcHeight, 0.0f // Top-right
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+        2, 3, 0  // Second triangle
+    };
+
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Draw the rectangle
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void GlRender::renderBlueHealthRectangle(float x, float y, float width, float height)
+{
+    // Convert screen coordinates (0, 1280) and (0, 720) to NDC (-1, 1)
+    float ndcX = (2.0f * x / M_WINDOW_WIDTH_PX) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y / M_WINDOW_HEIGHT_PX);
+    float ndcWidth = 2.0f * width / M_WINDOW_WIDTH_PX;
+    float ndcHeight = -2.0f * height / M_WINDOW_HEIGHT_PX;
+
+    glUseProgram(m_redRectangleShader->m_shaderProgram);
+
+    // Set uniform values
+    GLint fillColorLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "fillColor");
+    glUniform3f(fillColorLoc, 0.0f, 0.0f, 0.9f); // Blue fill
 
     // Define vertices for the rectangle
     float vertices[] = {

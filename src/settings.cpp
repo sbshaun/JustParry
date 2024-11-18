@@ -597,20 +597,20 @@ namespace Settings
             windowSettings.enable_debug == DefaultConfig::WINDOW_SETTINGS.enable_debug;
 
         // For debugging
-        if (!windowMatches)
-        {
-            std::cout << "Window settings mismatch:" << std::endl;
-            std::cout << "Mode: current=" << windowSettings.window_mode
-                      << " default=" << DefaultConfig::WINDOW_SETTINGS.window_mode << std::endl;
-            std::cout << "Resolution: current=" << windowSettings.resolution.width << "x" << windowSettings.resolution.height
-                      << " default=" << DefaultConfig::WINDOW_SETTINGS.resolution.width << "x" << DefaultConfig::WINDOW_SETTINGS.resolution.height << std::endl;
-            std::cout << "Show FPS: current=" << windowSettings.show_fps
-                      << " default=" << DefaultConfig::WINDOW_SETTINGS.show_fps << std::endl;
-            std::cout << "Enable Bot: current=" << windowSettings.enable_bot
-                      << " default=" << DefaultConfig::WINDOW_SETTINGS.enable_bot << std::endl;
-            std::cout << "Enable Debug: current=" << windowSettings.enable_debug
-                      << " default=" << DefaultConfig::WINDOW_SETTINGS.enable_debug << std::endl;
-        }
+        // if (!windowMatches)
+        // {
+        //     std::cout << "Window settings mismatch:" << std::endl;
+        //     std::cout << "Mode: current=" << windowSettings.window_mode
+        //               << " default=" << DefaultConfig::WINDOW_SETTINGS.window_mode << std::endl;
+        //     std::cout << "Resolution: current=" << windowSettings.resolution.width << "x" << windowSettings.resolution.height
+        //               << " default=" << DefaultConfig::WINDOW_SETTINGS.resolution.width << "x" << DefaultConfig::WINDOW_SETTINGS.resolution.height << std::endl;
+        //     std::cout << "Show FPS: current=" << windowSettings.show_fps
+        //               << " default=" << DefaultConfig::WINDOW_SETTINGS.show_fps << std::endl;
+        //     std::cout << "Enable Bot: current=" << windowSettings.enable_bot
+        //               << " default=" << DefaultConfig::WINDOW_SETTINGS.enable_bot << std::endl;
+        //     std::cout << "Enable Debug: current=" << windowSettings.enable_debug
+        //               << " default=" << DefaultConfig::WINDOW_SETTINGS.enable_debug << std::endl;
+        // }
 
         return (
             // Check window settings

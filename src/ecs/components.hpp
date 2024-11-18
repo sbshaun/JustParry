@@ -13,6 +13,7 @@ enum class PlayerState
     // JUMPING,
     CROUCHING,
     ATTACKING,
+    KICKING,
     PARRYING,
     PERFECT_PARRYING,
     COUNTER_ATTACKING,
@@ -36,6 +37,8 @@ constexpr const char *PlayerStateToString(PlayerState state)
         return "CROUCHING";
     case PlayerState::ATTACKING:
         return "ATTACKING";
+    case PlayerState::KICKING:
+        return "KICKING";
     case PlayerState::PARRYING:
         return "PARRYING";
     case PlayerState::PERFECT_PARRYING:
@@ -71,6 +74,7 @@ p.s. when the state timer expires, the player will be transitioned to IDLE
 struct PlayerCurrentState
 {
     PlayerState currentState = PlayerState::IDLE;
+    PlayerState previousState = PlayerState::IDLE;
 };
 
 // AI opponent
@@ -87,10 +91,20 @@ struct Health
     // float recoverRate; // optional, health recover after x seconds of not being hit.
 };
 
+
+struct PostureBar
+{
+    float maxBar;      // max number of bars.
+    float currentBar;  // remaining bars.
+    float recoverRate; // how many seconds to recover 1 bar
+    float recoverBar;
+};
+
 struct Animation
 {
     GLuint currentTexture;
     int currentFrame;
+    bool playedOnce = false;
 };
 
 struct Motion
@@ -113,13 +127,6 @@ struct Motion
 struct StationaryTimer
 {
     float counter_ms = 0.f; // period of time of a player can't move because of stun, or recovery time after actions (e.g. an attack)...
-};
-
-struct PostureBar
-{
-    int maxBar;      // max number of bars.
-    int currentBar;  // remaining bars.
-    int recoverRate; // how many seconds to recover 1 bar. use int for implicity.
 };
 
 struct StateTimer
@@ -276,12 +283,12 @@ struct HurtBox : public Box
 
     float getTop(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y + height;
+        return playerPosition.y + height + yOffset; 
     }
 
     float getBottom(const vec2 &playerPosition, bool facingRight = true) const override
     {
-        return playerPosition.y - height;
+        return playerPosition.y - height + yOffset;
     }
 };
 

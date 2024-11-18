@@ -23,7 +23,7 @@ struct FighterConfig
 
     // properties
     float MAX_HEALTH = 100.f;
-    int POSTURE_MAX = 10;
+    int POSTURE_MAX = 7;
     int POSTURE_REGEN = 3;
 
     // movement
@@ -33,13 +33,25 @@ struct FighterConfig
     // attack 1 (punch)
     float HITBOX_DURATION; // this is the time the hitbox is active
     float PUNCH_X_OFFSET = 0.f;
-    float PUNCH_Y_OFFSET = 0.20f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+    //float PUNCH_Y_OFFSET = 0.10f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+	float PUNCH_Y_OFFSET = 0.0f;
     float PUNCH_WIDTH;
     float PUNCH_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
     float PUNCH_DAMAGE = 10.f;
     float PUNCH_STUN_DURATION; // time of how long the player itself is stunned after being hit by a punch, not to the other player
     float PARRY_STUN_DURATION; // if a hit is perfect parried, the player is stunned longer than being punched, heavy panelty on failed attack, this prevent abuse of attacking
     float BLOCK_STUN_DURATION; // if a hit is block, the player that blocked will be stunned for a period of time
+
+    // attack 2 (kick) 
+    float KICK_HITBOX_DURATION; 
+    float KICK_X_OFFSET = 0.f;  
+    float KICK_Y_OFFSET; 
+    float KICK_WIDTH; 
+    float KICK_HEIGHT = 0.15f * (BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f); 
+    float KICK_DAMAGE = 10.f; 
+    float KICK_STUN_DURATION; 
+
+    float CROUCH_TIMER = 1500.f; // crouching period 
 
     float PARRY_DURATION; // parry duration (parryBox active time)
     float PERFECT_PARRY_DURATION;
@@ -52,8 +64,21 @@ struct FighterConfig
 
     GLuint m_bird_idle_f1_texture;
     GLuint m_bird_idle_f2_texture;
+    GLuint m_bird_idle_f3_texture;
+    GLuint m_bird_idle_f4_texture;
     GLuint m_bird_punch_f1_texture;
     GLuint m_bird_punch_f2_texture;
+    GLuint m_bird_punch_f3_texture;
+    GLuint m_bird_kick_f1_texture;
+    GLuint m_bird_kick_f2_texture;
+    GLuint m_bird_kick_f3_texture;
+    GLuint m_bird_kick_f4_texture;
+    GLuint m_bird_walk_f1_texture;
+    GLuint m_bird_walk_f2_texture;
+    GLuint m_bird_walk_f3_texture;
+    GLuint m_bird_walk_f4_texture;
+    GLuint m_bird_stun_f1_texture;
+    GLuint m_bird_parry_f1_texture;
 
     // default constructor
     FighterConfig(int window_width_px = 1024, int window_height_px = 768)
@@ -61,7 +86,8 @@ struct FighterConfig
           NDC_HEIGHT(BB_HEIGHT / window_height_px * 2.0f),
           PUNCH_Y_OFFSET(0.20f * (BB_HEIGHT / window_height_px * 2.0f)),
           PUNCH_WIDTH(0.50f * (BB_WIDTH / window_width_px * 2.0f)),
-          PUNCH_HEIGHT(0.15f * (BB_HEIGHT / window_height_px * 2.0f)) {};
+          KICK_WIDTH(0.50f * (BB_WIDTH / window_width_px * 2.0f)),
+          KICK_Y_OFFSET(-0.40f * (BB_HEIGHT / window_height_px * 2.0f)) {};
 };
 
 // 3. fighter manager, this stores configs for all fighters
