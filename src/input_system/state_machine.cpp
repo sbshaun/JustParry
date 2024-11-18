@@ -556,8 +556,6 @@ void StunnedState::update(Entity entity, float elapsed_ms, StateMachine& stateMa
 	}
 	else
 	{
-		PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-		playerState.currentState = PlayerState::IDLE;
 		stateMachine.transition(entity, PlayerState::IDLE);
 	}
 }
@@ -610,8 +608,6 @@ void BlockStunnedState::update(Entity entity, float elapsed_ms, StateMachine& st
 	}
 	else
 	{
-		PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-		playerState.currentState = PlayerState::IDLE;
 		stateMachine.transition(entity, PlayerState::IDLE);
 	}
 }
