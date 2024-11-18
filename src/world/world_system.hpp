@@ -37,6 +37,11 @@ public:
 	void checkAABBCollision(bool &xCollision, bool &yCollision, const Box &box1, Motion &motion1, const Box &box2, Motion &motion2);
 	void playerCollisions(GlRender *renderer);
 	static void playPunchSound() { Mix_PlayChannel(-1, punch_sound, 0); }
+	static void playKickSound() { Mix_PlayChannel(-1, kick_sound, 0); }
+	static void playParrySound() { Mix_PlayChannel(-1, parry_sound, 0); }
+	static void playMenuSelectSound() { Mix_PlayChannel(-1, menu_select_sound, 0); }
+	static void playMenuConfirmSound() { Mix_PlayChannel(-1, menu_confirm_sound, 0); }
+	static void playGameCountDownSound() { Mix_PlayChannel(-1, game_count_down_sound, 0); }
 
 	static void playBackgroundMusic() { 
 		// Playing background music indefinitely
@@ -92,4 +97,9 @@ private:
 	static Mix_Music* background_music; 
 	static Mix_Chunk* punch_sound; 
 	static Mix_Chunk* walk_sound;
+	static Mix_Chunk* parry_sound;
+	static Mix_Chunk* kick_sound;
+	static Mix_Chunk* menu_select_sound;
+	static Mix_Chunk* menu_confirm_sound;
+	static Mix_Chunk* game_count_down_sound;
 };

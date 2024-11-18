@@ -458,6 +458,7 @@ void ParryingState::enter(Entity entity, StateMachine& stateMachine)
 
     StateTimer &playerStateTimer = registry.stateTimers.get(entity);
     playerStateTimer.reset(PARRY_BOX_DURATION);
+    WorldSystem::playParrySound();
 
     if (registry.postureBars.get(entity).currentBar > 0) {
         registry.postureBars.get(entity).currentBar--;
