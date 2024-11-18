@@ -18,6 +18,7 @@ FighterConfig &setUpBirdmanConfig()
 
     birdmanConfig.HITBOX_DURATION = 1000.f;
     birdmanConfig.PUNCH_X_OFFSET = 0.f;
+    birdmanConfig.PUNCH_Y_OFFSET = 0.0f;
     birdmanConfig.PUNCH_DAMAGE = 10.f;
     birdmanConfig.PUNCH_STUN_DURATION = 700.f;
     birdmanConfig.PARRY_STUN_DURATION = 3000.f;
@@ -28,7 +29,7 @@ FighterConfig &setUpBirdmanConfig()
     birdmanConfig.KICK_DAMAGE = 10.f;
     birdmanConfig.KICK_STUN_DURATION = 700.f;
 
-    birdmanConfig.KNOCKBACK_FORCE_X = 0.02f;
+    birdmanConfig.KNOCKBACK_FORCE_X = 0.015f;
     birdmanConfig.KNOCKBACK_FORCE_Y = 0.0f;
 
     birdmanConfig.PARRY_DURATION = 700.f;
@@ -63,8 +64,21 @@ void FighterManager::loadBirdTextures(GlRender &renderer)
     auto &birdConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
     renderer.loadTexture(textures_path("bird_idle_f1.png"), birdConfig.m_bird_idle_f1_texture);
     renderer.loadTexture(textures_path("bird_idle_f2.png"), birdConfig.m_bird_idle_f2_texture);
+    renderer.loadTexture(textures_path("bird_idle_f3.png"), birdConfig.m_bird_idle_f3_texture);
+    renderer.loadTexture(textures_path("bird_idle_f4.png"), birdConfig.m_bird_idle_f4_texture);
     renderer.loadTexture(textures_path("bird_punch_f1.png"), birdConfig.m_bird_punch_f1_texture);
     renderer.loadTexture(textures_path("bird_punch_f2.png"), birdConfig.m_bird_punch_f2_texture);
+    renderer.loadTexture(textures_path("bird_punch_f3.png"), birdConfig.m_bird_punch_f3_texture);
+    renderer.loadTexture(textures_path("bird_kick_f1.png"), birdConfig.m_bird_kick_f1_texture);
+    renderer.loadTexture(textures_path("bird_kick_f2.png"), birdConfig.m_bird_kick_f2_texture);
+    renderer.loadTexture(textures_path("bird_kick_f3.png"), birdConfig.m_bird_kick_f3_texture);
+    renderer.loadTexture(textures_path("bird_kick_f4.png"), birdConfig.m_bird_kick_f4_texture);
+    renderer.loadTexture(textures_path("bird_walk_f1.png"), birdConfig.m_bird_walk_f1_texture);
+    renderer.loadTexture(textures_path("bird_walk_f2.png"), birdConfig.m_bird_walk_f2_texture);
+    renderer.loadTexture(textures_path("bird_walk_f3.png"), birdConfig.m_bird_walk_f3_texture);
+    renderer.loadTexture(textures_path("bird_walk_f4.png"), birdConfig.m_bird_walk_f4_texture);
+    renderer.loadTexture(textures_path("bird_stun_f1.png"), birdConfig.m_bird_stun_f1_texture);
+    renderer.loadTexture(textures_path("bird_parry_f1.png"), birdConfig.m_bird_parry_f1_texture);
 };
 
 void FighterManager::deleteBirdTextures()
@@ -72,8 +86,21 @@ void FighterManager::deleteBirdTextures()
     auto &birdConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
     glDeleteTextures(1, &birdConfig.m_bird_idle_f1_texture);
     glDeleteTextures(1, &birdConfig.m_bird_idle_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_idle_f3_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_idle_f4_texture);
     glDeleteTextures(1, &birdConfig.m_bird_punch_f1_texture);
     glDeleteTextures(1, &birdConfig.m_bird_punch_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_punch_f3_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f3_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_kick_f4_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_walk_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_walk_f2_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_walk_f3_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_walk_f4_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_stun_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_parry_f1_texture);
 }
 
 // reigster fighter configs to FighterManager
