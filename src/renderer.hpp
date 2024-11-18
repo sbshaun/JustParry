@@ -142,8 +142,8 @@ public:
     void handleP1Health(float p1Health);
     void handleP2Health(float p2Health);
 
-    void handleP1Posture(float p1Posture);
-    void handleP2Posture(float p2Posture);
+    void handleP1Posture(int p1Posture);
+    void handleP2Posture(int p2Posture);
 
     void renderSelectorTriangleP1(float x, float y, float width, float height, bool p1);
     void renderSelectorTriangleP2(float x, float y, float width, float height, bool p2);

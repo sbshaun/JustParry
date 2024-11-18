@@ -314,7 +314,7 @@ void Game::saveCurrentState()
     {
         fprintf(file, "%d", this->levelCompleted);
         fclose(file);
-        printf("Integer written to file successfully.\n");
+        printf("Saved arcade level state.\n");
     }
     else
     {

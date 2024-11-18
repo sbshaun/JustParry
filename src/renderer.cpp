@@ -596,27 +596,19 @@ void GlRender::renderUI(int timer)
     // Bar dimensions and positions
     float barWidth = 275.0f;
     float barHeight = 40.0f;
-    float barPadding = -5.0f; // Space between timer and bars
-
-    // Avatar dimensions
-    float avatarSize = barHeight * 1.8f; // Increased from 1.2f to 1.8f for larger avatars
-    float avatarPadding = 10.0f * xscale;
+    float smallBarHeight = 20.0f;  // Height for the smaller bars
+    float barPadding = -5.0f;      // Space between timer and bars
+    float verticalPadding = 10.0f; // Space between main bar and small bar
 
     // Left bar position
     float leftBarX = timerBgX - barWidth - barPadding;
     float leftBarY = timerBgY + (timerBgHeight - barHeight) / 2.0f;
-
-    // Left avatar position - adjust Y position to keep it centered with the bar
-    float leftAvatarX = leftBarX - avatarSize - avatarPadding;
-    float leftAvatarY = leftBarY - (avatarSize - barHeight) / 2.0f;
+    float leftSmallBarY = leftBarY + barHeight + verticalPadding; // Position below main bar
 
     // Right bar position
     float rightBarX = timerBgX + timerBgWidth + barPadding;
     float rightBarY = leftBarY;
-
-    // Right avatar position - adjust Y position to keep it centered with the bar
-    float rightAvatarX = rightBarX + barWidth + avatarPadding;
-    float rightAvatarY = leftAvatarY;
+    float rightSmallBarY = rightBarY + barHeight + verticalPadding; // Position below main bar
 
     // Draw scores P1
     renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -627,6 +619,18 @@ void GlRender::renderUI(int timer)
     renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
     renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    // Avatar dimensions and positions
+    float avatarSize = barHeight * 1.8f; // Make avatar 1.8x the height of the health bar
+    float avatarPadding = 10.0f * xscale;
+
+    // Left avatar position
+    float leftAvatarX = leftBarX - avatarSize - avatarPadding;
+    float leftAvatarY = leftBarY - (avatarSize - barHeight) / 2.0f;
+
+    // Right avatar position
+    float rightAvatarX = rightBarX + barWidth + avatarPadding;
+    float rightAvatarY = leftAvatarY;
 
     // Disable depth testing for UI elements
     glDisable(GL_DEPTH_TEST);
@@ -664,6 +668,32 @@ void GlRender::renderUI(int timer)
         m_timerBackgroundTexture,
         timerBgX, timerBgY,
         timerBgWidth, timerBgHeight,
+        1.0f);
+
+    // Render main health bars
+    renderTexturedQuadScaled(
+        m_barTexture,
+        leftBarX, leftBarY,
+        barWidth, barHeight,
+        1.0f);
+
+    renderTexturedQuadScaled(
+        m_barTexture,
+        rightBarX, rightBarY,
+        barWidth, barHeight,
+        1.0f);
+
+    // Render smaller bars below
+    renderTexturedQuadScaled(
+        m_barTexture,
+        leftBarX + 75, leftSmallBarY,
+        barWidth - 75, smallBarHeight + 10,
+        1.0f);
+
+    renderTexturedQuadScaled(
+        m_barTexture,
+        rightBarX, rightSmallBarY,
+        barWidth - 75, smallBarHeight + 10,
         1.0f);
 
     // draw health boxes according to player health
@@ -711,6 +741,7 @@ void GlRender::handleP1Health(float p1Health)
         renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
         renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
         renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
+        renderRedHealthRectangle(195.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
     }
     else if (p1Health == 80)
     {
@@ -872,94 +903,58 @@ void GlRender::handleP2Health(float p2Health)
     }
 }
 
-void GlRender::handleP1Posture(float p1Posture)
+void GlRender::handleP1Posture(int p1Posture)
 { // render health values
     float wx = 23.75f;
     float off = 2.35f;
-    if (p1Posture == 10)
+    if (p1Posture == 7)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
-    }
-    else if (p1Posture == 9)
-    {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-    }
-    else if (p1Posture == 8)
-    {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-    }
-    else if (p1Posture == 7)
-    {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 6)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 5)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 4)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 3)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 2)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(195.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 1)
     {
-        renderBlueHealthRectangle(192.5f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 0)
     {
@@ -967,94 +962,59 @@ void GlRender::handleP1Posture(float p1Posture)
     }
 }
 
-void GlRender::handleP2Posture(float p2Posture)
+void GlRender::handleP2Posture(int p2Posture)
 { // render health values
     float wx = 23.75f;
     float off = 2.35f;
-    if (p2Posture == 10)
+
+    if (p2Posture == 7)
     {
-        renderBlueHealthRectangle(572.5f, 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
-    }
-    else if (p2Posture == 9)
-    {
-        renderBlueHealthRectangle(575.f + (0 * off) + (1 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
-    }
-    else if (p2Posture == 8)
-    {
-        renderBlueHealthRectangle(575.f + (1 * off) + (2 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
-    }
-    else if (p2Posture == 7)
-    {
-        renderBlueHealthRectangle(575.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 6)
     {
-        renderBlueHealthRectangle(575.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 5)
     {
-        renderBlueHealthRectangle(575.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 4)
     {
-        renderBlueHealthRectangle(575.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 3)
     {
-        renderBlueHealthRectangle(575.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 2)
     {
-        renderBlueHealthRectangle(575.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 1)
     {
-        renderBlueHealthRectangle(575.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 0)
     {

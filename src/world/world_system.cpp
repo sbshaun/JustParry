@@ -384,7 +384,7 @@ void WorldSystem::movementProcessing()
         walkStopTimer = 0.f;
         if (!isPlayerWalking && Settings::audioSettings.enable_sound_effects)
         {
-            std::cout << "Playing walk sound" << std::endl;
+            // std::cout << "Playing walk sound" << std::endl;
             Mix_PlayChannel(WALK_SOUND_CHANNEL, walk_sound, -1);
             isPlayerWalking = true;
         }
