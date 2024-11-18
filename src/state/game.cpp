@@ -347,6 +347,7 @@ void Game::generateBackground(float val, GlRender &renderer)
 
 void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2)
 {
+    // First clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
 
@@ -358,12 +359,21 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness
     );
 
+    // Add back button (moved after background render)
+    renderer.renderButton(
+        25.0f, 15.0f,        // x, y position
+        90.0f, 70.0f,        // width, height
+        "<-",                // text
+        isBackButtonHovered, // Add this member variable to Game class
+        isBackButtonPressed  // Add this member variable to Game class
+    );
+
+    // Rest of the character select rendering...
     renderer.renderTexturedQuadScaled(
         p1 ? renderer.m_character1_ready : renderer.m_character1,
         200.f, 360.f,
         225, 275,
-        1.0f // Full brightness for main menu
-    );
+        1.0f);
 
     renderer.renderTexturedQuadScaled(
         p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
@@ -514,13 +524,43 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
 }
 
 void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
-                                 bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2)
+                                 bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2,
+                                 float &offsetY1, float &offsetY2)
 {
+    double mouseX, mouseY;
+    glfwGetCursorPos(glWindow.window, &mouseX, &mouseY);
+
+    // Check back button hover
+    isBackButtonHovered = (mouseX >= 50.0f && mouseX <= 150.0f &&
+                           mouseY >= 50.0f && mouseY <= 100.0f);
+
+    // Check for back button click
+    if (isBackButtonHovered && glfwGetMouseButton(glWindow.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    {
+        isBackButtonPressed = true;
+    }
+    else if (isBackButtonPressed && glfwGetMouseButton(glWindow.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+    {
+        // Reset character select state
+        p1Ready = false;
+        p2Ready = false;
+        offsetY1 = 0.0f;
+        offsetY2 = 0.0f;
+
+        // Return to menu
+        setState(GameState::MENU);
+        isBackButtonPressed = false;
+    }
+    else if (!isBackButtonHovered)
+    {
+        isBackButtonPressed = false;
+    }
+
     if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
-            WorldSystem::playMenuConfirmSound(); 
+            WorldSystem::playMenuConfirmSound();
             p1Ready = !p1Ready;  // Toggle p1Ready
             p1KeyPressed = true; // Mark the key as pressed
             if (std::to_string(p1Ready) == "0")
@@ -542,7 +582,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
     {
         if (!p2KeyPressed) // Check if the key was not pressed before
         {
-            WorldSystem::playMenuConfirmSound(); 
+            WorldSystem::playMenuConfirmSound();
             p2Ready = !p2Ready;  // Toggle p2Ready
             p2KeyPressed = true; // Mark the key as pressed
             if (std::to_string(p2Ready) == "0")
@@ -677,7 +717,7 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
         renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
         if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            WorldSystem::playGameCountDownSound(); 
+            WorldSystem::playGameCountDownSound();
             game.setState(GameState::ROUND_START);
         }
     }

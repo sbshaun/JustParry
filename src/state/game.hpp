@@ -184,4 +184,7 @@ private:
     bool isReturnPressed = false;
     bool buttonAlreadyHovered = false; // prevent sound spam
     bool isMenuSelectedSoundPlaying = false;
+
+    bool isBackButtonHovered = false;
+    bool isBackButtonPressed = false;
 };
