@@ -193,8 +193,6 @@ Entity createNotification(float counter_ms, bool player1Side, GLuint texture_id)
     notification.player1Side = player1Side;
     notification.texture_id = texture_id;
 
-    std::cout << "Notification created with timer:" << notification.counter_ms << std::endl;
-
     return entity;
 }
 

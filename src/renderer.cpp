@@ -465,10 +465,7 @@ void GlRender::handleNotifications(float elapsed_ms)
     for (Entity& notification_entity : registry.notifications.entities) {
         Notification& notification = registry.notifications.get(notification_entity);
 
-        std::cout << "Notification:" << notification.counter_ms << std::endl;
-
         float opacity = 1.0f;
-
         notification.counter_ms -= elapsed_ms;
 
         if (notification.counter_ms <= 0.f) {
@@ -481,7 +478,7 @@ void GlRender::handleNotifications(float elapsed_ms)
         }
 
         float x = notification.player1Side ? 0 : M_WINDOW_WIDTH_PX / 2;
-        float y = 10 * opacity;
+        float y = 15.f * opacity;
 
         renderTexturedQuadScaled(
             notification.texture_id,
@@ -643,14 +640,14 @@ void GlRender::renderUI(int timer)
     float rightSmallBarY = rightBarY + barHeight + verticalPadding; // Position below main bar
 
     // Draw scores P1
-    renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
-    std::string strScore1 = "SCORE: " + std::to_string(game->getPlayer1Score());
-    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::string strScore1 = "WINS: " + std::to_string(game->getPlayer1Score());
+    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Draw scores P2
-    renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
-    std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
-    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::string strScore2 = "WINS: " + std::to_string(game->getPlayer2Score());
+    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Avatar dimensions and positions
     float avatarSize = barHeight * 1.8f; // Make avatar 1.8x the height of the health bar
@@ -696,11 +693,11 @@ void GlRender::renderUI(int timer)
         1.0f);
 
     // Render timer background
-    renderTexturedQuadScaled(
-        m_timerBackgroundTexture,
-        timerBgX, timerBgY,
-        timerBgWidth, timerBgHeight,
-        1.0f);
+    //renderTexturedQuadScaled(
+    //    m_timerBackgroundTexture,
+    //    timerBgX, timerBgY,
+    //    timerBgWidth, timerBgHeight,
+    //    1.0f);
 
     // Render main health bars
     renderTexturedQuadScaled(

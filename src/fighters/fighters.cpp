@@ -26,7 +26,7 @@ FighterConfig &setUpBirdmanConfig()
 
     birdmanConfig.KICK_HITBOX_DURATION = 1000.f;
     birdmanConfig.KICK_X_OFFSET = 0.f;
-    birdmanConfig.KICK_DAMAGE = 10.f;
+    birdmanConfig.KICK_DAMAGE = 20.f;
     birdmanConfig.KICK_STUN_DURATION = 700.f;
 
     birdmanConfig.KNOCKBACK_FORCE_X = 0.015f;
