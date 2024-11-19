@@ -52,16 +52,32 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 		
 		// Render countdown numbers based on timer
 		if (count_down_timer > 1.5f) {
-			renderer.renderText("3", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+			renderer.renderTexturedQuadScaled(
+				renderer.m_countdown_3,
+				0, 0,
+				M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+				1.0f);
 		}
-		else if (count_down_timer > 1.0f) {
-			renderer.renderText("2", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 0.5f, 0.0f));
+		else if (count_down_timer > 0.9f) {
+			renderer.renderTexturedQuadScaled(
+				renderer.m_countdown_2,
+				0, 0,
+				M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+				1.0f);
 		}
-		else if (count_down_timer > 0.5f) {
-			renderer.renderText("1", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+		else if (count_down_timer > 0.6f) {
+			renderer.renderTexturedQuadScaled(
+				renderer.m_countdown_1,
+				0, 0,
+				M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+				1.0f);
 		}
 		else if (count_down_timer > 0.0f) {
-			renderer.renderText("FIGHT!", centerX - 150.f, centerY - 80.f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+			renderer.renderTexturedQuadScaled(
+				renderer.m_countdown_fight,
+				0, 0,
+				M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+				1.0f);
 		}
 
 		if (count == 1 && count_down_timer <= 0)

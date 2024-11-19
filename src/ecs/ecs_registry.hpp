@@ -22,6 +22,7 @@ public:
     ComponentContainer<StationaryTimer> stationaryTimers; 
     ComponentContainer<PostureBar> postureBars; 
 	ComponentContainer<StateTimer> stateTimers; 
+	ComponentContainer<Notification> notifications;
 	ComponentContainer<PlayerInput> playerInputs; 
 	ComponentContainer<CollisionBox> collisionBoxes;
 	ComponentContainer<HitBox> hitBoxes; 
@@ -56,6 +57,7 @@ public:
         registry_list.push_back(&stationaryTimers);
         registry_list.push_back(&postureBars);
         registry_list.push_back(&stateTimers);
+		registry_list.push_back(&notifications);
         registry_list.push_back(&playerInputs);
 		registry_list.push_back(&collisionBoxes);
         registry_list.push_back(&hitBoxes);

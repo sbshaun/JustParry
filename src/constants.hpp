@@ -22,7 +22,7 @@ const static int TARGET_FPS = 60; // IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH
 const static float FPS_LOGIC_FACTOR = TARGET_LOGIC_RATE / TARGET_FPS;
 
 // TIMERS
-const int timer_length = 100;
+const int timer_length = 99;
 
 // movement
 // const float JUMP_HEIGHT = 0.5f;

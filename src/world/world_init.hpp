@@ -15,6 +15,7 @@ Entity createPlayableArea(const vec2& pos, float width, float height);
 Entity createFloor(float val, int type);
 
 Entity createFloor(GlRender *renderer);
+Entity createNotification(float counter_ms, bool player1Side, GLuint texture_id);
 
 // Add cleanup function declaration
 void cleanupShaders(Entity entity);

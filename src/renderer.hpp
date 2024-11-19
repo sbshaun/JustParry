@@ -46,7 +46,7 @@ public:
 
     // helpers
     void handleTexturedRenders();
-    void handleHitboxRenders();
+    void handleNotifications(float elapsed_ms);
     void handleStaticRenders();
 
     void renderTexturedQuad(GLuint texture);
@@ -83,6 +83,15 @@ public:
     GLuint m_bg2Texture;
     GLuint m_bg3Texture;
     GLuint m_bg4Texture;
+    GLuint m_countdown_3;
+    GLuint m_countdown_2;
+    GLuint m_countdown_1;
+    GLuint m_countdown_fight;
+
+    GLuint m_notif_parried;
+    GLuint m_notif_hit;
+    GLuint m_notif_stunned;
+
     GLuint m_roundOverTexture;
     GLuint m_timerBackgroundTexture;
     GLuint m_barTexture;
