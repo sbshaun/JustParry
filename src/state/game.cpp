@@ -391,13 +391,13 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
 
     renderer.renderTexturedQuadScaled(
         renderer.m_p2SelectKey,
-        620.f, 245.0f + offset2,
+        645.f, 245.0f + offset2,
         30, 30,
         1.0f // Full brightness for main menu
     );
 
     renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
-    renderer.renderSelectorTriangleP2(580, 245 + offset2, 30, 30, p2);
+    renderer.renderSelectorTriangleP2(605, 245 + offset2, 30, 30, p2);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -441,13 +441,13 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 
     renderer.renderTexturedQuadScaled(
         renderer.m_p2SelectKey,
-        620.f, 245.0f,
+        640.f, 245.0f,
         30, 30,
         1.0f // Full brightness for main menu
     );
 
     renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
-    renderer.renderSelectorTriangleP2(580, 245, 30, 30, true);
+    renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -486,9 +486,9 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
             if (!goDown1)
             {
                 goDown1 = true;
-                if (offsetY1 < 280.f)
+                if (offsetY1 < 300.f)
                 {
-                    offsetY1 += 140.f;
+                    offsetY1 += 150.f;
                 }
                 else
                 {
@@ -508,7 +508,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
                 goUp1 = true;
                 if (offsetY1 > 0.0f)
                 {
-                    offsetY1 -= 140.f;
+                    offsetY1 -= 150.f;
                 }
                 else
                 {
@@ -608,9 +608,9 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
             {
                 WorldSystem::playMenuSelectSound();
                 goDown1 = true;
-                if (offsetY1 < 280.f)
+                if (offsetY1 < 300.f)
                 {
-                    offsetY1 += 140.f;
+                    offsetY1 += 150.f;
                 }
                 else
                 {
@@ -631,7 +631,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
                 goUp1 = true;
                 if (offsetY1 > 0.0f)
                 {
-                    offsetY1 -= 140.f;
+                    offsetY1 -= 150.f;
                 }
                 else
                 {
@@ -653,9 +653,9 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
             {
                 WorldSystem::playMenuSelectSound();
                 goDown2 = true;
-                if (offsetY2 < 280.f)
+                if (offsetY2 < 300.f)
                 {
-                    offsetY2 += 140.f;
+                    offsetY2 += 150.f;
                 }
                 else
                 {
@@ -676,7 +676,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
                 goUp2 = true;
                 if (offsetY2 > 0.0f)
                 {
-                    offsetY2 -= 140.f;
+                    offsetY2 -= 150.f;
                 }
                 else
                 {
