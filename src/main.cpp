@@ -173,6 +173,7 @@ int main()
         case GameState::MENU:
             p1Ready = false;
             p2Ready = false;
+            game.resetGame(renderer, worldSystem);
             WorldSystem::stopAllSounds(); // Stop sounds in menu
             WorldSystem::stopBackgroundMusic();
             game.renderMenu(renderer);
