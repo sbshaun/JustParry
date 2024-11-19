@@ -784,8 +784,8 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (xCollision && yCollision)
     {
-        player1Motion->position.x = player1Motion->position.x - player1Motion->velocity.x;
-        player2Motion->position.x = player2Motion->position.x - player2Motion->velocity.x;
+        player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;;
+        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
         player1Motion->velocity.x = 0;
         player2Motion->velocity.x = 0;
     }
