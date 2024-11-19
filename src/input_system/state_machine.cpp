@@ -29,6 +29,17 @@ void StateMachine::update(Entity entity, float elapsed_ms)
 	PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
 	// for some reason, the currentState in state machine transitions to IDLE immediately after STUNNED using the playerState.currentState to check for the current state instead.
 	// call update on the state object of the current state.
+	if (playerState.currentState != PlayerState::PARRYING) {
+		PostureBar& posture = registry.postureBars.get(entity);
+
+		posture.recoverBar += elapsed_ms;
+		if (posture.recoverBar >= posture.recoverRate) {
+			if (posture.currentBar < posture.maxBar) {
+				posture.currentBar++;
+				posture.recoverBar = 0.f;
+			}
+		}
+	}
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = (animation.currentFrame + 1) % 60;
 	states[playerState.currentState]->update(entity, elapsed_ms, *this);
@@ -42,7 +53,6 @@ void IdleState::enter(Entity entity, StateMachine& stateMachine)
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
 	Animation& animation = registry.animations.get(entity);
 	animation.currentTexture = fighterConfig.m_bird_idle_f1_texture;
-	posture.recoverBar = 0;
 }
 
 void IdleState::exit(Entity entity, StateMachine& stateMachine)
@@ -52,18 +62,10 @@ void IdleState::exit(Entity entity, StateMachine& stateMachine)
 
 void IdleState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine)
 {
- 
+
 	Fighters fighter = registry.players.get(entity).current_char;
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
-	PostureBar& posture = registry.postureBars.get(entity);
 
-	posture.recoverBar += elapsed_ms;
-	if (posture.recoverBar >= posture.recoverRate) {
-		if (posture.currentBar < posture.maxBar) {
-			posture.currentBar++;
-			posture.recoverBar = 0.f;
-		}
-	}
 	Animation& animation = registry.animations.get(entity);
 	int frameIndex = (animation.currentFrame / 12) % 4;
 	switch (frameIndex) {
@@ -171,8 +173,8 @@ void AttackingState::enter(Entity entity, StateMachine& stateMachine)
 
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
-    
-    WorldSystem::playPunchSound();
+
+	WorldSystem::playPunchSound();
 }
 
 void AttackingState::exit(Entity entity, StateMachine& stateMachine)
@@ -279,7 +281,7 @@ void KickingState::enter(Entity entity, StateMachine& stateMachine)
 	animation.currentFrame = 0;
 	animation.currentTexture = fighterConfig.m_bird_kick_f1_texture;
 
-    WorldSystem::playKickSound();
+	WorldSystem::playKickSound();
 }
 
 void KickingState::exit(Entity entity, StateMachine& stateMachine)
@@ -460,13 +462,13 @@ void ParryingState::enter(Entity entity, StateMachine& stateMachine)
 	ParryBox& playerParryBox = registry.parryBoxes.get(entity);
 	playerParryBox.active = true;
 
-    StateTimer &playerStateTimer = registry.stateTimers.get(entity);
-    playerStateTimer.reset(PARRY_BOX_DURATION);
-    WorldSystem::playParrySound();
+	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+	playerStateTimer.reset(PARRY_BOX_DURATION);
+	WorldSystem::playParrySound();
 
-    if (registry.postureBars.get(entity).currentBar > 0) {
-        registry.postureBars.get(entity).currentBar--;
-    }
+	if (registry.postureBars.get(entity).currentBar > 0) {
+		registry.postureBars.get(entity).currentBar--;
+	}
 }
 
 void ParryingState::exit(Entity entity, StateMachine& stateMachine)
