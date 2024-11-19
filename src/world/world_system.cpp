@@ -259,7 +259,7 @@ void WorldSystem::initInputHandlers()
 
     // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
-    player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
+    //player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
     // player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
@@ -269,7 +269,7 @@ void WorldSystem::initInputHandlers()
 
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
-    player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
+    //player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
     // player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
