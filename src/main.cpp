@@ -114,7 +114,7 @@ int main()
 
     // Initialize states from game instance instead of directly from settings
     bool showFPS = game.getShowFPS();
-    bool botEnabled = game.getBotEnabled();
+    bool botEnabled = false;
     renderer.debugMode = Settings::windowSettings.enable_debug;
 
     game.loadArcadeState();
@@ -189,10 +189,6 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_MENU:
-            // Force bot enabled for arcade mode
-            botEnabled = true;
-            worldSystem.botEnabled = true;
-
             game.renderArcadeMenu(renderer);
             if (game.handleArcadeMenuInput(glWindow.window))
             {
@@ -207,10 +203,9 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_PREFIGHT:
-            // Already have bot enabled here, but let's be explicit
+            // Enable bot for arcade 
             botEnabled = true;
             worldSystem.botEnabled = true;
-            // Settings::windowSettings.enable_bot = true;
 
             game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
             game.renderArcadePrefight(renderer, offsetY1, p1Ready);
@@ -293,6 +288,8 @@ int main()
             }
             break;
         case GameState::CHARACTER_SELECT:
+            botEnabled = false;
+            worldSystem.botEnabled = false;
             game.handleCharacterInputs(glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
             game.renderCharacterSelect(renderer, offsetY1, offsetY2, p1Ready, p2Ready);
             game.renderReadyText(renderer, p1Ready, p2Ready, game);
@@ -364,31 +361,10 @@ int main()
                     WorldSystem::updateAudioState(); // Make sure music is playing if enabled
                 }
 
-                // Handle bot toggle differently based on game mode
-                if (game.isArcadeMode())
-                {
-                    // Force bot enabled in arcade mode
-                    botEnabled = true;
-                    worldSystem.botEnabled = true;
-                    Settings::windowSettings.enable_bot = true;
-                }
-                else
-                {
-                    // Sync bot state with settings first
-                    botEnabled = Settings::windowSettings.enable_bot;
-                    worldSystem.botEnabled = botEnabled;
-                    game.setBotEnabled(botEnabled);
-
-                    // Then handle utility inputs
-                    handleUtilityInputs(renderer, showFPS, botEnabled,
-                                        fKeyPressed, bKeyPressed, hKeyPressed,
-                                        glWindow, fpsCounter, shouldExit,
-                                        worldSystem);
-
-                    // Update settings after utility inputs
-                    Settings::windowSettings.enable_bot = botEnabled;
-                    game.setBotEnabled(botEnabled);
-                }
+                handleUtilityInputs(renderer, showFPS,
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
 
                 // Do all rendering here, only once
                 renderer.render();
@@ -418,7 +394,7 @@ int main()
             worldSystem.step(elapsed_ms / 1000.0f);
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, Settings::windowSettings.enable_bot);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
 
             // time the next logic check
             auto end = std::chrono::steady_clock::now();

@@ -9,8 +9,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
                isPlayer1Selected(true),
                isPlayer2Selected(false),
                // Initialize these from settings
-               showFPS(Settings::windowSettings.show_fps),
-               botEnabled(Settings::windowSettings.enable_bot)
+               showFPS(Settings::windowSettings.show_fps)
 {
     float leftShift = M_WINDOW_WIDTH_PX * (0.05f + 0.015f + 0.02f + 0.03f); // 5% + 1.5% + 2% + 3% of window width
     float upShift = M_WINDOW_HEIGHT_PX * 0.05f;                             // 5% of window height
@@ -1534,10 +1533,9 @@ void Game::renderSettingsScreen(GlRender &renderer)
         Settings::resetToDefaults();
         // Update local state
         showFPS = Settings::windowSettings.show_fps;
-        botEnabled = Settings::windowSettings.enable_bot;
         if (worldSystem != nullptr)
         {
-            worldSystem->botEnabled = botEnabled;
+            // worldSystem->botEnabled = botEnabled;
             worldSystem->initInputHandlers();
         }
         renderer.debugMode = Settings::windowSettings.enable_debug;

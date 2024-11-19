@@ -27,6 +27,7 @@ struct WindowSettings
     std::string window_mode; // "Windowed", "Fullscreen", "Borderless"
     Resolution resolution;   // Current resolution
     bool show_fps;
+    // bool enable_bot;
     bool enable_debug;
 };
 

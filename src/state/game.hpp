@@ -84,8 +84,7 @@ public:
 
     bool getShowFPS() const { return showFPS; }
     void setShowFPS(bool show) { showFPS = show; }
-    bool getBotEnabled() const { return botEnabled; }
-    void setBotEnabled(bool enabled) { botEnabled = enabled; }
+
     GameState getPreviousState() const { return previousState; }
     bool isArcadeMode() const
     {
@@ -170,7 +169,7 @@ private:
     bool showErrorMessage = false;
 
     bool showFPS;
-    bool botEnabled;
+    // bool botEnabled;
 
     void cleanupButtons();
 

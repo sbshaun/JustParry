@@ -361,13 +361,13 @@ void WorldSystem::inputProcessing()
         player1StateMachine->transition(renderer->m_player1, PlayerState::ATTACKING);
 
     // Only process player 2's manual input if bot is disabled
-    if (!botEnabled)
-    {
-        if (player2Input.punch)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
-        if (player2Input.kick)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
-    }
+    // if (!botEnabled)
+    // {
+    //     if (player2Input.punch)
+    //         player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
+    //     if (player2Input.kick)
+    //         player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
+    // }
 }
 
 void WorldSystem::movementProcessing()
