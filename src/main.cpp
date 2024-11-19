@@ -86,7 +86,7 @@ int main()
     assert(gl3w_init() == 0);
     // assert(is_fine == 0);
 
-    // glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1); // Enable vsync
     if (SDL_Init(SDL_INIT_AUDIO) < 0) // Init SDL joystick
     {
         std::cerr << "Failed to init SDL joy handler" << std::endl;
