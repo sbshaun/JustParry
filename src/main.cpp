@@ -132,7 +132,7 @@ int main()
     //// END INITS ////
 
     // font setup and initialization.
-    std::string font_filename = "SpaceGrotesk-Bold.ttf";
+    std::string font_filename = "Kenney_Mini_Square.ttf";
     unsigned int font_default_size = 100;
     if (!renderer.fontInit(font_filename, font_default_size))
     {
@@ -396,6 +396,7 @@ int main()
                 // Do all rendering here, only once
                 renderer.render();
                 worldSystem.renderParticles();
+                renderer.handleNotifications(elapsed_ms);
                 renderer.renderUI(timer);
                 game.renderPauseButton(renderer);
 
@@ -410,7 +411,7 @@ int main()
             loopsSinceLastFrame++;
 
             // Commented out. Need to make the smoke look more realistic.
-            worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+            //worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
 
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
@@ -418,7 +419,7 @@ int main()
             worldSystem.hitBoxCollisions();
             worldSystem.updatePlayableArea();
             physicsSystem.step();
-            worldSystem.step(elapsed_ms / 1000.0f);
+            worldSystem.step(elapsed_ms);
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);

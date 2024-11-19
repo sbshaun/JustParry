@@ -185,6 +185,17 @@ Entity createPlayableArea(const vec2& pos, float width, float height)
     return entity;
 }
 
+Entity createNotification(float counter_ms, bool player1Side, GLuint texture_id) {
+    Entity entity = Entity();
+    
+    Notification& notification = registry.notifications.emplace(entity);
+    notification.counter_ms = counter_ms;
+    notification.player1Side = player1Side;
+    notification.texture_id = texture_id;
+
+    return entity;
+}
+
 Entity createFloor(float val, int type)
 {
     Entity floor = Entity();

@@ -91,7 +91,6 @@ struct Health
     // float recoverRate; // optional, health recover after x seconds of not being hit.
 };
 
-
 struct PostureBar
 {
     float maxBar;      // max number of bars.
@@ -149,6 +148,12 @@ struct StateTimer
         this->duration = duration;
         this->elapsedTime = 0.f;
     }
+};
+
+struct Notification {
+    GLuint texture_id;
+    float counter_ms = 0.f;
+    bool player1Side;
 };
 
 struct PlayerInput

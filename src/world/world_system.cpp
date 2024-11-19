@@ -574,11 +574,13 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
+                createNotification(500.f, true, renderer->m_notif_stunned);
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
+                createNotification(500.f, false, renderer->m_notif_parried);
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -587,11 +589,13 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
+                createNotification(500.f, false, renderer->m_notif_stunned);
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
+                createNotification(500.f, true, renderer->m_notif_parried);
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -752,6 +756,7 @@ void WorldSystem::hitBoxCollisions()
             config.KNOCKBACK_FORCE_Y};
 
         player2StateMachine->transition(player2, PlayerState::STUNNED);
+        createNotification(500.f, true, renderer->m_notif_hit);
     }
 
     // check if player 2 hit player 1
@@ -775,6 +780,7 @@ void WorldSystem::hitBoxCollisions()
             config.KNOCKBACK_FORCE_Y};
 
         player1StateMachine->transition(player1, PlayerState::STUNNED);
+        createNotification(500.f, false, renderer->m_notif_hit);
     }
 }
 

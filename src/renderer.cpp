@@ -460,9 +460,32 @@ void GlRender::handleTexturedRenders()
     }
 }
 
-void GlRender::handleHitboxRenders()
+void GlRender::handleNotifications(float elapsed_ms)
 {
-    // Empty this function since we're handling hitbox visualization in handleTexturedRenders
+    for (Entity& notification_entity : registry.notifications.entities) {
+        Notification& notification = registry.notifications.get(notification_entity);
+
+        float opacity = 1.0f;
+        notification.counter_ms -= elapsed_ms;
+
+        if (notification.counter_ms <= 0.f) {
+            registry.remove_all_components_of(notification_entity);
+            continue;
+        }
+
+        if (notification.counter_ms < 150.f) {
+            opacity = notification.counter_ms / 150.f;
+        }
+
+        float x = notification.player1Side ? 0 : M_WINDOW_WIDTH_PX / 2;
+        float y = 15.f * opacity;
+
+        renderTexturedQuadScaled(
+            notification.texture_id,
+            x, y,
+            M_WINDOW_WIDTH_PX / 2, M_WINDOW_HEIGHT_PX,
+            1.0f, opacity);
+    }
 }
 
 void GlRender::handleStaticRenders()
@@ -503,7 +526,6 @@ void GlRender::render()
 
     handleStaticRenders();
     handleTexturedRenders();
-    handleHitboxRenders();
 
     glDepthMask(GL_TRUE);
 }
@@ -519,6 +541,13 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bg2.png"), m_bg2Texture);
     loadTexture(textures_path("bg3.png"), m_bg3Texture);
     loadTexture(textures_path("bg4.png"), m_bg4Texture);
+    loadTexture(textures_path("3.png"), m_countdown_3);
+    loadTexture(textures_path("2.png"), m_countdown_2);
+    loadTexture(textures_path("1.png"), m_countdown_1);
+    loadTexture(textures_path("fight.png"), m_countdown_fight);
+    loadTexture(textures_path("notification_parried.png"), m_notif_parried);
+    loadTexture(textures_path("notification_hit.png"), m_notif_hit);
+    loadTexture(textures_path("notification_stunned.png"), m_notif_stunned);
     loadTexture(textures_path("round_over.png"), m_roundOverTexture);
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
@@ -611,14 +640,14 @@ void GlRender::renderUI(int timer)
     float rightSmallBarY = rightBarY + barHeight + verticalPadding; // Position below main bar
 
     // Draw scores P1
-    renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
-    std::string strScore1 = "SCORE: " + std::to_string(game->getPlayer1Score());
-    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::string strScore1 = "WINS: " + std::to_string(game->getPlayer1Score());
+    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Draw scores P2
-    renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
-    std::string strScore2 = "SCORE: " + std::to_string(game->getPlayer2Score());
-    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.2f, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::string strScore2 = "WINS: " + std::to_string(game->getPlayer2Score());
+    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Avatar dimensions and positions
     float avatarSize = barHeight * 1.8f; // Make avatar 1.8x the height of the health bar
@@ -664,11 +693,11 @@ void GlRender::renderUI(int timer)
         1.0f);
 
     // Render timer background
-    renderTexturedQuadScaled(
-        m_timerBackgroundTexture,
-        timerBgX, timerBgY,
-        timerBgWidth, timerBgHeight,
-        1.0f);
+    //renderTexturedQuadScaled(
+    //    m_timerBackgroundTexture,
+    //    timerBgX, timerBgY,
+    //    timerBgWidth, timerBgHeight,
+    //    1.0f);
 
     // Render main health bars
     renderTexturedQuadScaled(
@@ -707,7 +736,7 @@ void GlRender::renderUI(int timer)
     float textWidth = std::to_string(timer).length() * 30.0f * xscale;
     float timerX = centerX - (textWidth / 2.0f);
 
-    renderText(std::to_string(timer), (timerX - 0.f) + 30 * (xscale - 1), (valueY + 17.5f) - 35 * (xscale - 1), 0.5f, glm::vec3(0.1f, 0.3f, 0.2f));
+    renderText(std::to_string(timer), (timerX - 0.f) + 30 * (xscale - 1), (valueY + 17.5f) - 35 * (xscale - 1), 0.5f, glm::vec3(0.102f, 0.102f, 0.102f));
 
     // Restore depth testing
     glEnable(GL_DEPTH_TEST);
@@ -1142,6 +1171,8 @@ void GlRender::shutdown()
     // Clear texture IDs after deletion to prevent dangling references
     m_menuTexture = m_helpTexture = m_settingsTexture = m_pauseMenuTexture = 0;
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
+    m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
+    m_notif_parried = m_notif_hit = m_notif_stunned = 0;
     m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
     m_avatarTexture = m_characterSelectTexture = m_character1 = 0;
     m_character1_ready = m_character1_flip_ready = 0;
