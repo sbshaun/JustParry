@@ -41,12 +41,28 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 
 		m1.position = {0.2f, (FLOOR_Y + config1.NDC_HEIGHT / 2)};
 		m2.position = {0.7f, (FLOOR_Y + config2.NDC_HEIGHT / 2)};
-		// m1.scale = {1, 1};
-		// m2.scale = {1, 1};
 
-		// stop once done, and change isLoading to false to avoid inteference w game.
+		// Render countdown text
 		count_down_timer -= 0.01;
 		count = 1;
+
+		// Calculate the center of the screen
+		float centerX = M_WINDOW_WIDTH_PX / 2.0f;
+		float centerY = M_WINDOW_HEIGHT_PX / 2.0f;
+		
+		// Render countdown numbers based on timer
+		if (count_down_timer > 1.5f) {
+			renderer.renderText("3", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (count_down_timer > 1.0f) {
+			renderer.renderText("2", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 0.5f, 0.0f));
+		}
+		else if (count_down_timer > 0.5f) {
+			renderer.renderText("1", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+		}
+		else if (count_down_timer > 0.0f) {
+			renderer.renderText("FIGHT!", centerX - 150.f, centerY - 80.f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
 
 		if (count == 1 && count_down_timer <= 0)
 		{
