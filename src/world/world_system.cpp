@@ -421,17 +421,6 @@ void WorldSystem::movementProcessing()
         player2Motion->position.y += player2Motion->velocity.y;
         // std::cout << "Player 2 cannot move, current state: " << PlayerStateToString(player2State.currentState) << std::endl;
     }
-
-    if (player1Motion->position.x > player2Motion->position.x)
-    {
-        player1Motion->direction = false; // Player 1 now facing left
-        player2Motion->direction = true;  // Player 2 now facing right
-    }
-    else if (player1Motion->position.x < player2Motion->position.x)
-    {
-        player1Motion->direction = true;  // Player 1 now facing right
-        player2Motion->direction = false; // Player 2 now facing left
-    }
 }
 
 void WorldSystem::updateStateTimers(float elapsed_ms)
@@ -789,46 +778,10 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (xCollision && yCollision)
     {
-        // Neither player is on top of another
-        if (!player1Motion->wasAbove && !player2Motion->wasAbove)
-        {
-            player1Motion->position.x = player1Motion->position.x - player1Motion->velocity.x;
-            player2Motion->position.x = player2Motion->position.x - player2Motion->velocity.x;
-            player1Motion->velocity.x = 0;
-            player2Motion->velocity.x = 0;
-        }
-        // Player one is on top
-        else if (player1Motion->wasAbove)
-        {
-            if (player1Motion->direction)
-            {
-                player1Motion->position = {player1Motion->lastPos.x - MOVE_SPEED, player1Motion->lastPos.y};
-            }
-            else
-            {
-                player1Motion->position = {player1Motion->lastPos.x + MOVE_SPEED, player1Motion->lastPos.y};
-            }
-            player1Motion->above = true;
-            player1Motion->velocity.x = 0;
-            player2Motion->velocity.x = 0;
-            player2Motion->velocity.y = player1Motion->velocity.y - GRAVITY;
-        }
-        // Player two is on top
-        else if (player2Motion->wasAbove)
-        {
-            if (player2Motion->direction)
-            {
-                player2Motion->position = {player2Motion->lastPos.x - MOVE_SPEED, player2Motion->lastPos.y};
-            }
-            else
-            {
-                player2Motion->position = {player2Motion->lastPos.x + MOVE_SPEED, player2Motion->lastPos.y};
-            }
-            player1Motion->velocity.x = 0;
-            player1Motion->velocity.y = player2Motion->velocity.y - GRAVITY;
-            player2Motion->velocity.x = 0;
-            player2Motion->above = true;
-        }
+        player1Motion->position.x = player1Motion->position.x - player1Motion->velocity.x;
+        player2Motion->position.x = player2Motion->position.x - player2Motion->velocity.x;
+        player1Motion->velocity.x = 0;
+        player2Motion->velocity.x = 0;
     }
 }
 
