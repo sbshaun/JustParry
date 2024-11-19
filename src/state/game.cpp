@@ -2022,12 +2022,6 @@ void Game::renderPauseButton(GlRender &renderer)
             resetScores();
             resetInterpVariables();
             
-            // Reset the world system
-            if (worldSystem != nullptr)
-            {
-                worldSystem->init(&renderer);
-            }
-            
             // Set state to INIT to ensure proper reinitialization
             setState(GameState::INIT);
             
