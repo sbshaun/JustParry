@@ -16,7 +16,6 @@
 #include "input_system/utility_inputs.hpp"
 #include "SDL.h"
 #include <SDL.h>
-#include <thread>
 #define SDL_MAIN_HANDLED
 
 int timer = timer_length;
@@ -128,11 +127,8 @@ int main()
 
     const float targetLogicDuration = 1000 / TARGET_LOGIC_RATE;      // denominator is logic+input checks per second
     const float FramesPerLogicLoop = TARGET_LOGIC_RATE / TARGET_FPS; // The number of logic loops that would result in 60fps
-    const float frameDelay = 1000.0f / TARGET_FPS; // Time per frame in milliseconds
 
     int loopsSinceLastFrame = 0;
-    auto frameStart = std::chrono::high_resolution_clock::now();
-
     //// END INITS ////
 
     // font setup and initialization.
@@ -160,29 +156,13 @@ int main()
     auto t = std::chrono::high_resolution_clock::now();
     while (!glWindow.shouldClose())
     {
-        // Calculate frame time
-        auto frameEnd = std::chrono::high_resolution_clock::now();
-        float frameTime = std::chrono::duration<float, std::milli>(frameEnd - frameStart).count();
+        // start a timer for each loop
+        auto start = std::chrono::steady_clock::now();
 
-        // Get elapsed time since last frame
         auto now = std::chrono::high_resolution_clock::now();
-        float elapsed_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+        float elapsed_ms =
+            (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
         t = now;
-
-        // If frame finished early, delay to maintain constant frame rate
-        if (frameTime < frameDelay)
-        {
-            float delayTime = frameDelay - frameTime;
-            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(delayTime)));
-            
-            // Update frameTime to include the delay
-            frameEnd = std::chrono::high_resolution_clock::now();
-            frameTime = std::chrono::duration<float, std::milli>(frameEnd - frameStart).count();
-        }
-
-        // Start timing the next frame
-        frameStart = std::chrono::high_resolution_clock::now();
-        auto start = frameStart;
 
         switch (game.getState())
         {
@@ -324,33 +304,57 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ROUND_START:
-            worldSystem.updatePlayableArea();
-            renderer.render();
-            renderer.renderUI(timer);
-            game.renderPauseButton(renderer);
-
-            interp_moveEntitesToScreen(renderer);
-
-            if (!isLoading)
+        {
+            if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
-                // Only play music if it's enabled in settings
-                if (Settings::audioSettings.enable_music)
+                loopsSinceLastFrame = 0;
+                
+                worldSystem.updatePlayableArea();
+                renderer.render();
+                renderer.renderUI(timer);
+                game.renderPauseButton(renderer);
+
+                interp_moveEntitesToScreen(renderer);
+
+                if (!isLoading)
                 {
-                    WorldSystem::stopBackgroundMusic(); // Stop any existing music first
-                    WorldSystem::playBackgroundMusic(); // Start fresh
-                    WorldSystem::updateAudioState();    // Make sure volume is correct
+                    // Only play music if it's enabled in settings
+                    if (Settings::audioSettings.enable_music)
+                    {
+                        WorldSystem::stopBackgroundMusic(); // Stop any existing music first
+                        WorldSystem::playBackgroundMusic(); // Start fresh
+                        WorldSystem::updateAudioState();    // Make sure volume is correct
+                    }
+                    game.setState(GameState::PLAYING);
                 }
-                game.setState(GameState::PLAYING);
+
+                if (Settings::windowSettings.show_fps)
+                {
+                    fpsCounter.update(renderer, false);
+                    renderer.renderFPS(fpsCounter.getFPS(), true);
+                }
+
+                glWindow.windowSwapBuffers();
             }
 
-            if (Settings::windowSettings.show_fps)
+            loopsSinceLastFrame++;
+
+            // Time the next logic check
+            auto end = std::chrono::steady_clock::now();
+            std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
+
+            // Calculate the remaining time to sleep
+            int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
+            if (sleepDuration > 0)
             {
-                fpsCounter.update(renderer, false);
-                renderer.renderFPS(fpsCounter.getFPS(), true);
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
+                while (std::chrono::steady_clock::now() < sleepEnd)
+                {
+                    worldSystem.handleInput();
+                }
             }
-
-            glWindow.windowSwapBuffers();
-            break;
+        }
+        break;
 
         case GameState::PAUSED:
             WorldSystem::stopAllSounds(); // Stop sounds when paused
@@ -372,33 +376,44 @@ int main()
 
         case GameState::PLAYING:
         {
-            // Resume sounds and check music when returning to playing state
-            if (game.getPreviousState() == GameState::PAUSED ||
-                game.getPreviousState() == GameState::SETTINGS)
+            if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
-                WorldSystem::resumeSounds();
-                WorldSystem::updateAudioState(); // Make sure music is playing if enabled
+                loopsSinceLastFrame = 0;
+
+                // Resume sounds and check music when returning to playing state
+                if (game.getPreviousState() == GameState::PAUSED ||
+                    game.getPreviousState() == GameState::SETTINGS)
+                {
+                    WorldSystem::resumeSounds();
+                    WorldSystem::updateAudioState(); // Make sure music is playing if enabled
+                }
+
+                handleUtilityInputs(renderer, showFPS,
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
+
+                // Do all rendering here, only once
+                renderer.render();
+                worldSystem.renderParticles();
+                renderer.renderUI(timer);
+                game.renderPauseButton(renderer);
+
+                if (Settings::windowSettings.show_fps)
+                {
+                    renderer.renderFPS(fpsCounter.getFPS(), true);
+                }
+
+                glWindow.windowSwapBuffers();
             }
 
-            handleUtilityInputs(renderer, showFPS,
-                                fKeyPressed, bKeyPressed, hKeyPressed,
-                                glWindow, fpsCounter, shouldExit,
-                                worldSystem);
+            loopsSinceLastFrame++;
 
-            // Do all rendering here, only once
-            renderer.render();
-            worldSystem.renderParticles();
-            renderer.renderUI(timer);
-            game.renderPauseButton(renderer);
-
-            if (Settings::windowSettings.show_fps)
-            {
-                renderer.renderFPS(fpsCounter.getFPS(), true);
-            }
-
-            // Update game logic
+            // Commented out. Need to make the smoke look more realistic.
             worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
-            worldSystem.movementProcessing();
+
+            // Update center for playable area
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
             worldSystem.playerCollisions(&renderer);
             worldSystem.hitBoxCollisions();
             worldSystem.updatePlayableArea();
@@ -408,21 +423,21 @@ int main()
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
 
-            // Handle input during frame time remaining
+            // time the next logic check
             auto end = std::chrono::steady_clock::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
-            int remainingTime = static_cast<int>(frameDelay - FastLoopIterTime.count());
 
-            if (remainingTime > 0)
+            // Calculate the remaining time to sleep
+            int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
+            // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
+            if (sleepDuration > 0)
             {
-                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(remainingTime);
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput();
-                }
+                    worldSystem.handleInput(); // this sets player inputs #3
+                } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
-
-            glWindow.windowSwapBuffers();
         }
         break;
 

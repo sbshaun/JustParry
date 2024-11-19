@@ -17,7 +17,7 @@ const float PERFECT_PARRY_TIME = 300.0f;
 // 120hz = 4ms
 // Conservative estimate on 10 year old cpu: 4ms per iteration(incl render). = 125hz -> 120hz logic rate + 60fps cap
 // 60hz = 16.66ms
-const static int TARGET_LOGIC_RATE = 60;
+const static int TARGET_LOGIC_RATE = 120;
 const static int TARGET_FPS = 60; // IDEALLY WE CHANGE 60 TO THE MONITOR REFRESH RATE BUT NOT SURE HOW TO GET THAT AND CANNOT BE LARGER THAN LOGIC RATE WITH CURRENT IMPLEMENTATION
 const static float FPS_LOGIC_FACTOR = TARGET_LOGIC_RATE / TARGET_FPS;
 
