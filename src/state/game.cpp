@@ -1775,15 +1775,18 @@ bool Game::handleHelpInput(GLFWwindow *window)
     return false; // Stay in help state
 }
 
-void Game::resetGame(GlRender &renderer, WorldSystem &worldSystemRef)
+void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
-    worldSystem = &worldSystemRef;
+    this->worldSystem = &worldSystem;
+    
+    // Clear all components first
     registry.clear_all_components();
-    worldSystem->init(&renderer);
+    
+    // Reinitialize world system
+    worldSystem.init(&renderer);
 
     // Reset timer
     extern int timer;
-    extern const int timer_length;
     timer = timer_length;
 
     // Reset interpolation variables
@@ -1911,14 +1914,11 @@ void Game::cleanupButtons()
 
 void Game::renderPauseButton(GlRender &renderer)
 {
-    // Show pause button during gameplay, round start (only when not loading), and when paused
-    if (currentState != GameState::PLAYING &&
-        currentState != GameState::PAUSED &&
-        !(currentState == GameState::ROUND_START && !isLoading))  // Only show when not loading in ROUND_START
-        return;
-
-    // Don't show pause button during loading/countdown
-    if (currentState == GameState::ROUND_START && isLoading)
+    // Show pause button only during gameplay, and when not loading
+    if ((currentState != GameState::PLAYING &&
+         currentState != GameState::PAUSED &&
+         currentState != GameState::ROUND_START) ||
+        isLoading)  // Add isLoading check here
         return;
 
     GLFWwindow *window = glfwGetCurrentContext();
@@ -1937,24 +1937,126 @@ void Game::renderPauseButton(GlRender &renderer)
     static bool wasPressed = false;
     if (pausePressed && !wasPressed)
     {
-        if (currentState == GameState::PLAYING || 
-            (currentState == GameState::ROUND_START && !isLoading))
+        if (currentState == GameState::PLAYING || currentState == GameState::ROUND_START)
         {
             WorldSystem::stopAllSounds();
-            currentState = GameState::PAUSED;
+            setState(GameState::PAUSED); // Use setState instead of directly modifying currentState
         }
     }
     wasPressed = pausePressed;
 
-    // Always render the pause button (removed scaling on press)
+    // Render pause button
     renderer.renderButton(
         pauseButton.x, pauseButton.y,
         pauseButton.width, pauseButton.height,
         "=",
-        pauseHovered, false, // Set pressed to false to prevent scaling
+        pauseHovered, false,
         glm::vec3(0.4f, 0.4f, 0.4f));
 
-    // Rest of pause menu rendering code...
+    // If game is paused, render pause menu
+    if (currentState == GameState::PAUSED)
+    {
+        // First render a black overlay with reduced opacity
+        renderer.renderTexturedQuadScaled(
+            renderer.m_menuTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            0.0f, // Set brightness to 0 to make it black
+            0.5f  // 50% opacity for the black overlay
+        );
+
+        // Calculate dimensions for the pause menu background
+        float bgWidth = 500.0f;
+        float bgHeight = 500.0f;
+        float bgX = (M_WINDOW_WIDTH_PX - bgWidth) / 2.0f;
+        float bgY = (M_WINDOW_HEIGHT_PX - bgHeight) / 2.0f;
+
+        // Render the pause menu background
+        renderer.renderTexturedQuadScaled(
+            renderer.m_pauseMenuTexture,
+            bgX, bgY,
+            bgWidth, bgHeight,
+            1.0f, // Full brightness
+            1.0f  // Full opacity
+        );
+
+        // Get mouse position for button hover states
+        bool resumeHovered = mouseX >= resumeButton.x &&
+                             mouseX <= resumeButton.x + resumeButton.width &&
+                             mouseY >= resumeButton.y &&
+                             mouseY <= resumeButton.y + resumeButton.height;
+
+        bool menuHovered = mouseX >= menuButton.x &&
+                           mouseX <= menuButton.x + menuButton.width &&
+                           mouseY >= menuButton.y &&
+                           mouseY <= menuButton.y + menuButton.height;
+
+        bool settingsHovered = mouseX >= pauseSettingsButton.x &&
+                               mouseX <= pauseSettingsButton.x + pauseSettingsButton.width &&
+                               mouseY >= pauseSettingsButton.y &&
+                               mouseY <= pauseSettingsButton.y + pauseSettingsButton.height;
+
+        bool resumePressed = resumeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+        bool menuPressed = menuHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+        bool settingsPressed = settingsHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+        // Handle button clicks
+        static bool wasResumePressed = false;
+        static bool wasMenuPressed = false;
+        static bool wasSettingsPressed = false;
+
+        if (resumePressed && !wasResumePressed)
+        {
+            setState(GameState::PLAYING);
+        }
+        else if (menuPressed && !wasMenuPressed)
+        {
+            // Proper cleanup before going to menu
+            WorldSystem::stopBackgroundMusic();
+            WorldSystem::stopAllSounds();
+            
+            // Clear all components first
+            registry.clear_all_components();
+            
+            // Reset game state
+            resetScores();
+            resetInterpVariables();
+            
+            // Reset the world system
+            if (worldSystem != nullptr)
+            {
+                worldSystem->init(&renderer);
+            }
+            
+            // Set state to INIT to ensure proper reinitialization
+            setState(GameState::INIT);
+            
+            // Reset timer
+            extern int timer;
+            timer = timer_length;
+        }
+        else if (settingsPressed && !wasSettingsPressed)
+        {
+            setState(GameState::SETTINGS);
+        }
+
+        // Render pause menu buttons
+        renderer.renderButton(resumeButton.x, resumeButton.y,
+                            resumeButton.width, resumeButton.height,
+                            "RESUME", resumeHovered, resumePressed);
+
+        renderer.renderButton(menuButton.x, menuButton.y,
+                            menuButton.width, menuButton.height,
+                            "MAIN MENU", menuHovered, menuPressed);
+
+        renderer.renderButton(pauseSettingsButton.x, pauseSettingsButton.y,
+                            pauseSettingsButton.width, pauseSettingsButton.height,
+                            "SETTINGS", settingsHovered, settingsPressed);
+
+        wasResumePressed = resumePressed;
+        wasMenuPressed = menuPressed;
+        wasSettingsPressed = settingsPressed;
+    }
 }
 
 void Game::renderControlsSettings(GlRender &renderer, bool isPlayer1Selected, bool isPlayer2Selected)
