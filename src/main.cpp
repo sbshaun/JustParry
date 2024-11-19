@@ -394,6 +394,7 @@ int main()
                                     glWindow, fpsCounter, shouldExit,
                                     worldSystem);
 
+                // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
                 // Do all rendering here, only once
                 renderer.render();
                 worldSystem.renderParticles();
@@ -410,9 +411,7 @@ int main()
             }
 
             loopsSinceLastFrame++;
-
-            // Commented out. Need to make the smoke look more realistic.
-            //worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+            
 
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
@@ -420,7 +419,11 @@ int main()
             worldSystem.hitBoxCollisions();
             worldSystem.updatePlayableArea();
             physicsSystem.step();
-            worldSystem.step(elapsed_ms);
+
+            // NEEDS TO BE ELAPSED_MS / 1000.0f FOR PARTICLES TO RENDER!!
+            // OTHERWISE THEY DIE OUT TOO FAST
+            worldSystem.step(elapsed_ms / 1000.0f);
+
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
             checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);

@@ -1,11 +1,11 @@
 [Player1Controls]
-up=W
+up=V
 down=S
 left=A
 right=D
-punch=R
-kick=T
-parry=G
+punch=E
+kick=R
+parry=T
 
 [Player2Controls]
 up=UP
