@@ -31,7 +31,6 @@ namespace DefaultConfig
         "Windowed",  // window_mode
         {1024, 768}, // resolution (width, height)
         false,       // show_fps
-        false,       // enable_bot
         false        // enable_debug
     };
 

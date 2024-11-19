@@ -1180,7 +1180,7 @@ void Game::renderSettingsScreen(GlRender &renderer)
             renderer.renderText("WINDOW MODE", labelX, startY, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f));          // Grayed out
             renderer.renderText("RESOLUTION", labelX, startY + spacing, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f)); // Grayed out
             renderer.renderText("SHOW FPS COUNTER [F]", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("ENABLE BOT [B]", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+           // renderer.renderText("ENABLE BOT [B]", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
             renderer.renderText("ENABLE DEBUG MODE [D]", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
 
             // Update button positions
@@ -1188,7 +1188,7 @@ void Game::renderSettingsScreen(GlRender &renderer)
             windowButton1 = {buttonX, buttonY, buttonWidth, buttonHeight, "WINDOWED"};             // Fixed text
             windowButton2 = {buttonX, buttonY + spacing, buttonWidth, buttonHeight, "1024 x 768"}; // Fixed text
             windowButton3 = {buttonX, buttonY + spacing * 2, buttonWidth, buttonHeight, Settings::windowSettings.show_fps ? "ON" : "OFF"};
-            windowButton4 = {buttonX, buttonY + spacing * 3, buttonWidth, buttonHeight, Settings::windowSettings.enable_bot ? "ON" : "OFF"};
+            // windowButton4 = {buttonX, buttonY + spacing * 3, buttonWidth, buttonHeight, Settings::windowSettings.enable_bot ? "ON" : "OFF"};
             windowButton5 = {buttonX, buttonY + spacing * 4, buttonWidth, buttonHeight, Settings::windowSettings.enable_debug ? "ON" : "OFF"};
 
             // Check hover states (only for enabled buttons)
@@ -1217,14 +1217,14 @@ void Game::renderSettingsScreen(GlRender &renderer)
                 }
                 else if (wButton4Hovered) // Bot Mode
                 {
-                    Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
-                    botEnabled = Settings::windowSettings.enable_bot;
-                    if (worldSystem != nullptr)
-                    {
-                        worldSystem->botEnabled = botEnabled;
-                    }
-                    Settings::saveSettings();
-                    std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
+                    // Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
+                    // botEnabled = Settings::windowSettings.enable_bot;
+                    // if (worldSystem != nullptr)
+                    // {
+                    //     worldSystem->botEnabled = botEnabled;
+                    // }
+                    // Settings::saveSettings();
+                    // std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
                 }
                 else if (wButton5Hovered) // Debug Mode
                 {
@@ -1251,8 +1251,8 @@ void Game::renderSettingsScreen(GlRender &renderer)
             // Render enabled buttons normally
             renderer.renderSimpleButton(windowButton3.x, windowButton3.y, windowButton3.width, windowButton3.height,
                                         true, wButton3Hovered, false, placeholderColor);
-            renderer.renderSimpleButton(windowButton4.x, windowButton4.y, windowButton4.width, windowButton4.height,
-                                        true, wButton4Hovered, false, placeholderColor);
+           // renderer.renderSimpleButton(windowButton4.x, windowButton4.y, windowButton4.width, windowButton4.height,
+           //                             true, wButton4Hovered, false, placeholderColor);
             renderer.renderSimpleButton(windowButton5.x, windowButton5.y, windowButton5.width, windowButton5.height,
                                         true, wButton5Hovered, false, placeholderColor);
 
@@ -1270,11 +1270,11 @@ void Game::renderSettingsScreen(GlRender &renderer)
 
             if (strcmp(windowButton4.text, "ON") == 0)
             {
-                renderer.renderText(windowButton4.text, windowButton4.x + 85.f, windowButton4.y + 30.f, 0.25f, white);
+                // renderer.renderText(windowButton4.text, windowButton4.x + 85.f, windowButton4.y + 30.f, 0.25f, white);
             }
             else
             {
-                renderer.renderText(windowButton4.text, windowButton4.x + 80.f, windowButton4.y + 30.f, 0.25f, white);
+                // renderer.renderText(windowButton4.text, windowButton4.x + 80.f, windowButton4.y + 30.f, 0.25f, white);
             }
 
             if (strcmp(windowButton5.text, "ON") == 0)

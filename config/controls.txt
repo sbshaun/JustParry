@@ -19,8 +19,7 @@ parry=M
 [WindowSettings]
 window_mode=Windowed
 resolution=1024x768
-show_fps=false
-enable_bot=false
+show_fps=true
 enable_debug=true
 
 [AudioSettings]

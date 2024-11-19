@@ -79,7 +79,6 @@ namespace Settings
             file << "window_mode=" << windowSettings.window_mode << "\n";
             file << "resolution=" << windowSettings.resolution.width << "x" << windowSettings.resolution.height << "\n";
             file << "show_fps=" << (windowSettings.show_fps ? "true" : "false") << "\n";
-            file << "enable_bot=" << (windowSettings.enable_bot ? "true" : "false") << "\n";
             file << "enable_debug=" << (windowSettings.enable_debug ? "true" : "false") << "\n";
 
             // Add audio settings section
@@ -333,8 +332,6 @@ namespace Settings
                         }
                         else if (key == "show_fps")
                             windowSettings.show_fps = (value == "true");
-                        else if (key == "enable_bot")
-                            windowSettings.enable_bot = (value == "true");
                         else if (key == "enable_debug")
                             windowSettings.enable_debug = (value == "true");
                     }
@@ -601,7 +598,6 @@ namespace Settings
             windowSettings.resolution.height == DefaultConfig::WINDOW_SETTINGS.resolution.height &&
             // Compare boolean flags
             windowSettings.show_fps == DefaultConfig::WINDOW_SETTINGS.show_fps &&
-            windowSettings.enable_bot == DefaultConfig::WINDOW_SETTINGS.enable_bot &&
             windowSettings.enable_debug == DefaultConfig::WINDOW_SETTINGS.enable_debug;
 
         // For debugging

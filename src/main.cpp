@@ -192,7 +192,6 @@ int main()
             // Force bot enabled for arcade mode
             botEnabled = true;
             worldSystem.botEnabled = true;
-            Settings::windowSettings.enable_bot = true;
 
             game.renderArcadeMenu(renderer);
             if (game.handleArcadeMenuInput(glWindow.window))
@@ -211,7 +210,7 @@ int main()
             // Already have bot enabled here, but let's be explicit
             botEnabled = true;
             worldSystem.botEnabled = true;
-            Settings::windowSettings.enable_bot = true;
+            // Settings::windowSettings.enable_bot = true;
 
             game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
             game.renderArcadePrefight(renderer, offsetY1, p1Ready);
@@ -305,10 +304,11 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ROUND_START:
+            worldSystem.updatePlayableArea();
             renderer.render();
             renderer.renderUI(timer);
             game.renderPauseButton(renderer);
-            worldSystem.updatePlayableArea();
+
             interp_moveEntitesToScreen(renderer);
 
             if (!isLoading)
@@ -483,6 +483,8 @@ int main()
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
+                resetInterpVariables(); // Reset interpolation variables including countdown timer
+                WorldSystem::playGameCountDownSound(); // Play the countdown sound
                 // Only play music if enabled in settings AND sound effects are enabled
                 if (Settings::audioSettings.enable_music && Settings::audioSettings.enable_sound_effects)
                 {
