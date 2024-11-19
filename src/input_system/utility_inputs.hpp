@@ -13,13 +13,12 @@ struct UtilityKeys
 {
     static constexpr int DEBUG_TOGGLE = GLFW_KEY_H; // Toggle debug visualization
     static constexpr int FPS_TOGGLE = GLFW_KEY_F;   // Toggle FPS display
-    static constexpr int BOT_TOGGLE = GLFW_KEY_B;   // Toggle bot mode
     static constexpr int EXIT = SDLK_ESCAPE;        // Exit game
     static constexpr int CONFIRM = GLFW_KEY_ENTER;  // Confirm/Restart
 };
 
 // Utility input handling functions
-inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnabled,
+inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, 
                                 bool &fKeyPressed, bool &bKeyPressed, bool &hKeyPressed,
                                 GLWindow &glWindow, FPSCounter &fpsCounter, bool &shouldExit,
                                 WorldSystem &worldSystem)
@@ -60,22 +59,22 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, bool &botEnab
     fpsCounter.update(renderer, Settings::windowSettings.show_fps);
 
     // Bot mode toggle
-    if (isKeyPressed(UtilityKeys::BOT_TOGGLE))
-    {
-        if (!bKeyPressed)
-        {
-            Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
-            botEnabled = Settings::windowSettings.enable_bot;
-            worldSystem.botEnabled = botEnabled;
-            Settings::saveSettings();
-            bKeyPressed = true;
-            std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
-        }
-    }
-    else
-    {
-        bKeyPressed = false;
-    }
+    // if (isKeyPressed(UtilityKeys::BOT_TOGGLE))
+    // {
+    //     if (!bKeyPressed)
+    //     {
+    //         // Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
+    //         botEnabled = false;
+    //         worldSystem.botEnabled = botEnabled;
+    //         Settings::saveSettings();
+    //         bKeyPressed = true;
+    //         std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
+    //     }
+    // }
+    // else
+    // {
+    //     bKeyPressed = false;
+    // }
 
     // Exit game
     if (isKeyPressed(UtilityKeys::EXIT))

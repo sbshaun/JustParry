@@ -18,6 +18,7 @@ void resetInterpVariables()
 	b2 = 0;
 	count = 0;
 	isLoading = true;
+	count_down_timer = 2.0f; // Reset the countdown timer when resetting variables
 }
 
 void interp_moveEntitesToScreen(GlRender &renderer)
@@ -38,66 +39,30 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 		p1 = PlayerInput();
 		p2 = PlayerInput();
 
-		if (m1.position[0] < -0.5)
-		{
-			m1.position[0] = m1.position[0] + 0.0089f;
-		}
-		// move p1 to the ground
-		if (m1.position[1] > (FLOOR_Y + config1.NDC_HEIGHT / 2))
-		{
-			m1.position[1] = m1.position[1] - 0.0047f;
-		}
-		else
-		{
-			m1.position[1] = (FLOOR_Y + config1.NDC_HEIGHT / 2);
-		}
+		m1.position = {0.2f, (FLOOR_Y + config1.NDC_HEIGHT / 2)};
+		m2.position = {0.7f, (FLOOR_Y + config2.NDC_HEIGHT / 2)};
 
-		if (m2.position[0] > 0.5)
-		{
-			m2.position[0] = m2.position[0] - 0.0089f;
-
-		} // move p2 to ground
-		if (m2.position[1] > (FLOOR_Y + config2.NDC_HEIGHT / 2))
-		{
-			m2.position[1] = m2.position[1] - 0.0047f;
-		}
-		else
-		{
-			m2.position[1] = (FLOOR_Y + config2.NDC_HEIGHT / 2);
-		}
-
-		if (m1.scale[0] < 1)
-		{
-			a = m1.scale[0] + 0.01;
-			a2 = m1.scale[1] + 0.01;
-			m1.scale = {a, a2};
-		}
-		else
-		{
-			m1.scale[0] = 1;
-			m1.scale[1] = 1;
-			m1.scale[1] = 1;
-		}
-
-		if (m2.scale[0] < 1)
-		{
-			b = m2.scale[0] + 0.01;
-			b2 = m2.scale[1] + 0.01;
-			m2.scale = {b, b2};
-		}
-		else if ((m2.scale[0] > 1))
-		{
-			m2.scale[0] = 1;
-			m2.scale[1] = 1;
-		}
-
-		// stop once done, and change isLoading to false to avoid inteference w game.
-		if (m1.position[0] < 0.3 && m1.position[1] == (FLOOR_Y + config1.NDC_HEIGHT / 2) && m1.scale[0] == 1)
-		{
-			count = 1;
-		}
-
+		// Render countdown text
 		count_down_timer -= 0.01;
+		count = 1;
+
+		// Calculate the center of the screen
+		float centerX = M_WINDOW_WIDTH_PX / 2.0f;
+		float centerY = M_WINDOW_HEIGHT_PX / 2.0f;
+		
+		// Render countdown numbers based on timer
+		if (count_down_timer > 1.5f) {
+			renderer.renderText("3", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (count_down_timer > 1.0f) {
+			renderer.renderText("2", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 0.5f, 0.0f));
+		}
+		else if (count_down_timer > 0.5f) {
+			renderer.renderText("1", centerX - 20.f, centerY - 80.f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+		}
+		else if (count_down_timer > 0.0f) {
+			renderer.renderText("FIGHT!", centerX - 150.f, centerY - 80.f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
 
 		if (count == 1 && count_down_timer <= 0)
 		{
