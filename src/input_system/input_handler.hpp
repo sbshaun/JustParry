@@ -49,6 +49,9 @@ public:
         for (int i = 0; i < actionBuffer.size(); i++)
         {
             actionBuffer[i].ttl -= PLAYER_STATE_TIMER_STEP;
+            
+            
+            
             if (actionBuffer[i].ttl <= 0)
             {
                 actionBuffer.erase(actionBuffer.begin() + i);
@@ -62,22 +65,24 @@ public:
         {
             Action action = actionBuffer[i].action;
 
-            if (actionToCommandMapping.find(action) != actionToCommandMapping.end())
+            // std::cout << i << "  " << actionBuffer.size() << std::endl;
+            actionToCommandMapping[action]->execute(entity, state_machine);
+            
+            if (action == Action::MOVE_LEFT) 
             {
-                actionToCommandMapping[action]->execute(entity, state_machine);
+                moving = true;
             }
-            if (action == Action::MOVE_LEFT || action == Action::MOVE_RIGHT)
+            if (action == Action::MOVE_RIGHT)
             {
                 moving = true;
             }
         }
 
-        if (!moving && !motion.inAir)
-        {
-            motion.velocity.x = 0.0f;
+        if (!moving) {
             if (state_machine.transition(entity, PlayerState::IDLE))
             {
-                PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
+                motion.velocity.x = 0;
+                PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
             }
         }
     }
@@ -110,6 +115,8 @@ public:
                 // get the corresponded action from the key
                 Action action = pair.second;
 
+                // std::cout << pair.first << std::endl;
+
                 if (action == Action::PARRY)
                 {
                     if (registry.postureBars.get(entity).currentBar <= 0)
@@ -117,12 +124,38 @@ public:
                         continue;
                     }
                 }
+                bool actionInBuffer = false;
+                for (int i = 0; i < actionBuffer.size(); i++) {
+                    if (actionBuffer[i].action == action) {
+                        actionInBuffer = true;
+                    }
 
-                if (!actionBuffer.empty() && actionBuffer.back().action == action)
+                    if (actionBuffer[i].action == Action::MOVE_RIGHT) {
+                        if (action == Action::MOVE_RIGHT) {
+                            actionBuffer[i].ttl = 300.f;
+                            break;
+                        }
+                        else {
+                            actionBuffer.erase(actionBuffer.begin() + i);
+                            break;
+                        }
+                    }
+                    if (actionBuffer[i].action == Action::MOVE_LEFT) {
+                        if (action == Action::MOVE_LEFT) {
+                            actionBuffer[i].ttl = 300.f;
+                            break;
+                        }
+                        else {
+                            actionBuffer.erase(actionBuffer.begin() + i);
+                            break;
+                        }
+                    }
+                    
+                }
+                if (!actionBuffer.empty() && actionInBuffer)
                     continue;
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)
                     continue;
-
                 if (!shouldAddActionToBuffer(entity, action))
                     continue;
                 actionBuffer.push_back({action, TTL});

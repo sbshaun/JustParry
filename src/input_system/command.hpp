@@ -26,17 +26,10 @@ class MoveLeftCommand : public Command
 public:
     void execute(Entity entity, StateMachine &state_machine) override
     {
-        if (!state_machine.transition(entity, PlayerState::WALKING))
-            return;
-
+        state_machine.transition(entity, PlayerState::WALKING);
 
         Motion &motion = registry.motions.get(entity);
-        if (motion.inAir)
-            return;
-
-        // check max seperation between players before allowing back move hhere
         motion.velocity.x = -MOVE_SPEED;
-        // motion.direction = false; // facing left
     }
 };
 
@@ -45,15 +38,10 @@ class MoveRightCommand : public Command
 public:
     void execute(Entity entity, StateMachine &state_machine) override
     {
-        if (!state_machine.transition(entity, PlayerState::WALKING))
-            return;
+        state_machine.transition(entity, PlayerState::WALKING);
 
         Motion &motion = registry.motions.get(entity);
-        if (motion.inAir)
-            return;
-
         motion.velocity.x = MOVE_SPEED;
-        // motion.direction = true; // facing right
     }
 };
 

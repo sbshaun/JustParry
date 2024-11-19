@@ -474,7 +474,6 @@ int main()
                 isKeyPressed(GLFW_KEY_BACKSPACE))
             {
                 roundEnded = false;
-                game.resetGame(renderer, worldSystem);
                 WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
                 game.setState(GameState::MENU);
             }
