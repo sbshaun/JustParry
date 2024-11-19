@@ -1344,7 +1344,12 @@ void Game::renderSettingsScreen(GlRender &renderer)
                     {
                         Settings::audioSettings.enable_music = !Settings::audioSettings.enable_music;
                         Settings::saveSettings();
-                        WorldSystem::updateAudioState(); // Add this line
+                        
+                        // Only update audio state immediately if we came from pause menu
+                        if (previousState == GameState::PAUSED)
+                        {
+                            WorldSystem::updateAudioState();
+                        }
                     }
                     else if (aButton3Hovered)
                     {
@@ -2041,16 +2046,11 @@ void Game::renderPauseButton(GlRender &renderer)
                 p1Motion.position = {-1.25f, FLOOR_Y + config1.NDC_HEIGHT};
                 p2Motion.position = {1.25f, FLOOR_Y + config2.NDC_HEIGHT};
 
-                // Reset scales
-                p1Motion.scale = {0.1f, 0.1f};
-                p2Motion.scale = {0.1f, 0.1f};
 
                 // Reset playable area
                 if (registry.playableArea.has(renderer.m_playableArea))
                 {
                     PlayableArea &playableArea = registry.playableArea.get(renderer.m_playableArea);
-                    playableArea.position = vec2(0, 0); // Reset to center
-                    playableArea.updateWorldModel(renderer.m_worldModel);
                 }
             }
 

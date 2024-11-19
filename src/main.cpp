@@ -240,18 +240,21 @@ int main()
             break;
 
         case GameState::SETTINGS:
-            WorldSystem::stopAllSounds(); // Stop sounds in settings
+            WorldSystem::stopAllSounds(); // Stop sounds when entering settings from menu
             // First render the appropriate background based on where we came from
             if (game.getPreviousState() == GameState::PAUSED)
             {
-                // If from pause menu, render the game state
+                // If from pause menu, render the game state and keep music playing
                 renderer.render();
                 renderer.renderUI(timer);
                 game.renderPauseButton(renderer);
+                // Don't stop background music when coming from pause menu
             }
             else if (game.getPreviousState() == GameState::MENU)
             {
-                // If from main menu, render the menu background
+                // If from main menu, stop all audio including music
+                WorldSystem::stopBackgroundMusic();
+                // Render the menu background
                 renderer.renderTexturedQuadScaled(
                     renderer.m_menuTexture,
                     0, 0,

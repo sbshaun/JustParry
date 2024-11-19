@@ -41,8 +41,8 @@ void interp_moveEntitesToScreen(GlRender &renderer)
 
 		m1.position = {0.2f, (FLOOR_Y + config1.NDC_HEIGHT / 2)};
 		m2.position = {0.7f, (FLOOR_Y + config2.NDC_HEIGHT / 2)};
-		m1.scale = {1, 1};
-		m2.scale = {1, 1};
+		// m1.scale = {1, 1};
+		// m2.scale = {1, 1};
 
 		// stop once done, and change isLoading to false to avoid inteference w game.
 		count_down_timer -= 0.01;
