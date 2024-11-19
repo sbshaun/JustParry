@@ -478,6 +478,7 @@ int main()
             {
                 roundEnded = false;
                 WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
+                game.resetGame(renderer, worldSystem);
                 game.setState(GameState::MENU);
             }
 
