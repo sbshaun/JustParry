@@ -209,12 +209,15 @@ void WorldSystem::init(GlRender *renderer)
 
     bloodSystem = BloodParticleSystem();
     smokeSystem = SmokeParticleSystem();
+	sparkleSystem = SparkleParticleSystem();
 }
 
 void WorldSystem::step(float elapsed_ms)
 {
+    // PARTICLES: ADD ALL RENDERS HERE
     bloodSystem.update(elapsed_ms);
     smokeSystem.update(elapsed_ms);
+    sparkleSystem.update(elapsed_ms);
 }
 
 void WorldSystem::emitBloodParticles(float x, float y, float z, bool direction)
@@ -227,10 +230,17 @@ void WorldSystem::emitSmokeParticles(float x, float y, float z)
     smokeSystem.emit(x, y, z, false);
 }
 
+void WorldSystem::emitSparkleParticles(float x, float y, float z)
+{
+	sparkleSystem.emit(x, y, z, false);
+}
+
 void WorldSystem::renderParticles()
 {
+    // PARTICLES: ADD ALL RENDERS HERE
     bloodSystem.render(renderer->m_worldModel);
     smokeSystem.render(renderer->m_worldModel);
+	sparkleSystem.render(renderer->m_worldModel);
 }
 
 void WorldSystem::initInputHandlers()
@@ -653,6 +663,10 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
                                      otherPlayerMeshPtr, parryPlayerMotion))
         {
+            float hurt_x = parryPlayerMotion.position.x;
+            float hurt_y = parryPlayerMotion.position.y;
+            // bool hurt_dir = parryPlayerMotion.direction;
+            emitSparkleParticles(hurt_x, hurt_y, 0.f);
             // if parried successfully, reset state timer to 0
             StateTimer &playerStateTimer = registry.stateTimers.get(playerWithParryBox);
             playerStateTimer.reset(0);

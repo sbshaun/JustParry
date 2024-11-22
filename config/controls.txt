@@ -19,11 +19,11 @@ parry=M
 [WindowSettings]
 window_mode=Windowed
 resolution=1024x768
-show_fps=true
-enable_debug=true
+show_fps=false
+enable_debug=false
 
 [AudioSettings]
 enable_sound_effects=true
 enable_music=true
-overall_volume=0.0666667
-music_volume=0.471429
+overall_volume=1
+music_volume=0.75
