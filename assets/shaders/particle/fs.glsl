@@ -1,7 +1,14 @@
 #version 330 core
-in vec4 particleColor;
+in vec2 TexCoords;
+in vec4 ParticleColor;
 out vec4 FragColor;
 
 void main() {
-    FragColor = particleColor;
+    float distance = length(TexCoords - vec2(0.5, 0.5));
+    
+    if (distance > 0.5) {
+        discard;
+    }
+
+    FragColor = ParticleColor;
 }
