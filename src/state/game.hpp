@@ -113,22 +113,22 @@ private:
     bool showHelpDialog;
     bool isPaused;
 
-    Button startButton;
-    Button arcadeButton;
-    Button helpButton;
-    Button closeButton;
-    Button backButton;
-    Button settingsButton;
-    Button pauseButton;
-    Button resumeButton;
-    Button menuButton;
-    Button pauseSettingsButton;
+    struct Button startButton;
+    struct Button arcadeButton;
+    struct Button helpButton;
+    struct Button closeButton;
+    struct Button backButton;
+    struct Button settingsButton;
+    struct Button pauseButton;
+    struct Button resumeButton;
+    struct Button menuButton;
+    struct Button pauseSettingsButton;
 
-    Button arcadeLevelOneButton;
-    Button arcadeLevelTwoButton;
-    Button arcadeLevelThreeButton;
-    Button arcadeLevelFourButton;
-    Button arcadeLevelFiveButton;
+    struct Button arcadeLevelOneButton;
+    struct Button arcadeLevelTwoButton;
+    struct Button arcadeLevelThreeButton;
+    struct Button arcadeLevelFourButton;
+    struct Button arcadeLevelFiveButton;
 
     int player1Score = 0;
     int player2Score = 0;

@@ -339,7 +339,7 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 
     // Render background
     renderer.renderTexturedQuadScaled(
-        renderer.m_characterSelectTexture,
+        renderer.m_characterSelectTextureArcade,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         1.0f // Full brightness
@@ -347,17 +347,17 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 
     renderer.renderTexturedQuadScaled(
         renderer.m_character1,
-        175, 360.0f,
+        290, 360.0f,
         225, 275,
         1.0f // Full brightness for main menu
     );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_character1_flip,
-        625.f, 360.0f,
-        225, 275,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_character1_flip,
+    //     625.f, 360.0f,
+    //     225, 275,
+    //     1.0f // Full brightness for main menu
+    // );
 
     // renderer.renderTexturedQuadScaled(
     //     renderer.m_p1SelectKey,
@@ -373,11 +373,11 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
     //     1.0f // Full brightness for main menu
     // );
 
-    renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
-    renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
+    renderer.renderSelectorTriangleP1(560, 255 + offset1, 30, 30, p1);
+    // renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
 
-    renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
+    renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 525.f, 285.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -392,6 +392,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
+            WorldSystem::playMenuConfirmSound();
             p1Ready = !p1Ready;  // Toggle p1Ready
             p1KeyPressed = true; // Mark the key as pressed
             if (std::to_string(p1Ready) == "0")
@@ -415,6 +416,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
         {
             if (!goDown1)
             {
+                WorldSystem::playMenuSelectSound();
                 goDown1 = true;
                 if (offsetY1 < 300.f)
                 {
@@ -435,6 +437,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
         {
             if (!goUp1)
             {
+                WorldSystem::playMenuSelectSound();
                 goUp1 = true;
                 if (offsetY1 > 0.0f)
                 {
@@ -623,32 +626,54 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
 
 void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game)
 {
-    if (p1Ready)
-    {
-        renderer.renderText("READY", 210, 350, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
-    }
-    else
-    {
-        renderer.renderText("NOT READY", 180, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
-    }
-
-    if (p2Ready)
-    {
-        renderer.renderText("READY", 740, 350, 0.25f, glm::vec3(0.0f, 1.0f, 0.0f));
-    }
-    else
-    {
-        renderer.renderText("NOT READY", 725, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
-    }
-
-    if (p1Ready && p2Ready)
-    {
-        renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (!isArcadeMode()) {
+        if (p1Ready)
         {
-            WorldSystem::playGameCountDownSound();
-            game.setState(GameState::ROUND_START);
+            renderer.renderText("READY", 210, 350, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
+        }
+        else
+        {
+            renderer.renderText("NOT READY", 180, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
+        if (p2Ready)
+        {
+            renderer.renderText("READY", 740, 350, 0.25f, glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+        else
+        {
+            renderer.renderText("NOT READY", 725, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
+        if (p1Ready && p2Ready)
+        {
+            renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+            {
+                WorldSystem::playGameCountDownSound();
+                game.setState(GameState::ROUND_START);
+            }
+        }
+    } else {
+        if (p1Ready)
+        {
+            renderer.renderText("READY", 315, 390, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
+        }
+        else
+        {
+            renderer.renderText("NOT READY", 295, 390, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
+        if (p1Ready)
+        {
+            renderer.renderText("PRESS SPACE", 260, 260, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("TO START!", 285, 310, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+            {
+                WorldSystem::playGameCountDownSound();
+                game.setState(GameState::ROUND_START);
+            }
         }
     }
 }

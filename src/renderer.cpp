@@ -556,6 +556,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
     loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
+    loadTexture(textures_path("character_select_arcade.png"), m_characterSelectTextureArcade);
     loadTexture(textures_path("bird_idle_f1.png"), m_character1);
     loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
     loadTexture(textures_path("bird_parry_f1.png"), m_character1_ready);
@@ -1166,7 +1167,7 @@ void GlRender::shutdown()
         m_menuTexture, m_arcadeMenuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
-        m_avatarTexture, m_characterSelectTexture, m_character1,
+        m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade,m_character1,
         m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
@@ -1177,7 +1178,7 @@ void GlRender::shutdown()
     m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
     m_notif_parried = m_notif_hit = m_notif_stunned = 0;
     m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
-    m_avatarTexture = m_characterSelectTexture = m_character1 = 0;
+    m_avatarTexture = m_characterSelectTexture = m_characterSelectTextureArcade = m_character1 = 0;
     m_character1_ready = m_character1_flip_ready = 0;
     m_character1_flip = m_p1SelectKey = m_p2SelectKey = 0;
 
