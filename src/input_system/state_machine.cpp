@@ -170,6 +170,7 @@ void AttackingState::enter(Entity entity, StateMachine& stateMachine)
 	hitBox.yOffset = fighterConfig.PUNCH_Y_OFFSET;
 	float baseOffset = fighterConfig.PUNCH_X_OFFSET; // set base offset and adjust based on player direction 
 	hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;
+	hitBox.damage = fighterConfig.PUNCH_DAMAGE;
 
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
@@ -276,6 +277,7 @@ void KickingState::enter(Entity entity, StateMachine& stateMachine)
 	hitBox.yOffset = fighterConfig.KICK_Y_OFFSET;
 	float baseOffset = fighterConfig.KICK_X_OFFSET; // set base offset and adjust based on player direction
 	hitBox.xOffset = motion.direction ? baseOffset : -baseOffset;
+	hitBox.damage = fighterConfig.KICK_DAMAGE;
 
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
@@ -304,10 +306,9 @@ void KickingState::update(Entity entity, float elapsed_ms, StateMachine& stateMa
 	Fighters fighter = registry.players.get(entity).current_char;
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
 
-
 	if (hitBox.width < fighterConfig.KICK_WIDTH)
 	{
-		hitBox.width += fighterConfig.KICK_WIDTH / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms;
+		hitBox.width += fighterConfig.KICK_WIDTH / (fighterConfig.KICK_HITBOX_DURATION / 8) * elapsed_ms;
 	}
 
 	// if width is max, disable hitbox, the rest of the time doesn't apply damage (simulate a recovery time) 
@@ -318,7 +319,10 @@ void KickingState::update(Entity entity, float elapsed_ms, StateMachine& stateMa
 
 	Animation& animation = registry.animations.get(entity);
 
-	if (animation.currentFrame < 12 && animation.playedOnce == false) {
+	if (hitBox.active == false) {
+		animation.currentTexture = fighterConfig.m_bird_kick_f2_texture;
+	}
+	else if (animation.currentFrame < 12 && animation.playedOnce == false) {
 		animation.currentTexture = fighterConfig.m_bird_kick_f1_texture;
 	}
 	else if (animation.currentFrame < 24 && animation.playedOnce == false) {
@@ -327,10 +331,7 @@ void KickingState::update(Entity entity, float elapsed_ms, StateMachine& stateMa
 	else if (hitBox.active == true) {
 		animation.currentTexture = fighterConfig.m_bird_kick_f3_texture;
 		animation.playedOnce = true;
-	}
-	else {
-		animation.currentTexture = fighterConfig.m_bird_kick_f3_texture;
-	}
+	} 
 
 	// when state timer is expired, transition to idle
 	StateTimer& playerStateTimer = registry.stateTimers.get(entity);

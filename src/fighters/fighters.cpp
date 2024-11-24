@@ -24,10 +24,10 @@ FighterConfig &setUpBirdmanConfig()
     birdmanConfig.PARRY_STUN_DURATION = 3000.f;
     birdmanConfig.BLOCK_STUN_DURATION = 600.f;
 
-    birdmanConfig.KICK_HITBOX_DURATION = 1000.f;
+    birdmanConfig.KICK_HITBOX_DURATION = 1500.f;
     birdmanConfig.KICK_X_OFFSET = 0.f;
     birdmanConfig.KICK_DAMAGE = 20.f;
-    birdmanConfig.KICK_STUN_DURATION = 700.f;
+    birdmanConfig.KICK_STUN_DURATION = 900.f;
 
     birdmanConfig.KNOCKBACK_FORCE_X = 0.015f;
     birdmanConfig.KNOCKBACK_FORCE_Y = 0.0f;

@@ -727,7 +727,9 @@ void WorldSystem::hitBoxCollisions()
 
         // Get victim (player2) motion for particle emission
         Motion &victimMotion = registry.motions.get(player2);
-        applyDamage(player2, config.PUNCH_DAMAGE);
+
+        float damage = registry.hitBoxes.get(player1).damage;
+        applyDamage(player2, damage);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack &knockback = registry.knockbacks.get(player2);
@@ -751,7 +753,9 @@ void WorldSystem::hitBoxCollisions()
 
         // Get victim (player1) motion for particle emission
         Motion &victimMotion = registry.motions.get(player1);
-        applyDamage(player1, config.PUNCH_DAMAGE);
+
+        float damage = registry.hitBoxes.get(player2).damage;
+        applyDamage(player1, damage);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack &knockback = registry.knockbacks.get(player1);
