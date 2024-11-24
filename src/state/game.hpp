@@ -33,6 +33,12 @@ enum class GameState
     INIT
 };
 
+struct Button
+{
+    float x, y, width, height;
+    const char *text;
+};
+
 class Game
 {
 public:
@@ -76,12 +82,17 @@ public:
         player1Score = 0;
         player2Score = 0;
     }
-    void renderSettingsScreen(GlRender &renderer);
-    bool handleSettingsInput(GLFWwindow *window);
+
+
+
+    // SETTINGS MENU
+    void renderSettingsMenu(GlRender &renderer);
+    bool handleSettingsInput(GlRender &renderer, GLFWwindow *window);
+
+
+
     WorldSystem *getWorldSystem() { return worldSystem; }
     void renderPauseButton(GlRender &renderer);
-    void renderControlsSettings(GlRender &renderer, bool isPlayer1Selected, bool isPlayer2Selected);
-    void handleControlsSettingsInput(GLFWwindow *window);
 
     bool getShowFPS() const { return showFPS; }
     void setShowFPS(bool show) { showFPS = show; }
@@ -101,11 +112,7 @@ private:
     float loadingProgress;
     bool showHelpDialog;
     bool isPaused;
-    struct Button
-    {
-        float x, y, width, height;
-        const char *text;
-    };
+
     Button startButton;
     Button arcadeButton;
     Button helpButton;
@@ -115,13 +122,6 @@ private:
     Button pauseButton;
     Button resumeButton;
     Button menuButton;
-    Button generalButton;
-    Button controlsButton;
-    Button windowButton;
-    Button audioButton;
-    Button player1Button;
-    Button player2Button;
-    Button resetButton;
     Button pauseSettingsButton;
 
     Button arcadeLevelOneButton;
@@ -130,47 +130,14 @@ private:
     Button arcadeLevelFourButton;
     Button arcadeLevelFiveButton;
 
-    Button windowButton1;
-    Button windowButton2;
-    Button windowButton3;
-    Button windowButton4;
-    Button windowButton5;
-
-    Button audioButton1;
-    Button audioButton2;
-    Button audioButton3;
-    Button audioButton4;
-
-    Button playerButton1;
-    Button playerButton2;
-    Button playerButton3;
-    Button playerButton4;
-    Button playerButton5;
-    Button playerButton6;
-    Button playerButton7;
-
     int player1Score = 0;
     int player2Score = 0;
     WorldSystem *worldSystem = nullptr;
-    bool isGeneralSelected = true;
-    bool isControlsSelected = false;
-    bool isWindowSelected = true;
-    bool isAudioSelected = false;
-    bool isPlayer1Selected = true;
-    bool isPlayer2Selected = false;
 
     int levelCompleted = 0;
     int currentLevel = 0;
 
-    bool isRebinding = false;
-    int *currentlyRebindingKey = nullptr;
-
-    float errorMessageTimer = 0.0f;
-    int errorButtonIndex = -1; // Which button showed error
-    bool showErrorMessage = false;
-
     bool showFPS;
-    // bool botEnabled;
 
     void cleanupButtons();
 

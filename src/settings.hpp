@@ -5,7 +5,6 @@
 // Control scheme structure
 struct PlayerControls
 {
-    int up;
     int down;
     int left;
     int right;

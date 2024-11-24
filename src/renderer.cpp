@@ -462,27 +462,30 @@ void GlRender::handleTexturedRenders()
 
 void GlRender::handleNotifications(float elapsed_ms)
 {
-    for (Entity& notification_entity : registry.notifications.entities) {
-        Notification& notification = registry.notifications.get(notification_entity);
+    for (Entity &notification_entity : registry.notifications.entities)
+    {
+        Notification &notification = registry.notifications.get(notification_entity);
 
         float opacity = 1.0f;
         notification.counter_ms -= elapsed_ms;
 
-        if (notification.counter_ms <= 0.f) {
+        if (notification.counter_ms <= 0.f)
+        {
             registry.remove_all_components_of(notification_entity);
             continue;
         }
 
-        if (notification.counter_ms < 150.f) {
+        if (notification.counter_ms < 150.f)
+        {
             opacity = notification.counter_ms / 150.f;
         }
 
-        float x = notification.player1Side ? 0 : M_WINDOW_WIDTH_PX / 2;
+        int x = notification.player1Side ? 0 : M_WINDOW_WIDTH_PX / 2;
         float y = 15.f * opacity;
 
         renderTexturedQuadScaled(
             notification.texture_id,
-            x, y,
+            static_cast<float>(x), y,
             M_WINDOW_WIDTH_PX / 2, M_WINDOW_HEIGHT_PX,
             1.0f, opacity);
     }
@@ -693,7 +696,7 @@ void GlRender::renderUI(int timer)
         1.0f);
 
     // Render timer background
-    //renderTexturedQuadScaled(
+    // renderTexturedQuadScaled(
     //    m_timerBackgroundTexture,
     //    timerBgX, timerBgY,
     //    timerBgWidth, timerBgHeight,
@@ -729,8 +732,8 @@ void GlRender::renderUI(int timer)
     handleP1Health(p1Health);
     handleP2Health(p2Health);
 
-    handleP1Posture(p1Posture);
-    handleP2Posture(p2Posture);
+    handleP1Posture(static_cast<int>(p1Posture));
+    handleP2Posture(static_cast<int>(p2Posture));
 
     // render timer
     float textWidth = std::to_string(timer).length() * 30.0f * xscale;

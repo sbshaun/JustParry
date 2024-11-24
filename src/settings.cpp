@@ -7,12 +7,12 @@
 #include "../external/project_path.hpp"
 // #include <direct.h>
 #ifdef _WIN32
-    #include <direct.h>
-    #define MKDIR(dir) _mkdir(dir)
+#include <direct.h>
+#define MKDIR(dir) _mkdir(dir)
 #else
-    #include <sys/stat.h>
-    #include <errno.h>
-    #define MKDIR(dir) mkdir(dir, 0777)
+#include <sys/stat.h>
+#include <errno.h>
+#define MKDIR(dir) mkdir(dir, 0777)
 #endif
 
 namespace Settings
@@ -57,7 +57,6 @@ namespace Settings
         {
             // Save P1 controls
             file << "[Player1Controls]\n";
-            file << "up=" << getKeyName(p1Controls.up) << "\n";
             file << "down=" << getKeyName(p1Controls.down) << "\n";
             file << "left=" << getKeyName(p1Controls.left) << "\n";
             file << "right=" << getKeyName(p1Controls.right) << "\n";
@@ -67,7 +66,6 @@ namespace Settings
 
             // Save P2 controls
             file << "[Player2Controls]\n";
-            file << "up=" << getKeyName(p2Controls.up) << "\n";
             file << "down=" << getKeyName(p2Controls.down) << "\n";
             file << "left=" << getKeyName(p2Controls.left) << "\n";
             file << "right=" << getKeyName(p2Controls.right) << "\n";
@@ -362,9 +360,7 @@ namespace Settings
 
                         if (currentControls != nullptr)
                         {
-                            if (key == "up")
-                                currentControls->up = getKeyFromName(value);
-                            else if (key == "down")
+                            if (key == "down")
                                 currentControls->down = getKeyFromName(value);
                             else if (key == "left")
                                 currentControls->left = getKeyFromName(value);

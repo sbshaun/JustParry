@@ -44,7 +44,7 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, punch_sound, 0);
-			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
 	static void playKickSound()
@@ -52,7 +52,7 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, kick_sound, 0);
-			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
 	static void playParrySound()
@@ -60,7 +60,7 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, parry_sound, 0);
-			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
 	static void playMenuSelectSound()
@@ -68,7 +68,7 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, menu_select_sound, 0);
-			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
 	static void playMenuConfirmSound()
@@ -76,7 +76,7 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, menu_confirm_sound, 0);
-			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
 	static void playGameCountDownSound()
@@ -84,7 +84,7 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, game_count_down_sound, 0);
-			Mix_Volume(channel, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
 
@@ -104,7 +104,7 @@ public:
 			{
 				fprintf(stderr, "Background music started\n");
 				// Set the correct volume based on settings
-				Mix_VolumeMusic(MIX_MAX_VOLUME * Settings::audioSettings.music_volume * Settings::audioSettings.overall_volume);
+				Mix_VolumeMusic(static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.music_volume * Settings::audioSettings.overall_volume));
 			}
 		}
 	}
@@ -152,7 +152,7 @@ public:
 		// Update music volume independently of sound effects
 		if (Settings::audioSettings.enable_music)
 		{
-			Mix_VolumeMusic(MIX_MAX_VOLUME * Settings::audioSettings.music_volume * Settings::audioSettings.overall_volume);
+			Mix_VolumeMusic(static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.music_volume * Settings::audioSettings.overall_volume));
 		}
 		else
 		{
@@ -167,7 +167,7 @@ public:
 			{
 				if (i != WALK_SOUND_CHANNEL) // Skip walk sound channel if needed
 				{
-					Mix_Volume(i, MIX_MAX_VOLUME * Settings::audioSettings.overall_volume);
+					Mix_Volume(i, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 				}
 			}
 		}

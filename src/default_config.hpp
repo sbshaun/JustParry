@@ -6,7 +6,6 @@ namespace DefaultConfig
 {
     // Player 1 default controls (WASD + RTG)
     const PlayerControls P1_CONTROLS = {
-        GLFW_KEY_W, // Up
         GLFW_KEY_S, // Down
         GLFW_KEY_A, // Left
         GLFW_KEY_D, // Right
@@ -17,7 +16,6 @@ namespace DefaultConfig
 
     // Player 2 default controls (Arrow keys + .,M)
     const PlayerControls P2_CONTROLS = {
-        GLFW_KEY_UP,     // Up
         GLFW_KEY_DOWN,   // Down
         GLFW_KEY_LEFT,   // Left
         GLFW_KEY_RIGHT,  // Right

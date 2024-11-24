@@ -1,5 +1,4 @@
 [Player1Controls]
-up=W
 down=S
 left=A
 right=D
@@ -8,7 +7,6 @@ kick=T
 parry=G
 
 [Player2Controls]
-up=UP
 down=DOWN
 left=LEFT
 right=RIGHT
@@ -19,7 +17,7 @@ parry=M
 [WindowSettings]
 window_mode=Windowed
 resolution=1024x768
-show_fps=false
+show_fps=true
 enable_debug=false
 
 [AudioSettings]

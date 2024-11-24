@@ -156,15 +156,15 @@ void WorldSystem::init(GlRender *renderer)
         parry_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present \n",
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
                 audio_path("background_music.wav").c_str(),
-                audio_path("punch_sound.wav").c_str()),
-            audio_path("walk_sound.wav").c_str(),
-            audio_path("parry_sound.wav").c_str(),
-            audio_path("kick_sound.wav").c_str(),
-            audio_path("menu_select_sound.wav").c_str(),
-            audio_path("menu_confirm_sound.wav").c_str(),
-            audio_path("game_count_down_sound.wav").c_str();
+                audio_path("punch_sound.wav").c_str(),
+                audio_path("walk_sound.wav").c_str(),
+                audio_path("parry_sound.wav").c_str(),
+                audio_path("kick_sound.wav").c_str(),
+                audio_path("menu_select_sound.wav").c_str(),
+                audio_path("menu_confirm_sound.wav").c_str(),
+                audio_path("game_count_down_sound.wav").c_str());
         exit(1);
     }
     else
@@ -184,7 +184,6 @@ void WorldSystem::init(GlRender *renderer)
     renderer->m_player1 = player1;
     renderer->m_player2 = player2;
 
-    // defined BOUND_SIZE in constants
     Entity boundaryRight = createBoundary(BOUND_SIZE_R, RIGHT);
     Entity boundaryLeft = createBoundary(BOUND_SIZE_L, LEFT);
     Entity boundaryFloor = createFloor(FLOOR_Y, FLOOR);
@@ -210,7 +209,6 @@ void WorldSystem::init(GlRender *renderer)
     bloodSystem = BloodParticleSystem();
     smokeSystem = SmokeParticleSystem();
 }
-
 void WorldSystem::step(float elapsed_ms)
 {
     bloodSystem.update(elapsed_ms);
@@ -239,7 +237,6 @@ void WorldSystem::initInputHandlers()
 
     // Print Player 1 controls
     std::cout << "\nPlayer 1 Controls:" << std::endl;
-    std::cout << "Jump: " << Settings::getKeyName(Settings::p1Controls.up) << std::endl;
     std::cout << "Crouch: " << Settings::getKeyName(Settings::p1Controls.down) << std::endl;
     std::cout << "Move Left: " << Settings::getKeyName(Settings::p1Controls.left) << std::endl;
     std::cout << "Move Right: " << Settings::getKeyName(Settings::p1Controls.right) << std::endl;
@@ -249,7 +246,6 @@ void WorldSystem::initInputHandlers()
 
     // Print Player 2 controls
     std::cout << "\nPlayer 2 Controls:" << std::endl;
-    std::cout << "Jump: " << Settings::getKeyName(Settings::p2Controls.up) << std::endl;
     std::cout << "Crouch: " << Settings::getKeyName(Settings::p2Controls.down) << std::endl;
     std::cout << "Move Left: " << Settings::getKeyName(Settings::p2Controls.left) << std::endl;
     std::cout << "Move Right: " << Settings::getKeyName(Settings::p2Controls.right) << std::endl;
@@ -260,8 +256,8 @@ void WorldSystem::initInputHandlers()
     // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
 
-    //player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
-    // player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
+    // player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
+    //  player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
@@ -270,8 +266,8 @@ void WorldSystem::initInputHandlers()
 
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
-    //player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
-    // player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
+    // player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
+    //  player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
@@ -784,7 +780,8 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (xCollision && yCollision)
     {
-        player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;;
+        player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        ;
         player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
         player1Motion->velocity.x = 0;
         player2Motion->velocity.x = 0;

@@ -14,6 +14,7 @@
 #include "input_system/input_handler.hpp"
 #include "input_system/state_machine.hpp"
 #include "input_system/utility_inputs.hpp"
+// #include "state/settings_menu.hpp"
 #include "SDL.h"
 #include <SDL.h>
 #define SDL_MAIN_HANDLED
@@ -205,7 +206,7 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_PREFIGHT:
-            // Enable bot for arcade 
+            // Enable bot for arcade
             botEnabled = true;
             worldSystem.botEnabled = true;
 
@@ -242,35 +243,16 @@ int main()
             break;
 
         case GameState::SETTINGS:
-            WorldSystem::stopAllSounds(); // Stop sounds when entering settings from menu
-            // First render the appropriate background based on where we came from
-            if (game.getPreviousState() == GameState::PAUSED)
-            {
-                // If from pause menu, render the game state and keep music playing
-                renderer.render();
-                renderer.renderUI(timer);
-                game.renderPauseButton(renderer);
-                // Don't stop background music when coming from pause menu
-            }
-            else if (game.getPreviousState() == GameState::MENU)
-            {
-                // If from main menu, stop all audio including music
-                WorldSystem::stopBackgroundMusic();
-                // Render the menu background
-                renderer.renderTexturedQuadScaled(
-                    renderer.m_menuTexture,
-                    0, 0,
-                    M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-                    1.0f // Full brightness
-                );
-            }
+            WorldSystem::stopAllSounds(); // Stop sounds when entering settings
+            game.renderSettingsMenu(renderer); // render settings overlay
 
-            // Then render settings overlay
-            game.renderSettingsScreen(renderer);
-            if (game.handleSettingsInput(glWindow.window))
+            // handle user input
+            if (game.handleSettingsInput(renderer, glWindow.window))
             {
+                // save changes and update game to new inputs.
                 game.setState(GameState::SETTINGS_EXIT);
             }
+
             if (Settings::windowSettings.show_fps)
             {
                 fpsCounter.update(renderer, false);
@@ -283,6 +265,7 @@ int main()
             worldSystem.initInputHandlers();
 
             // Return to previous state
+            // previous state is saved before settings were opened.
             if (game.getPreviousState() == GameState::PAUSED)
             {
                 game.setState(GameState::PAUSED);
@@ -310,7 +293,7 @@ int main()
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
                 loopsSinceLastFrame = 0;
-                
+
                 worldSystem.updatePlayableArea();
                 renderer.render();
                 renderer.renderUI(timer);
@@ -413,7 +396,6 @@ int main()
             }
 
             loopsSinceLastFrame++;
-            
 
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
@@ -494,7 +476,7 @@ int main()
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
-                resetInterpVariables(); // Reset interpolation variables including countdown timer
+                resetInterpVariables();                // Reset interpolation variables including countdown timer
                 WorldSystem::playGameCountDownSound(); // Play the countdown sound
                 // Only play music if enabled in settings AND sound effects are enabled
                 if (Settings::audioSettings.enable_music && Settings::audioSettings.enable_sound_effects)
