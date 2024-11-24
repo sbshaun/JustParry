@@ -207,7 +207,7 @@ void GlRender::renderRoundOver(int count)
 
         // Create and render restart prompt
         renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10) * xscale, (baseY + 250.0f) * yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+        // renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10) * xscale, (baseY + 250.0f) * yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 }
 

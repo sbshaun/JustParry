@@ -479,14 +479,14 @@ int main()
                 renderer.startExitAnimation();
             }
 
-            if (!renderer.isExitAnimationStarted() &&
-                isKeyPressed(GLFW_KEY_BACKSPACE))
-            {
-                roundEnded = false;
-                WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
-                game.resetGame(renderer, worldSystem);
-                game.setState(GameState::MENU);
-            }
+            // if (!renderer.isExitAnimationStarted() &&
+            //     isKeyPressed(GLFW_KEY_BACKSPACE))
+            // {
+            //     roundEnded = false;
+            //     WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
+            //     game.resetGame(renderer, worldSystem);
+            //     game.setState(GameState::MENU);
+            // }
 
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
