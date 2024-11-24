@@ -16,7 +16,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         375.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
-        "START"                                        // button text
+        "VERSUS"                                       // button text
     };
 
     arcadeButton = {
