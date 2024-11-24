@@ -101,6 +101,7 @@ public:
     GLuint m_pauseMenuTexture;
 
     GLuint m_characterSelectTexture;
+    GLuint m_characterSelectTextureArcade;
     GLuint m_character1;
     GLuint m_character1_flip;
     GLuint m_character1_ready;
