@@ -1215,11 +1215,12 @@ void Game::renderPauseButton(GlRender &renderer)
 
     // Render pause button
     renderer.renderButton(
-        pauseButton.x, pauseButton.y,
-        pauseButton.width, pauseButton.height,
-        "=",
+        pauseButton.x - 5.f, pauseButton.y - 5.f,
+        pauseButton.width + 5.f, pauseButton.height + 5.f,
+        "",
         pauseHovered, false,
         glm::vec3(0.4f, 0.4f, 0.4f));
+    renderer.renderText("||", pauseButton.x + 20.f, pauseButton.y + 42.5f, 0.48f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     // If game is paused, render pause menu
     if (currentState == GameState::PAUSED)
