@@ -273,6 +273,10 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     // First clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
+    backButton.x = 25.0f;
+    backButton.y = 15.0f;
+    backButton.width = 80.0f;
+    backButton.height = 70.0f;
 
     // Render background
     renderer.renderTexturedQuadScaled(
@@ -282,14 +286,13 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness
     );
 
-    // Add back button (moved after background render)
-
+    // Add back button
     renderer.renderButton(
-        25.0f, 15.0f,        // x, y position
-        80.0f, 70.0f,        // width, height
-        "<-",                // text
-        isBackButtonHovered, // Add this member variable to Game class
-        isBackButtonPressed  // Add this member variable to Game class
+        backButton.x, backButton.y,          // x, y position
+        backButton.width, backButton.height, // width, height
+        "<-",                                // text
+        isBackButtonHovered,                 // Add this member variable to Game class
+        isBackButtonPressed                  // Add this member variable to Game class
     );
 
     // Rest of the character select rendering...
@@ -359,19 +362,48 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
         1.0f // Full brightness for main menu
     );
 
-    // renderer.renderTexturedQuadScaled(
-    //     renderer.m_p1SelectKey,
-    //     360.f, 245.0f + offset1,
-    //     30, 30,
-    //     1.0f // Full brightness for main menu
-    // );
+    // Get mouse position for hover effects
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
 
-    // renderer.renderTexturedQuadScaled(
-    //     renderer.m_p2SelectKey,
-    //     640.f, 245.0f,
-    //     30, 30,
-    //     1.0f // Full brightness for main menu
-    // );
+    // Add back button
+    backButton.x = 25.0f;
+    backButton.y = 15.0f;
+    backButton.width = 80.0f;
+    backButton.height = 70.0f;
+
+    // Check button states
+    bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
+                       mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
+
+    static bool backButtonPressed = false;
+
+    if (backHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    {
+        if (!backButtonPressed)
+        {
+            backButtonPressed = true; // Remember that button was pressed
+        }
+    }
+    else
+    {
+        if (backButtonPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        {
+            handleBackButton(); // Trigger action on release
+            std::cout << "Back button pressed!" << std::endl;
+        }
+        backButtonPressed = false; // Reset the state when released
+    }
+
+    // render back button
+    renderer.renderButton(
+        backButton.x, backButton.y,          // x, y position
+        backButton.width, backButton.height, // width, height
+        "<-",                                // text
+        backHovered,                         // Add this member variable to Game class
+        backButtonPressed                    // Add this member variable to Game class
+    );
 
     renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
     renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
@@ -461,8 +493,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
     glfwGetCursorPos(glWindow.window, &mouseX, &mouseY);
 
     // Check back button hover
-    isBackButtonHovered = (mouseX >= 50.0f && mouseX <= 150.0f &&
-                           mouseY >= 50.0f && mouseY <= 100.0f);
+    isBackButtonHovered = SettingsMenu::isHovered(mouseX, mouseY, backButton);
 
     // Check for back button click
     if (isBackButtonHovered && glfwGetMouseButton(glWindow.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -743,6 +774,12 @@ void Game::renderArcadeMenu(GlRender &renderer)
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
+    // Add back button
+    backButton.x = 25.0f;
+    backButton.y = 15.0f;
+    backButton.width = 80.0f;
+    backButton.height = 70.0f;
+
     // Check button states
     bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
                        mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
@@ -769,11 +806,13 @@ void Game::renderArcadeMenu(GlRender &renderer)
     bool LevelFourPressed = levelFourHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool LevelFivePressed = levelFiveHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-    // Render all buttons
-    renderer.renderButton(backButton.x, backButton.y,
-                          backButton.width, backButton.height,
-                          backButton.text,
-                          backHovered, backPressed);
+    renderer.renderButton(
+        backButton.x, backButton.y,          // x, y position
+        backButton.width, backButton.height, // width, height
+        "<-",                                // text
+        backHovered,                         // Add this member variable to Game class
+        backPressed                          // Add this member variable to Game class
+    );
 
     renderer.renderButton(arcadeLevelOneButton.x, arcadeLevelOneButton.y,
                           arcadeLevelOneButton.width, arcadeLevelOneButton.height,
@@ -1040,8 +1079,16 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
 
 void Game::handleBackButton()
 {
-    this->setState(GameState::MENU);
-    std::cout << "Going to Menu Screen" << std::endl;
+    if (this->getState() == GameState::ARCADE_PREFIGHT)
+    {
+        this->setState(GameState::ARCADE_MENU);
+        std::cout << "Going to Arcade Menu Screen" << std::endl;
+    }
+    else
+    {
+        this->setState(GameState::MENU);
+        std::cout << "Going to Menu Screen" << std::endl;
+    }
 }
 
 void Game::handleHelpButton()

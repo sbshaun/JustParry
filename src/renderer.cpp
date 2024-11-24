@@ -1246,12 +1246,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     float ndcWidth = 2.0f * width * xscale / framew_width;
     float ndcHeight = -2.0f * height * yscale / frame_height;
 
-    // Add a small offset when pressed
-    if (pressed)
-    {
-        ndcY -= 0.1f; // Slight downward shift when pressed
-    }
-
     float vertices[] = {
         ndcX, ndcY, 0.0f,                        // top left
         ndcX + ndcWidth, ndcY, 0.0f,             // top right
