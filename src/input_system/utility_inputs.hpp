@@ -13,7 +13,8 @@ struct UtilityKeys
 {
     static constexpr int DEBUG_TOGGLE = GLFW_KEY_H; // Toggle debug visualization
     static constexpr int FPS_TOGGLE = GLFW_KEY_F;   // Toggle FPS display
-    static constexpr int EXIT = SDLK_ESCAPE;        // Exit game
+    // static constexpr int EXIT = SDLK_ESCAPE;        // Exit game
+    static constexpr int PAUSE = GLFW_KEY_ESCAPE;   // Toggle FPS display
     static constexpr int CONFIRM = GLFW_KEY_ENTER;  // Confirm/Restart
 };
 
@@ -58,6 +59,10 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS,
     }
     fpsCounter.update(renderer, Settings::windowSettings.show_fps);
 
+    if(isKeyPressed(UtilityKeys::PAUSE)){
+        Game* game = renderer.getGameInstance();
+        game->attemptPause();
+    }
     // Bot mode toggle
     // if (isKeyPressed(UtilityKeys::BOT_TOGGLE))
     // {
@@ -77,8 +82,8 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS,
     // }
 
     // Exit game
-    if (isKeyPressed(UtilityKeys::EXIT))
-    {
-        shouldExit = true;
-    }
+    // if (isKeyPressed(UtilityKeys::EXIT))
+    // {
+    //     shouldExit = true;
+    // }
 }

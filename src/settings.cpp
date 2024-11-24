@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <cstring> //needed for linux
 #include "../external/project_path.hpp"
 // #include <direct.h>
 #ifdef _WIN32

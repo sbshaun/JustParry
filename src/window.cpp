@@ -1,6 +1,7 @@
 #define GL_SILENCE_DEPRECATION // supress warning on mac: " 'glViewport' is deprecated: first deprecated in macOS 10.14 - OpenGL API deprecated."
 #include "window.hpp"
 #include "constants.hpp"
+#include "state/game.hpp" // Include the header file where Game is declared
 #include "common.hpp"
 
 GLWindow::GLWindow()
@@ -88,8 +89,9 @@ void GLWindow::on_key(int key, int, int action, int mod)
     // ESC key to exit
     if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE)
     {
-        std::cout << "INFO: ESC key pressed, close window" << std::endl;
-        m_close_window = true;
+        // std::cout << "INFO: ESC key pressed, close window" << std::endl;
+        // m_close_window = true;
+        // Game::attemptPause();
     }
 }
 

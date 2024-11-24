@@ -86,7 +86,7 @@ int main()
     assert(gl3w_init() == 0);
     // assert(is_fine == 0);
 
-    // glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1); // Enable vsync
     if (SDL_Init(SDL_INIT_AUDIO) < 0) // Init SDL joystick
     {
         std::cerr << "Failed to init SDL joy handler" << std::endl;
@@ -173,6 +173,7 @@ int main()
         case GameState::MENU:
             p1Ready = false;
             p2Ready = false;
+            glfwSwapInterval(1); // enable vsync
 
             WorldSystem::stopAllSounds(); // Stop sounds in menu
             WorldSystem::stopBackgroundMusic();
@@ -355,6 +356,7 @@ int main()
                 }
             }
         }
+        glfwSwapInterval(0); // disable vsync
         break;
 
         case GameState::PAUSED:
@@ -507,6 +509,7 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+            glfwSwapInterval(1);
             glWindow.windowSwapBuffers();
             break;
         default:

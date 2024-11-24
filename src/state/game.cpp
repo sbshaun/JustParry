@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "../input_system/input_mapping.hpp"
 #include "../linearinterp.hpp"
 
 Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0f),
@@ -382,19 +383,22 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness for main menu
     );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p1SelectKey,
-        360.f, 245.0f + offset1,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_p1SelectKey,
+    //     360.f, 245.0f + offset1,
+    //     30, 30,
+    //     1.0f // Full brightness for main menu
+    // );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p2SelectKey,
-        645.f, 245.0f + offset2,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_p2SelectKey,
+    //     645.f, 245.0f + offset2,
+    //     30, 30,
+    //     1.0f // Full brightness for main menu
+    // );
+
+    renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
+    renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f + offset2, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
     renderer.renderSelectorTriangleP2(605, 245 + offset2, 30, 30, p2);
@@ -432,22 +436,25 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
         1.0f // Full brightness for main menu
     );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p1SelectKey,
-        360.f, 245.0f + offset1,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_p1SelectKey,
+    //     360.f, 245.0f + offset1,
+    //     30, 30,
+    //     1.0f // Full brightness for main menu
+    // );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p2SelectKey,
-        640.f, 245.0f,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_p2SelectKey,
+    //     640.f, 245.0f,
+    //     30, 30,
+    //     1.0f // Full brightness for main menu
+    // );
 
     renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
     renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
+
+    renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
+    renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -458,7 +465,7 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready,
                                       bool &goDown1, bool &goUp1, float &offsetY1)
 {
-    if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
+    if (glfwGetKey(glWindow.window, Settings::p1Controls.punch) == GLFW_PRESS)
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
@@ -481,7 +488,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
 
     if (!p1Ready)
     {
-        if (glfwGetKey(glWindow.window, GLFW_KEY_S) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.down) == GLFW_PRESS)
         {
             if (!goDown1)
             {
@@ -501,7 +508,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
             goDown1 = false;
         }
 
-        if (glfwGetKey(glWindow.window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.up) == GLFW_PRESS)
         {
             if (!goUp1)
             {
@@ -556,7 +563,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         isBackButtonPressed = false;
     }
 
-    if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
+    if (glfwGetKey(glWindow.window, Settings::p1Controls.punch) == GLFW_PRESS)
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
@@ -578,7 +585,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         p1KeyPressed = false; // Reset when the key is released
     }
 
-    if (glfwGetKey(glWindow.window, GLFW_KEY_X) == GLFW_PRESS)
+    if (glfwGetKey(glWindow.window, Settings::p2Controls.punch) == GLFW_PRESS)
     {
         if (!p2KeyPressed) // Check if the key was not pressed before
         {
@@ -602,7 +609,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
 
     if (!p1Ready)
     {
-        if (glfwGetKey(glWindow.window, GLFW_KEY_S) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.down) == GLFW_PRESS)
         {
             if (!goDown1)
             {
@@ -623,7 +630,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
             goDown1 = false;
         }
 
-        if (glfwGetKey(glWindow.window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.up) == GLFW_PRESS)
         {
             if (!goUp1)
             {
@@ -647,7 +654,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
 
     if (!p2Ready)
     {
-        if (glfwGetKey(glWindow.window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p2Controls.down) == GLFW_PRESS)
         {
             if (!goDown2)
             {
@@ -668,7 +675,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
             goDown2 = false;
         }
 
-        if (glfwGetKey(glWindow.window, GLFW_KEY_UP) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p2Controls.up) == GLFW_PRESS)
         {
             if (!goUp2)
             {
@@ -1179,7 +1186,7 @@ void Game::renderSettingsScreen(GlRender &renderer)
             renderer.renderText("WINDOW MODE", labelX, startY, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f));          // Grayed out
             renderer.renderText("RESOLUTION", labelX, startY + spacing, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f)); // Grayed out
             renderer.renderText("SHOW FPS COUNTER [F]", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-           // renderer.renderText("ENABLE BOT [B]", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+            // renderer.renderText("ENABLE BOT [B]", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
             renderer.renderText("ENABLE DEBUG MODE [D]", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
 
             // Update button positions
@@ -1250,8 +1257,8 @@ void Game::renderSettingsScreen(GlRender &renderer)
             // Render enabled buttons normally
             renderer.renderSimpleButton(windowButton3.x, windowButton3.y, windowButton3.width, windowButton3.height,
                                         true, wButton3Hovered, false, placeholderColor);
-           // renderer.renderSimpleButton(windowButton4.x, windowButton4.y, windowButton4.width, windowButton4.height,
-           //                             true, wButton4Hovered, false, placeholderColor);
+            // renderer.renderSimpleButton(windowButton4.x, windowButton4.y, windowButton4.width, windowButton4.height,
+            //                             true, wButton4Hovered, false, placeholderColor);
             renderer.renderSimpleButton(windowButton5.x, windowButton5.y, windowButton5.width, windowButton5.height,
                                         true, wButton5Hovered, false, placeholderColor);
 
@@ -1344,7 +1351,7 @@ void Game::renderSettingsScreen(GlRender &renderer)
                     {
                         Settings::audioSettings.enable_music = !Settings::audioSettings.enable_music;
                         Settings::saveSettings();
-                        
+
                         // Only update audio state immediately if we came from pause menu
                         if (previousState == GameState::PAUSED)
                         {
@@ -1778,10 +1785,10 @@ bool Game::handleHelpInput(GLFWwindow *window)
 void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
     this->worldSystem = &worldSystem;
-    
+
     // Clear all components first
     registry.clear_all_components();
-    
+
     // Reinitialize world system
     worldSystem.init(&renderer);
 
@@ -1912,13 +1919,22 @@ void Game::cleanupButtons()
     playerButton7 = {};
 }
 
+void Game::attemptPause()
+{
+    if (currentState == GameState::PLAYING || currentState == GameState::ROUND_START)
+    {
+        WorldSystem::stopAllSounds();
+        setState(GameState::PAUSED); // Use setState instead of directly modifying currentState
+    }
+}
+
 void Game::renderPauseButton(GlRender &renderer)
 {
     // Show pause button only during gameplay, and when not loading
     if ((currentState != GameState::PLAYING &&
          currentState != GameState::PAUSED &&
          currentState != GameState::ROUND_START) ||
-        isLoading)  // Add isLoading check here
+        isLoading) // Add isLoading check here
         return;
 
     GLFWwindow *window = glfwGetCurrentContext();
@@ -1937,11 +1953,7 @@ void Game::renderPauseButton(GlRender &renderer)
     static bool wasPressed = false;
     if (pausePressed && !wasPressed)
     {
-        if (currentState == GameState::PLAYING || currentState == GameState::ROUND_START)
-        {
-            WorldSystem::stopAllSounds();
-            setState(GameState::PAUSED); // Use setState instead of directly modifying currentState
-        }
+        attemptPause();
     }
     wasPressed = pausePressed;
 
@@ -2014,17 +2026,17 @@ void Game::renderPauseButton(GlRender &renderer)
             // Proper cleanup before going to menu
             WorldSystem::stopBackgroundMusic();
             WorldSystem::stopAllSounds();
-            
+
             // Clear all components first
             registry.clear_all_components();
-            
+
             // Reset game state
             resetScores();
             resetInterpVariables();
-            
+
             // Set state to INIT to ensure proper reinitialization
             setState(GameState::INIT);
-            
+
             // Reset timer
             extern int timer;
             timer = timer_length;
@@ -2036,16 +2048,16 @@ void Game::renderPauseButton(GlRender &renderer)
 
         // Render pause menu buttons
         renderer.renderButton(resumeButton.x, resumeButton.y,
-                            resumeButton.width, resumeButton.height,
-                            "RESUME", resumeHovered, resumePressed);
+                              resumeButton.width, resumeButton.height,
+                              "RESUME", resumeHovered, resumePressed);
 
         renderer.renderButton(menuButton.x, menuButton.y,
-                            menuButton.width, menuButton.height,
-                            "MAIN MENU", menuHovered, menuPressed);
+                              menuButton.width, menuButton.height,
+                              "MAIN MENU", menuHovered, menuPressed);
 
         renderer.renderButton(pauseSettingsButton.x, pauseSettingsButton.y,
-                            pauseSettingsButton.width, pauseSettingsButton.height,
-                            "SETTINGS", settingsHovered, settingsPressed);
+                              pauseSettingsButton.width, pauseSettingsButton.height,
+                              "SETTINGS", settingsHovered, settingsPressed);
 
         wasResumePressed = resumePressed;
         wasMenuPressed = menuPressed;

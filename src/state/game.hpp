@@ -58,6 +58,7 @@ public:
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
     bool handleHelpInput(GLFWwindow *window);
+    void attemptPause();
 
     bool handleCharacterInput(GLFWwindow *window);
     void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);

@@ -35,6 +35,7 @@ public:
     GlRender();
     ~GlRender();
     void setGameInstance(Game *gameInstance) { game = gameInstance; }
+    
 
     void initialize();
     void render();
@@ -45,6 +46,7 @@ public:
     void shutdown();
 
     // helpers
+    Game* getGameInstance() { return game; }
     void handleTexturedRenders();
     void handleNotifications(float elapsed_ms);
     void handleStaticRenders();
