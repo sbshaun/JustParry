@@ -4,42 +4,62 @@
 #include <memory>
 #include <cstdlib>
 
-// Helper function to pick next action based on distance
-BotState pickNextAction(float distance)
+// Helper function to calculate utility for different actions
+float calculateUtility(BotState state, float distance, PlayerState currentState, float health, float opponentHealth)
 {
-    // Always prioritize getting into position
-    if (distance > TOO_FAR_DISTANCE)
+    float utility = 0.0f;
+
+    switch (state)
     {
-        return BotState::CHASE;
+    case BotState::CHASE:
+        utility = (distance > IDEAL_ATTACK_DISTANCE) ? 10.0f : -5.0f;
+        break;
+    case BotState::ATTACK:
+        utility = (distance <= IDEAL_ATTACK_DISTANCE) ? 20.0f : -10.0f;
+        break;
+    case BotState::RETREAT:
+        utility = (distance < TOO_CLOSE_DISTANCE) ? 10.0f : -5.0f;
+        break;
+    case BotState::IDLE:
+        utility = 5.0f;
+        break;
+    case BotState::PARRY:
+        utility = (currentState == PlayerState::ATTACKING) ? 15.0f : -5.0f;
+        break;
     }
-    else if (distance < TOO_CLOSE_DISTANCE)
+
+    if (health < opponentHealth)
     {
-        return BotState::RETREAT;
+        utility -= 5.0f;
     }
-    // When in ideal range, choose an action
     else
     {
-        int rng = rand() % 100;
-        if (rng < 50)
-        { // 50% chance to attack when in range (reduced from 60%)
-            return BotState::ATTACK;
-        }
-        else if (rng < 70)
-        { // 20% chance to adjust position
-            return (distance > IDEAL_ATTACK_DISTANCE) ? BotState::CHASE : BotState::RETREAT;
-        }
-        //else if (rng < 75)
-        //{ // 15% chance to jump
-        //    return BotState::JUMP;
-        //}
-        else
-        { // 30% chance to pause (increased from 10%)
-            return BotState::IDLE;
-        }
+        utility += 5.0f;
     }
+
+    return utility;
 }
 
-void Bot::pollBotRng(GlRender &renderer)
+// Helper function to pick next action based on utilities
+BotState pickNextAction(float distance, PlayerState currentState, float health, float opponentHealth)
+{
+    std::vector<std::pair<BotState, float>> actions = {
+        {BotState::CHASE, calculateUtility(BotState::CHASE, distance, currentState, health, opponentHealth)},
+        {BotState::ATTACK, calculateUtility(BotState::ATTACK, distance, currentState, health, opponentHealth)},
+        {BotState::RETREAT, calculateUtility(BotState::RETREAT, distance, currentState, health, opponentHealth)},
+        {BotState::IDLE, calculateUtility(BotState::IDLE, distance, currentState, health, opponentHealth)},
+        {BotState::PARRY, calculateUtility(BotState::PARRY, distance, currentState, health, opponentHealth)}};
+
+    // Sort actions based on utilities
+    std::sort(actions.begin(), actions.end(), [](const std::pair<BotState, float> &a, const std::pair<BotState, float> &b) {
+        return a.second > b.second;
+    });
+
+    // Return the action with the highest utility
+    return actions.front().first;
+}
+
+void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine)
 {
     Entity player2 = renderer.m_player2;
     Entity player1 = renderer.m_player1;
@@ -48,6 +68,8 @@ void Bot::pollBotRng(GlRender &renderer)
     Motion &player2Motion = registry.motions.get(player2);
     Motion &player1Motion = registry.motions.get(player1);
     PlayerCurrentState &state = registry.playerCurrentStates.get(player2);
+    Health &player2Health = registry.healths.get(player2);
+    Health &player1Health = registry.healths.get(player1);
 
     // Reset inputs
     player2Input = PlayerInput();
@@ -67,25 +89,25 @@ void Bot::pollBotRng(GlRender &renderer)
 
     // Pick new action if counter expires or distance changes significantly
     if (actionCounter <= 0 ||
-        (currentState == BotState::ATTACK && distance > IDEAL_ATTACK_DISTANCE * 1.2f))
+        (currentState == BotState::ATTACK && distance > IDEAL_ATTACK_DISTANCE * 1.1f))
     {
-        currentState = pickNextAction(distance);
+        currentState = pickNextAction(distance, state.currentState, player2Health.currentHealth, player1Health.currentHealth);
 
-        // Set appropriate duration for each action (increased durations)
+        // Set appropriate duration for each action
         switch (currentState)
         {
         case BotState::ATTACK:
-            actionCounter = 45; // Increased from 20
+            actionCounter = 20;
             break;
         case BotState::CHASE:
         case BotState::RETREAT:
-            actionCounter = 60; // Increased from 30
-            break;
-        case BotState::JUMP:
-            actionCounter = 50; // Increased from 40
+            actionCounter = 40;
             break;
         case BotState::IDLE:
-            actionCounter = 35; // Increased from 15
+            actionCounter = 15;
+            break;
+        case BotState::PARRY:
+            actionCounter = 30;
             break;
         }
     }
@@ -94,75 +116,71 @@ void Bot::pollBotRng(GlRender &renderer)
     switch (currentState)
     {
     case BotState::CHASE:
-        // Move towards player
         player2Input.left = moveLeft;
         player2Input.right = !moveLeft;
-
-        // Maybe jump to close distance faster (reduced frequency)
-        if (!player2Motion.inAir && rand() % 45 == 0)
-        { // Increased from 30
-            player2Input.up = true;
-        }
         break;
 
     case BotState::ATTACK:
-        // Only attack if in good range
-        if (distance <= IDEAL_ATTACK_DISTANCE * 1.2f)
+        if (distance <= IDEAL_ATTACK_DISTANCE)
         {
-            if (rand() % 4 == 0)
-            { // Reduced attack frequency
+            if (rand() % 2 == 0)
+            {
                 player2Input.kick = true;
             }
-            else if (rand() % 3 == 0)
+            else
             {
                 player2Input.punch = true;
             }
         }
         else
         {
-            // If target moved out of range, go back to chasing
             currentState = BotState::CHASE;
         }
         break;
 
     case BotState::RETREAT:
-        // Move away from player
         player2Input.right = moveLeft;
         player2Input.left = !moveLeft;
-
-        // Maybe attack while retreating (reduced frequency)
-        if (rand() % 30 == 0)
-        { // Increased from 20
+        if (rand() % 15 == 0)
+        {
             player2Input.punch = true;
         }
         break;
 
-    //case BotState::JUMP:
-    //    if (!player2Motion.inAir)
-    //    {
-    //        player2Input.up = true;
-    //        // Attack during jump if in range (reduced frequency)
-    //        if (distance <= IDEAL_ATTACK_DISTANCE && rand() % 3 == 0)
-    //        {
-    //            player2Input.punch = (rand() % 2 == 0);
-    //            player2Input.kick = !player2Input.punch;
-    //        }
-    //    }
-    //    break;
-
     case BotState::IDLE:
-        // Longer idle periods
+        break;
+
+    case BotState::PARRY:
+        if (state.currentState == PlayerState::ATTACKING)
+        {
+            player2Input.parry = true;
+        }
         break;
     }
 
-    // Emergency chase if player gets too far away (reduced urgency)
-    if (distance > TOO_FAR_DISTANCE * 1.8f && // Increased from 1.5f
-        state.currentState != PlayerState::ATTACKING 
-        //&& state.currentState != PlayerState::JUMPING
-    )
+    // Emergency chase if player gets too far away
+    if (distance > TOO_FAR_DISTANCE && state.currentState != PlayerState::ATTACKING)
     {
         player2Input.left = moveLeft;
         player2Input.right = !moveLeft;
         currentState = BotState::CHASE;
     }
+
+    // Update state machine based on inputs
+    if (player2Input.left || player2Input.right)
+        stateMachine.transition(player2, PlayerState::WALKING);
+    if (player2Input.punch)
+        stateMachine.transition(player2, PlayerState::ATTACKING);
+    if (player2Input.kick)
+        stateMachine.transition(player2, PlayerState::KICKING);
+    if (player2Input.parry)
+        stateMachine.transition(player2, PlayerState::PARRYING);
+
+    // Update motion based on inputs
+    if (player2Input.left)
+        player2Motion.velocity.x = -MOVE_SPEED;
+    else if (player2Input.right)
+        player2Motion.velocity.x = MOVE_SPEED;
+    else
+        player2Motion.velocity.x = 0;
 }

@@ -8,6 +8,7 @@
 #include "../particle_system/particle_system.hpp"
 #include "../particle_system/blood_system.hpp"
 #include "../particle_system/smoke_system.hpp"
+#include "../bot.hpp"
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -223,4 +224,6 @@ private:
 	static Mix_Chunk *menu_select_sound;
 	static Mix_Chunk *menu_confirm_sound;
 	static Mix_Chunk *game_count_down_sound;
+
+	Bot botInstance; // Add bot instance
 };
