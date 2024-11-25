@@ -338,6 +338,10 @@ void KickingState::update(Entity entity, float elapsed_ms, StateMachine& stateMa
 	if (playerStateTimer.isAlive())
 	{
 		playerStateTimer.update(elapsed_ms);
+		// if a kick successfully hits the opponent, update twice as fast to reduce the recovery from a kick 
+		if (hitBox.hit) {
+			playerStateTimer.update(elapsed_ms);
+		}
 	}
 	else
 	{
