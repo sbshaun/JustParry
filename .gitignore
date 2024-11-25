@@ -8,3 +8,4 @@ external/project_path.hpp
 assets/saves/
 config/
 config/controls.txt
+assets/saves/arcadeLevelState.txt
