@@ -11,35 +11,35 @@ class WorldSystem;
 // Utility key definitions
 struct UtilityKeys
 {
-    static constexpr int DEBUG_TOGGLE = GLFW_KEY_H; // Toggle debug visualization
-    static constexpr int FPS_TOGGLE = GLFW_KEY_F;   // Toggle FPS display
+    // static constexpr int DEBUG_TOGGLE = GLFW_KEY_H; // Toggle debug visualization
+    static constexpr int FPS_TOGGLE = GLFW_KEY_F; // Toggle FPS display
     // static constexpr int EXIT = SDLK_ESCAPE;        // Exit game
-    static constexpr int PAUSE = GLFW_KEY_ESCAPE;   // Toggle FPS display
-    static constexpr int CONFIRM = GLFW_KEY_ENTER;  // Confirm/Restart
+    static constexpr int PAUSE = GLFW_KEY_ESCAPE;  // Toggle FPS display
+    static constexpr int CONFIRM = GLFW_KEY_ENTER; // Confirm/Restart
 };
 
 // Utility input handling functions
-inline void handleUtilityInputs(GlRender &renderer, bool &showFPS, 
+inline void handleUtilityInputs(GlRender &renderer, bool &showFPS,
                                 bool &fKeyPressed, bool &bKeyPressed, bool &hKeyPressed,
                                 GLWindow &glWindow, FPSCounter &fpsCounter, bool &shouldExit,
                                 WorldSystem &worldSystem)
 {
     // Debug mode toggle
-    if (isKeyPressed(UtilityKeys::DEBUG_TOGGLE))
-    {
-        if (!hKeyPressed)
-        {
-            Settings::windowSettings.enable_debug = !Settings::windowSettings.enable_debug;
-            renderer.debugMode = Settings::windowSettings.enable_debug;
-            Settings::saveSettings();
-            hKeyPressed = true;
-            std::cout << "Debug mode " << (renderer.debugMode ? "enabled" : "disabled") << std::endl;
-        }
-    }
-    else
-    {
-        hKeyPressed = false;
-    }
+    // if (isKeyPressed(UtilityKeys::DEBUG_TOGGLE))
+    // {
+    //     if (!hKeyPressed)
+    //     {
+    //         Settings::windowSettings.enable_debug = !Settings::windowSettings.enable_debug;
+    //         renderer.debugMode = Settings::windowSettings.enable_debug;
+    //         Settings::saveSettings();
+    //         hKeyPressed = true;
+    //         std::cout << "Debug mode " << (renderer.debugMode ? "enabled" : "disabled") << std::endl;
+    //     }
+    // }
+    // else
+    // {
+    //     hKeyPressed = false;
+    // }
 
     // FPS display toggle
     if (isKeyPressed(UtilityKeys::FPS_TOGGLE))
@@ -59,8 +59,9 @@ inline void handleUtilityInputs(GlRender &renderer, bool &showFPS,
     }
     fpsCounter.update(renderer, Settings::windowSettings.show_fps);
 
-    if(isKeyPressed(UtilityKeys::PAUSE)){
-        Game* game = renderer.getGameInstance();
+    if (isKeyPressed(UtilityKeys::PAUSE))
+    {
+        Game *game = renderer.getGameInstance();
         game->attemptPause();
     }
     // Bot mode toggle

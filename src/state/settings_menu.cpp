@@ -211,7 +211,7 @@ namespace SettingsMenu
                                     true, wButton5Hovered, false, placeholderColor);
 
         // Render button text (grayed out for disabled buttons)
-        renderer.renderText(windowButton1.text, windowButton1.x + 40.f, windowButton1.y + 30.f, 0.25f, grayText);
+        renderer.renderText(windowButton1.text, windowButton1.x + 45.f, windowButton1.y + 30.f, 0.25f, grayText);
         renderer.renderText(windowButton2.text, windowButton2.x + 40.f, windowButton2.y + 30.f, 0.25f, grayText);
         if (strcmp(windowButton3.text, "ON") == 0)
         {
