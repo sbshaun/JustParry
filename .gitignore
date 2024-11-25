@@ -7,3 +7,4 @@ external/project_path.hpp
 .DS_Store
 assets/saves/
 config/
+config/controls.txt
