@@ -1,6 +1,6 @@
 #pragma once
 #include <chrono>
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 
 class FPSCounter
 {

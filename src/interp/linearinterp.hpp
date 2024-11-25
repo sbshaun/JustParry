@@ -1,5 +1,5 @@
 #pragma once
-#include "renderer.hpp"
+#include "../graphics/renderer.hpp"
 
 void interp_moveEntitesToScreen(GlRender &renderer);
 void resetInterpVariables();

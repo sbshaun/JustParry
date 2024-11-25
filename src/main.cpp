@@ -1,14 +1,14 @@
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
-#include "bot.hpp"
+#include "bot/bot.hpp"
 #include "window.hpp"
-#include "renderer.hpp"
+#include "graphics/renderer.hpp"
 #include <assert.h>
 #include "constants.hpp"
 #include "physics/physics_system.hpp"
 #include "ecs/ecs_registry.hpp"
 #include "world/world_system.hpp"
-#include "linearinterp.hpp"
+#include "interp/linearinterp.hpp"
 #include "state/game.hpp"
 #include "fps/fps.hpp"
 #include "input_system/input_handler.hpp"
