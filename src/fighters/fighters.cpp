@@ -1,6 +1,6 @@
 #include "../constants.hpp"
 #include "../common.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "fighters.hpp"
 
 FighterConfig &setUpBirdmanConfig()

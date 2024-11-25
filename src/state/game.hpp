@@ -1,6 +1,6 @@
 #pragma once
 #include "../constants.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../common.hpp"
 #include "stb_image/stb_image.h"
@@ -12,7 +12,7 @@
 #include "../world/world_init.hpp"
 #include <string>
 #include <GLFW/glfw3.h>
-#include "../settings.hpp"
+#include "../settings/settings.hpp"
 
 enum class GameState
 {

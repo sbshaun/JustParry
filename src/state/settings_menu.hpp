@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include "game.hpp"
-#include "../settings.hpp"
-#include "../renderer.hpp"
+#include "../settings/settings.hpp"
+#include "../graphics/renderer.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>

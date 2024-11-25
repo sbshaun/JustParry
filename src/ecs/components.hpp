@@ -1,7 +1,7 @@
 #pragma once
 #include "../common.hpp"
 #include "../mesh.hpp"
-#include "../shader.hpp"
+#include "../graphics/shader.hpp"
 #include "../constants.hpp"
 #include "ecs.hpp"
 #include "../fighters/fighters.hpp"

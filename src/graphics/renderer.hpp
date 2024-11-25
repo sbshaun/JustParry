@@ -1,13 +1,13 @@
 #pragma once
 #include "../external/project_path.hpp"
 #include "shader.hpp"
-#include "mesh.hpp"
-#include "common.hpp"
-#include "ecs/ecs.hpp"
-#include "ecs/ecs_registry.hpp"
-#include "ecs/components.hpp"
-#include "mesh.hpp"
-#include "window.hpp"
+#include "../mesh.hpp"
+#include "../common.hpp"
+#include "../ecs/ecs.hpp"
+#include "../ecs/ecs_registry.hpp"
+#include "../ecs/components.hpp"
+#include "../mesh.hpp"
+#include "../window.hpp"
 #include <array>
 #include <chrono>
 

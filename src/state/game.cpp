@@ -1,6 +1,6 @@
 #include "game.hpp"
 #include "../input_system/input_mapping.hpp"
-#include "../linearinterp.hpp"
+#include "../interp/linearinterp.hpp"
 #include "settings_menu.hpp"
 
 Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0f),

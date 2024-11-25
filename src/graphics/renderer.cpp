@@ -1,6 +1,6 @@
 #include "renderer.hpp"
-#include "common.hpp"
-#include "state/game.hpp"
+#include "../common.hpp"
+#include "../state/game.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 

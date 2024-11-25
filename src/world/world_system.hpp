@@ -1,10 +1,10 @@
 #pragma once
 #include "../common.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
-#include "../settings.hpp"
-#include "../default_config.hpp"
+#include "../settings/settings.hpp"
+#include "../settings/default_config.hpp"
 #include "../particle_system/particle_system.hpp"
 #include "../particle_system/blood_system.hpp"
 #include "../particle_system/smoke_system.hpp"
