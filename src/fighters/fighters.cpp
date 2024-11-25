@@ -79,6 +79,7 @@ void FighterManager::loadBirdTextures(GlRender &renderer)
     renderer.loadTexture(textures_path("bird_walk_f4.png"), birdConfig.m_bird_walk_f4_texture);
     renderer.loadTexture(textures_path("bird_stun_f1.png"), birdConfig.m_bird_stun_f1_texture);
     renderer.loadTexture(textures_path("bird_parry_f1.png"), birdConfig.m_bird_parry_f1_texture);
+    renderer.loadTexture(textures_path("bird_crouch_f3.png"), birdConfig.m_bird_crouch_f3_texture);
 };
 
 void FighterManager::deleteBirdTextures()
@@ -101,6 +102,7 @@ void FighterManager::deleteBirdTextures()
     glDeleteTextures(1, &birdConfig.m_bird_walk_f4_texture);
     glDeleteTextures(1, &birdConfig.m_bird_stun_f1_texture);
     glDeleteTextures(1, &birdConfig.m_bird_parry_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_crouch_f3_texture);
 }
 
 // reigster fighter configs to FighterManager

@@ -148,6 +148,15 @@ bool WalkingState::canTransitionTo(Entity entity, PlayerState newState)
 void AttackingState::enter(Entity entity, StateMachine& stateMachine)
 {
 	Player& player = registry.players.get(entity);
+	PlayerInput &input = registry.playerInputs.get(entity);
+	if (input.down) {
+		// if down is pressed, transition to kicking instead. 
+		StateTimer &playerStateTimer = registry.stateTimers.get(entity);
+        playerStateTimer.reset(0);
+		stateMachine.transition(entity, PlayerState::KICKING);
+		return;
+	}
+
 	std::cout << "Player " << player.id << " attacks!" << std::endl;
 
 	// add attack animation
@@ -372,7 +381,7 @@ void CrouchingState::enter(Entity entity, StateMachine& stateMachine)
 	// TODO: change animation 
 	Animation& animation = registry.animations.get(entity);
 	animation.currentFrame = 0;
-	animation.currentTexture = fighterConfig.m_bird_punch_f1_texture;
+	animation.currentTexture = fighterConfig.m_bird_crouch_f3_texture;
 
 	// print out hurtbox stats 
 	HurtBox& hurtBox = registry.hurtBoxes.get(entity);
