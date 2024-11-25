@@ -9,6 +9,7 @@ Mix_Music *WorldSystem::background_music = nullptr;
 Mix_Chunk *WorldSystem::punch_sound = nullptr;
 Mix_Chunk *WorldSystem::walk_sound = nullptr;
 Mix_Chunk *WorldSystem::parry_sound = nullptr;
+Mix_Chunk *WorldSystem::crouch_sound = nullptr;
 Mix_Chunk *WorldSystem::kick_sound = nullptr;
 Mix_Chunk *WorldSystem::menu_select_sound = nullptr;
 Mix_Chunk *WorldSystem::menu_confirm_sound = nullptr;
@@ -101,6 +102,11 @@ WorldSystem::~WorldSystem()
         Mix_FreeChunk(parry_sound);
         parry_sound = nullptr;
     }
+    if (crouch_sound != nullptr)
+    {
+        Mix_FreeChunk(crouch_sound);
+        crouch_sound = nullptr;
+    }
     if (kick_sound != nullptr)
     {
         Mix_FreeChunk(kick_sound);
@@ -147,19 +153,21 @@ void WorldSystem::init(GlRender *renderer)
     punch_sound = Mix_LoadWAV(audio_path("punch_sound.wav").c_str());
     walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
     parry_sound = Mix_LoadWAV(audio_path("parry_sound.wav").c_str());
+    crouch_sound = Mix_LoadWAV(audio_path("crouch_sound.wav").c_str());
     kick_sound = Mix_LoadWAV(audio_path("kick_sound.wav").c_str());
     menu_select_sound = Mix_LoadWAV(audio_path("menu_select_sound.wav").c_str());
     menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
     game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
-    if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
+    if (parry_sound == nullptr || background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
         parry_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
                 audio_path("background_music.wav").c_str(),
                 audio_path("punch_sound.wav").c_str(),
                 audio_path("walk_sound.wav").c_str(),
+                audio_path("crouch_sound.wav").c_str(),
                 audio_path("parry_sound.wav").c_str(),
                 audio_path("kick_sound.wav").c_str(),
                 audio_path("menu_select_sound.wav").c_str(),
@@ -261,7 +269,7 @@ void WorldSystem::initInputHandlers()
     player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
-    player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
+    // player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
     // Player 2 controls using Settings
@@ -271,7 +279,7 @@ void WorldSystem::initInputHandlers()
     player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
-    player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
+    // player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
     // Initialize input handlers with the mappings

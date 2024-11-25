@@ -383,8 +383,7 @@ void CrouchingState::enter(Entity entity, StateMachine& stateMachine)
 	animation.currentFrame = 0;
 	animation.currentTexture = fighterConfig.m_bird_crouch_f3_texture;
 
-	// print out hurtbox stats 
-	HurtBox& hurtBox = registry.hurtBoxes.get(entity);
+	WorldSystem::playCrouchSound();
 }
 
 void CrouchingState::exit(Entity entity, StateMachine& stateMachine)
@@ -412,10 +411,12 @@ void CrouchingState::update(Entity entity, float elapsed_ms, StateMachine& state
 	HurtBox& hurtBox = registry.hurtBoxes.get(entity);
 	Fighters fighter = registry.players.get(entity).current_char;
 	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
-	if (hurtBox.height > fighterConfig.NDC_HEIGHT / 6.0f)
+	if (hurtBox.height > fighterConfig.NDC_HEIGHT / 8.0f)
 	{
-		hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * 2;
-		hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * 2;
+		// times a coeffficient to make the hurt box shrink faster 
+		float coefficient = 6;
+		hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * coefficient; 
+		hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * coefficient;
 	}
 
 	// when state timer is expired, transition to idle
@@ -438,14 +439,21 @@ bool CrouchingState::canTransitionTo(Entity entity, PlayerState newState)
 {
 	// you can transition to any state from crouching, including attacking. 
 	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
-	// if (playerStateTimer.isAlive())
-	//     return false; // still in current state
+	if (newState ==  PlayerState::ATTACKING ||
+		newState == PlayerState::KICKING) {
+		playerStateTimer.reset(0);
+		return true;
+	}
+	if (newState == PlayerState::STUNNED)
+		return true; 
 	if (newState == PlayerState::IDLE) {
 		// if crouch key is pressed, don't transition to idle 
 		PlayerInput& input = registry.playerInputs.get(entity);
 		return !input.down && !playerStateTimer.isAlive();
 	}
-
+	if (playerStateTimer.elapsedTime < (playerStateTimer.duration))
+		// at least half of crouch time must have passed. 
+	    return false; // still in current state
 	return newState != PlayerState::CROUCHING;
 	// && newState != PlayerState::JUMPING;
 }

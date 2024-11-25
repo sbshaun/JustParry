@@ -10,8 +10,8 @@ namespace DefaultConfig
         GLFW_KEY_A, // Left
         GLFW_KEY_D, // Right
         GLFW_KEY_R, // Punch
-        GLFW_KEY_T, // Kick
-        GLFW_KEY_G  // Parry
+        GLFW_KEY_G, // Kick (deprecated, not bound to actions anymore) 
+        GLFW_KEY_T  // Parry
     };
 
     // Player 2 default controls (Arrow keys + .,M)
@@ -20,7 +20,7 @@ namespace DefaultConfig
         GLFW_KEY_LEFT,   // Left
         GLFW_KEY_RIGHT,  // Right
         GLFW_KEY_COMMA,  // Punch
-        GLFW_KEY_PERIOD, // Kick
+        GLFW_KEY_PERIOD, // Kick (deprecated, not bound to actions anymore) 
         GLFW_KEY_M       // Parry
     };
 
