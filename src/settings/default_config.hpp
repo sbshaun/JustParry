@@ -37,6 +37,6 @@ namespace DefaultConfig
         true, // enable_sound_effects
         true, // enable_music
         1.0f, // overall_volume (100%)
-        0.75f // music_volume (75%)
+        0.1f // music_volume (75%)
     };
 }
