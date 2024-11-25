@@ -87,7 +87,7 @@ int main()
     assert(gl3w_init() == 0);
     // assert(is_fine == 0);
 
-    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1);              // Enable vsync
     if (SDL_Init(SDL_INIT_AUDIO) < 0) // Init SDL joystick
     {
         std::cerr << "Failed to init SDL joy handler" << std::endl;
@@ -189,6 +189,12 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+            // Handle ESC = close game when in menu
+            if (isKeyPressed(GLFW_KEY_ESCAPE))
+            {
+                shouldExit = true;
+            }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_MENU:
@@ -203,6 +209,7 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_PREFIGHT:
@@ -243,7 +250,7 @@ int main()
             break;
 
         case GameState::SETTINGS:
-            WorldSystem::stopAllSounds(); // Stop sounds when entering settings
+            WorldSystem::stopAllSounds();      // Stop sounds when entering settings
             game.renderSettingsMenu(renderer); // render settings overlay
 
             // handle user input
@@ -258,6 +265,16 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
+            // Handle ESC = go back to pause when in playing
+            if (isKeyPressed(GLFW_KEY_ESCAPE))
+            {
+                if (game.getPreviousState() == GameState::PAUSED)
+                {
+                    game.setState(GameState::PAUSED);
+                }
+            }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::SETTINGS_EXIT:
@@ -339,8 +356,8 @@ int main()
                 }
             }
         }
-        glfwSwapInterval(0); // disable vsync
-        break;
+            glfwSwapInterval(0); // disable vsync
+            break;
 
         case GameState::PAUSED:
             WorldSystem::stopAllSounds(); // Stop sounds when paused
@@ -462,14 +479,14 @@ int main()
                 renderer.startExitAnimation();
             }
 
-            if (!renderer.isExitAnimationStarted() &&
-                isKeyPressed(GLFW_KEY_BACKSPACE))
-            {
-                roundEnded = false;
-                WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
-                game.resetGame(renderer, worldSystem);
-                game.setState(GameState::MENU);
-            }
+            // if (!renderer.isExitAnimationStarted() &&
+            //     isKeyPressed(GLFW_KEY_BACKSPACE))
+            // {
+            //     roundEnded = false;
+            //     WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
+            //     game.resetGame(renderer, worldSystem);
+            //     game.setState(GameState::MENU);
+            // }
 
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
