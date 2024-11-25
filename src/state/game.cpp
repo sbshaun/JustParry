@@ -703,7 +703,7 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
             {
                 WorldSystem::playGameCountDownSound();
-                game.setState(GameState::ROUND_START);
+                game.setState(GameState::ARCADE_STORY);
             }
         }
     }
@@ -906,6 +906,11 @@ void Game::renderArcadeMenu(GlRender &renderer)
     }
 
     glDepthFunc(GL_LESS);
+}
+
+void Game::renderArcadeStory(GlRender& renderer)
+{
+
 }
 
 void Game::renderHelpScreen(GlRender &renderer)
@@ -1129,6 +1134,12 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
     }
 
     return false;
+}
+
+bool Game::handleArcadeStoryInput(GLFWwindow* window) 
+{
+    // TODO: handle the story inputs
+    return true;
 }
 
 void Game::handleBackButton()

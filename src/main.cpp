@@ -227,13 +227,19 @@ int main()
             }
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_WIN:
-            // Win/Loss screen for winning/losing in arcade mode
+        case GameState::ARCADE_STORY:
+            game.renderArcadeStory(renderer);
+            if (game.handleArcadeStoryInput(glWindow.window))
+            {
+                game.setState(GameState::PLAYING);
+            }
+            if (Settings::windowSettings.show_fps)
+            {
+                fpsCounter.update(renderer, false);
+                renderer.renderFPS(fpsCounter.getFPS(), true);
+            }
 
-            break;
-        case GameState::ARCADE_LOSE:
-            // Win/Loss screen for winning/losing in arcade mode
-
+            glWindow.windowSwapBuffers();
             break;
         case GameState::HELP:
             game.renderHelpScreen(renderer);

@@ -23,6 +23,7 @@ enum class GameState
     HELP,
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
+    ARCADE_STORY,
     ARCADE_WIN,
     ARCADE_LOSE,
     SETTINGS,
@@ -56,9 +57,11 @@ public:
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
     void renderArcadeMenu(GlRender &renderer);
+    void renderArcadeStory(GlRender& renderer);
     bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
     void handleArcadeButton();
     bool handleArcadeMenuInput(GLFWwindow *window);
+    bool handleArcadeStoryInput(GLFWwindow* window);
     void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
