@@ -190,6 +190,7 @@ void AttackingState::exit(Entity entity, StateMachine& stateMachine)
 	HitBox& playerHitBox = registry.hitBoxes.get(entity);
 	playerHitBox.active = false;
 	playerHitBox.hit = false;
+	playerHitBox.width = 0;
 
 	Animation& animation = registry.animations.get(entity);
 	animation.playedOnce = false;

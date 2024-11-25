@@ -742,6 +742,15 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
+        // e.g. when a player starts a punch and being it before punch takes effect 
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        StateTimer &playerStateTimer = registry.stateTimers.get(player2);
+        playerStateTimer.reset(0);
+        PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
+        player2StateMachine->transition(player2, PlayerState::IDLE);
         player2StateMachine->transition(player2, PlayerState::STUNNED);
         createNotification(500.f, true, renderer->m_notif_hit);
     }
@@ -768,6 +777,16 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
+        // same as above: 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
+        // e.g. when a player starts a punch and being it before punch takes effect 
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        StateTimer &playerStateTimer = registry.stateTimers.get(player1);
+        playerStateTimer.reset(0);
+        PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
+        player1StateMachine->transition(player1, PlayerState::IDLE);
         player1StateMachine->transition(player1, PlayerState::STUNNED);
         createNotification(500.f, false, renderer->m_notif_hit);
     }
