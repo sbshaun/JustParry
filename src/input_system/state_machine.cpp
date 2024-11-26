@@ -368,94 +368,95 @@ bool KickingState::canTransitionTo(Entity entity, PlayerState newState)
 
 void CrouchingState::enter(Entity entity, StateMachine& stateMachine)
 {
-	std::cout << "Player crouches!" << std::endl;
+	// std::cout << "Player crouches!" << std::endl;
 
-	// register timer 
-	PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
-	playerState.currentState = PlayerState::CROUCHING;
-	Fighters fighter = registry.players.get(entity).current_char;
-	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
-	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
-	playerStateTimer.reset(fighterConfig.CROUCH_TIMER);
+	// // register timer 
+	// PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+	// playerState.currentState = PlayerState::CROUCHING;
+	// Fighters fighter = registry.players.get(entity).current_char;
+	// const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+	// StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+	// playerStateTimer.reset(fighterConfig.CROUCH_TIMER);
 
-	// TODO: change animation 
-	Animation& animation = registry.animations.get(entity);
-	animation.currentFrame = 0;
-	animation.currentTexture = fighterConfig.m_bird_crouch_f3_texture;
+	// // TODO: change animation 
+	// Animation& animation = registry.animations.get(entity);
+	// animation.currentFrame = 0;
+	// animation.currentTexture = fighterConfig.m_bird_crouch_f3_texture;
 
-	WorldSystem::playCrouchSound();
+	// WorldSystem::playCrouchSound();
 }
 
 void CrouchingState::exit(Entity entity, StateMachine& stateMachine)
 {
-	std::cout << "Player exiting Crouching State" << std::endl;
+	// std::cout << "Player exiting Crouching State" << std::endl;
 
 	// make sure the state timer is not alive 
-	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
-	playerStateTimer.reset(0);
+	// StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+	// playerStateTimer.reset(0);
 
-	PlayerState& playerState = registry.playerCurrentStates.get(entity).currentState;
-	playerState = PlayerState::IDLE;
+	// PlayerState& playerState = registry.playerCurrentStates.get(entity).currentState;
+	// playerState = PlayerState::IDLE;
 
-	// recover player's hurtbox to normal size 
-	HurtBox& hurtBox = registry.hurtBoxes.get(entity);
-	Fighters fighter = registry.players.get(entity).current_char;
-	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
-	hurtBox.height = fighterConfig.NDC_HEIGHT / 2.0f;
-	hurtBox.yOffset = 0;
+	// // recover player's hurtbox to normal size 
+	// HurtBox& hurtBox = registry.hurtBoxes.get(entity);
+	// Fighters fighter = registry.players.get(entity).current_char;
+	// const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+	// hurtBox.height = fighterConfig.NDC_HEIGHT / 2.0f;
+	// hurtBox.yOffset = 0;
 }
 
 void CrouchingState::update(Entity entity, float elapsed_ms, StateMachine& stateMachine)
 {
-	// shrink hurtbox height to 1/3, same as kicking 
-	HurtBox& hurtBox = registry.hurtBoxes.get(entity);
-	Fighters fighter = registry.players.get(entity).current_char;
-	const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
-	if (hurtBox.height > fighterConfig.NDC_HEIGHT / 8.0f)
-	{
-		// times a coeffficient to make the hurt box shrink faster 
-		float coefficient = 6;
-		hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * coefficient; 
-		hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * coefficient;
-	}
+	// // shrink hurtbox height to 1/3, same as kicking 
+	// HurtBox& hurtBox = registry.hurtBoxes.get(entity);
+	// Fighters fighter = registry.players.get(entity).current_char;
+	// const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+	// if (hurtBox.height > fighterConfig.NDC_HEIGHT / 8.0f)
+	// {
+	// 	// times a coeffficient to make the hurt box shrink faster 
+	// 	float coefficient = 6;
+	// 	hurtBox.yOffset -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * coefficient; 
+	// 	hurtBox.height -= fighterConfig.NDC_HEIGHT / 6.0f / (fighterConfig.KICK_HITBOX_DURATION / 4) * elapsed_ms * coefficient;
+	// }
 
-	// when state timer is expired, transition to idle
-	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
-	if (playerStateTimer.isAlive())
-	{
-		playerStateTimer.update(elapsed_ms);
-	}
-	else
-	{
-		PlayerInput& input = registry.playerInputs.get(entity);
-		// check if crouch key is still held 
-		if (!input.down) {
-			stateMachine.transition(entity, PlayerState::IDLE);
-		}
-	}
+	// // when state timer is expired, transition to idle
+	// StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+	// if (playerStateTimer.isAlive())
+	// {
+	// 	playerStateTimer.update(elapsed_ms);
+	// }
+	// else
+	// {
+	// 	PlayerInput& input = registry.playerInputs.get(entity);
+	// 	// check if crouch key is still held 
+	// 	if (!input.down) {
+	// 		stateMachine.transition(entity, PlayerState::IDLE);
+	// 	}
+	// }
 }
 
 bool CrouchingState::canTransitionTo(Entity entity, PlayerState newState)
 {
-	// you can transition to any state from crouching, including attacking. 
-	StateTimer& playerStateTimer = registry.stateTimers.get(entity);
-	if (newState ==  PlayerState::ATTACKING ||
-		newState == PlayerState::KICKING) {
-		playerStateTimer.reset(0);
-		return true;
-	}
-	if (newState == PlayerState::STUNNED)
-		return true; 
-	if (newState == PlayerState::IDLE) {
-		// if crouch key is pressed, don't transition to idle 
-		PlayerInput& input = registry.playerInputs.get(entity);
-		return !input.down && !playerStateTimer.isAlive();
-	}
-	if (playerStateTimer.elapsedTime < (playerStateTimer.duration))
-		// at least half of crouch time must have passed. 
-	    return false; // still in current state
-	return newState != PlayerState::CROUCHING;
-	// && newState != PlayerState::JUMPING;
+	return true;
+	// // you can transition to any state from crouching, including attacking. 
+	// StateTimer& playerStateTimer = registry.stateTimers.get(entity);
+	// if (newState ==  PlayerState::ATTACKING ||
+	// 	newState == PlayerState::KICKING) {
+	// 	playerStateTimer.reset(0);
+	// 	return true;
+	// }
+	// if (newState == PlayerState::STUNNED)
+	// 	return true; 
+	// if (newState == PlayerState::IDLE) {
+	// 	// if crouch key is pressed, don't transition to idle 
+	// 	PlayerInput& input = registry.playerInputs.get(entity);
+	// 	return !input.down && !playerStateTimer.isAlive();
+	// }
+	// if (playerStateTimer.elapsedTime < (playerStateTimer.duration))
+	// 	// at least half of crouch time must have passed. 
+	//     return false; // still in current state
+	// return newState != PlayerState::CROUCHING;
+	// // && newState != PlayerState::JUMPING;
 }
 
 void ParryingState::enter(Entity entity, StateMachine& stateMachine)
