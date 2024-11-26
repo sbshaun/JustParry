@@ -18,13 +18,13 @@ float calculateUtility(BotState state, float distance, PlayerState currentState,
         utility = (distance <= IDEAL_ATTACK_DISTANCE) ? 20.0f : -10.0f;
         break;
     case BotState::RETREAT:
-        utility = (distance < TOO_CLOSE_DISTANCE) ? 10.0f : -5.0f;
+        utility = (distance < TOO_CLOSE_DISTANCE) ? 21.0f : -5.0f;
         break;
     case BotState::IDLE:
         utility = 5.0f;
         break;
     case BotState::PARRY:
-        utility = (currentState == PlayerState::ATTACKING) ? 15.0f : -5.0f;
+        utility = (currentState == PlayerState::ATTACKING) ? 25.0f : -5.0f; // Increased utility for parrying
         break;
     }
 
@@ -55,6 +55,15 @@ BotState pickNextAction(float distance, PlayerState currentState, float health, 
         return a.second > b.second;
     });
 
+    // Add randomness to the decision-making process
+    //if (rand() % 100 < 20) // 20% chance to pick a different action
+    //{
+    //    return actions[rand() % actions.size()].first;
+    //}
+    if (actions.front().first == BotState::PARRY) {
+		std::cout << "Bot decided to Parry" << std::endl;
+    }
+
     // Return the action with the highest utility
     return actions.front().first;
 }
@@ -68,6 +77,7 @@ void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine)
     Motion &player2Motion = registry.motions.get(player2);
     Motion &player1Motion = registry.motions.get(player1);
     PlayerCurrentState &state = registry.playerCurrentStates.get(player2);
+	PlayerCurrentState& player1State = registry.playerCurrentStates.get(player1);
     Health &player2Health = registry.healths.get(player2);
     Health &player1Health = registry.healths.get(player1);
 
@@ -87,27 +97,26 @@ void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine)
     // Decrement action counter
     actionCounter--;
 
-    // Pick new action if counter expires or distance changes significantly
-    if (actionCounter <= 0 ||
-        (currentState == BotState::ATTACK && distance > IDEAL_ATTACK_DISTANCE * 1.1f))
+    // Pick new action if counter expires
+    if (actionCounter <= 0)
     {
-        currentState = pickNextAction(distance, state.currentState, player2Health.currentHealth, player1Health.currentHealth);
+        currentState = pickNextAction(distance, player1State.currentState, player2Health.currentHealth, player1Health.currentHealth);
 
         // Set appropriate duration for each action
         switch (currentState)
         {
         case BotState::ATTACK:
-            actionCounter = 20;
+            actionCounter = 50;
             break;
         case BotState::CHASE:
         case BotState::RETREAT:
-            actionCounter = 40;
+            actionCounter = 70;
             break;
         case BotState::IDLE:
-            actionCounter = 15;
+            actionCounter = 45;
             break;
         case BotState::PARRY:
-            actionCounter = 30;
+            actionCounter = 40; // Reduced duration for quicker parry reaction
             break;
         }
     }
@@ -141,20 +150,13 @@ void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine)
     case BotState::RETREAT:
         player2Input.right = moveLeft;
         player2Input.left = !moveLeft;
-        if (rand() % 15 == 0)
-        {
-            player2Input.punch = true;
-        }
         break;
 
     case BotState::IDLE:
         break;
 
     case BotState::PARRY:
-        if (state.currentState == PlayerState::ATTACKING)
-        {
-            player2Input.parry = true;
-        }
+        player2Input.parry = true;
         break;
     }
 

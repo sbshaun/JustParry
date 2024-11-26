@@ -13,7 +13,7 @@ enum class BotState
     ATTACK,  // Attack when in range
     RETREAT, // Back off if too close
     IDLE,    // Brief pauses between actions
-    PARRY
+    PARRY,   // Parry incoming attacks
 };
 
 class Bot
