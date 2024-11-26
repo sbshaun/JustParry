@@ -910,22 +910,16 @@ void Game::renderArcadeMenu(GlRender &renderer)
 
 void Game::renderHelpScreen(GlRender &renderer)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // First render the full background (darkened)
-    renderer.renderTexturedQuadScaled(
-        renderer.m_menuTexture,
-        0, 0,
-        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-        0.3f // Darkness factor
-    );
 
     // Calculate dimensions for the help screen image
-    float helpBoxWidth = 660.0f;
-    float helpBoxHeight = 500.0f;
-    float helpBoxX = (M_WINDOW_WIDTH_PX - helpBoxWidth) / 2.0f;
-    float helpBoxY = (M_WINDOW_HEIGHT_PX - helpBoxHeight) / 2.0f;
+    float helpBoxWidth = 300.0f;
+    float helpBoxHeight = 300.0f;
+    float helpBoxX = (M_WINDOW_WIDTH_PX + 350.f) / 2.0f;
+    float helpBoxY = (M_WINDOW_HEIGHT_PX) / 2.0f - 350.f;
 
+    glDisable(GL_BLEND);
     // Render the help screen image in the center
     renderer.renderTexturedQuadScaled(
         renderer.m_helpTexture,
@@ -933,13 +927,15 @@ void Game::renderHelpScreen(GlRender &renderer)
         helpBoxWidth, helpBoxHeight,
         1.0f);
 
+
     // Position and size the close button (make it square)
     closeButton = {
-        helpBoxX + helpBoxWidth - 75.0f, // 10px padding from right
-        helpBoxY + 15.0f,                // 10px padding from top
-        60.0f,                           // Square width
-        50.0f,                           // Square height
-        "X"};
+        30.f, // 10px padding from right
+        22.f,                // 10px padding from top
+        120.0f,                           // Square width
+        55.0f,                           // Square height
+        ""};
+
 
     // Get mouse position and check hover/press state
     GLFWwindow *window = glfwGetCurrentContext();
@@ -960,6 +956,64 @@ void Game::renderHelpScreen(GlRender &renderer)
         closeHovered, closePressed,
         glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
     );
+    renderer.renderText("EXIT", 55.f, 60.f, 0.35f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    //renderer.renderText("LEFT", 700.f, 220.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+    //renderer.renderText("RIGHT", 700.f, 320.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    Button previousButton = {
+        helpBoxX, // 10px padding from right
+        helpBoxY + 315.f,                // 10px padding from top
+        145.0f,                           // Square width
+        50.0f,                           // Square height
+        "BACK"};
+    Button nextButton = {
+        helpBoxX + 150.f, // 10px padding from right
+        helpBoxY + 315.f,                // 10px padding from top
+        145.0f,                           // Square width
+        50.0f,                           // Square height
+        "NEXT"};
+
+    bool previousHovered = mouseX >= previousButton.x &&
+                        mouseX <= previousButton.x + previousButton.width &&
+                        mouseY >= previousButton.y &&
+                        mouseY <= previousButton.y + previousButton.height;
+    bool previousPressed = previousHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    bool nextHovered = mouseX >= nextButton.x &&
+                        mouseX <= nextButton.x + nextButton.width &&
+                        mouseY >= nextButton.y &&
+                        mouseY <= nextButton.y + nextButton.height;
+    bool nextPressed = nextHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    
+    renderer.renderButton(
+        previousButton.x, previousButton.y,
+        previousButton.width, previousButton.height,
+        previousButton.text,
+        previousHovered, previousPressed,
+        glm::vec3(0.9f, 0.9f, 0.9f) // Dark red color
+    );
+
+    renderer.renderButton(
+        nextButton.x, nextButton.y,
+        nextButton.width, nextButton.height,
+        nextButton.text,
+        nextHovered, nextPressed,
+        glm::vec3(0.9f, 0.9f, 0.9f) // Dark red color
+    );
+
+    int count = 4;
+    if (count == 0)
+    {
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 850.f, 250.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 850.f, 275.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+    } else if (count == 1) {
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 850.f, 250.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.kick), 850.f, 275.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+    } else {
+        // renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 850.f, 275.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+    }
+
 }
 
 bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)

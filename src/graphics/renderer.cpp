@@ -537,7 +537,7 @@ void GlRender::loadTextures()
     // Load texture for player 1
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
     loadTexture(textures_path("arcade_menu.png"), m_arcadeMenuTexture);
-    loadTexture(textures_path("help-screen.png"), m_helpTexture);
+    loadTexture(textures_path("t1.png"), m_helpTexture);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
     loadTexture(textures_path("paused.png"), m_pauseMenuTexture);
     loadTexture(textures_path("bg1.png"), m_bg1Texture);
