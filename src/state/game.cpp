@@ -910,7 +910,48 @@ void Game::renderArcadeMenu(GlRender &renderer)
 
 void Game::renderArcadeStory(GlRender& renderer)
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Render background with full brightness
+    renderer.renderTexturedQuadScaled(
+        renderer.m_arcadeMenuTexture,
+        0, 0,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        1.0f // Full brightness for main menu
+    );
+
+    // LEVEL ONE 
+    // TODO: MAKE INTO A TUTORIAL LEVEL
+    if (currentLevel == 1) {
+        // Calculate dimensions for the help screen image
+        float storyBoxWidth = 800.0f;
+        float storyBoxHeight = 600.0f;
+        float storyBoxX = (M_WINDOW_WIDTH_PX - storyBoxWidth) / 2.0f;
+        float storyBoxY = (M_WINDOW_HEIGHT_PX - storyBoxHeight) / 2.0f;
+
+        // Render the help screen image in the center
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL TWO
+    if (currentLevel == 2) {
+
+    }
+    // LEVEL THREE
+    if (currentLevel == 3) {
+
+    }
+    // LEVEL FOUR
+    if (currentLevel == 4) {
+
+    }
+    // LEVEL FIVE
+    if (currentLevel == 5) {
+
+    }
 }
 
 void Game::renderHelpScreen(GlRender &renderer)
@@ -1096,9 +1137,6 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         mouseY >= arcadeLevelFiveButton.y &&
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
-    // reset the arcade level when going back to the menu
-    currentLevel = 0;
-
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverBack)
@@ -1107,28 +1145,37 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         }
         if (mouseOverLevelOne)
         {
-
             currentLevel = 1;
+            currentFrame = 1;
+            currentFinalFrame = 5;
             return true;
         }
         else if (mouseOverLevelTwo && levelCompleted >= 1)
         {
             currentLevel = 2;
+            currentFrame = 1;
+            currentFinalFrame = 6;
             return true;
         }
         else if (mouseOverLevelThree && levelCompleted >= 2)
         {
             currentLevel = 3;
+            currentFrame = 1;
+            currentFinalFrame = 7;
             return true;
         }
         else if (mouseOverLevelFour && levelCompleted >= 3)
         {
             currentLevel = 4;
+            currentFrame = 1;
+            currentFinalFrame = 8;
             return true;
         }
         else if (mouseOverLevelFive && levelCompleted >= 4)
         {
             currentLevel = 5;
+            currentFrame = 1;
+            currentFinalFrame = 9;
             return true;
         }
     }
@@ -1138,8 +1185,38 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
 
 bool Game::handleArcadeStoryInput(GLFWwindow* window) 
 {
-    // TODO: handle the story inputs
-    return true;
+    std::cout << currentFrame << std::endl;
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS && rightRelease == true)
+    {
+        rightRelease = false;
+        if (currentFrame < currentFinalFrame) {
+            currentFrame++;
+        }
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && leftRelease == true)
+    {
+        leftRelease = false;
+        if (currentFrame > 1) {
+            currentFrame--;
+        }
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
+    {
+        spaceRelease = false;
+        if (currentFrame == currentFinalFrame) {
+            return true;
+        }
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE) {
+        rightRelease = true;
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
+        leftRelease = true;
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
+        spaceRelease = true;
+    }
+    return false;;
 }
 
 void Game::handleBackButton()

@@ -231,7 +231,7 @@ int main()
             game.renderArcadeStory(renderer);
             if (game.handleArcadeStoryInput(glWindow.window))
             {
-                game.setState(GameState::PLAYING);
+                game.setState(GameState::ROUND_START);
             }
             if (Settings::windowSettings.show_fps)
             {

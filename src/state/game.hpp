@@ -139,6 +139,12 @@ private:
 
     int levelCompleted = 0;
     int currentLevel = 0;
+    int currentFrame = 0;
+    int currentFinalFrame = 0;
+
+    bool rightRelease = true;
+    bool leftRelease = true;
+    bool spaceRelease = true;
 
     bool showFPS;
 
