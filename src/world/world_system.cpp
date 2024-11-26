@@ -9,6 +9,9 @@ Mix_Music *WorldSystem::background_music = nullptr;
 Mix_Chunk *WorldSystem::punch_sound = nullptr;
 Mix_Chunk *WorldSystem::walk_sound = nullptr;
 Mix_Chunk *WorldSystem::parry_sound = nullptr;
+Mix_Chunk *WorldSystem::parry_blocked_sound = nullptr;
+Mix_Chunk *WorldSystem::perfect_parry_sound = nullptr;
+Mix_Chunk *WorldSystem::hurt_sound = nullptr;
 Mix_Chunk *WorldSystem::kick_sound = nullptr;
 Mix_Chunk *WorldSystem::menu_select_sound = nullptr;
 Mix_Chunk *WorldSystem::menu_confirm_sound = nullptr;
@@ -39,6 +42,7 @@ static void applyDamage(Entity player, float damage)
     {
         health.currentHealth = 0;
     }
+    WorldSystem::playHurtSound();
 }
 
 WorldSystem::WorldSystem() {};
@@ -101,6 +105,21 @@ WorldSystem::~WorldSystem()
         Mix_FreeChunk(parry_sound);
         parry_sound = nullptr;
     }
+    if (parry_blocked_sound != nullptr)
+    {
+        Mix_FreeChunk(parry_blocked_sound);
+        parry_blocked_sound = nullptr;
+    }
+    if (perfect_parry_sound != nullptr)
+    {
+        Mix_FreeChunk(perfect_parry_sound);
+        perfect_parry_sound = nullptr;
+    }
+    if (hurt_sound != nullptr)
+    {
+        Mix_FreeChunk(hurt_sound);
+        hurt_sound = nullptr;
+    }
     if (kick_sound != nullptr)
     {
         Mix_FreeChunk(kick_sound);
@@ -147,20 +166,27 @@ void WorldSystem::init(GlRender *renderer)
     punch_sound = Mix_LoadWAV(audio_path("punch_sound.wav").c_str());
     walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
     parry_sound = Mix_LoadWAV(audio_path("parry_sound.wav").c_str());
+    parry_blocked_sound = Mix_LoadWAV(audio_path("parry_blocked_sound.wav").c_str());
+    perfect_parry_sound = Mix_LoadWAV(audio_path("perfect_parry_sound.wav").c_str());
+    hurt_sound = Mix_LoadWAV(audio_path("hurt_sound.wav").c_str());
     kick_sound = Mix_LoadWAV(audio_path("kick_sound.wav").c_str());
     menu_select_sound = Mix_LoadWAV(audio_path("menu_select_sound.wav").c_str());
     menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
     game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
     if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
-        parry_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
+        parry_sound == nullptr || parry_blocked_sound == nullptr || perfect_parry_sound == nullptr || 
+        hurt_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr || 
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
                 audio_path("background_music.wav").c_str(),
                 audio_path("punch_sound.wav").c_str(),
                 audio_path("walk_sound.wav").c_str(),
                 audio_path("parry_sound.wav").c_str(),
+                audio_path("parry_blocked_sound.wav").c_str(),
+                audio_path("perfect_parry_sound.wav").c_str(),
+                audio_path("hurt_sound.wav").c_str(),
                 audio_path("kick_sound.wav").c_str(),
                 audio_path("menu_select_sound.wav").c_str(),
                 audio_path("menu_confirm_sound.wav").c_str(),
@@ -560,12 +586,14 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
                 createNotification(500.f, true, renderer->m_notif_stunned);
+                playPerfectParrySound();
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
                 createNotification(500.f, false, renderer->m_notif_parried);
+                playParryBlockedSound();
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -575,12 +603,14 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
                 createNotification(500.f, false, renderer->m_notif_stunned);
+                playPerfectParrySound();
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
                 createNotification(500.f, true, renderer->m_notif_parried);
+                playParryBlockedSound();
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
