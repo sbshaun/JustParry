@@ -9,7 +9,11 @@ Mix_Music *WorldSystem::background_music = nullptr;
 Mix_Chunk *WorldSystem::punch_sound = nullptr;
 Mix_Chunk *WorldSystem::walk_sound = nullptr;
 Mix_Chunk *WorldSystem::parry_sound = nullptr;
+
 Mix_Chunk *WorldSystem::crouch_sound = nullptr;
+Mix_Chunk *WorldSystem::parry_blocked_sound = nullptr;
+Mix_Chunk *WorldSystem::perfect_parry_sound = nullptr;
+Mix_Chunk *WorldSystem::hurt_sound = nullptr;
 Mix_Chunk *WorldSystem::kick_sound = nullptr;
 Mix_Chunk *WorldSystem::menu_select_sound = nullptr;
 Mix_Chunk *WorldSystem::menu_confirm_sound = nullptr;
@@ -40,6 +44,7 @@ static void applyDamage(Entity player, float damage)
     {
         health.currentHealth = 0;
     }
+    WorldSystem::playHurtSound();
 }
 
 WorldSystem::WorldSystem() {};
@@ -106,6 +111,20 @@ WorldSystem::~WorldSystem()
     {
         Mix_FreeChunk(crouch_sound);
         crouch_sound = nullptr;
+    if (parry_blocked_sound != nullptr)
+    {
+        Mix_FreeChunk(parry_blocked_sound);
+        parry_blocked_sound = nullptr;
+    }
+    if (perfect_parry_sound != nullptr)
+    {
+        Mix_FreeChunk(perfect_parry_sound);
+        perfect_parry_sound = nullptr;
+    }
+    if (hurt_sound != nullptr)
+    {
+        Mix_FreeChunk(hurt_sound);
+        hurt_sound = nullptr;
     }
     if (kick_sound != nullptr)
     {
@@ -154,21 +173,29 @@ void WorldSystem::init(GlRender *renderer)
     walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
     parry_sound = Mix_LoadWAV(audio_path("parry_sound.wav").c_str());
     crouch_sound = Mix_LoadWAV(audio_path("crouch_sound.wav").c_str());
+    parry_blocked_sound = Mix_LoadWAV(audio_path("parry_blocked_sound.wav").c_str());
+    perfect_parry_sound = Mix_LoadWAV(audio_path("perfect_parry_sound.wav").c_str());
+    hurt_sound = Mix_LoadWAV(audio_path("hurt_sound.wav").c_str());
     kick_sound = Mix_LoadWAV(audio_path("kick_sound.wav").c_str());
     menu_select_sound = Mix_LoadWAV(audio_path("menu_select_sound.wav").c_str());
     menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
     game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
-    if (parry_sound == nullptr || background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
-        parry_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
+
+    if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr || crouch_sound == nullptr ||
+        parry_sound == nullptr || parry_blocked_sound == nullptr || perfect_parry_sound == nullptr || 
+        hurt_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr || 
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
                 audio_path("background_music.wav").c_str(),
                 audio_path("punch_sound.wav").c_str(),
                 audio_path("walk_sound.wav").c_str(),
                 audio_path("crouch_sound.wav").c_str(),
                 audio_path("parry_sound.wav").c_str(),
+                audio_path("parry_blocked_sound.wav").c_str(),
+                audio_path("perfect_parry_sound.wav").c_str(),
+                audio_path("hurt_sound.wav").c_str(),
                 audio_path("kick_sound.wav").c_str(),
                 audio_path("menu_select_sound.wav").c_str(),
                 audio_path("menu_confirm_sound.wav").c_str(),
@@ -568,12 +595,14 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
                 createNotification(500.f, true, renderer->m_notif_stunned);
+                playPerfectParrySound();
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
                 createNotification(500.f, false, renderer->m_notif_parried);
+                playParryBlockedSound();
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -583,12 +612,14 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
                 createNotification(500.f, false, renderer->m_notif_stunned);
+                playPerfectParrySound();
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
             else
             {
                 createNotification(500.f, true, renderer->m_notif_parried);
+                playParryBlockedSound();
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -735,7 +766,9 @@ void WorldSystem::hitBoxCollisions()
 
         // Get victim (player2) motion for particle emission
         Motion &victimMotion = registry.motions.get(player2);
-        applyDamage(player2, config.PUNCH_DAMAGE);
+
+        float damage = registry.hitBoxes.get(player1).damage;
+        applyDamage(player2, damage);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack &knockback = registry.knockbacks.get(player2);
@@ -748,6 +781,15 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
+        // e.g. when a player starts a punch and being it before punch takes effect 
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        StateTimer &playerStateTimer = registry.stateTimers.get(player2);
+        playerStateTimer.reset(0);
+        PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
+        player2StateMachine->transition(player2, PlayerState::IDLE);
         player2StateMachine->transition(player2, PlayerState::STUNNED);
         createNotification(500.f, true, renderer->m_notif_hit);
     }
@@ -759,7 +801,9 @@ void WorldSystem::hitBoxCollisions()
 
         // Get victim (player1) motion for particle emission
         Motion &victimMotion = registry.motions.get(player1);
-        applyDamage(player1, config.PUNCH_DAMAGE);
+
+        float damage = registry.hitBoxes.get(player2).damage;
+        applyDamage(player1, damage);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack &knockback = registry.knockbacks.get(player1);
@@ -772,6 +816,16 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
+        // same as above: 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
+        // e.g. when a player starts a punch and being it before punch takes effect 
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        StateTimer &playerStateTimer = registry.stateTimers.get(player1);
+        playerStateTimer.reset(0);
+        PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
+        player1StateMachine->transition(player1, PlayerState::IDLE);
         player1StateMachine->transition(player1, PlayerState::STUNNED);
         createNotification(500.f, false, renderer->m_notif_hit);
     }

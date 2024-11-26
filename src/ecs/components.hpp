@@ -241,6 +241,7 @@ struct HitBox : public Box
     bool active = false; // TODO: active for how  many frames? 12?
     // if the current attack already caused damage
     bool hit = false; // flag to check before applying damage.
+    float damage = 10.f; // default damage value 
 
     float getLeft(const vec2 &playerPosition, bool facingRight) const override
     {

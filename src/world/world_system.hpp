@@ -68,6 +68,29 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, crouch_sound, 0);
+    }
+  }
+	static void playPerfectParrySound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, perfect_parry_sound, 0);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
+		}
+	}
+	static void playHurtSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, hurt_sound, 0);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
+		}
+	}
+	static void playParryBlockedSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, parry_blocked_sound, 0);
 			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
@@ -227,6 +250,9 @@ private:
 	static Mix_Chunk *walk_sound;
 
 	static Mix_Chunk *parry_sound;
+	static Mix_Chunk *perfect_parry_sound;
+	static Mix_Chunk *parry_blocked_sound;
+	static Mix_Chunk *hurt_sound;
 	static Mix_Chunk *kick_sound;
 	static Mix_Chunk *menu_select_sound;
 	static Mix_Chunk *menu_confirm_sound;
