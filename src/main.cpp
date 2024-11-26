@@ -231,6 +231,7 @@ int main()
             game.renderArcadeStory(renderer);
             if (game.handleArcadeStoryInput(glWindow.window))
             {
+                WorldSystem::playGameCountDownSound();
                 game.setState(GameState::ROUND_START);
             }
             if (Settings::windowSettings.show_fps)

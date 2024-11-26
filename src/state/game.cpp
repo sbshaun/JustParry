@@ -700,7 +700,6 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
             renderer.renderText("TO START!", 285, 310, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
             {
-                WorldSystem::playGameCountDownSound();
                 game.setState(GameState::ARCADE_MENU);
             }
         }
