@@ -111,6 +111,7 @@ WorldSystem::~WorldSystem()
     {
         Mix_FreeChunk(crouch_sound);
         crouch_sound = nullptr;
+    }
     if (parry_blocked_sound != nullptr)
     {
         Mix_FreeChunk(parry_blocked_sound);
@@ -187,7 +188,7 @@ void WorldSystem::init(GlRender *renderer)
         hurt_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr || 
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
                 audio_path("background_music.wav").c_str(),
                 audio_path("punch_sound.wav").c_str(),
                 audio_path("walk_sound.wav").c_str(),
