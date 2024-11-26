@@ -12,15 +12,21 @@ Main program loop
     auto last_time
 
 *Functions*
+---
 
     int generateUI(GlRender &renderer) 
+    
 Counts down the timer <br>
 Calls renderer.renderUI(timer)
+
+---
 
     void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
 Checks for the healths of the 2 players and the timer<br>
 If its over change the state to ROUND_OVER, otherwise keep running <br>
 Calls renderer.renderRoundeOver(1), renderer.renderUI(timer)
+
+---
 
     int main()
 *Initialize*<br>
