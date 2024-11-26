@@ -145,6 +145,7 @@ private:
     bool rightRelease = true;
     bool leftRelease = true;
     bool spaceRelease = true;
+    bool backButtonReleased = true;
 
     bool showFPS;
 

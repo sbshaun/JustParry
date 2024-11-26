@@ -377,23 +377,21 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
     bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
                        mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
 
-    static bool backButtonPressed = false;
+    // static bool backButtonPressed = false;
 
     if (backHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
-        if (!backButtonPressed)
+        if (backButtonReleased)
         {
-            backButtonPressed = true; // Remember that button was pressed
+            handleBackButton();
         }
+        backButtonReleased = false;
     }
     else
     {
-        if (backButtonPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-        {
-            handleBackButton(); // Trigger action on release
-            std::cout << "Back button pressed!" << std::endl;
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+            backButtonReleased = true;
         }
-        backButtonPressed = false; // Reset the state when released
     }
 
     // render back button
@@ -402,7 +400,7 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
         backButton.width, backButton.height, // width, height
         "<-",                                // text
         backHovered,                         // Add this member variable to Game class
-        backButtonPressed                    // Add this member variable to Game class
+        !backButtonReleased                   // Add this member variable to Game class
     );
 
     renderer.renderSelectorTriangleP1(560, 255 + offset1, 30, 30, p1);
@@ -703,7 +701,7 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
             {
                 WorldSystem::playGameCountDownSound();
-                game.setState(GameState::ARCADE_STORY);
+                game.setState(GameState::ARCADE_MENU);
             }
         }
     }
@@ -1106,7 +1104,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
 
 void Game::handleArcadeButton()
 {
-    this->setState(GameState::ARCADE_MENU);
+    this->setState(GameState::ARCADE_PREFIGHT);
     std::cout << "Arcade menu screen opened!" << std::endl;
 }
 
@@ -1152,11 +1150,15 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         mouseY >= arcadeLevelFiveButton.y &&
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
+
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverBack)
         {
-            handleBackButton();
+            if (!backButtonReleased) {
+                handleBackButton();
+            }
+            backButtonReleased = false;
         }
         if (mouseOverLevelOne)
         {
@@ -1194,6 +1196,11 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
             return true;
         }
     }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+    {
+        backButtonReleased = true;
+    }
+
 
     return false;
 }
@@ -1236,9 +1243,9 @@ bool Game::handleArcadeStoryInput(GLFWwindow* window)
 
 void Game::handleBackButton()
 {
-    if (this->getState() == GameState::ARCADE_PREFIGHT)
+    if (this->getState() == GameState::ARCADE_MENU)
     {
-        this->setState(GameState::ARCADE_MENU);
+        this->setState(GameState::ARCADE_PREFIGHT);
         std::cout << "Going to Arcade Menu Screen" << std::endl;
     }
     else

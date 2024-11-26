@@ -197,21 +197,6 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_MENU:
-            game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window))
-            {
-                std::cout << "Entered Character Select Stage" << std::endl;
-                game.setState(GameState::ARCADE_PREFIGHT);
-            }
-            if (Settings::windowSettings.show_fps)
-            {
-                fpsCounter.update(renderer, false);
-                renderer.renderFPS(fpsCounter.getFPS(), true);
-            }
-
-            glWindow.windowSwapBuffers();
-            break;
         case GameState::ARCADE_PREFIGHT:
             // Enable bot for arcade
             botEnabled = true;
@@ -225,6 +210,21 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::ARCADE_MENU:
+            game.renderArcadeMenu(renderer);
+            if (game.handleArcadeMenuInput(glWindow.window))
+            {
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::ARCADE_STORY);
+            }
+            if (Settings::windowSettings.show_fps)
+            {
+                fpsCounter.update(renderer, false);
+                renderer.renderFPS(fpsCounter.getFPS(), true);
+            }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_STORY:
