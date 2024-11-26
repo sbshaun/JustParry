@@ -727,7 +727,9 @@ void WorldSystem::hitBoxCollisions()
 
         // Get victim (player2) motion for particle emission
         Motion &victimMotion = registry.motions.get(player2);
-        applyDamage(player2, config.PUNCH_DAMAGE);
+
+        float damage = registry.hitBoxes.get(player1).damage;
+        applyDamage(player2, damage);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack &knockback = registry.knockbacks.get(player2);
@@ -740,6 +742,15 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
+        // e.g. when a player starts a punch and being it before punch takes effect 
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        StateTimer &playerStateTimer = registry.stateTimers.get(player2);
+        playerStateTimer.reset(0);
+        PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
+        player2StateMachine->transition(player2, PlayerState::IDLE);
         player2StateMachine->transition(player2, PlayerState::STUNNED);
         createNotification(500.f, true, renderer->m_notif_hit);
     }
@@ -751,7 +762,9 @@ void WorldSystem::hitBoxCollisions()
 
         // Get victim (player1) motion for particle emission
         Motion &victimMotion = registry.motions.get(player1);
-        applyDamage(player1, config.PUNCH_DAMAGE);
+
+        float damage = registry.hitBoxes.get(player2).damage;
+        applyDamage(player1, damage);
         emitBloodParticles(victimMotion.position.x, victimMotion.position.y, 0.0f, victimMotion.direction);
 
         KnockBack &knockback = registry.knockbacks.get(player1);
@@ -764,6 +777,16 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
+        // same as above: 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
+        // e.g. when a player starts a punch and being it before punch takes effect 
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        StateTimer &playerStateTimer = registry.stateTimers.get(player1);
+        playerStateTimer.reset(0);
+        PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
+        player1StateMachine->transition(player1, PlayerState::IDLE);
         player1StateMachine->transition(player1, PlayerState::STUNNED);
         createNotification(500.f, false, renderer->m_notif_hit);
     }
