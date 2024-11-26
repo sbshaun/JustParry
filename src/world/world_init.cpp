@@ -3,6 +3,9 @@
 #include "../constants.hpp"
 #include "../bot/bot.hpp"
 #include <stb_image.h>
+
+int P1_cid = -1;
+
 void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlayer1)
 {
     Health &health = registry.healths.emplace(entity);
@@ -132,9 +135,14 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
     // set current_char to BIRDMAN by default
     // registry.players.get(entity).current_char = fighter;
-    if (glfwJoystickPresent(GLFW_JOYSTICK_1))
-    { // TODO make this assign dynamically
-        registry.players.get(entity).controller_id = GLFW_JOYSTICK_1;
+    for (int cid = GLFW_JOYSTICK_1; cid <= GLFW_JOYSTICK_LAST; ++cid)
+    {
+        if (glfwJoystickPresent(cid))
+        {
+            registry.players.get(entity).controller_id = cid;
+            P1_cid = cid;
+            break;
+        }
     }
     std::cout << "player 1 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;
@@ -150,9 +158,13 @@ Entity createPlayer2(GlRender *renderer, vec2 pos, Fighters fighter)
     Shader *rectShader = new Shader(std::string("player2"));
     createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
     // registry.players.get(entity).current_char = fighter;
-    if (glfwJoystickPresent(GLFW_JOYSTICK_2))
-    { // TODO make this assign dynamically
-        registry.players.get(entity).controller_id = GLFW_JOYSTICK_2;
+    for (int cid = GLFW_JOYSTICK_1; cid <= GLFW_JOYSTICK_LAST; ++cid)
+    {
+        if (glfwJoystickPresent(cid) && cid != P1_cid)
+        {
+            registry.players.get(entity).controller_id = cid;
+            break;
+        }
     }
     std::cout << "player 2 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;
