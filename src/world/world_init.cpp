@@ -123,7 +123,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
     registry.knockbacks.emplace(entity);
 }
 
-bool assigned_cids[16] = {}; //an array to represent if the the controller with the cid at index is assgined
+bool assigned_cids[GLFW_JOYSTICK_LAST] = {}; //an array to represent if the the controller with the cid at index is assgined
 
 void assignController(Entity &entity){
     for (int cid = GLFW_JOYSTICK_1; cid <= GLFW_JOYSTICK_LAST; ++cid) //THIS IMPLEMENTATION OF CONTROLLER ASSIGNMENT ONLY ALLOWS FOR 2 UNIQUE CONTROLLERS TO BE PLUGGED IN OTHERWISE THE CHOSEN CONTROLLER FOR EACH PLAYER IS UNDETERMINED
@@ -146,6 +146,7 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     // set current_char to BIRDMAN by default v
     registry.players.insert(entity, Player{1, fighter});
     Shader *rectShader = new Shader(std::string("player1"));
+    registry.players.get(entity).controller_id = -1;
     createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
     // set current_char to BIRDMAN by default
     // registry.players.get(entity).current_char = fighter;
@@ -161,6 +162,7 @@ Entity createPlayer2(GlRender *renderer, vec2 pos, Fighters fighter)
     Entity entity = Entity();
     registry.players.insert(entity, Player{2, fighter});
     Shader *rectShader = new Shader(std::string("player2"));
+    registry.players.get(entity).controller_id = -1;
     createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
     // registry.players.get(entity).current_char = fighter;
 

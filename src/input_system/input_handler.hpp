@@ -3,6 +3,7 @@
 #include "command.hpp"
 #include "input_utils.hpp"
 #include "input_mapping.hpp"
+#include "controller_mapping.hpp"
 #include "state_machine.hpp"
 #include "../ecs/components.hpp"
 
@@ -99,9 +100,11 @@ public:
     //  also need to some how support axis (for a future goal honestly)
     void handleInput(Entity entity, StateMachine &state_machine)
     {
-        if (registry.players.get(entity).controller_id != -1)
+        int controller_id = registry.players.get(entity).controller_id;
+        if (controller_id != -1)
         {
-            // CALL A CONTROLLER VERSION OF handleInput
+            handleControllerInput(entity, state_machine, controller_id);
+            return;
         }
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
@@ -207,7 +210,7 @@ public:
         bool moving = false;
         // int size;
 
-        for (const auto &pair : inputMapping->getKeyToActionMap())
+        for (const auto &pair : controllerMapping->getKeyToActionMap())
         {
             // check if any key is pressed
             if (isControllerKeyPressed(cid, pair.first))
@@ -227,7 +230,7 @@ public:
         }
 
         // loop to see key release action
-        for (const auto &pair : inputMapping->getKeyToActionMap())
+        for (const auto &pair : controllerMapping->getKeyToActionMap())
         {
             if (isControllerKeyReleased(cid, pair.first))
             {
@@ -326,6 +329,7 @@ public:
 
 private:
     std::unique_ptr<InputMapping> inputMapping;
+    std::unique_ptr<ControllerMapping> controllerMapping;
     std::unordered_map<Action, std::unique_ptr<Command>> actionToCommandMapping;
     // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/
     struct actionBufferItem
