@@ -920,16 +920,15 @@ void Game::renderArcadeStory(GlRender& renderer)
         1.0f // Full brightness for main menu
     );
 
+    // Calculate dimensions for the story images
+    float storyBoxWidth = 800.0f;
+    float storyBoxHeight = 600.0f;
+    float storyBoxX = (M_WINDOW_WIDTH_PX - storyBoxWidth) / 2.0f;
+    float storyBoxY = (M_WINDOW_HEIGHT_PX - storyBoxHeight) / 2.0f;
+
     // LEVEL ONE 
     // TODO: MAKE INTO A TUTORIAL LEVEL
     if (currentLevel == 1) {
-        // Calculate dimensions for the help screen image
-        float storyBoxWidth = 800.0f;
-        float storyBoxHeight = 600.0f;
-        float storyBoxX = (M_WINDOW_WIDTH_PX - storyBoxWidth) / 2.0f;
-        float storyBoxY = (M_WINDOW_HEIGHT_PX - storyBoxHeight) / 2.0f;
-
-        // Render the help screen image in the center
         renderer.renderTexturedQuadScaled(
             renderer.m_helpTexture,
             storyBoxX, storyBoxY,
@@ -938,19 +937,35 @@ void Game::renderArcadeStory(GlRender& renderer)
     }
     // LEVEL TWO
     if (currentLevel == 2) {
-
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
     }
     // LEVEL THREE
     if (currentLevel == 3) {
-
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
     }
     // LEVEL FOUR
     if (currentLevel == 4) {
-
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
     }
     // LEVEL FIVE
     if (currentLevel == 5) {
-
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
     }
 }
 
@@ -1193,13 +1208,13 @@ bool Game::handleArcadeStoryInput(GLFWwindow* window)
             currentFrame++;
         }
     }
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && leftRelease == true)
+    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && leftRelease == true)
     {
         leftRelease = false;
         if (currentFrame > 1) {
             currentFrame--;
         }
-    }
+    }*/
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
     {
         spaceRelease = false;
@@ -1210,9 +1225,9 @@ bool Game::handleArcadeStoryInput(GLFWwindow* window)
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE) {
         rightRelease = true;
     }
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
+    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
         leftRelease = true;
-    }
+    }*/
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
         spaceRelease = true;
     }
