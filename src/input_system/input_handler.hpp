@@ -99,7 +99,7 @@ public:
     // NEED TO UPDATE FOR CONTROLLER SUPPORT OR MAKE A CHECK TO HAVE A SEPERATE CONTROLLER IMPLEMENTATION CAUSE THIS IS PER PLAYER
     //  Let a controllers key be represented as the index of the button from glfwGetJoystickButtons. includes the HAT
     //  also need to some how support axis (for a future goal honestly)
-    void handleInput(Entity entity, StateMachine &state_machine)
+    virtual void handleInput(Entity entity, StateMachine &state_machine)
     {
         Motion &motion = registry.motions.get(entity);
         bool moving = false;

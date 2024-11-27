@@ -7,17 +7,16 @@
 
 class ControllerHandler : public InputHandler {
     public:
-    public:
     ControllerHandler(std::unique_ptr<ControllerMapping> controllerMapping) : InputHandler(nullptr, std::move(controllerMapping)) {}
 
 
-    void handleInput(Entity entity, StateMachine &state_machine, int cid) //THIS CAUSES A CRASH 
+    void handleInput(Entity entity, StateMachine &state_machine) override 
     {
         // int size;
         // std::cout << glfwGetJoystickButtons(cid, &size) << std::endl;
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
-        // int size;
+        int cid = registry.players.get(entity).controller_id;
 
         for (const auto &pair : controllerMapping->getKeyToActionMap())
         {
@@ -39,7 +38,7 @@ class ControllerHandler : public InputHandler {
         }
 
         // loop to see key release action
-        for (const auto &pair : controllerMapping->getKeyToActionMap())
+        for (const auto &pair : controllerMapping->getKeyToActionMap()) 
         {
             if (isControllerKeyReleased(cid, pair.first))
             {
@@ -66,16 +65,6 @@ class ControllerHandler : public InputHandler {
         // chek release key
 
         processActionBuffer(entity, state_machine);
-    }
-
-        Action getActionFromKey(int key) const
-    {
-        return controllerMapping->getActionFromKey(key);
-    }
-
-    int getKeyFromAction(Action action) const
-    {
-        return controllerMapping->getKeyFromAction(action);
     }
 
 };
