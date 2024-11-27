@@ -10,7 +10,7 @@
 class InputHandler
 {
 public:
-    InputHandler(std::unique_ptr<InputMapping> inputMapping) : inputMapping(std::move(inputMapping)) {}
+    InputHandler(std::unique_ptr<InputMapping> inputMapping, std::unique_ptr<ControllerMapping> controllerMapping) : inputMapping(std::move(inputMapping)), controllerMapping(std::move(controllerMapping)) {}
 
     void bindActionToCommand(Action action, std::unique_ptr<Command> command)
     {
@@ -104,7 +104,7 @@ public:
         if (controller_id != -1)
         {
             handleControllerInput(entity, state_machine, controller_id);
-            return;
+            // return; //uncomment this to disable keyboard when controller is assigned.
         }
         Motion &motion = registry.motions.get(entity);
         bool moving = false;

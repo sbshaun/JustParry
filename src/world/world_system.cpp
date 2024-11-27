@@ -281,6 +281,7 @@ void WorldSystem::initInputHandlers()
 
     // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
+    
 
     // player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
     //  player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
@@ -289,6 +290,22 @@ void WorldSystem::initInputHandlers()
     player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
+
+    std::unique_ptr<ControllerMapping> player1ControllerMapping = std::make_unique<ControllerMapping>(0); //HAVE TO SOME HOW MAKE THESE CID's NOT HARD CODED 
+
+    player1ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
+    player1ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
+    player1ControllerMapping->bindKeyToAction(2, Action::PUNCH);
+    player1ControllerMapping->bindKeyToAction(3, Action::KICK);
+    player1ControllerMapping->bindKeyToAction(4, Action::PARRY);
+
+    std::unique_ptr<ControllerMapping> player2ControllerMapping = std::make_unique<ControllerMapping>(1);
+
+    player2ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
+    player2ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
+    player2ControllerMapping->bindKeyToAction(2, Action::PUNCH);
+    player2ControllerMapping->bindKeyToAction(3, Action::KICK);
+    player2ControllerMapping->bindKeyToAction(4, Action::PARRY);
 
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
@@ -301,8 +318,10 @@ void WorldSystem::initInputHandlers()
     player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
     // Initialize input handlers with the mappings
-    player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
-    player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping));
+    player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), std::move(player1ControllerMapping));
+    player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));
+
+
     player1InputHandler->initDefaultActionToCommandMapping();
     player2InputHandler->initDefaultActionToCommandMapping();
 
