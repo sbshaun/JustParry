@@ -69,9 +69,9 @@ class CrouchCommand : public Command
 public:
     void execute(Entity entity, StateMachine &state_machine) override
     {
-        if (!state_machine.transition(entity, PlayerState::CROUCHING))
-            return;
-        // if stateMachine.transition("CROUCHING") success:
+        // if (!state_machine.transition(entity, PlayerState::CROUCHING))
+        //     return;
+        return;
         // TODO: implement
     }
 };
