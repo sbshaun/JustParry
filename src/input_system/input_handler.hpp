@@ -101,6 +101,7 @@ public:
     void handleInput(Entity entity, StateMachine &state_machine)
     {
         int controller_id = registry.players.get(entity).controller_id;
+        std::cout << controller_id << std::endl;
         if (controller_id != -1)
         {
             handleControllerInput(entity, state_machine, controller_id);
