@@ -205,58 +205,59 @@ public:
 
     void handleControllerInput(Entity entity, StateMachine &state_machine, int cid)
     {
+        int size;
+        std::cout << glfwGetJoystickButtons(cid, &size) << std::endl;
+        // Motion &motion = registry.motions.get(entity);
+        // bool moving = false;
+        // // int size;
 
-        Motion &motion = registry.motions.get(entity);
-        bool moving = false;
-        // int size;
+        // for (const auto &pair : controllerMapping->getKeyToActionMap())
+        // {
+        //     // check if any key is pressed
+        //     if (isControllerKeyPressed(cid, pair.first))
+        //     {
+        //         // get the corresponded action from the key
+        //         Action action = pair.second;
 
-        for (const auto &pair : controllerMapping->getKeyToActionMap())
-        {
-            // check if any key is pressed
-            if (isControllerKeyPressed(cid, pair.first))
-            {
-                // get the corresponded action from the key
-                Action action = pair.second;
+        //         if (!actionBuffer.empty() && actionBuffer.back().action == action)
+        //             continue;
+        //         if (actionBuffer.size() >= MAX_BUFFER_SIZE)
+        //             continue;
 
-                if (!actionBuffer.empty() && actionBuffer.back().action == action)
-                    continue;
-                if (actionBuffer.size() >= MAX_BUFFER_SIZE)
-                    continue;
+        //         if (!shouldAddActionToBuffer(entity, action))
+        //             continue;
+        //         actionBuffer.push_back({action, TTL});
+        //     }
+        // }
 
-                if (!shouldAddActionToBuffer(entity, action))
-                    continue;
-                actionBuffer.push_back({action, TTL});
-            }
-        }
+        // // loop to see key release action
+        // for (const auto &pair : controllerMapping->getKeyToActionMap())
+        // {
+        //     if (isControllerKeyReleased(cid, pair.first))
+        //     {
+        //         Action action = pair.second;
+        //         if (action == Action::PUNCH)
+        //         {
+        //             punchReleased = true;
+        //         }
+        //         if (action == Action::KICK)
+        //         {
+        //             kickReleased = true;
+        //         }
+        //         if (action == Action::PARRY)
+        //         {
+        //             parryReleased = true;
+        //         }
+        //         if (action == Action::CROUCH)
+        //         {
+        //             crouchReleased = true;
+        //         }
+        //     }
+        // }
 
-        // loop to see key release action
-        for (const auto &pair : controllerMapping->getKeyToActionMap())
-        {
-            if (isControllerKeyReleased(cid, pair.first))
-            {
-                Action action = pair.second;
-                if (action == Action::PUNCH)
-                {
-                    punchReleased = true;
-                }
-                if (action == Action::KICK)
-                {
-                    kickReleased = true;
-                }
-                if (action == Action::PARRY)
-                {
-                    parryReleased = true;
-                }
-                if (action == Action::CROUCH)
-                {
-                    crouchReleased = true;
-                }
-            }
-        }
+        // // chek release key
 
-        // chek release key
-
-        processActionBuffer(entity, state_machine);
+        // processActionBuffer(entity, state_machine);
     }
 
     // functioin to determine if a key should be added: only add one action per press
