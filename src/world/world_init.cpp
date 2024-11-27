@@ -74,8 +74,6 @@ p.s. entity: player entity
 */
 static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRender *renderer, bool isPlayer1, Fighters fighter)
 {
-    assignController(entity);
-
     // init player's currentState to be IDLE, init stateTimer to 0
     PlayerCurrentState &playerState = registry.playerCurrentStates.emplace(entity);
     playerState.currentState = PlayerState::IDLE;
@@ -119,6 +117,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
 
     registry.players.get(entity).controller_id = -1; // Represents no controller
+    assignController(entity);
 
     registry.knockbacks.emplace(entity);
 }
@@ -148,7 +147,6 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     // set current_char to BIRDMAN by default v
     registry.players.insert(entity, Player{1, fighter});
     Shader *rectShader = new Shader(std::string("player1"));
-    registry.players.get(entity).controller_id = -1;
     createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
     // set current_char to BIRDMAN by default
     // registry.players.get(entity).current_char = fighter;
@@ -164,7 +162,6 @@ Entity createPlayer2(GlRender *renderer, vec2 pos, Fighters fighter)
     Entity entity = Entity();
     registry.players.insert(entity, Player{2, fighter});
     Shader *rectShader = new Shader(std::string("player2"));
-    registry.players.get(entity).controller_id = -1;
     createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
     // registry.players.get(entity).current_char = fighter;
 
