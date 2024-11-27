@@ -203,7 +203,7 @@ public:
         processActionBuffer(entity, state_machine);
     }
 
-    void handleControllerInput(Entity entity, StateMachine &state_machine, int cid)
+    void handleControllerInput(Entity entity, StateMachine &state_machine, int cid) //THIS CAUSES A CRASH 
     {
         // int size;
         // std::cout << glfwGetJoystickButtons(cid, &size) << std::endl;
