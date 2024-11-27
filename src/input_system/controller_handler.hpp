@@ -68,4 +68,14 @@ class ControllerHandler : public InputHandler {
         processActionBuffer(entity, state_machine);
     }
 
+        Action getActionFromKey(int key) const
+    {
+        return controllerMapping->getActionFromKey(key);
+    }
+
+    int getKeyFromAction(Action action) const
+    {
+        return controllerMapping->getKeyFromAction(action);
+    }
+
 };
