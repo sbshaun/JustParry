@@ -926,11 +926,36 @@ void Game::renderArcadeStory(GlRender& renderer)
     // LEVEL ONE 
     // TODO: MAKE INTO A TUTORIAL LEVEL
     if (currentLevel == 1) {
-        renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture,
-            storyBoxX, storyBoxY,
-            storyBoxWidth, storyBoxHeight,
-            1.0f);
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        }
     }
     // LEVEL TWO
     if (currentLevel == 2) {
@@ -1163,7 +1188,7 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         {
             currentLevel = 1;
             currentFrame = 1;
-            currentFinalFrame = 5;
+            currentFinalFrame = 4;
             return true;
         }
         else if (mouseOverLevelTwo && levelCompleted >= 1)
