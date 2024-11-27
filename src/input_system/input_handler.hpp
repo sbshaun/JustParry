@@ -10,7 +10,7 @@
 class InputHandler
 {
 public:
-    InputHandler(std::unique_ptr<InputMapping> inputMapping, std::unique_ptr<ControllerMapping> controllerMapping) : inputMapping(std::move(inputMapping)), controllerMapping(std::move(controllerMapping)) {}
+    InputHandler(std::unique_ptr<InputMapping> inputMapping) : inputMapping(std::move(inputMapping)){}
 
     void bindActionToCommand(Action action, std::unique_ptr<Command> command)
     {
@@ -100,12 +100,6 @@ public:
     //  also need to some how support axis (for a future goal honestly)
     void handleInput(Entity entity, StateMachine &state_machine)
     {
-        int controller_id = registry.players.get(entity).controller_id;
-        if (controller_id != -1)
-        {
-            handleControllerInput(entity, state_machine, controller_id);
-            // return; //uncomment this to disable keyboard when controller is assigned.
-        }
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
 
@@ -203,62 +197,7 @@ public:
         processActionBuffer(entity, state_machine);
     }
 
-    void handleControllerInput(Entity entity, StateMachine &state_machine, int cid) //THIS CAUSES A CRASH 
-    {
-        // int size;
-        // std::cout << glfwGetJoystickButtons(cid, &size) << std::endl;
-        Motion &motion = registry.motions.get(entity);
-        bool moving = false;
-        // int size;
 
-        for (const auto &pair : controllerMapping->getKeyToActionMap())
-        {
-            // check if any key is pressed
-            if (isControllerKeyPressed(cid, pair.first))
-            {
-                // get the corresponded action from the key
-                Action action = pair.second;
-
-                if (!actionBuffer.empty() && actionBuffer.back().action == action)
-                    continue;
-                if (actionBuffer.size() >= MAX_BUFFER_SIZE)
-                    continue;
-
-                if (!shouldAddActionToBuffer(entity, action))
-                    continue;
-                actionBuffer.push_back({action, TTL});
-            }
-        }
-
-        // loop to see key release action
-        for (const auto &pair : controllerMapping->getKeyToActionMap())
-        {
-            if (isControllerKeyReleased(cid, pair.first))
-            {
-                Action action = pair.second;
-                if (action == Action::PUNCH)
-                {
-                    punchReleased = true;
-                }
-                if (action == Action::KICK)
-                {
-                    kickReleased = true;
-                }
-                if (action == Action::PARRY)
-                {
-                    parryReleased = true;
-                }
-                if (action == Action::CROUCH)
-                {
-                    crouchReleased = true;
-                }
-            }
-        }
-
-        // chek release key
-
-        processActionBuffer(entity, state_machine);
-    }
 
     // functioin to determine if a key should be added: only add one action per press
     bool shouldAddActionToBuffer(Entity entity, Action action)
@@ -328,9 +267,8 @@ public:
         return inputMapping->getKeyFromAction(action);
     }
 
-private:
+protected:
     std::unique_ptr<InputMapping> inputMapping;
-    std::unique_ptr<ControllerMapping> controllerMapping;
     std::unordered_map<Action, std::unique_ptr<Command>> actionToCommandMapping;
     // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/
     struct actionBufferItem

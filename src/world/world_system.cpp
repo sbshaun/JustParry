@@ -281,7 +281,6 @@ void WorldSystem::initInputHandlers()
 
     // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
-    
 
     // player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
     //  player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
@@ -318,9 +317,10 @@ void WorldSystem::initInputHandlers()
     player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
     // Initialize input handlers with the mappings
-    player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), std::move(player1ControllerMapping));
-    player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));
+    // player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), std::move(player1ControllerMapping));
+    // player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));
 
+    //the Input Handler definition is to be done based on controller assignment
 
     player1InputHandler->initDefaultActionToCommandMapping();
     player2InputHandler->initDefaultActionToCommandMapping();
