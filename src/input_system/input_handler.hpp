@@ -10,7 +10,7 @@
 class InputHandler
 {
 public:
-    InputHandler(std::unique_ptr<InputMapping> inputMapping) : inputMapping(std::move(inputMapping)){}
+    InputHandler(std::unique_ptr<InputMapping> inputMapping, std::unique_ptr<ControllerMapping> controllerMapping) : inputMapping(std::move(inputMapping)){}
 
     void bindActionToCommand(Action action, std::unique_ptr<Command> command)
     {

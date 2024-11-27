@@ -5,9 +5,11 @@
 #include <iostream>
 #include "input_handler.hpp"
 
-class ControllerHandler : InputHandler {
+class ControllerHandler : public InputHandler {
     public:
-    ControllerHandler(std::unique_ptr<ControllerMapping> controllerMapping) : controllerMapping(std::move(controllerMapping)){}
+    public:
+    ControllerHandler(std::unique_ptr<ControllerMapping> controllerMapping) : InputHandler(nullptr, std::move(controllerMapping)) {}
+
 
     void handleInput(Entity entity, StateMachine &state_machine, int cid) //THIS CAUSES A CRASH 
     {

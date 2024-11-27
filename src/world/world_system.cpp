@@ -4,6 +4,7 @@
 #include "../physics/physics_system.hpp"
 #include "../constants.hpp"
 #include "../input_system/input_utils.hpp"
+#include "../input_system/controller_handler.hpp"
 
 Mix_Music *WorldSystem::background_music = nullptr;
 Mix_Chunk *WorldSystem::punch_sound = nullptr;
@@ -320,7 +321,15 @@ void WorldSystem::initInputHandlers()
 
     // Initialize input handlers with the mappings
     // player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), std::move(player1ControllerMapping));
-    // player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));
+    // player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));        
+    int p1_cid = registry.players.get(player1).controller_id;
+    int p2_cid = registry.players.get(player2).controller_id;
+    if (p1_cid != -1)
+    {
+        player1InputHandler = std::make_unique<ControllerHandler>(std::move(player1ControllerMapping));
+    } else {
+        player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), nullptr);
+    }
 
     //the Input Handler definition is to be done based on controller assignment
 
