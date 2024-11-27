@@ -330,11 +330,12 @@ void WorldSystem::initInputHandlers()
     } else {
         player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), nullptr);
     }
+
     if (p2_cid != -1)
     {
-        player2InputHandler = std::make_unique<ControllerHandler>(std::move(player1ControllerMapping));
+        player2InputHandler = std::make_unique<ControllerHandler>(std::move(player2ControllerMapping));
     } else {
-        player2InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), nullptr);
+        player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), nullptr);
     }
 
     //the Input Handler definition is to be done based on controller assignment
