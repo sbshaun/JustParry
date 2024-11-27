@@ -1206,7 +1206,6 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
 
 bool Game::handleArcadeStoryInput(GLFWwindow* window) 
 {
-    std::cout << currentFrame << std::endl;
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS && rightRelease == true)
     {
         rightRelease = false;
