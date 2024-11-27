@@ -10,7 +10,8 @@
 class InputHandler
 {
 public:
-    InputHandler(std::unique_ptr<InputMapping> inputMapping, std::unique_ptr<ControllerMapping> controllerMapping) : inputMapping(std::move(inputMapping)){}
+    InputHandler(std::unique_ptr<InputMapping> inputMapping, std::unique_ptr<ControllerMapping> controllerMapping)
+        : inputMapping(std::move(inputMapping)), controllerMapping(std::move(controllerMapping)) {}
 
     void bindActionToCommand(Action action, std::unique_ptr<Command> command)
     {
@@ -269,6 +270,7 @@ public:
 
 protected:
     std::unique_ptr<InputMapping> inputMapping;
+    std::unique_ptr<ControllerMapping> controllerMapping;
     std::unordered_map<Action, std::unique_ptr<Command>> actionToCommandMapping;
     // unique_ptr: https://www.geeksforgeeks.org/unique_ptr-in-cpp/
     struct actionBufferItem

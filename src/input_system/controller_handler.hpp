@@ -68,6 +68,4 @@ class ControllerHandler : public InputHandler {
         processActionBuffer(entity, state_machine);
     }
 
-    private:
-    std::unique_ptr<ControllerMapping> controllerMapping;
 };
