@@ -154,4 +154,6 @@ private:
 
     bool isBackButtonHovered = false;
     bool isBackButtonPressed = false;
+
+    int currentTutorialPage = 0;
 };

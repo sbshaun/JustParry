@@ -69,7 +69,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         575.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
-        "HELP"                                         // button text
+        "TUTORIAL"                                         // button text
     };
 
     // Add settings button below help button
@@ -910,32 +910,21 @@ void Game::renderArcadeMenu(GlRender &renderer)
 
 void Game::renderHelpScreen(GlRender &renderer)
 {
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
     // Calculate dimensions for the help screen image
+    glEnable(GL_BLEND);
     float helpBoxWidth = 300.0f;
     float helpBoxHeight = 300.0f;
     float helpBoxX = (M_WINDOW_WIDTH_PX + 350.f) / 2.0f;
-    float helpBoxY = (M_WINDOW_HEIGHT_PX) / 2.0f - 350.f;
-
-    glDisable(GL_BLEND);
-    // Render the help screen image in the center
-    renderer.renderTexturedQuadScaled(
-        renderer.m_helpTexture,
-        helpBoxX, helpBoxY,
-        helpBoxWidth, helpBoxHeight,
-        1.0f);
-
+    float helpBoxY = (M_WINDOW_HEIGHT_PX) / 2.0f - 325.f;
 
     // Position and size the close button (make it square)
     closeButton = {
-        30.f, // 10px padding from right
-        22.f,                // 10px padding from top
-        120.0f,                           // Square width
-        55.0f,                           // Square height
-        ""};
-
+        30.f,   // 10px padding from right
+        22.f,   // 10px padding from top
+        120.0f, // Square width
+        55.0f,  // Square height
+        ""
+    };
 
     // Get mouse position and check hover/press state
     GLFWwindow *window = glfwGetCurrentContext();
@@ -943,10 +932,57 @@ void Game::renderHelpScreen(GlRender &renderer)
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
     bool closeHovered = mouseX >= closeButton.x &&
-                        mouseX <= closeButton.x + closeButton.width &&
-                        mouseY >= closeButton.y &&
-                        mouseY <= closeButton.y + closeButton.height;
+                       mouseX <= closeButton.x + closeButton.width &&
+                       mouseY >= closeButton.y &&
+                       mouseY <= closeButton.y + closeButton.height;
     bool closePressed = closeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    Button previousButton = {
+        helpBoxX,        // x position
+        helpBoxY + 315.f, // y position
+        145.0f,          // width
+        50.0f,           // height
+        "BACK"
+    };
+
+    Button nextButton = {
+        helpBoxX + 150.f, // x position
+        helpBoxY + 315.f, // y position
+        145.0f,          // width
+        50.0f,           // height
+        "NEXT"
+    };
+
+    bool previousHovered = mouseX >= previousButton.x &&
+                         mouseX <= previousButton.x + previousButton.width &&
+                         mouseY >= previousButton.y &&
+                         mouseY <= previousButton.y + previousButton.height;
+    bool previousPressed = previousHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    bool nextHovered = mouseX >= nextButton.x &&
+                      mouseX <= nextButton.x + nextButton.width &&
+                      mouseY >= nextButton.y &&
+                      mouseY <= nextButton.y + nextButton.height;
+    bool nextPressed = nextHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    static bool prevButtonWasPressed = false;
+    static bool nextButtonWasPressed = false;
+
+    // Handle button clicks with debouncing
+    if (previousPressed && !prevButtonWasPressed) {
+        if (currentTutorialPage > 0) {
+            currentTutorialPage--;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    if (nextPressed && !nextButtonWasPressed) {
+        if (currentTutorialPage < 2) {  // 0,1,2 = 3 pages total
+            currentTutorialPage++;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    prevButtonWasPressed = previousPressed;
+    nextButtonWasPressed = nextPressed;
 
     // Render close button
     renderer.renderButton(
@@ -954,66 +990,105 @@ void Game::renderHelpScreen(GlRender &renderer)
         closeButton.width, closeButton.height,
         closeButton.text,
         closeHovered, closePressed,
-        glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
+        glm::vec3(0.7f, 0.1f, 0.1f)
     );
     renderer.renderText("EXIT", 55.f, 60.f, 0.35f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-    //renderer.renderText("LEFT", 700.f, 220.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-    //renderer.renderText("RIGHT", 700.f, 320.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // Render navigation buttons with disabled states
+    glm::vec3 backButtonColor = (currentTutorialPage == 0) ? 
+        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
+        glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
 
-    Button previousButton = {
-        helpBoxX, // 10px padding from right
-        helpBoxY + 315.f,                // 10px padding from top
-        145.0f,                           // Square width
-        50.0f,                           // Square height
-        "BACK"};
-    Button nextButton = {
-        helpBoxX + 150.f, // 10px padding from right
-        helpBoxY + 315.f,                // 10px padding from top
-        145.0f,                           // Square width
-        50.0f,                           // Square height
-        "NEXT"};
+    glm::vec3 nextButtonColor = (currentTutorialPage == 2) ? 
+        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
+        glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
 
-    bool previousHovered = mouseX >= previousButton.x &&
-                        mouseX <= previousButton.x + previousButton.width &&
-                        mouseY >= previousButton.y &&
-                        mouseY <= previousButton.y + previousButton.height;
-    bool previousPressed = previousHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    // Only allow button clicks if they're not at the limits
+    if (previousPressed && !prevButtonWasPressed) {
+        if (currentTutorialPage > 0) {
+            currentTutorialPage--;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    if (nextPressed && !nextButtonWasPressed) {
+        if (currentTutorialPage < 2) {
+            currentTutorialPage++;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    prevButtonWasPressed = previousPressed;
+    nextButtonWasPressed = nextPressed;
 
-    bool nextHovered = mouseX >= nextButton.x &&
-                        mouseX <= nextButton.x + nextButton.width &&
-                        mouseY >= nextButton.y &&
-                        mouseY <= nextButton.y + nextButton.height;
-    bool nextPressed = nextHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    
+    // Render navigation buttons with disabled states
     renderer.renderButton(
         previousButton.x, previousButton.y,
         previousButton.width, previousButton.height,
         previousButton.text,
-        previousHovered, previousPressed,
-        glm::vec3(0.9f, 0.9f, 0.9f) // Dark red color
+        currentTutorialPage > 0 && previousHovered,
+        currentTutorialPage > 0 && previousPressed,
+        backButtonColor
     );
 
     renderer.renderButton(
         nextButton.x, nextButton.y,
         nextButton.width, nextButton.height,
         nextButton.text,
-        nextHovered, nextPressed,
-        glm::vec3(0.9f, 0.9f, 0.9f) // Dark red color
+        currentTutorialPage < 2 && nextHovered,
+        currentTutorialPage < 2 && nextPressed,
+        nextButtonColor
     );
 
-    int count = 4;
-    if (count == 0)
-    {
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 850.f, 250.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 850.f, 275.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-    } else if (count == 1) {
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 850.f, 250.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.kick), 850.f, 275.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-    } else {
-        // renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 850.f, 275.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // Render the appropriate help screen image based on currentTutorialPage
+    GLuint currentTexture;
+    switch (currentTutorialPage) {
+        case 0:
+            currentTexture = renderer.m_helpTexture1;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+            break;
+        case 1:
+            currentTexture = renderer.m_helpTexture2;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            break;
+        case 2:
+            currentTexture = renderer.m_helpTexture3;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+             renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+            renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+            break;
     }
 
+    // Add page indicator text
+    renderer.renderText(std::to_string(currentTutorialPage + 1) + "/3", 
+        helpBoxX, helpBoxY - 10.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
@@ -1201,6 +1276,7 @@ void Game::handleBackButton()
 
 void Game::handleHelpButton()
 {
+    currentTutorialPage = 0; // Reset to first page when opening help
     this->setState(GameState::HELP);
     std::cout << "Help screen opened!" << std::endl;
 }
@@ -1219,6 +1295,7 @@ bool Game::handleHelpInput(GLFWwindow *window)
 
     if (mouseOverClose && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
+        currentTutorialPage = 0; // Reset page counter when closing help
         return true; // Return to menu
     }
 

@@ -79,7 +79,9 @@ public:
     Entity m_playableArea;
     GLuint m_menuTexture;
     GLuint m_arcadeMenuTexture;
-    GLuint m_helpTexture;
+    GLuint m_helpTexture1;
+    GLuint m_helpTexture2;
+    GLuint m_helpTexture3;
     GLuint m_settingsTexture;
     GLuint m_bg1Texture;
     GLuint m_bg2Texture;
