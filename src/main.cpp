@@ -242,18 +242,76 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
-        case GameState::HELP:
-            game.renderHelpScreen(renderer);
+        case GameState::HELP: {
+            
             if (game.handleHelpInput(glWindow.window))
             {
-                game.setState(GameState::MENU);
+                 game.resetGame(renderer, worldSystem);
+                 game.setState(GameState::MENU);
             }
-            if (Settings::windowSettings.show_fps)
+            if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
-                fpsCounter.update(renderer, false);
-                renderer.renderFPS(fpsCounter.getFPS(), true);
+                loopsSinceLastFrame = 0;
+
+                // Resume sounds and check music when returning to playing state
+                if (game.getPreviousState() == GameState::PAUSED ||
+                    game.getPreviousState() == GameState::SETTINGS)
+                {
+                    WorldSystem::resumeSounds();
+                    WorldSystem::updateAudioState(); // Make sure music is playing if enabled
+                }
+                
+                
+                handleUtilityInputs(renderer, showFPS,
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
+
+                // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+                // Do all rendering here, only once
+                renderer.render();
+                game.renderHelpScreen(renderer); 
+                worldSystem.renderParticles();
+                renderer.handleNotifications(elapsed_ms);
+
+                interp_moveEntitesToScreen(renderer, game);
+                if (Settings::windowSettings.show_fps)
+                {
+                    renderer.renderFPS(fpsCounter.getFPS(), true);
+                }
+                glWindow.windowSwapBuffers();
             }
-            glWindow.windowSwapBuffers();
+
+            loopsSinceLastFrame++;
+
+            // Update center for playable area
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
+            worldSystem.playerCollisions(&renderer);
+            worldSystem.hitBoxCollisions();
+            worldSystem.updatePlayableArea();
+            physicsSystem.step();
+
+            // NEEDS TO BE ELAPSED_MS / 1000.0f FOR PARTICLES TO RENDER!!
+            // OTHERWISE THEY DIE OUT TOO FAST
+            worldSystem.step(elapsed_ms / 1000.0f);
+
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
+            // time the next logic check
+            auto end = std::chrono::steady_clock::now();
+            std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
+
+            // Calculate the remaining time to sleep
+            int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
+            // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
+            if (sleepDuration > 0)
+            {
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
+                while (std::chrono::steady_clock::now() < sleepEnd)
+                {
+                    worldSystem.handleInput(); // this sets player inputs #3
+                } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
+            }
+            }
             break;
 
         case GameState::SETTINGS:
@@ -323,7 +381,7 @@ int main()
                 renderer.renderUI(timer);
                 game.renderPauseButton(renderer);
 
-                interp_moveEntitesToScreen(renderer);
+                interp_moveEntitesToScreen(renderer, game);
 
                 if (!isLoading)
                 {

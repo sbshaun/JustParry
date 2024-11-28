@@ -537,7 +537,9 @@ void GlRender::loadTextures()
     // Load texture for player 1
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
     loadTexture(textures_path("arcade_menu.png"), m_arcadeMenuTexture);
-    loadTexture(textures_path("help-screen.png"), m_helpTexture);
+    loadTexture(textures_path("t1.png"), m_helpTexture1);
+    loadTexture(textures_path("t2.png"), m_helpTexture2);
+    loadTexture(textures_path("t3.png"), m_helpTexture3);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
     loadTexture(textures_path("paused.png"), m_pauseMenuTexture);
     loadTexture(textures_path("bg1.png"), m_bg1Texture);
@@ -1168,7 +1170,7 @@ void GlRender::shutdown()
 
     // Delete textures
     GLuint textures[] = {
-        m_menuTexture, m_arcadeMenuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
+        m_menuTexture, m_arcadeMenuTexture, m_helpTexture1, m_helpTexture2, m_helpTexture3, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade,m_character1,
@@ -1177,7 +1179,7 @@ void GlRender::shutdown()
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
     // Clear texture IDs after deletion to prevent dangling references
-    m_menuTexture = m_helpTexture = m_settingsTexture = m_pauseMenuTexture = 0;
+    m_menuTexture = m_helpTexture1 = m_helpTexture2 = m_helpTexture3 = m_settingsTexture = m_pauseMenuTexture = 0;
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
     m_notif_parried = m_notif_hit = m_notif_stunned = 0;
