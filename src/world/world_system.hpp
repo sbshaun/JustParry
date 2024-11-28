@@ -1,14 +1,14 @@
 #pragma once
 #include "../common.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "../input_system/input_handler.hpp"
 #include "../input_system/state_machine.hpp"
-#include "../settings.hpp"
-#include "../default_config.hpp"
+#include "../settings/settings.hpp"
+#include "../settings/default_config.hpp"
 #include "../particle_system/particle_system.hpp"
 #include "../particle_system/blood_system.hpp"
 #include "../particle_system/smoke_system.hpp"
-#include "../bot.hpp"
+#include "../bot/bot.hpp"
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -61,6 +61,37 @@ public:
 		if (Settings::audioSettings.enable_sound_effects)
 		{
 			int channel = Mix_PlayChannel(-1, parry_sound, 0);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
+		}
+	}
+	static void playCrouchSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, crouch_sound, 0);
+    }
+  }
+	static void playPerfectParrySound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, perfect_parry_sound, 0);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
+		}
+	}
+	static void playHurtSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, hurt_sound, 0);
+			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
+		}
+	}
+	static void playParryBlockedSound()
+	{
+		if (Settings::audioSettings.enable_sound_effects)
+		{
+			int channel = Mix_PlayChannel(-1, parry_blocked_sound, 0);
 			Mix_Volume(channel, static_cast<int>(MIX_MAX_VOLUME * Settings::audioSettings.overall_volume));
 		}
 	}
@@ -220,10 +251,14 @@ private:
 	static Mix_Chunk *walk_sound;
 
 	static Mix_Chunk *parry_sound;
+	static Mix_Chunk *perfect_parry_sound;
+	static Mix_Chunk *parry_blocked_sound;
+	static Mix_Chunk *hurt_sound;
 	static Mix_Chunk *kick_sound;
 	static Mix_Chunk *menu_select_sound;
 	static Mix_Chunk *menu_confirm_sound;
 	static Mix_Chunk *game_count_down_sound;
+	static Mix_Chunk *crouch_sound;
 
-	Bot botInstance; // Add bot instance
+	Bot botInstance;
 };

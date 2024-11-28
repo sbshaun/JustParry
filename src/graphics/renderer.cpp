@@ -1,6 +1,6 @@
 #include "renderer.hpp"
-#include "common.hpp"
-#include "state/game.hpp"
+#include "../common.hpp"
+#include "../state/game.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -207,7 +207,7 @@ void GlRender::renderRoundOver(int count)
 
         // Create and render restart prompt
         renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10) * xscale, (baseY + 250.0f) * yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+        // renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10) * xscale, (baseY + 250.0f) * yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -537,7 +537,9 @@ void GlRender::loadTextures()
     // Load texture for player 1
     loadTexture(textures_path("menu_1.png"), m_menuTexture);
     loadTexture(textures_path("arcade_menu.png"), m_arcadeMenuTexture);
-    loadTexture(textures_path("help-screen.png"), m_helpTexture);
+    loadTexture(textures_path("t1.png"), m_helpTexture1);
+    loadTexture(textures_path("t2.png"), m_helpTexture2);
+    loadTexture(textures_path("t3.png"), m_helpTexture3);
     loadTexture(textures_path("settings-screen.png"), m_settingsTexture);
     loadTexture(textures_path("paused.png"), m_pauseMenuTexture);
     loadTexture(textures_path("bg1.png"), m_bg1Texture);
@@ -556,12 +558,17 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
     loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
+    loadTexture(textures_path("character_select_arcade.png"), m_characterSelectTextureArcade);
     loadTexture(textures_path("bird_idle_f1.png"), m_character1);
     loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
     loadTexture(textures_path("bird_parry_f1.png"), m_character1_ready);
     loadTexture(textures_path("bird_parry_f1_flipped.png"), m_character1_flip_ready);
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
+    loadTexture(textures_path("Bird_Story_1_1.png"), bird_Story_1_1);
+    loadTexture(textures_path("Bird_Story_1_2.png"), bird_Story_1_2);
+    loadTexture(textures_path("Bird_Story_1_3.png"), bird_Story_1_3);
+    loadTexture(textures_path("Bird_Story_1_4.png"), bird_Story_1_4);
     FighterManager::loadBirdTextures(*this);
 }
 
@@ -951,42 +958,42 @@ void GlRender::handleP1Posture(int p1Posture)
     }
     else if (p1Posture == 6)
     {
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 5)
     {
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 4)
     {
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(270.f + (3 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 3)
     {
-        renderBlueHealthRectangle(270.f + (4 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (2 * off) + (2 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 2)
     {
-        renderBlueHealthRectangle(270.f + (5 * off) + (5 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f + (1 * off) + (1 * wx), 150.f, wx, 15.f);
     }
     else if (p1Posture == 1)
     {
-        renderBlueHealthRectangle(270.f + (6 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(270.f, 150.f, wx, 15.f);
     }
     else if (p1Posture == 0)
     {
@@ -1011,42 +1018,42 @@ void GlRender::handleP2Posture(int p2Posture)
     }
     else if (p2Posture == 6)
     {
-        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 5)
     {
-        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 4)
     {
-        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
         renderBlueHealthRectangle(500.f + (5 * off) + (6 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 3)
     {
-        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(500.f + (4 * off) + (5 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (6 * off) + (7 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 2)
     {
-        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
-        renderBlueHealthRectangle(500.f + (3 * off) + (4 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (7 * off) + (8 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 1)
     {
-        renderBlueHealthRectangle(500.f + (2 * off) + (3 * wx), 150.f, wx, 15.f);
+        renderBlueHealthRectangle(500.f + (8 * off) + (9 * wx), 150.f, wx, 15.f);
     }
     else if (p2Posture == 0)
     {
@@ -1163,21 +1170,21 @@ void GlRender::shutdown()
 
     // Delete textures
     GLuint textures[] = {
-        m_menuTexture, m_arcadeMenuTexture, m_helpTexture, m_settingsTexture, m_pauseMenuTexture,
+        m_menuTexture, m_arcadeMenuTexture, m_helpTexture1, m_helpTexture2, m_helpTexture3, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
-        m_avatarTexture, m_characterSelectTexture, m_character1,
+        m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade,m_character1,
         m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
     // Clear texture IDs after deletion to prevent dangling references
-    m_menuTexture = m_helpTexture = m_settingsTexture = m_pauseMenuTexture = 0;
+    m_menuTexture = m_helpTexture1 = m_helpTexture2 = m_helpTexture3 = m_settingsTexture = m_pauseMenuTexture = 0;
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
     m_notif_parried = m_notif_hit = m_notif_stunned = 0;
     m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
-    m_avatarTexture = m_characterSelectTexture = m_character1 = 0;
+    m_avatarTexture = m_characterSelectTexture = m_characterSelectTextureArcade = m_character1 = 0;
     m_character1_ready = m_character1_flip_ready = 0;
     m_character1_flip = m_p1SelectKey = m_p2SelectKey = 0;
 
@@ -1245,12 +1252,6 @@ void GlRender::renderButton(float x, float y, float width, float height, const c
     float ndcY = 1.0f - (2.0f * y * yscale / frame_height);
     float ndcWidth = 2.0f * width * xscale / framew_width;
     float ndcHeight = -2.0f * height * yscale / frame_height;
-
-    // Add a small offset when pressed
-    if (pressed)
-    {
-        ndcY -= 0.1f; // Slight downward shift when pressed
-    }
 
     float vertices[] = {
         ndcX, ndcY, 0.0f,                        // top left

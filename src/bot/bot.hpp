@@ -1,10 +1,10 @@
 #ifndef BOT_HPP
 #define BOT_HPP
 
-#include "common.hpp"
+#include "../common.hpp"
 #include <random>
-#include "renderer.hpp"
-#include "input_system/state_machine.hpp"
+#include "../graphics/renderer.hpp"
+#include "../input_system/state_machine.hpp"
 
 // Bot states with clear priorities
 enum class BotState

@@ -1,6 +1,6 @@
 #pragma once
 #include "../constants.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../common.hpp"
 #include "stb_image/stb_image.h"
@@ -12,7 +12,7 @@
 #include "../world/world_init.hpp"
 #include <string>
 #include <GLFW/glfw3.h>
-#include "../settings.hpp"
+#include "../settings/settings.hpp"
 
 enum class GameState
 {
@@ -23,6 +23,7 @@ enum class GameState
     HELP,
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
+    ARCADE_STORY,
     ARCADE_WIN,
     ARCADE_LOSE,
     SETTINGS,
@@ -56,9 +57,11 @@ public:
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
     void renderArcadeMenu(GlRender &renderer);
+    void renderArcadeStory(GlRender& renderer);
     bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
     void handleArcadeButton();
     bool handleArcadeMenuInput(GLFWwindow *window);
+    bool handleArcadeStoryInput(GLFWwindow* window);
     void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
@@ -112,22 +115,22 @@ private:
     bool showHelpDialog;
     bool isPaused;
 
-    Button startButton;
-    Button arcadeButton;
-    Button helpButton;
-    Button closeButton;
-    Button backButton;
-    Button settingsButton;
-    Button pauseButton;
-    Button resumeButton;
-    Button menuButton;
-    Button pauseSettingsButton;
+    struct Button startButton;
+    struct Button arcadeButton;
+    struct Button helpButton;
+    struct Button closeButton;
+    struct Button backButton;
+    struct Button settingsButton;
+    struct Button pauseButton;
+    struct Button resumeButton;
+    struct Button menuButton;
+    struct Button pauseSettingsButton;
 
-    Button arcadeLevelOneButton;
-    Button arcadeLevelTwoButton;
-    Button arcadeLevelThreeButton;
-    Button arcadeLevelFourButton;
-    Button arcadeLevelFiveButton;
+    struct Button arcadeLevelOneButton;
+    struct Button arcadeLevelTwoButton;
+    struct Button arcadeLevelThreeButton;
+    struct Button arcadeLevelFourButton;
+    struct Button arcadeLevelFiveButton;
 
     int player1Score = 0;
     int player2Score = 0;
@@ -135,6 +138,13 @@ private:
 
     int levelCompleted = 0;
     int currentLevel = 0;
+    int currentFrame = 0;
+    int currentFinalFrame = 0;
+
+    bool rightRelease = true;
+    bool leftRelease = true;
+    bool spaceRelease = true;
+    bool backButtonReleased = true;
 
     bool showFPS;
 
@@ -153,4 +163,6 @@ private:
 
     bool isBackButtonHovered = false;
     bool isBackButtonPressed = false;
+
+    int currentTutorialPage = 0;
 };

@@ -2,12 +2,12 @@
 #include "../external/project_path.hpp"
 #include "shader.hpp"
 #include "mesh.hpp"
-#include "common.hpp"
-#include "ecs/ecs.hpp"
-#include "ecs/ecs_registry.hpp"
-#include "ecs/components.hpp"
+#include "../common.hpp"
+#include "../ecs/ecs.hpp"
+#include "../ecs/ecs_registry.hpp"
+#include "../ecs/components.hpp"
 #include "mesh.hpp"
-#include "window.hpp"
+#include "../window.hpp"
 #include <array>
 #include <chrono>
 
@@ -79,7 +79,9 @@ public:
     Entity m_playableArea;
     GLuint m_menuTexture;
     GLuint m_arcadeMenuTexture;
-    GLuint m_helpTexture;
+    GLuint m_helpTexture1;
+    GLuint m_helpTexture2;
+    GLuint m_helpTexture3;
     GLuint m_settingsTexture;
     GLuint m_bg1Texture;
     GLuint m_bg2Texture;
@@ -101,12 +103,17 @@ public:
     GLuint m_pauseMenuTexture;
 
     GLuint m_characterSelectTexture;
+    GLuint m_characterSelectTextureArcade;
     GLuint m_character1;
     GLuint m_character1_flip;
     GLuint m_character1_ready;
     GLuint m_character1_flip_ready;
     GLuint m_p1SelectKey;
     GLuint m_p2SelectKey;
+    GLuint bird_Story_1_1;
+    GLuint bird_Story_1_2;
+    GLuint bird_Story_1_3;
+    GLuint bird_Story_1_4;
 
     // font elements
     std::map<char, Character> m_ftCharacters;

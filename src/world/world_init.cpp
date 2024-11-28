@@ -1,7 +1,7 @@
 #include "world_init.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../constants.hpp"
-#include "../bot.hpp"
+#include "../bot/bot.hpp"
 #include <stb_image.h>
 void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlayer1)
 {

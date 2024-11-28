@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <algorithm>
-#include "../shader.hpp"
+#include "../graphics/shader.hpp"
 #include "../ecs/ecs_registry.hpp"
 
 struct Particle {
