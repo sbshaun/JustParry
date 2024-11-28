@@ -960,7 +960,7 @@ void Game::renderArcadeStory(GlRender& renderer)
     // LEVEL TWO
     if (currentLevel == 2) {
         renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture,
+            renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
             storyBoxWidth, storyBoxHeight,
             1.0f);
@@ -968,7 +968,7 @@ void Game::renderArcadeStory(GlRender& renderer)
     // LEVEL THREE
     if (currentLevel == 3) {
         renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture,
+            renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
             storyBoxWidth, storyBoxHeight,
             1.0f);
@@ -976,7 +976,7 @@ void Game::renderArcadeStory(GlRender& renderer)
     // LEVEL FOUR
     if (currentLevel == 4) {
         renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture,
+            renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
             storyBoxWidth, storyBoxHeight,
             1.0f);
@@ -984,7 +984,7 @@ void Game::renderArcadeStory(GlRender& renderer)
     // LEVEL FIVE
     if (currentLevel == 5) {
         renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture,
+            renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
             storyBoxWidth, storyBoxHeight,
             1.0f);
