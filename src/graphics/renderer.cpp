@@ -565,6 +565,10 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bird_parry_f1_flipped.png"), m_character1_flip_ready);
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
+    loadTexture(textures_path("Bird_Story_1_1.png"), bird_Story_1_1);
+    loadTexture(textures_path("Bird_Story_1_2.png"), bird_Story_1_2);
+    loadTexture(textures_path("Bird_Story_1_3.png"), bird_Story_1_3);
+    loadTexture(textures_path("Bird_Story_1_4.png"), bird_Story_1_4);
     FighterManager::loadBirdTextures(*this);
 }
 

@@ -110,6 +110,10 @@ public:
     GLuint m_character1_flip_ready;
     GLuint m_p1SelectKey;
     GLuint m_p2SelectKey;
+    GLuint bird_Story_1_1;
+    GLuint bird_Story_1_2;
+    GLuint bird_Story_1_3;
+    GLuint bird_Story_1_4;
 
     // font elements
     std::map<char, Character> m_ftCharacters;

@@ -51,7 +51,7 @@ struct FighterConfig
     float KICK_DAMAGE = 10.f; 
     float KICK_STUN_DURATION; 
 
-    float CROUCH_TIMER = 1500.f; // crouching period 
+    float CROUCH_TIMER = 500.f; // crouching period 
 
     float PARRY_DURATION; // parry duration (parryBox active time)
     float PERFECT_PARRY_DURATION;
@@ -79,6 +79,7 @@ struct FighterConfig
     GLuint m_bird_walk_f4_texture;
     GLuint m_bird_stun_f1_texture;
     GLuint m_bird_parry_f1_texture;
+    GLuint m_bird_crouch_f3_texture;
 
     // default constructor
     FighterConfig(int window_width_px = 1024, int window_height_px = 768)

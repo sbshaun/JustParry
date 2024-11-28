@@ -197,21 +197,6 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_MENU:
-            game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window))
-            {
-                std::cout << "Entered Character Select Stage" << std::endl;
-                game.setState(GameState::ARCADE_PREFIGHT);
-            }
-            if (Settings::windowSettings.show_fps)
-            {
-                fpsCounter.update(renderer, false);
-                renderer.renderFPS(fpsCounter.getFPS(), true);
-            }
-
-            glWindow.windowSwapBuffers();
-            break;
         case GameState::ARCADE_PREFIGHT:
             // Enable bot for arcade
             botEnabled = true;
@@ -227,13 +212,35 @@ int main()
             }
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_WIN:
-            // Win/Loss screen for winning/losing in arcade mode
+        case GameState::ARCADE_MENU:
+            game.renderArcadeMenu(renderer);
+            if (game.handleArcadeMenuInput(glWindow.window))
+            {
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::ARCADE_STORY);
+            }
+            if (Settings::windowSettings.show_fps)
+            {
+                fpsCounter.update(renderer, false);
+                renderer.renderFPS(fpsCounter.getFPS(), true);
+            }
 
+            glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_LOSE:
-            // Win/Loss screen for winning/losing in arcade mode
+        case GameState::ARCADE_STORY:
+            game.renderArcadeStory(renderer);
+            if (game.handleArcadeStoryInput(glWindow.window))
+            {
+                WorldSystem::playGameCountDownSound();
+                game.setState(GameState::ROUND_START);
+            }
+            if (Settings::windowSettings.show_fps)
+            {
+                fpsCounter.update(renderer, false);
+                renderer.renderFPS(fpsCounter.getFPS(), true);
+            }
 
+            glWindow.windowSwapBuffers();
             break;
         case GameState::HELP: {
             
