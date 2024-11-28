@@ -377,23 +377,21 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
     bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
                        mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
 
-    static bool backButtonPressed = false;
+    // static bool backButtonPressed = false;
 
     if (backHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
-        if (!backButtonPressed)
+        if (backButtonReleased)
         {
-            backButtonPressed = true; // Remember that button was pressed
+            handleBackButton();
         }
+        backButtonReleased = false;
     }
     else
     {
-        if (backButtonPressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-        {
-            handleBackButton(); // Trigger action on release
-            std::cout << "Back button pressed!" << std::endl;
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+            backButtonReleased = true;
         }
-        backButtonPressed = false; // Reset the state when released
     }
 
     // render back button
@@ -402,7 +400,7 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
         backButton.width, backButton.height, // width, height
         "<-",                                // text
         backHovered,                         // Add this member variable to Game class
-        backButtonPressed                    // Add this member variable to Game class
+        !backButtonReleased                   // Add this member variable to Game class
     );
 
     renderer.renderSelectorTriangleP1(560, 255 + offset1, 30, 30, p1);
@@ -702,8 +700,7 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
             renderer.renderText("TO START!", 285, 310, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
             {
-                WorldSystem::playGameCountDownSound();
-                game.setState(GameState::ROUND_START);
+                game.setState(GameState::ARCADE_MENU);
             }
         }
     }
@@ -908,6 +905,92 @@ void Game::renderArcadeMenu(GlRender &renderer)
     glDepthFunc(GL_LESS);
 }
 
+void Game::renderArcadeStory(GlRender& renderer)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Render background with full brightness
+    renderer.renderTexturedQuadScaled(
+        renderer.m_arcadeMenuTexture,
+        0, 0,
+        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+        1.0f // Full brightness for main menu
+    );
+
+    // Calculate dimensions for the story images
+    float storyBoxWidth = 800.0f;
+    float storyBoxHeight = 600.0f;
+    float storyBoxX = (M_WINDOW_WIDTH_PX - storyBoxWidth) / 2.0f;
+    float storyBoxY = (M_WINDOW_HEIGHT_PX - storyBoxHeight) / 2.0f;
+
+    // LEVEL ONE 
+    // TODO: MAKE INTO A TUTORIAL LEVEL
+    if (currentLevel == 1) {
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        }
+    }
+    // LEVEL TWO
+    if (currentLevel == 2) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL THREE
+    if (currentLevel == 3) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL FOUR
+    if (currentLevel == 4) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL FIVE
+    if (currentLevel == 5) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+}
+
 void Game::renderHelpScreen(GlRender &renderer)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1045,7 +1128,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
 
 void Game::handleArcadeButton()
 {
-    this->setState(GameState::ARCADE_MENU);
+    this->setState(GameState::ARCADE_PREFIGHT);
     std::cout << "Arcade menu screen opened!" << std::endl;
 }
 
@@ -1091,51 +1174,101 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         mouseY >= arcadeLevelFiveButton.y &&
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
-    // reset the arcade level when going back to the menu
-    currentLevel = 0;
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverBack)
         {
-            handleBackButton();
+            if (!backButtonReleased) {
+                handleBackButton();
+            }
+            backButtonReleased = false;
         }
         if (mouseOverLevelOne)
         {
-
             currentLevel = 1;
+            currentFrame = 1;
+            currentFinalFrame = 4;
             return true;
         }
         else if (mouseOverLevelTwo && levelCompleted >= 1)
         {
             currentLevel = 2;
+            currentFrame = 1;
+            currentFinalFrame = 6;
             return true;
         }
         else if (mouseOverLevelThree && levelCompleted >= 2)
         {
             currentLevel = 3;
+            currentFrame = 1;
+            currentFinalFrame = 7;
             return true;
         }
         else if (mouseOverLevelFour && levelCompleted >= 3)
         {
             currentLevel = 4;
+            currentFrame = 1;
+            currentFinalFrame = 8;
             return true;
         }
         else if (mouseOverLevelFive && levelCompleted >= 4)
         {
             currentLevel = 5;
+            currentFrame = 1;
+            currentFinalFrame = 9;
             return true;
         }
     }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+    {
+        backButtonReleased = true;
+    }
+
 
     return false;
 }
 
+bool Game::handleArcadeStoryInput(GLFWwindow* window) 
+{
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS && rightRelease == true)
+    {
+        rightRelease = false;
+        if (currentFrame < currentFinalFrame) {
+            currentFrame++;
+        }
+    }
+    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && leftRelease == true)
+    {
+        leftRelease = false;
+        if (currentFrame > 1) {
+            currentFrame--;
+        }
+    }*/
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
+    {
+        spaceRelease = false;
+        if (currentFrame == currentFinalFrame) {
+            return true;
+        }
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE) {
+        rightRelease = true;
+    }
+    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
+        leftRelease = true;
+    }*/
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
+        spaceRelease = true;
+    }
+    return false;;
+}
+
 void Game::handleBackButton()
 {
-    if (this->getState() == GameState::ARCADE_PREFIGHT)
+    if (this->getState() == GameState::ARCADE_MENU)
     {
-        this->setState(GameState::ARCADE_MENU);
+        this->setState(GameState::ARCADE_PREFIGHT);
         std::cout << "Going to Arcade Menu Screen" << std::endl;
     }
     else
