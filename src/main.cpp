@@ -74,7 +74,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         roundEnded = false;
         if (botEnabled)
         {
-            botInstance.pollBotRng(renderer, botStateMachine);
+            botInstance.pollBotRng(renderer, botStateMachine, game.getCurrentLevel());
         }
         renderer.renderUI(timer);
     }
@@ -344,7 +344,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput();
+                    worldSystem.handleInput(game.getCurrentLevel());
                 }
             }
         }
@@ -424,7 +424,7 @@ int main()
             // time the next logic check
             auto end = std::chrono::steady_clock::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
-
+            game.getCurrentLevel();
             // Calculate the remaining time to sleep
             int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
             // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
@@ -433,7 +433,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }

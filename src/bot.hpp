@@ -19,15 +19,17 @@ enum class BotState
 class Bot
 {
 public:
-    void pollBotRng(GlRender &renderer, StateMachine &stateMachine);
+    void pollBotRng(GlRender &renderer, StateMachine &stateMachine, int currentLevel);
 };
 
 static BotState currentState = BotState::CHASE;
 static int actionCounter = 0;
+static int parryCounter = 0;
 
 // Constants for positioning
-const float IDEAL_ATTACK_DISTANCE = 0.25f; // Best distance for attacking
+const float IDEAL_ATTACK_DISTANCE = 0.18f; // Best distance for attacking
 const float TOO_CLOSE_DISTANCE = 0.15f;    // Distance to start backing off
 const float TOO_FAR_DISTANCE = 0.35f;      // Distance to start chasing
+const int BOT_PARRY_COOLDOWN = 1000;  // Cooldown for parry
 
 #endif

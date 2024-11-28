@@ -83,12 +83,11 @@ public:
         player2Score = 0;
     }
 
-
+    int getCurrentLevel() { return currentLevel; }
 
     // SETTINGS MENU
     void renderSettingsMenu(GlRender &renderer);
     bool handleSettingsInput(GlRender &renderer, GLFWwindow *window);
-
 
 
     WorldSystem *getWorldSystem() { return worldSystem; }

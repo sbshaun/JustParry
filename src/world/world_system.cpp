@@ -314,7 +314,7 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput()
+void WorldSystem::handleInput(int currentLevel)
 {
     // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
@@ -327,7 +327,7 @@ void WorldSystem::handleInput()
     else
     {
         // Process bot's inputs through the state machine
-        botInstance.pollBotRng(*renderer, *player2StateMachine);
+        botInstance.pollBotRng(*renderer, *player2StateMachine, currentLevel);
     }
 }
 

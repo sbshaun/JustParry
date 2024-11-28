@@ -29,7 +29,7 @@ public:
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
-	void handleInput();
+	void handleInput(int currentLevel);
 	void inputProcessing();
 	void movementProcessing();
 	void handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine);
