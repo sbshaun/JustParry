@@ -11,7 +11,7 @@ FighterConfig &setUpBirdmanConfig()
 
     birdmanConfig.MAX_HEALTH = 100.f;
     birdmanConfig.POSTURE_MAX = 7;
-    birdmanConfig.POSTURE_REGEN = 2000;
+    birdmanConfig.POSTURE_REGEN = 5000.f;
 
     birdmanConfig.MOVESPEED = MOVE_SPEED;
     birdmanConfig.JUMP_VELOCITY = 0.06f / FPS_LOGIC_FACTOR;

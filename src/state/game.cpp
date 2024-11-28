@@ -989,6 +989,8 @@ void Game::renderArcadeStory(GlRender& renderer)
             storyBoxWidth, storyBoxHeight,
             1.0f);
     }
+
+    renderer.renderText("SPACE ->", 850.f, 750.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 void Game::renderHelpScreen(GlRender &renderer)
@@ -1360,33 +1362,16 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
 
 bool Game::handleArcadeStoryInput(GLFWwindow* window) 
 {
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS && rightRelease == true)
-    {
-        rightRelease = false;
-        if (currentFrame < currentFinalFrame) {
-            currentFrame++;
-        }
-    }
-    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && leftRelease == true)
-    {
-        leftRelease = false;
-        if (currentFrame > 1) {
-            currentFrame--;
-        }
-    }*/
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
     {
         spaceRelease = false;
         if (currentFrame == currentFinalFrame) {
             return true;
         }
+        if (currentFrame < currentFinalFrame) {
+            currentFrame++;
+        }
     }
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE) {
-        rightRelease = true;
-    }
-    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
-        leftRelease = true;
-    }*/
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
         spaceRelease = true;
     }
