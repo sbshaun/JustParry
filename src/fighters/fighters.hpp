@@ -25,6 +25,7 @@ struct FighterConfig
     float MAX_HEALTH = 100.f;
     int POSTURE_MAX = 7;
     int POSTURE_REGEN = 3;
+    float PERFECT_PARRY_TIME; 
 
     // movement
     float MOVESPEED;

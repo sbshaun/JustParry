@@ -9,7 +9,7 @@ const int M_WINDOW_HEIGHT_PX = 768;
 
 const bool BOT_ENABLED = false;
 
-const float PERFECT_PARRY_TIME = 300.0f;
+// const float PERFECT_PARRY_TIME = 300.0f;
 
 // LOOP LOGIC
 // 1000hz = 1ms
