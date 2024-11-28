@@ -16,10 +16,10 @@ class GlRender;
 struct FighterConfig
 {
     // collision and size
-    float BB_WIDTH = PLAYER_BB_WIDTH;
-    float BB_HEIGHT = PLAYER_BB_HEIGHT;
-    float NDC_WIDTH = BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f;
-    float NDC_HEIGHT = BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
+    float BB_WIDTH;
+    float BB_HEIGHT;
+    float NDC_WIDTH;
+    float NDC_HEIGHT;
 
     // properties
     float MAX_HEALTH = 100.f;
@@ -27,8 +27,8 @@ struct FighterConfig
     int POSTURE_REGEN = 3;
 
     // movement
-    float MOVESPEED = MOVE_SPEED;
-    float JUMP_VELOCITY = 0.2f;
+    float MOVESPEED;
+    float JUMP_VELOCITY;
 
     // attack 1 (punch)
     float HITBOX_DURATION; // this is the time the hitbox is active

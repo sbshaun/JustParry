@@ -6,14 +6,17 @@
 FighterConfig &setUpBirdmanConfig()
 {
     static FighterConfig birdmanConfig(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
-    birdmanConfig.BB_WIDTH = PLAYER_BB_WIDTH;
-    birdmanConfig.BB_HEIGHT = PLAYER_BB_HEIGHT;
+    birdmanConfig.BB_WIDTH = 2.5f * 80.f;
+    birdmanConfig.BB_HEIGHT = 2.5f * 100.f;
+
+    birdmanConfig.NDC_WIDTH = birdmanConfig.BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f;
+    birdmanConfig.NDC_HEIGHT = birdmanConfig.BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 
     birdmanConfig.MAX_HEALTH = 100.f;
     birdmanConfig.POSTURE_MAX = 7;
     birdmanConfig.POSTURE_REGEN = 2000;
 
-    birdmanConfig.MOVESPEED = MOVE_SPEED;
+    birdmanConfig.MOVESPEED = 0.02f / FPS_LOGIC_FACTOR;
     birdmanConfig.JUMP_VELOCITY = 0.06f / FPS_LOGIC_FACTOR;
 
     birdmanConfig.HITBOX_DURATION = 1000.f;

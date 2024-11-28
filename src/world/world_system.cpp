@@ -373,11 +373,13 @@ void WorldSystem::handleInput()
         if (p2Input.punch || p2Input.kick)
             player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
 
-        // Update motion based on inputs
+        // Update motion based on inputs  
+        float P2_movespeed = FighterManager::getFighterConfig(registry.players.get(renderer->m_player2).current_char).MOVESPEED; //why does this only exist for p2
+        
         if (p2Input.left)
-            player2Motion->velocity.x = -MOVE_SPEED;
+            player2Motion->velocity.x = -P2_movespeed;
         else if (p2Input.right)
-            player2Motion->velocity.x = MOVE_SPEED;
+            player2Motion->velocity.x = P2_movespeed;
         else
             player2Motion->velocity.x = 0;
     }
