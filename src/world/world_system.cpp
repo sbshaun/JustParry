@@ -636,6 +636,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // Hitbox collided with the hurtbox of the other player
         // Check if the hitbox has collided with the mesh of the other player
         ObjectMesh *otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
+        std::cout << "HELLO" << std::endl;
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
                                      otherPlayerMeshPtr, hurtPlayerMotion))
         {
@@ -728,26 +729,6 @@ void WorldSystem::checkAABBCollision(bool &xCollision, bool &yCollision,
 
     xCollision = x_collision;
     yCollision = y_collision;
-
-    // keep track of whether the collision happened from above or the side
-    motion1.wasAbove = motion1.above;
-    motion2.wasAbove = motion2.above;
-
-    if (x_collision && box1Bottom > box2Top)
-    {
-        motion1.above = true;
-        motion2.above = false;
-    }
-    else if (x_collision && box2Bottom > box1Top)
-    {
-        motion2.above = true;
-        motion1.above = false;
-    }
-    else if (box1Bottom < box2Top && box2Bottom < box1Top)
-    {
-        motion1.above = false;
-        motion2.above = false;
-    }
 }
 
 /*

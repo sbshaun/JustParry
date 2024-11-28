@@ -12,6 +12,14 @@ FighterConfig &setUpBirdmanConfig()
     birdmanConfig.NDC_WIDTH = birdmanConfig.BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f;
     birdmanConfig.NDC_HEIGHT = birdmanConfig.BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f;
 
+    birdmanConfig.PUNCH_WIDTH = 0.50f * (birdmanConfig.BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f);
+    birdmanConfig.PUNCH_HEIGHT = 0.15f * (birdmanConfig.BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+
+    birdmanConfig.KICK_WIDTH = 0.50f * (birdmanConfig.BB_WIDTH / M_WINDOW_WIDTH_PX * 2.0f);
+    birdmanConfig.KICK_HEIGHT = 0.15f * (birdmanConfig.BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+
+    birdmanConfig.KICK_Y_OFFSET = -0.40f * (birdmanConfig.BB_HEIGHT / M_WINDOW_HEIGHT_PX * 2.0f);
+
     birdmanConfig.MAX_HEALTH = 100.f;
     birdmanConfig.POSTURE_MAX = 7;
     birdmanConfig.POSTURE_REGEN = 2000;
