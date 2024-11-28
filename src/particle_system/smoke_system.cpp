@@ -1,17 +1,21 @@
 #include "smoke_system.hpp"
 
-SmokeParticleSystem::SmokeParticleSystem() {
+SmokeParticleSystem::SmokeParticleSystem()
+{
     shader = new Shader("particle");
     std::cout << "Shader program ID: " << shader->m_shaderProgram << std::endl;
     init();
 }
 
-void SmokeParticleSystem::update(float deltaTime) {
-    if (particles.empty()) {
+void SmokeParticleSystem::update(float deltaTime)
+{
+    if (particles.empty())
+    {
         return;
     }
 
-    for (auto& particle : particles) {
+    for (auto &particle : particles)
+    {
         // Update position
         particle.x += particle.vx * deltaTime;
         particle.y += particle.vy * deltaTime;
@@ -32,9 +36,9 @@ void SmokeParticleSystem::update(float deltaTime) {
     // Remove dead particles
     particles.erase(
         std::remove_if(particles.begin(), particles.end(),
-            [](const Particle& p) { return p.life <= 0.0f; }),
-        particles.end()
-    );
+                       [](const Particle &p)
+                       { return p.life <= 0.0f; }),
+        particles.end());
 }
 
 void SmokeParticleSystem::emit(float x, float y, float z, bool direction = 0) {
@@ -47,14 +51,15 @@ void SmokeParticleSystem::emit(float x, float y, float z, bool direction = 0) {
     const float MAX_VELOCITY = 0.1f;
     const float SPAWN_RADIUS = 0.05f;
 
-    for (int i = 0; i < NUM_PARTICLES; i++) {
+    for (int i = 0; i < NUM_PARTICLES; i++)
+    {
         Particle particle;
 
         // Random spawn position within a small radius
-        float theta = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
-        float radius = ((float)rand() / RAND_MAX) * SPAWN_RADIUS;
-        particle.x = x + radius * cos(theta);
-        particle.y = y + radius * sin(theta);
+        double theta = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
+        double radius = ((float)rand() / RAND_MAX) * SPAWN_RADIUS;
+        particle.x = float(x + radius * cos(theta));
+        particle.y = float(y + radius * sin(theta));
         particle.z = z;
 
         // Random velocity
@@ -71,7 +76,8 @@ void SmokeParticleSystem::emit(float x, float y, float z, bool direction = 0) {
 
         particles.push_back(particle);
 
-        if (particles.size() >= MAX_PARTICLES) {
+        if (particles.size() >= MAX_PARTICLES)
+        {
             break;
         }
     }

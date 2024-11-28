@@ -1,7 +1,7 @@
 #pragma once
 #include "../common.hpp"
-#include "../mesh.hpp"
-#include "../shader.hpp"
+#include "../graphics/mesh.hpp"
+#include "../graphics/shader.hpp"
 #include "../constants.hpp"
 #include "ecs.hpp"
 #include "../fighters/fighters.hpp"
@@ -241,6 +241,7 @@ struct HitBox : public Box
     bool active = false; // TODO: active for how  many frames? 12?
     // if the current attack already caused damage
     bool hit = false; // flag to check before applying damage.
+    float damage = 10.f; // default damage value 
 
     float getLeft(const vec2 &playerPosition, bool facingRight) const override
     {

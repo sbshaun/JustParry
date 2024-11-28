@@ -2,7 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include "../ecs/ecs.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 
 using namespace glm;
 

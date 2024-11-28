@@ -1,7 +1,7 @@
 #include "world_init.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../constants.hpp"
-#include "../bot.hpp"
+#include "../bot/bot.hpp"
 #include <stb_image.h>
 void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlayer1)
 {
@@ -10,9 +10,9 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     health.maxHealth = config.MAX_HEALTH;
 
     PostureBar &postureBar = registry.postureBars.emplace(entity);
-    postureBar.currentBar = config.POSTURE_MAX;
-    postureBar.maxBar = config.POSTURE_MAX;
-    postureBar.recoverRate = config.POSTURE_REGEN; // 3 seconds per bar
+    postureBar.currentBar = float(config.POSTURE_MAX);
+    postureBar.maxBar = float(config.POSTURE_MAX);
+    postureBar.recoverRate = float(config.POSTURE_REGEN); // 3 seconds per bar
 
     float PUNCH_WIDTH;
     float PUNCH_HEIGHT;
@@ -25,7 +25,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
     PUNCH_Y_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_Y_OFFSET;
 
-    HitBox& hitBox = registry.hitBoxes.emplace(entity);
+    HitBox &hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = config.PUNCH_WIDTH;
     hitBox.height = config.PUNCH_HEIGHT;
     hitBox.xOffset = isPlayer1 ? config.PUNCH_X_OFFSET : -config.PUNCH_X_OFFSET;
@@ -34,7 +34,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
 
     CollisionBox &collisionBox = registry.collisionBoxes.emplace(entity);
     // apparently this is the width, height, and offset calculation of the collision box
-    collisionBox.width = config.NDC_WIDTH / 2.2f; 
+    collisionBox.width = config.NDC_WIDTH / 2.2f;
     collisionBox.height = config.NDC_HEIGHT / 2.7f;
     collisionBox.xOffset = -config.NDC_WIDTH / 5.7f;
     collisionBox.yOffset = 0;
@@ -46,7 +46,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     hurtBox.xOffset = -config.NDC_WIDTH / 5.7f;
     hurtBox.yOffset = 0;
 
-    // slighly bigger than hurtbox to not overlap when rendering 
+    // slighly bigger than hurtbox to not overlap when rendering
     ParryBox &parryBox = registry.parryBoxes.emplace(entity);
     parryBox.width = config.NDC_WIDTH / 1.5f;
     parryBox.height = config.NDC_HEIGHT / 1.9f;
@@ -62,7 +62,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     perfectParryBox.yOffset = 0;
 
     // TODO: Shouldnt  assume fighter, read player
-    Animation& animation = registry.animations.emplace(entity);
+    Animation &animation = registry.animations.emplace(entity);
     animation.currentTexture = config.m_bird_idle_f1_texture;
     animation.currentFrame = 0;
 }
@@ -71,7 +71,7 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
 helper function for player1, player2, and opponent1
 p.s. entity: player entity
 */
-static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRender* renderer, bool isPlayer1, Fighters fighter)
+static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRender *renderer, bool isPlayer1, Fighters fighter)
 {
     // init player's currentState to be IDLE, init stateTimer to 0
     PlayerCurrentState &playerState = registry.playerCurrentStates.emplace(entity);
@@ -84,9 +84,9 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
     Fighters current_char = registry.players.get(entity).current_char;
     FighterConfig config = FighterManager::getFighterConfig(current_char);
 
-    Animation& animation = registry.animations.get(entity);
+    Animation &animation = registry.animations.get(entity);
 
-    ObjectMesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::IDLE_BIRD);
+    ObjectMesh &mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::IDLE_BIRD);
     registry.objectMeshPtrs.emplace(entity, &mesh);
 
     // Convert 'player' width and height to normalized device coordinates
@@ -115,7 +115,7 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
 
     PlayerInput playerInput = registry.playerInputs.emplace(entity);
 
-    registry.players.get(entity).controller_id = -1; //Represents no controller
+    registry.players.get(entity).controller_id = -1; // Represents no controller
 
     registry.knockbacks.emplace(entity);
 }
@@ -132,7 +132,8 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
     // set current_char to BIRDMAN by default
     // registry.players.get(entity).current_char = fighter;
-    if(glfwJoystickPresent(GLFW_JOYSTICK_1)){ //TODO make this assign dynamically
+    if (glfwJoystickPresent(GLFW_JOYSTICK_1))
+    { // TODO make this assign dynamically
         registry.players.get(entity).controller_id = GLFW_JOYSTICK_1;
     }
     std::cout << "player 1 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
@@ -142,14 +143,15 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
 /*
 Create player2 entity, init and register components using the helper function above
 */
-Entity createPlayer2(GlRender* renderer, vec2 pos, Fighters fighter)
+Entity createPlayer2(GlRender *renderer, vec2 pos, Fighters fighter)
 {
     Entity entity = Entity();
     registry.players.insert(entity, Player{2, fighter});
     Shader *rectShader = new Shader(std::string("player2"));
     createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
     // registry.players.get(entity).current_char = fighter;
-    if(glfwJoystickPresent(GLFW_JOYSTICK_2)){ //TODO make this assign dynamically
+    if (glfwJoystickPresent(GLFW_JOYSTICK_2))
+    { // TODO make this assign dynamically
         registry.players.get(entity).controller_id = GLFW_JOYSTICK_2;
     }
     std::cout << "player 2 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
@@ -173,11 +175,11 @@ Entity createBoundary(float val, int type)
     return entity;
 };
 
-Entity createPlayableArea(const vec2& pos, float width, float height)
+Entity createPlayableArea(const vec2 &pos, float width, float height)
 {
     Entity entity = Entity();
 
-    PlayableArea& playableArea = registry.playableArea.emplace(entity);
+    PlayableArea &playableArea = registry.playableArea.emplace(entity);
     playableArea.position = pos;
     playableArea.width = width;
     playableArea.height = height;
@@ -185,10 +187,11 @@ Entity createPlayableArea(const vec2& pos, float width, float height)
     return entity;
 }
 
-Entity createNotification(float counter_ms, bool player1Side, GLuint texture_id) {
+Entity createNotification(float counter_ms, bool player1Side, GLuint texture_id)
+{
     Entity entity = Entity();
-    
-    Notification& notification = registry.notifications.emplace(entity);
+
+    Notification &notification = registry.notifications.emplace(entity);
     notification.counter_ms = counter_ms;
     notification.player1Side = player1Side;
     notification.texture_id = texture_id;
@@ -212,7 +215,7 @@ Entity createFloor(float val, int type)
     Mesh floorMesh(floorVertices, false);
     Shader *floorShader = new Shader(std::string("floor"));
 
-    //registry.staticRenders.insert(floor, StaticRender{floorMesh, floorShader});
+    // registry.staticRenders.insert(floor, StaticRender{floorMesh, floorShader});
 
     Boundary &boundary = registry.boundaries.emplace(floor);
 

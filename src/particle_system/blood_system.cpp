@@ -1,19 +1,23 @@
 #include "blood_system.hpp"
 
-BloodParticleSystem::BloodParticleSystem() {
+BloodParticleSystem::BloodParticleSystem()
+{
     shader = new Shader("particle");
     std::cout << "Shader program ID: " << shader->m_shaderProgram << std::endl;
     init();
 }
 
-void BloodParticleSystem::update(float deltaTime) {
-    if (particles.empty()) {
+void BloodParticleSystem::update(float deltaTime)
+{
+    if (particles.empty())
+    {
         return;
     }
 
     const float GRAVITY = -9.8f;
 
-    for (auto& particle : particles) {
+    for (auto &particle : particles)
+    {
         // Update position
         particle.x += particle.vx * deltaTime;
         particle.y += particle.vy * deltaTime;
@@ -32,12 +36,13 @@ void BloodParticleSystem::update(float deltaTime) {
     // Remove dead particles
     particles.erase(
         std::remove_if(particles.begin(), particles.end(),
-            [](const Particle& p) { return p.life <= 0.0f; }),
-        particles.end()
-    );
+                       [](const Particle &p)
+                       { return p.life <= 0.0f; }),
+        particles.end());
 }
 
-void BloodParticleSystem::emit(float x, float y, float z, bool direction) {
+void BloodParticleSystem::emit(float x, float y, float z, bool direction)
+{
     const int NUM_PARTICLES = 20;
     const float SPRAY_ANGLE = 90.0f;
     const float MIN_VELOCITY = 1.0f;
@@ -48,14 +53,15 @@ void BloodParticleSystem::emit(float x, float y, float z, bool direction) {
     float baseAngle = direction ? 180.0f : 0.0f;
     float centerY = y + VERTICAL_OFFSET;
 
-    for (int i = 0; i < NUM_PARTICLES; i++) {
+    for (int i = 0; i < NUM_PARTICLES; i++)
+    {
         Particle particle;
 
         // Controlled spawn position
-        float theta = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
-        float radius = ((float)rand() / RAND_MAX) * SPAWN_RADIUS;
-        particle.x = x + radius * cos(theta);
-        particle.y = centerY + radius * sin(theta);
+        double theta = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
+        double radius = ((float)rand() / RAND_MAX) * SPAWN_RADIUS;
+        particle.x = float(x + radius * cos(theta));
+        particle.y = float(centerY + radius * sin(theta));
         particle.z = z;
 
         // Controlled velocity

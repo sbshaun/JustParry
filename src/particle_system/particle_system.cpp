@@ -1,23 +1,23 @@
 #include "particle_system.hpp"
 
-ParticleSystem::ParticleSystem() {
+ParticleSystem::ParticleSystem()
+{
     shader = new Shader("particle");
     std::cout << "Shader program ID: " << shader->m_shaderProgram << std::endl;
     init();
 }
 
-void ParticleSystem::init() {
+void ParticleSystem::init()
+{
     // Base particle quad vertices
     float quadVertices[] = {
         -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f
-    };
+        0.5f, -0.5f, 0.0f,
+        0.5f, 0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f};
     unsigned int indices[] = {
         0, 1, 2,
-        2, 3, 0
-    };
+        2, 3, 0};
 
     // Create buffers
     glGenVertexArrays(1, &VAO);
@@ -37,7 +37,7 @@ void ParticleSystem::init() {
 
     // Vertex positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
     // Instance data buffer
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -45,19 +45,21 @@ void ParticleSystem::init() {
 
     // Position attribute (per instance)
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, x));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)offsetof(Particle, x));
     glVertexAttribDivisor(1, 1);
 
     // Color attribute (per instance)
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, r));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)offsetof(Particle, r));
     glVertexAttribDivisor(2, 1);
 
     glBindVertexArray(0);
 }
 
-void ParticleSystem::render(const glm::mat4& worldModel) {
-    if (particles.empty()) {
+void ParticleSystem::render(const glm::mat4 &worldModel)
+{
+    if (particles.empty())
+    {
         return;
     }
 
@@ -72,7 +74,7 @@ void ParticleSystem::render(const glm::mat4& worldModel) {
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle) * particles.size(), particles.data());
 
     // Draw particles using instancing
-    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, particles.size());
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, static_cast<GLsizei>(particles.size()));
 
     glBindVertexArray(0);
     glDisable(GL_BLEND);

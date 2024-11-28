@@ -1,19 +1,20 @@
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
-#include "bot.hpp"
+#include "bot/bot.hpp"
 #include "window.hpp"
-#include "renderer.hpp"
+#include "graphics/renderer.hpp"
 #include <assert.h>
 #include "constants.hpp"
 #include "physics/physics_system.hpp"
 #include "ecs/ecs_registry.hpp"
 #include "world/world_system.hpp"
-#include "linearinterp.hpp"
+#include "interp/linearinterp.hpp"
 #include "state/game.hpp"
 #include "fps/fps.hpp"
 #include "input_system/input_handler.hpp"
 #include "input_system/state_machine.hpp"
 #include "input_system/utility_inputs.hpp"
+// #include "state/settings_menu.hpp"
 #include "SDL.h"
 #include <SDL.h>
 #define SDL_MAIN_HANDLED
@@ -86,7 +87,7 @@ int main()
     assert(gl3w_init() == 0);
     // assert(is_fine == 0);
 
-    // glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1);              // Enable vsync
     if (SDL_Init(SDL_INIT_AUDIO) < 0) // Init SDL joystick
     {
         std::cerr << "Failed to init SDL joy handler" << std::endl;
@@ -173,6 +174,7 @@ int main()
         case GameState::MENU:
             p1Ready = false;
             p2Ready = false;
+            glfwSwapInterval(1); // enable vsync
 
             WorldSystem::stopAllSounds(); // Stop sounds in menu
             WorldSystem::stopBackgroundMusic();
@@ -187,24 +189,16 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
-            glWindow.windowSwapBuffers();
-            break;
-        case GameState::ARCADE_MENU:
-            game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window))
+            // Handle ESC = close game when in menu
+            if (isKeyPressed(GLFW_KEY_ESCAPE))
             {
-                std::cout << "Entered Character Select Stage" << std::endl;
-                game.setState(GameState::ARCADE_PREFIGHT);
+                shouldExit = true;
             }
-            if (Settings::windowSettings.show_fps)
-            {
-                fpsCounter.update(renderer, false);
-                renderer.renderFPS(fpsCounter.getFPS(), true);
-            }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_PREFIGHT:
-            // Enable bot for arcade 
+            // Enable bot for arcade
             botEnabled = true;
             worldSystem.botEnabled = true;
 
@@ -218,63 +212,134 @@ int main()
             }
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_WIN:
-            // Win/Loss screen for winning/losing in arcade mode
-
-            break;
-        case GameState::ARCADE_LOSE:
-            // Win/Loss screen for winning/losing in arcade mode
-
-            break;
-        case GameState::HELP:
-            game.renderHelpScreen(renderer);
-            if (game.handleHelpInput(glWindow.window))
+        case GameState::ARCADE_MENU:
+            game.renderArcadeMenu(renderer);
+            if (game.handleArcadeMenuInput(glWindow.window))
             {
-                game.setState(GameState::MENU);
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::ARCADE_STORY);
             }
             if (Settings::windowSettings.show_fps)
             {
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
             glWindow.windowSwapBuffers();
+            break;
+        case GameState::ARCADE_STORY:
+            game.renderArcadeStory(renderer);
+            if (game.handleArcadeStoryInput(glWindow.window))
+            {
+                WorldSystem::playGameCountDownSound();
+                game.setState(GameState::ROUND_START);
+            }
+            if (Settings::windowSettings.show_fps)
+            {
+                fpsCounter.update(renderer, false);
+                renderer.renderFPS(fpsCounter.getFPS(), true);
+            }
+
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::HELP: {
+            
+            if (game.handleHelpInput(glWindow.window))
+            {
+                 game.resetGame(renderer, worldSystem);
+                 game.setState(GameState::MENU);
+            }
+            if (loopsSinceLastFrame == FramesPerLogicLoop)
+            {
+                loopsSinceLastFrame = 0;
+
+                // Resume sounds and check music when returning to playing state
+                if (game.getPreviousState() == GameState::PAUSED ||
+                    game.getPreviousState() == GameState::SETTINGS)
+                {
+                    WorldSystem::resumeSounds();
+                    WorldSystem::updateAudioState(); // Make sure music is playing if enabled
+                }
+                
+                
+                handleUtilityInputs(renderer, showFPS,
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
+
+                // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+                // Do all rendering here, only once
+                renderer.render();
+                game.renderHelpScreen(renderer); 
+                worldSystem.renderParticles();
+                renderer.handleNotifications(elapsed_ms);
+
+                interp_moveEntitesToScreen(renderer, game);
+                if (Settings::windowSettings.show_fps)
+                {
+                    renderer.renderFPS(fpsCounter.getFPS(), true);
+                }
+                glWindow.windowSwapBuffers();
+            }
+
+            loopsSinceLastFrame++;
+
+            // Update center for playable area
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
+            worldSystem.playerCollisions(&renderer);
+            worldSystem.hitBoxCollisions();
+            worldSystem.updatePlayableArea();
+            physicsSystem.step();
+
+            // NEEDS TO BE ELAPSED_MS / 1000.0f FOR PARTICLES TO RENDER!!
+            // OTHERWISE THEY DIE OUT TOO FAST
+            worldSystem.step(elapsed_ms / 1000.0f);
+
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
+            // time the next logic check
+            auto end = std::chrono::steady_clock::now();
+            std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
+
+            // Calculate the remaining time to sleep
+            int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
+            // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
+            if (sleepDuration > 0)
+            {
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
+                while (std::chrono::steady_clock::now() < sleepEnd)
+                {
+                    worldSystem.handleInput(); // this sets player inputs #3
+                } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
+            }
+            }
             break;
 
         case GameState::SETTINGS:
-            WorldSystem::stopAllSounds(); // Stop sounds when entering settings from menu
-            // First render the appropriate background based on where we came from
-            if (game.getPreviousState() == GameState::PAUSED)
-            {
-                // If from pause menu, render the game state and keep music playing
-                renderer.render();
-                renderer.renderUI(timer);
-                game.renderPauseButton(renderer);
-                // Don't stop background music when coming from pause menu
-            }
-            else if (game.getPreviousState() == GameState::MENU)
-            {
-                // If from main menu, stop all audio including music
-                WorldSystem::stopBackgroundMusic();
-                // Render the menu background
-                renderer.renderTexturedQuadScaled(
-                    renderer.m_menuTexture,
-                    0, 0,
-                    M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-                    1.0f // Full brightness
-                );
-            }
+            WorldSystem::stopAllSounds();      // Stop sounds when entering settings
+            game.renderSettingsMenu(renderer); // render settings overlay
 
-            // Then render settings overlay
-            game.renderSettingsScreen(renderer);
-            if (game.handleSettingsInput(glWindow.window))
+            // handle user input
+            if (game.handleSettingsInput(renderer, glWindow.window))
             {
+                // save changes and update game to new inputs.
                 game.setState(GameState::SETTINGS_EXIT);
             }
+
             if (Settings::windowSettings.show_fps)
             {
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
+            // Handle ESC = go back to pause when in playing
+            if (isKeyPressed(GLFW_KEY_ESCAPE))
+            {
+                if (game.getPreviousState() == GameState::PAUSED)
+                {
+                    game.setState(GameState::PAUSED);
+                }
+            }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::SETTINGS_EXIT:
@@ -282,6 +347,7 @@ int main()
             worldSystem.initInputHandlers();
 
             // Return to previous state
+            // previous state is saved before settings were opened.
             if (game.getPreviousState() == GameState::PAUSED)
             {
                 game.setState(GameState::PAUSED);
@@ -309,13 +375,13 @@ int main()
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
                 loopsSinceLastFrame = 0;
-                
+
                 worldSystem.updatePlayableArea();
                 renderer.render();
                 renderer.renderUI(timer);
                 game.renderPauseButton(renderer);
 
-                interp_moveEntitesToScreen(renderer);
+                interp_moveEntitesToScreen(renderer, game);
 
                 if (!isLoading)
                 {
@@ -355,7 +421,8 @@ int main()
                 }
             }
         }
-        break;
+            glfwSwapInterval(0); // disable vsync
+            break;
 
         case GameState::PAUSED:
             WorldSystem::stopAllSounds(); // Stop sounds when paused
@@ -411,7 +478,6 @@ int main()
             }
 
             loopsSinceLastFrame++;
-            
 
             // Update center for playable area
             worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
@@ -478,21 +544,21 @@ int main()
                 renderer.startExitAnimation();
             }
 
-            if (!renderer.isExitAnimationStarted() &&
-                isKeyPressed(GLFW_KEY_BACKSPACE))
-            {
-                roundEnded = false;
-                WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
-                game.resetGame(renderer, worldSystem);
-                game.setState(GameState::MENU);
-            }
+            // if (!renderer.isExitAnimationStarted() &&
+            //     isKeyPressed(GLFW_KEY_BACKSPACE))
+            // {
+            //     roundEnded = false;
+            //     WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
+            //     game.resetGame(renderer, worldSystem);
+            //     game.setState(GameState::MENU);
+            // }
 
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
             {
                 roundEnded = false;
                 game.resetGame(renderer, worldSystem);
-                resetInterpVariables(); // Reset interpolation variables including countdown timer
+                resetInterpVariables();                // Reset interpolation variables including countdown timer
                 WorldSystem::playGameCountDownSound(); // Play the countdown sound
                 // Only play music if enabled in settings AND sound effects are enabled
                 if (Settings::audioSettings.enable_music && Settings::audioSettings.enable_sound_effects)
@@ -507,6 +573,7 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+            glfwSwapInterval(1);
             glWindow.windowSwapBuffers();
             break;
         default:

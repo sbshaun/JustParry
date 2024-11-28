@@ -49,9 +49,7 @@ public:
         for (int i = 0; i < actionBuffer.size(); i++)
         {
             actionBuffer[i].ttl -= PLAYER_STATE_TIMER_STEP;
-            
-            
-            
+
             if (actionBuffer[i].ttl <= 0)
             {
                 actionBuffer.erase(actionBuffer.begin() + i);
@@ -67,8 +65,8 @@ public:
 
             // std::cout << i << "  " << actionBuffer.size() << std::endl;
             actionToCommandMapping[action]->execute(entity, state_machine);
-            
-            if (action == Action::MOVE_LEFT) 
+
+            if (action == Action::MOVE_LEFT)
             {
                 moving = true;
             }
@@ -78,11 +76,12 @@ public:
             }
         }
 
-        if (!moving) {
+        if (!moving)
+        {
             if (state_machine.transition(entity, PlayerState::IDLE))
             {
                 motion.velocity.x = 0;
-                PlayerCurrentState& playerState = registry.playerCurrentStates.get(entity);
+                PlayerCurrentState &playerState = registry.playerCurrentStates.get(entity);
             }
         }
     }
@@ -125,32 +124,39 @@ public:
                     }
                 }
                 bool actionInBuffer = false;
-                for (int i = 0; i < actionBuffer.size(); i++) {
-                    if (actionBuffer[i].action == action) {
+                for (int i = 0; i < actionBuffer.size(); i++)
+                {
+                    if (actionBuffer[i].action == action)
+                    {
                         actionInBuffer = true;
                     }
 
-                    if (actionBuffer[i].action == Action::MOVE_RIGHT) {
-                        if (action == Action::MOVE_RIGHT) {
+                    if (actionBuffer[i].action == Action::MOVE_RIGHT)
+                    {
+                        if (action == Action::MOVE_RIGHT)
+                        {
                             actionBuffer[i].ttl = 300.f;
                             break;
                         }
-                        else {
+                        else
+                        {
                             actionBuffer.erase(actionBuffer.begin() + i);
                             break;
                         }
                     }
-                    if (actionBuffer[i].action == Action::MOVE_LEFT) {
-                        if (action == Action::MOVE_LEFT) {
+                    if (actionBuffer[i].action == Action::MOVE_LEFT)
+                    {
+                        if (action == Action::MOVE_LEFT)
+                        {
                             actionBuffer[i].ttl = 300.f;
                             break;
                         }
-                        else {
+                        else
+                        {
                             actionBuffer.erase(actionBuffer.begin() + i);
                             break;
                         }
                     }
-                    
                 }
                 if (!actionBuffer.empty() && actionInBuffer)
                     continue;
@@ -199,7 +205,7 @@ public:
 
         Motion &motion = registry.motions.get(entity);
         bool moving = false;
-        int size;
+        // int size;
 
         for (const auto &pair : inputMapping->getKeyToActionMap())
         {

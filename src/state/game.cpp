@@ -1,18 +1,14 @@
 #include "game.hpp"
-#include "../linearinterp.hpp"
+#include "../input_system/input_mapping.hpp"
+#include "../interp/linearinterp.hpp"
+#include "settings_menu.hpp"
 
 Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0f),
-               isGeneralSelected(true),
-               isControlsSelected(false),
-               isWindowSelected(true),
-               isAudioSelected(false),
-               isPlayer1Selected(true),
-               isPlayer2Selected(false),
                // Initialize these from settings
                showFPS(Settings::windowSettings.show_fps)
 {
     float leftShift = M_WINDOW_WIDTH_PX * (0.05f + 0.015f + 0.02f + 0.03f); // 5% + 1.5% + 2% + 3% of window width
-    float upShift = M_WINDOW_HEIGHT_PX * 0.05f;                             // 5% of window height
+    float upShift = M_WINDOW_HEIGHT_PX * 0.09f;                             // 5% of window height
 
     // Position start button (moved left and up)
     startButton = {
@@ -20,7 +16,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         375.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
-        "START"                                        // button text
+        "VERSUS"                                       // button text
     };
 
     arcadeButton = {
@@ -32,40 +28,40 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
     };
 
     arcadeLevelOneButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
-        250.0f - upShift,                              // y position
-        500.0f,                                        // width
-        80.0f,                                         // height
-        "Level One"                                    // button text
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift + 75.f, // x position
+        235.0f - upShift + 50.f,                              // y position
+        400.0f,                                               // width
+        70.0f,                                                // height
+        "Level One"                                           // button text
     };
 
     arcadeLevelTwoButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
-        350.0f - upShift,                              // y position
-        500.0f,                                        // width
-        80.0f,                                         // height
-        "Level Two"                                    // button text
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift + 75.f, // x position
+        325.0f - upShift + 50.f,                              // y position
+        400.0f,                                               // width
+        70.0f,                                                // height
+        "Level Two"                                           // button text
     };
     arcadeLevelThreeButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
-        450.0f - upShift,                              // y position
-        500.0f,                                        // width
-        80.0f,                                         // height
-        "Level Three"                                  // button text
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift + 75.f, // x position
+        415.0f - upShift + 50.f,                              // y position
+        400.0f,                                               // width
+        70.0f,                                                // height
+        "Level Three"                                         // button text
     };
     arcadeLevelFourButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
-        550.0f - upShift,                              // y position
-        500.0f,                                        // width
-        80.0f,                                         // height
-        "Level Four"                                   // button text
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift + 75.f, // x position
+        505.0f - upShift + 50.f,                              // y position
+        400.0f,                                               // width
+        70.0f,                                                // height
+        "Level Four"                                          // button text
     };
     arcadeLevelFiveButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift, // x position
-        650.0f - upShift,                              // y position
-        500.0f,                                        // width
-        80.0f,                                         // height
-        "Level Five"                                   // button text
+        M_WINDOW_WIDTH_PX / 2.0f - 300.0f - leftShift + 75.f, // x position
+        595.0f - upShift + 50.f,                              // y position
+        400.0f,                                               // width
+        70.0f,                                                // height
+        "Level Five"                                          // button text
     };
     // Position help button below start button
     helpButton = {
@@ -73,7 +69,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         575.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
-        "HELP"                                         // button text
+        "TUTORIAL"                                         // button text
     };
 
     // Add settings button below help button
@@ -112,7 +108,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         "="    // pause symbol
     };
 
-    // Initialize resume button (centered)
+    // // Initialize resume button (centered)
     resumeButton = {
         M_WINDOW_WIDTH_PX / 2.0f - 130.0f, // x position
         M_WINDOW_HEIGHT_PX / 2.0f - 60.0f, // y position
@@ -138,80 +134,6 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         80.0f,                              // height
         "MAIN MENU"                         // button text
     };
-
-    // Add two new buttons for settings navigation
-    generalButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 295.0f,  // x position
-        M_WINDOW_HEIGHT_PX / 2.0f - 217.5f, // y position
-        275.0f,                             // width
-        45.0f,                              // height
-        "GENERAL"};
-
-    controlsButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 30.f,    // x position
-        M_WINDOW_HEIGHT_PX / 2.0f - 217.5f, // y position
-        275.0f,                             // width
-        45.0f,                              // height
-        "CONTROLS"};
-
-    // Add smaller toggle buttons
-    windowButton = {
-        M_WINDOW_WIDTH_PX / 2.0f - 210.0f, // Same x as generalButton
-        M_WINDOW_HEIGHT_PX / 2.0f - 145.f, // 50px below generalButton
-        190.0f,                            // Smaller width
-        35.0f,                             // Smaller height
-        "WINDOW"};
-
-    audioButton = {
-        M_WINDOW_WIDTH_PX / 2.0f + 30.0f,  // Next to windowButton
-        M_WINDOW_HEIGHT_PX / 2.0f - 145.f, // Same y as windowButton
-        190.0f,                            // Same width
-        35.0f,                             // Same height
-        "AUDIO"};
-
-    player1Button = {
-        M_WINDOW_WIDTH_PX / 2.0f - 210.0f, // Same x as controlsButton
-        M_WINDOW_HEIGHT_PX / 2.0f - 145.f, // Same y as other toggle buttons
-        190.0f,                            // Same width
-        35.0f,                             // Same height
-        "PLAYER 1"};
-
-    player2Button = {
-        M_WINDOW_WIDTH_PX / 2.0f + 30.0f,  // Next to player1Button
-        M_WINDOW_HEIGHT_PX / 2.0f - 145.f, // Same y as other toggle buttons
-        190.0f,                            // Same width
-        35.0f,                             // Same height
-        "PLAYER 2"};
-
-    // Initialize reset button (bottom left of settings)
-    resetButton = {
-        125.0f,                      // x - align with labels
-        M_WINDOW_HEIGHT_PX - 160.0f, // y - 100px from bottom
-        175.0f,                      // width
-        60.0f,                       // height
-        "RESET"};
-
-    // Add new button definitions
-
-    // In the Game constructor, initialize the new buttons
-    windowButton2 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f - 65.0f, 210.0f, 40.0f, "Placeholder 2"};
-    windowButton3 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f - 15.0f, 210.0f, 40.0f, "Placeholder 3"};
-    windowButton4 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 35.0f, 210.0f, 40.0f, "Placeholder 4"};
-    windowButton5 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 85.0f, 210.0f, 40.0f, "Placeholder 5"};
-    windowButton1 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 135.0f, 210.0f, 40.0f, "Placeholder 1"};
-
-    audioButton1 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f - 65.0f, 210.0f, 40.0f, "Placeholder 2"};
-    audioButton2 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f - 15.0f, 210.0f, 40.0f, "Placeholder 3"};
-    audioButton3 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 35.0f, 210.0f, 40.0f, "Placeholder 4"};
-    audioButton4 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 85.0f, 210.0f, 40.0f, "Placeholder 5"};
-
-    playerButton1 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f - 70.f, 210.0f, 30.0f, "Placeholder 1"};
-    playerButton2 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f - 35.0f, 210.0f, 30.0f, "Placeholder 2"};
-    playerButton3 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 0.0f, 210.0f, 30.0f, "Placeholder 3"};
-    playerButton4 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 35.0f, 210.0f, 30.0f, "Placeholder 4"};
-    playerButton5 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 90.0f, 210.0f, 30.0f, "Placeholder 5"};
-    playerButton6 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 125.0f, 210.0f, 30.0f, "Placeholder 6"};
-    playerButton7 = {M_WINDOW_WIDTH_PX / 2.0f + 60.0f, M_WINDOW_HEIGHT_PX / 2.0f + 160.0f, 210.0f, 30.0f, "Placeholder 7"};
 
     std::cout << "Buttons initialized" << std::endl;
 }
@@ -293,9 +215,11 @@ void Game::updateArcadeLevel()
 
 void Game::loadArcadeState()
 {
-    FILE *file = fopen(saves_path("arcadeLevelState.txt").c_str(), "r");
+    FILE *file = nullptr;
+    file = fopen(saves_path("arcadeLevelState.txt").c_str(), "r");
     if (file != nullptr)
     {
+        fscanf(file, "%d", &this->levelCompleted);
         fscanf(file, "%d", &this->levelCompleted);
         fclose(file);
         printf("Integer read from file: %d\n", this->levelCompleted);
@@ -305,13 +229,14 @@ void Game::loadArcadeState()
         printf("Unable to open file for reading.\n");
     }
 }
-
 void Game::saveCurrentState()
 {
-    FILE *file = fopen(saves_path("arcadeLevelState.txt").c_str(), "w");
+    FILE *file = nullptr;
+    file = fopen(saves_path("arcadeLevelState.txt").c_str(), "w");
     if (file != nullptr)
     {
         fprintf(file, "%d", this->levelCompleted);
+        fscanf(file, "%d", &this->levelCompleted);
         fclose(file);
         printf("Saved arcade level state.\n");
     }
@@ -320,7 +245,6 @@ void Game::saveCurrentState()
         printf("Unable to open file for writing.\n");
     }
 }
-
 void Game::render(GlRender &renderer)
 {
     // Existing game render logic
@@ -349,6 +273,10 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     // First clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
+    backButton.x = 25.0f;
+    backButton.y = 15.0f;
+    backButton.width = 80.0f;
+    backButton.height = 70.0f;
 
     // Render background
     renderer.renderTexturedQuadScaled(
@@ -358,14 +286,13 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness
     );
 
-    // Add back button (moved after background render)
-
+    // Add back button
     renderer.renderButton(
-        25.0f, 15.0f,        // x, y position
-        80.0f, 70.0f,        // width, height
-        "<-",                // text
-        isBackButtonHovered, // Add this member variable to Game class
-        isBackButtonPressed  // Add this member variable to Game class
+        backButton.x, backButton.y,          // x, y position
+        backButton.width, backButton.height, // width, height
+        "<-",                                // text
+        isBackButtonHovered,                 // Add this member variable to Game class
+        isBackButtonPressed                  // Add this member variable to Game class
     );
 
     // Rest of the character select rendering...
@@ -382,19 +309,22 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness for main menu
     );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p1SelectKey,
-        360.f, 245.0f + offset1,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_p1SelectKey,
+    //     360.f, 245.0f + offset1,
+    //     30, 30,
+    //     1.0f // Full brightness for main menu
+    // );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p2SelectKey,
-        645.f, 245.0f + offset2,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_p2SelectKey,
+    //     645.f, 245.0f + offset2,
+    //     30, 30,
+    //     1.0f // Full brightness for main menu
+    // );
+
+    renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
+    renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f + offset2, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
     renderer.renderSelectorTriangleP2(605, 245 + offset2, 30, 30, p2);
@@ -412,7 +342,7 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 
     // Render background
     renderer.renderTexturedQuadScaled(
-        renderer.m_characterSelectTexture,
+        renderer.m_characterSelectTextureArcade,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         1.0f // Full brightness
@@ -420,34 +350,64 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 
     renderer.renderTexturedQuadScaled(
         renderer.m_character1,
-        175, 360.0f,
+        290, 360.0f,
         225, 275,
         1.0f // Full brightness for main menu
     );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_character1_flip,
-        625.f, 360.0f,
-        225, 275,
-        1.0f // Full brightness for main menu
+    // renderer.renderTexturedQuadScaled(
+    //     renderer.m_character1_flip,
+    //     625.f, 360.0f,
+    //     225, 275,
+    //     1.0f // Full brightness for main menu
+    // );
+
+    // Get mouse position for hover effects
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Add back button
+    backButton.x = 25.0f;
+    backButton.y = 15.0f;
+    backButton.width = 80.0f;
+    backButton.height = 70.0f;
+
+    // Check button states
+    bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
+                       mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
+
+    // static bool backButtonPressed = false;
+
+    if (backHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    {
+        if (backButtonReleased)
+        {
+            handleBackButton();
+        }
+        backButtonReleased = false;
+    }
+    else
+    {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+            backButtonReleased = true;
+        }
+    }
+
+    // render back button
+    renderer.renderButton(
+        backButton.x, backButton.y,          // x, y position
+        backButton.width, backButton.height, // width, height
+        "<-",                                // text
+        backHovered,                         // Add this member variable to Game class
+        !backButtonReleased                   // Add this member variable to Game class
     );
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p1SelectKey,
-        360.f, 245.0f + offset1,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
+    renderer.renderSelectorTriangleP1(560, 255 + offset1, 30, 30, p1);
+    // renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
 
-    renderer.renderTexturedQuadScaled(
-        renderer.m_p2SelectKey,
-        640.f, 245.0f,
-        30, 30,
-        1.0f // Full brightness for main menu
-    );
-
-    renderer.renderSelectorTriangleP1(400, 245 + offset1, 30, 30, p1);
-    renderer.renderSelectorTriangleP2(600, 245, 30, 30, true);
+    renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 525.f, 285.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -458,10 +418,11 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready,
                                       bool &goDown1, bool &goUp1, float &offsetY1)
 {
-    if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
+    if (glfwGetKey(glWindow.window, Settings::p1Controls.punch) == GLFW_PRESS)
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
+            WorldSystem::playMenuConfirmSound();
             p1Ready = !p1Ready;  // Toggle p1Ready
             p1KeyPressed = true; // Mark the key as pressed
             if (std::to_string(p1Ready) == "0")
@@ -485,6 +446,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
         {
             if (!goDown1)
             {
+                WorldSystem::playMenuSelectSound();
                 goDown1 = true;
                 if (offsetY1 < 300.f)
                 {
@@ -505,6 +467,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
         {
             if (!goUp1)
             {
+                WorldSystem::playMenuSelectSound();
                 goUp1 = true;
                 if (offsetY1 > 0.0f)
                 {
@@ -531,8 +494,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
     glfwGetCursorPos(glWindow.window, &mouseX, &mouseY);
 
     // Check back button hover
-    isBackButtonHovered = (mouseX >= 50.0f && mouseX <= 150.0f &&
-                           mouseY >= 50.0f && mouseY <= 100.0f);
+    isBackButtonHovered = SettingsMenu::isHovered(mouseX, mouseY, backButton);
 
     // Check for back button click
     if (isBackButtonHovered && glfwGetMouseButton(glWindow.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -556,7 +518,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         isBackButtonPressed = false;
     }
 
-    if (glfwGetKey(glWindow.window, GLFW_KEY_R) == GLFW_PRESS)
+    if (glfwGetKey(glWindow.window, Settings::p1Controls.punch) == GLFW_PRESS)
     {
         if (!p1KeyPressed) // Check if the key was not pressed before
         {
@@ -578,7 +540,7 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
         p1KeyPressed = false; // Reset when the key is released
     }
 
-    if (glfwGetKey(glWindow.window, GLFW_KEY_X) == GLFW_PRESS)
+    if (glfwGetKey(glWindow.window, Settings::p2Controls.punch) == GLFW_PRESS)
     {
         if (!p2KeyPressed) // Check if the key was not pressed before
         {
@@ -693,32 +655,53 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
 
 void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game)
 {
-    if (p1Ready)
-    {
-        renderer.renderText("READY", 210, 350, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
-    }
-    else
-    {
-        renderer.renderText("NOT READY", 180, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
-    }
-
-    if (p2Ready)
-    {
-        renderer.renderText("READY", 740, 350, 0.25f, glm::vec3(0.0f, 1.0f, 0.0f));
-    }
-    else
-    {
-        renderer.renderText("NOT READY", 725, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
-    }
-
-    if (p1Ready && p2Ready)
-    {
-        renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (!isArcadeMode()) {
+        if (p1Ready)
         {
-            WorldSystem::playGameCountDownSound();
-            game.setState(GameState::ROUND_START);
+            renderer.renderText("READY", 210, 350, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
+        }
+        else
+        {
+            renderer.renderText("NOT READY", 180, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
+        if (p2Ready)
+        {
+            renderer.renderText("READY", 740, 350, 0.25f, glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+        else
+        {
+            renderer.renderText("NOT READY", 725, 350, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
+        if (p1Ready && p2Ready)
+        {
+            renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+            {
+                WorldSystem::playGameCountDownSound();
+                game.setState(GameState::ROUND_START);
+            }
+        }
+    } else {
+        if (p1Ready)
+        {
+            renderer.renderText("READY", 315, 390, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
+        }
+        else
+        {
+            renderer.renderText("NOT READY", 295, 390, 0.25f, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
+        if (p1Ready)
+        {
+            renderer.renderText("PRESS SPACE", 260, 260, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("TO START!", 285, 310, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
+            {
+                game.setState(GameState::ARCADE_MENU);
+            }
         }
     }
 }
@@ -813,6 +796,12 @@ void Game::renderArcadeMenu(GlRender &renderer)
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
+    // Add back button
+    backButton.x = 25.0f;
+    backButton.y = 15.0f;
+    backButton.width = 80.0f;
+    backButton.height = 70.0f;
+
     // Check button states
     bool backHovered = mouseX >= backButton.x && mouseX <= backButton.x + backButton.width &&
                        mouseY >= backButton.y && mouseY <= backButton.y + backButton.height;
@@ -833,172 +822,192 @@ void Game::renderArcadeMenu(GlRender &renderer)
                             mouseY >= arcadeLevelFiveButton.y && mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
     bool backPressed = backHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool LevelOnePressed = levelOneHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool LevelTwoPressed = levelThreeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool LevelThreePressed = levelTwoHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool LevelFourPressed = levelFourHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool LevelFivePressed = levelFiveHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-    // Render all buttons
-    renderer.renderButton(backButton.x, backButton.y,
-                          backButton.width, backButton.height,
-                          backButton.text,
-                          backHovered, backPressed);
+    renderer.renderButton(
+        backButton.x, backButton.y,          // x, y position
+        backButton.width, backButton.height, // width, height
+        "<-",                                // text
+        backHovered,                         // Add this member variable to Game class
+        backPressed                          // Add this member variable to Game class
+    );
+
+    renderer.renderText("PROGRESS : " + std::to_string(levelCompleted) + "/5 COMPLETED", 180.f, 190.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    bool isLevelOneCompleted = (levelCompleted >= 1);
+    bool isLevelTwoCompleted = (levelCompleted >= 2);
+    bool isLevelThreeCompleted = (levelCompleted >= 3);
+    bool isLevelFourCompleted = (levelCompleted >= 4);
+    bool isLevelFiveCompleted = (levelCompleted == 5);
+
+    bool LevelOnePressed = levelOneHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelTwoPressed = isLevelOneCompleted && levelThreeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelThreePressed = isLevelTwoCompleted && levelTwoHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelFourPressed = isLevelThreeCompleted && levelFourHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool LevelFivePressed = isLevelFourCompleted && levelFiveHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     renderer.renderButton(arcadeLevelOneButton.x, arcadeLevelOneButton.y,
                           arcadeLevelOneButton.width, arcadeLevelOneButton.height,
                           arcadeLevelOneButton.text,
-                          levelOneHovered, LevelOnePressed);
+                          levelOneHovered, LevelOnePressed,
+                          glm::vec3(0.8F, 0.8F, 0.8F));
+    renderer.renderButton(arcadeLevelTwoButton.x, arcadeLevelTwoButton.y,
+                          arcadeLevelTwoButton.width, arcadeLevelTwoButton.height,
+                          arcadeLevelTwoButton.text,
+                          isLevelOneCompleted ? levelTwoHovered : false,
+                          isLevelOneCompleted ? LevelTwoPressed : false,
+                          isLevelOneCompleted ? glm::vec3(0.8F, 0.8F, 0.8F) : glm::vec3(-1.0f, -1.0f, -1.0f));
+    renderer.renderButton(arcadeLevelThreeButton.x, arcadeLevelThreeButton.y,
+                          arcadeLevelThreeButton.width, arcadeLevelThreeButton.height,
+                          arcadeLevelThreeButton.text,
+                          isLevelTwoCompleted ? levelThreeHovered : false,
+                          isLevelTwoCompleted ? LevelThreePressed : false,
+                          isLevelTwoCompleted ? glm::vec3(0.8F, 0.8F, 0.8F) : glm::vec3(-1.0f, -1.0f, -1.0f));
+    renderer.renderButton(arcadeLevelFourButton.x, arcadeLevelFourButton.y,
+                          arcadeLevelFourButton.width, arcadeLevelFourButton.height,
+                          arcadeLevelFourButton.text,
+                          isLevelThreeCompleted ? levelFourHovered : false,
+                          isLevelThreeCompleted ? LevelFourPressed : false,
+                          isLevelThreeCompleted ? glm::vec3(0.8F, 0.8F, 0.8F) : glm::vec3(-1.0f, -1.0f, -1.0f));
+    renderer.renderButton(arcadeLevelFiveButton.x, arcadeLevelFiveButton.y,
+                          arcadeLevelFiveButton.width, arcadeLevelFiveButton.height,
+                          arcadeLevelFiveButton.text,
+                          isLevelFourCompleted ? levelFiveHovered : false,
+                          isLevelFourCompleted ? LevelFivePressed : false,
+                          isLevelFourCompleted ? glm::vec3(0.8F, 0.8F, 0.8F) : glm::vec3(-1.0f, -1.0f, -1.0f));
+    static bool oneDone = false;
+    static bool twoDone = false;
+    static bool threeDone = false;
+    static bool fourDone = false;
+    static bool fiveDone = false;
 
+    if (levelCompleted >= 0)
+    {
+        renderer.renderSelectorTriangleP1(110.f, 235.f, 40.f, 40.f, isLevelOneCompleted);
+    }
     if (levelCompleted >= 1)
     {
-        renderer.renderButton(arcadeLevelTwoButton.x, arcadeLevelTwoButton.y,
-                              arcadeLevelTwoButton.width, arcadeLevelTwoButton.height,
-                              arcadeLevelTwoButton.text,
-                              levelTwoHovered, LevelThreePressed);
+        renderer.renderSelectorTriangleP1(110.f, 325.f, 40.f, 40.f, isLevelTwoCompleted);
     }
-
     if (levelCompleted >= 2)
     {
-        renderer.renderButton(arcadeLevelThreeButton.x, arcadeLevelThreeButton.y,
-                              arcadeLevelThreeButton.width, arcadeLevelThreeButton.height,
-                              arcadeLevelThreeButton.text,
-                              levelThreeHovered, LevelTwoPressed);
+        renderer.renderSelectorTriangleP1(110.f, 415.f, 40.f, 40.f, isLevelThreeCompleted);
     }
-
     if (levelCompleted >= 3)
     {
-        renderer.renderButton(arcadeLevelFourButton.x, arcadeLevelFourButton.y,
-                              arcadeLevelFourButton.width, arcadeLevelFourButton.height,
-                              arcadeLevelFourButton.text,
-                              levelFourHovered, LevelFourPressed);
+        renderer.renderSelectorTriangleP1(110.f, 505.f, 40.f, 40.f, isLevelFourCompleted);
     }
 
     if (levelCompleted >= 4)
     {
-        renderer.renderButton(arcadeLevelFiveButton.x, arcadeLevelFiveButton.y,
-                              arcadeLevelFiveButton.width, arcadeLevelFiveButton.height,
-                              arcadeLevelFiveButton.text,
-                              levelFiveHovered, LevelFivePressed);
+        renderer.renderSelectorTriangleP1(110.f, 595.f, 40.f, 40.f, isLevelFiveCompleted);
     }
 
     glDepthFunc(GL_LESS);
 }
 
-void Game::renderHelpScreen(GlRender &renderer)
+void Game::renderArcadeStory(GlRender& renderer)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // First render the full background (darkened)
+    // Render background with full brightness
     renderer.renderTexturedQuadScaled(
-        renderer.m_menuTexture,
+        renderer.m_arcadeMenuTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-        0.3f // Darkness factor
+        1.0f // Full brightness for main menu
     );
 
-    // Calculate dimensions for the help screen image
-    float helpBoxWidth = 660.0f;
-    float helpBoxHeight = 500.0f;
-    float helpBoxX = (M_WINDOW_WIDTH_PX - helpBoxWidth) / 2.0f;
-    float helpBoxY = (M_WINDOW_HEIGHT_PX - helpBoxHeight) / 2.0f;
+    // Calculate dimensions for the story images
+    float storyBoxWidth = 800.0f;
+    float storyBoxHeight = 600.0f;
+    float storyBoxX = (M_WINDOW_WIDTH_PX - storyBoxWidth) / 2.0f;
+    float storyBoxY = (M_WINDOW_HEIGHT_PX - storyBoxHeight) / 2.0f;
 
-    // Render the help screen image in the center
-    renderer.renderTexturedQuadScaled(
-        renderer.m_helpTexture,
-        helpBoxX, helpBoxY,
-        helpBoxWidth, helpBoxHeight,
-        1.0f);
-
-    // Position and size the close button (make it square)
-    closeButton = {
-        helpBoxX + helpBoxWidth - 75.0f, // 10px padding from right
-        helpBoxY + 15.0f,                // 10px padding from top
-        60.0f,                           // Square width
-        50.0f,                           // Square height
-        "X"};
-
-    // Get mouse position and check hover/press state
-    GLFWwindow *window = glfwGetCurrentContext();
-    double mouseX, mouseY;
-    glfwGetCursorPos(window, &mouseX, &mouseY);
-
-    bool closeHovered = mouseX >= closeButton.x &&
-                        mouseX <= closeButton.x + closeButton.width &&
-                        mouseY >= closeButton.y &&
-                        mouseY <= closeButton.y + closeButton.height;
-    bool closePressed = closeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-    // Render close button
-    renderer.renderButton(
-        closeButton.x, closeButton.y,
-        closeButton.width, closeButton.height,
-        closeButton.text,
-        closeHovered, closePressed,
-        glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
-    );
+    // LEVEL ONE 
+    // TODO: MAKE INTO A TUTORIAL LEVEL
+    if (currentLevel == 1) {
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        }
+    }
+    // LEVEL TWO
+    if (currentLevel == 2) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture1,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL THREE
+    if (currentLevel == 3) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture1,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL FOUR
+    if (currentLevel == 4) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture1,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
+    // LEVEL FIVE
+    if (currentLevel == 5) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_helpTexture1,
+            storyBoxX, storyBoxY,
+            storyBoxWidth, storyBoxHeight,
+            1.0f);
+    }
 }
 
-void Game::renderSettingsScreen(GlRender &renderer)
+void Game::renderHelpScreen(GlRender &renderer)
 {
-    // First render the appropriate background based on where we came from
-    if (getPreviousState() == GameState::PAUSED)
-    {
-        // If from pause menu, render the game state
-        renderer.render();
-        extern int timer;
-        renderer.renderUI(timer);
-        this->renderPauseButton(renderer);
-    }
-    else if (getPreviousState() == GameState::MENU)
-    {
-        // If from main menu, render the menu background first
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderer.renderTexturedQuadScaled(
-            renderer.m_menuTexture,
-            0, 0,
-            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-            1.0f // Full brightness
-        );
-    }
-
-    // Then render the semi-transparent black overlay
-    renderer.renderTexturedQuadScaled(
-        renderer.m_menuTexture, // Use any texture
-        0, 0,
-        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-        0.0f, // Set brightness to 0 to make it black
-        0.5f  // 50% opacity for the black overlay
-    );
-
-    // Calculate dimensions for the settings screen image
-    float settingsBoxWidth = 850.0f;
-    float settingsBoxHeight = 600.0f;
-    float settingsBoxX = (M_WINDOW_WIDTH_PX - settingsBoxWidth) / 2.0f;
-    float settingsBoxY = (M_WINDOW_HEIGHT_PX - settingsBoxHeight) / 2.0f;
-
-    // Render the settings screen image in the center
-    if (renderer.m_settingsTexture != 0)
-    {
-        renderer.renderTexturedQuadScaled(
-            renderer.m_settingsTexture,
-            settingsBoxX, settingsBoxY,
-            settingsBoxWidth, settingsBoxHeight,
-            1.0f, // Full brightness
-            1.0f  // Full opacity
-        );
-    }
-
-    // Always render the SETTINGS text on top
-    renderer.renderText("SETTINGS", 410, 140, 0.55f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // Calculate dimensions for the help screen image
+    glEnable(GL_BLEND);
+    float helpBoxWidth = 300.0f;
+    float helpBoxHeight = 300.0f;
+    float helpBoxX = (M_WINDOW_WIDTH_PX + 350.f) / 2.0f;
+    float helpBoxY = (M_WINDOW_HEIGHT_PX) / 2.0f - 325.f;
 
     // Position and size the close button (make it square)
     closeButton = {
-        settingsBoxX + settingsBoxWidth - 75.f, // 10px padding from right
-        settingsBoxY + 10.0f,                   // 10px padding from top
-        65.0f,                                  // Square width
-        50.0f,                                  // Square height
-        "X"};
+        30.f,   // 10px padding from right
+        22.f,   // 10px padding from top
+        120.0f, // Square width
+        55.0f,  // Square height
+        ""
+    };
 
     // Get mouse position and check hover/press state
     GLFWwindow *window = glfwGetCurrentContext();
@@ -1006,10 +1015,57 @@ void Game::renderSettingsScreen(GlRender &renderer)
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
     bool closeHovered = mouseX >= closeButton.x &&
-                        mouseX <= closeButton.x + closeButton.width &&
-                        mouseY >= closeButton.y &&
-                        mouseY <= closeButton.y + closeButton.height;
+                       mouseX <= closeButton.x + closeButton.width &&
+                       mouseY >= closeButton.y &&
+                       mouseY <= closeButton.y + closeButton.height;
     bool closePressed = closeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    Button previousButton = {
+        helpBoxX,        // x position
+        helpBoxY + 315.f, // y position
+        145.0f,          // width
+        50.0f,           // height
+        "BACK"
+    };
+
+    Button nextButton = {
+        helpBoxX + 150.f, // x position
+        helpBoxY + 315.f, // y position
+        145.0f,          // width
+        50.0f,           // height
+        "NEXT"
+    };
+
+    bool previousHovered = mouseX >= previousButton.x &&
+                         mouseX <= previousButton.x + previousButton.width &&
+                         mouseY >= previousButton.y &&
+                         mouseY <= previousButton.y + previousButton.height;
+    bool previousPressed = previousHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    bool nextHovered = mouseX >= nextButton.x &&
+                      mouseX <= nextButton.x + nextButton.width &&
+                      mouseY >= nextButton.y &&
+                      mouseY <= nextButton.y + nextButton.height;
+    bool nextPressed = nextHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    static bool prevButtonWasPressed = false;
+    static bool nextButtonWasPressed = false;
+
+    // Handle button clicks with debouncing
+    if (previousPressed && !prevButtonWasPressed) {
+        if (currentTutorialPage > 0) {
+            currentTutorialPage--;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    if (nextPressed && !nextButtonWasPressed) {
+        if (currentTutorialPage < 2) {  // 0,1,2 = 3 pages total
+            currentTutorialPage++;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    prevButtonWasPressed = previousPressed;
+    nextButtonWasPressed = nextPressed;
 
     // Render close button
     renderer.renderButton(
@@ -1017,563 +1073,107 @@ void Game::renderSettingsScreen(GlRender &renderer)
         closeButton.width, closeButton.height,
         closeButton.text,
         closeHovered, closePressed,
-        glm::vec3(0.7f, 0.1f, 0.1f) // Dark red color
+        glm::vec3(0.7f, 0.1f, 0.1f)
+    );
+    renderer.renderText("EXIT", 55.f, 60.f, 0.35f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    // Render navigation buttons with disabled states
+    glm::vec3 backButtonColor = (currentTutorialPage == 0) ? 
+        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
+        glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
+
+    glm::vec3 nextButtonColor = (currentTutorialPage == 2) ? 
+        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
+        glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
+
+    // Only allow button clicks if they're not at the limits
+    if (previousPressed && !prevButtonWasPressed) {
+        if (currentTutorialPage > 0) {
+            currentTutorialPage--;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    if (nextPressed && !nextButtonWasPressed) {
+        if (currentTutorialPage < 2) {
+            currentTutorialPage++;
+            WorldSystem::playMenuSelectSound();
+        }
+    }
+    prevButtonWasPressed = previousPressed;
+    nextButtonWasPressed = nextPressed;
+
+    // Render navigation buttons with disabled states
+    renderer.renderButton(
+        previousButton.x, previousButton.y,
+        previousButton.width, previousButton.height,
+        previousButton.text,
+        currentTutorialPage > 0 && previousHovered,
+        currentTutorialPage > 0 && previousPressed,
+        backButtonColor
     );
 
-    // Get mouse position and check hover/press states
-    bool generalHovered = mouseX >= generalButton.x &&
-                          mouseX <= generalButton.x + generalButton.width &&
-                          mouseY >= generalButton.y &&
-                          mouseY <= generalButton.y + generalButton.height;
+    renderer.renderButton(
+        nextButton.x, nextButton.y,
+        nextButton.width, nextButton.height,
+        nextButton.text,
+        currentTutorialPage < 2 && nextHovered,
+        currentTutorialPage < 2 && nextPressed,
+        nextButtonColor
+    );
 
-    bool controlsHovered = mouseX >= controlsButton.x &&
-                           mouseX <= controlsButton.x + controlsButton.width &&
-                           mouseY >= controlsButton.y &&
-                           mouseY <= controlsButton.y + controlsButton.height;
-
-    // Add hover checks for the toggle buttons
-    bool windowHovered = mouseX >= windowButton.x &&
-                         mouseX <= windowButton.x + windowButton.width &&
-                         mouseY >= windowButton.y &&
-                         mouseY <= windowButton.y + windowButton.height;
-
-    bool audioHovered = mouseX >= audioButton.x &&
-                        mouseX <= audioButton.x + audioButton.width &&
-                        mouseY >= audioButton.y &&
-                        mouseY <= audioButton.y + audioButton.height;
-
-    bool player1Hovered = mouseX >= player1Button.x &&
-                          mouseX <= player1Button.x + player1Button.width &&
-                          mouseY >= player1Button.y &&
-                          mouseY <= player1Button.y + player1Button.height;
-
-    bool player2Hovered = mouseX >= player2Button.x &&
-                          mouseX <= player2Button.x + player2Button.width &&
-                          mouseY >= player2Button.y &&
-                          mouseY <= player2Button.y + player2Button.height;
-
-    // Handle button clicks
-    static bool wasPressed = false;
-    bool isPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool generalPressed = generalHovered && isPressed;
-    bool controlsPressed = controlsHovered && isPressed;
-    bool windowPressed = windowHovered && isPressed;
-    bool audioPressed = audioHovered && isPressed;
-    bool player1Pressed = player1Hovered && isPressed;
-    bool player2Pressed = player2Hovered && isPressed;
-
-    if (isPressed && !wasPressed)
-    {
-        if (generalHovered)
-        {
-            isGeneralSelected = true;
-            isControlsSelected = false;
-        }
-        else if (controlsHovered)
-        {
-            isGeneralSelected = false;
-            isControlsSelected = true;
-        }
-        else if (windowHovered && isGeneralSelected)
-        {
-            isWindowSelected = true;
-            isAudioSelected = false;
-        }
-        else if (audioHovered && isGeneralSelected)
-        {
-            isWindowSelected = false;
-            isAudioSelected = true;
-        }
-        else if (player1Hovered && isControlsSelected)
-        {
-            isPlayer1Selected = true;
-            isPlayer2Selected = false;
-        }
-        else if (player2Hovered && isControlsSelected)
-        {
-            isPlayer1Selected = false;
-            isPlayer2Selected = true;
-        }
-    }
-    wasPressed = isPressed;
-
-    // Save current OpenGL state
-    GLboolean depthTestEnabled;
-    glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
-    GLint blendSrc, blendDst;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
-    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
-
-    // Disable depth testing and enable blending for all 2D elements
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Original color (normalized)
-    glm::vec3 color(139.0f / 255.0f, 169.0f / 255.0f, 174.0f / 255.0f);
-    glm::vec3 darkerColor = color * 1.075f;
-
-    // Navigation buttons (GENERAL, CONTROLS)
-    renderer.renderSimpleButton(
-        generalButton.x, generalButton.y,
-        generalButton.width, generalButton.height,
-        false, // No selection animation
-        false, // No hover animation for button
-        false, // No pressed animation
-        darkerColor);
-
-    renderer.renderSimpleButton(
-        controlsButton.x, controlsButton.y,
-        controlsButton.width, controlsButton.height,
-        false, // No selection animation
-        false, // No hover animation for button
-        false, // No pressed animation
-        darkerColor);
-
-    // Then render the button text with hover effect
-    renderer.renderText("GENERAL",
-                        generalButton.x + 50.0f, generalButton.y + 35.0f, 0.4f,
-                        isGeneralSelected || generalHovered ? glm::vec3(1.0f, 1.0f, 1.0f) : glm::vec3(0.0f, 0.0f, 0.0f));
-
-    renderer.renderText("CONTROLS",
-                        controlsButton.x + 40.0f, controlsButton.y + 35.0f, 0.4f,
-                        isControlsSelected || controlsHovered ? glm::vec3(1.0f, 1.0f, 1.0f) : glm::vec3(0.0f, 0.0f, 0.0f));
-
-    // Render content based on which button is selected
-    if (isGeneralSelected)
-    {
-        renderer.renderSimpleButton(
-            windowButton.x, windowButton.y,
-            windowButton.width, windowButton.height,
-            false, // No selection animation
-            false, // No hover animation for button
-            false, // No pressed animation
-            darkerColor);
-
-        renderer.renderSimpleButton(
-            audioButton.x, audioButton.y,
-            audioButton.width, audioButton.height,
-            false, // No selection animation
-            false, // No hover animation for button
-            false, // No pressed animation
-            darkerColor);
-
-        renderer.renderText("WINDOW",
-                            windowButton.x + 33.5f, windowButton.y + 27.5f, 0.3f,
-                            isWindowSelected || windowHovered ? glm::vec3(1.0f, 1.0f, 1.0f) : glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("AUDIO",
-                            audioButton.x + 47.5f, audioButton.y + 27.5f, 0.3f,
-                            isAudioSelected || audioHovered ? glm::vec3(1.0f, 1.0f, 1.0f) : glm::vec3(0.0f, 0.0f, 0.0f));
-
-        if (isWindowSelected)
-        {
-            // Window settings labels and buttons
-            float labelX = 215;
-            float buttonX = M_WINDOW_WIDTH_PX / 2.0f + 60.0f;
-            float startY = 350;
-            float spacing = 50;
-            float buttonWidth = 210.0f;
-            float buttonHeight = 40.0f;
-
-            // Labels - gray out the disabled options
-            renderer.renderText("WINDOW MODE", labelX, startY, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f));          // Grayed out
-            renderer.renderText("RESOLUTION", labelX, startY + spacing, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f)); // Grayed out
-            renderer.renderText("SHOW FPS COUNTER [F]", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-           // renderer.renderText("ENABLE BOT [B]", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("ENABLE DEBUG MODE [D]", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-
-            // Update button positions
-            float buttonY = startY - 22;
-            windowButton1 = {buttonX, buttonY, buttonWidth, buttonHeight, "WINDOWED"};             // Fixed text
-            windowButton2 = {buttonX, buttonY + spacing, buttonWidth, buttonHeight, "1024 x 768"}; // Fixed text
-            windowButton3 = {buttonX, buttonY + spacing * 2, buttonWidth, buttonHeight, Settings::windowSettings.show_fps ? "ON" : "OFF"};
-            // windowButton4 = {buttonX, buttonY + spacing * 3, buttonWidth, buttonHeight, Settings::windowSettings.enable_bot ? "ON" : "OFF"};
-            windowButton5 = {buttonX, buttonY + spacing * 4, buttonWidth, buttonHeight, Settings::windowSettings.enable_debug ? "ON" : "OFF"};
-
-            // Check hover states (only for enabled buttons)
-            bool wButton1Hovered = false; // Disabled
-            bool wButton2Hovered = false; // Disabled
-            bool wButton3Hovered = mouseX >= windowButton3.x && mouseX <= windowButton3.x + windowButton3.width &&
-                                   mouseY >= windowButton3.y && mouseY <= windowButton3.y + windowButton3.height;
-            bool wButton4Hovered = mouseX >= windowButton4.x && mouseX <= windowButton4.x + windowButton4.width &&
-                                   mouseY >= windowButton4.y && mouseY <= windowButton4.y + windowButton4.height;
-            bool wButton5Hovered = mouseX >= windowButton5.x && mouseX <= windowButton5.x + windowButton5.width &&
-                                   mouseY >= windowButton5.y && mouseY <= windowButton5.y + windowButton5.height;
-
-            // Handle clicks (only for enabled buttons)
-            static bool wasPressed = false;
-            bool isPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-            if (isPressed && !wasPressed)
-            {
-                // Remove window mode and resolution handlers
-                if (wButton3Hovered) // FPS Counter
-                {
-                    Settings::windowSettings.show_fps = !Settings::windowSettings.show_fps;
-                    showFPS = Settings::windowSettings.show_fps;
-                    Settings::saveSettings();
-                    std::cout << "FPS display " << (showFPS ? "enabled" : "disabled") << std::endl;
-                }
-                else if (wButton4Hovered) // Bot Mode
-                {
-                    // Settings::windowSettings.enable_bot = !Settings::windowSettings.enable_bot;
-                    // botEnabled = Settings::windowSettings.enable_bot;
-                    // if (worldSystem != nullptr)
-                    // {
-                    //     worldSystem->botEnabled = botEnabled;
-                    // }
-                    // Settings::saveSettings();
-                    // std::cout << "Bot mode " << (botEnabled ? "enabled" : "disabled") << std::endl;
-                }
-                else if (wButton5Hovered) // Debug Mode
-                {
-                    Settings::windowSettings.enable_debug = !Settings::windowSettings.enable_debug;
-                    renderer.debugMode = Settings::windowSettings.enable_debug;
-                    Settings::saveSettings();
-                    std::cout << "Debug mode " << (renderer.debugMode ? "enabled" : "disabled") << std::endl;
-                }
-            }
-            wasPressed = isPressed;
-
-            // Render buttons with hover effect
-            const glm::vec3 disabledColor(0.4f, 0.4f, 0.4f); // Darker gray for disabled buttons
-            const glm::vec3 placeholderColor(0.6f, 0.6f, 0.6f);
-            const glm::vec3 white(1.0f, 1.0f, 1.0f);
-            const glm::vec3 grayText(0.7f, 0.7f, 0.7f); // Gray text for disabled buttons
-
-            // Render disabled buttons with gray color
-            renderer.renderSimpleButton(windowButton1.x, windowButton1.y, windowButton1.width, windowButton1.height,
-                                        true, false, false, disabledColor);
-            renderer.renderSimpleButton(windowButton2.x, windowButton2.y, windowButton2.width, windowButton2.height,
-                                        true, false, false, disabledColor);
-
-            // Render enabled buttons normally
-            renderer.renderSimpleButton(windowButton3.x, windowButton3.y, windowButton3.width, windowButton3.height,
-                                        true, wButton3Hovered, false, placeholderColor);
-           // renderer.renderSimpleButton(windowButton4.x, windowButton4.y, windowButton4.width, windowButton4.height,
-           //                             true, wButton4Hovered, false, placeholderColor);
-            renderer.renderSimpleButton(windowButton5.x, windowButton5.y, windowButton5.width, windowButton5.height,
-                                        true, wButton5Hovered, false, placeholderColor);
-
-            // Render button text (grayed out for disabled buttons)
-            renderer.renderText(windowButton1.text, windowButton1.x + 40.f, windowButton1.y + 30.f, 0.25f, grayText);
-            renderer.renderText(windowButton2.text, windowButton2.x + 40.f, windowButton2.y + 30.f, 0.25f, grayText);
-            if (strcmp(windowButton3.text, "ON") == 0)
-            {
-                renderer.renderText(windowButton3.text, windowButton3.x + 85.f, windowButton3.y + 30.f, 0.25f, white);
-            }
-            else
-            {
-                renderer.renderText(windowButton3.text, windowButton3.x + 80.f, windowButton3.y + 30.f, 0.25f, white);
-            }
-
-            if (strcmp(windowButton4.text, "ON") == 0)
-            {
-                // renderer.renderText(windowButton4.text, windowButton4.x + 85.f, windowButton4.y + 30.f, 0.25f, white);
-            }
-            else
-            {
-                // renderer.renderText(windowButton4.text, windowButton4.x + 80.f, windowButton4.y + 30.f, 0.25f, white);
-            }
-
-            if (strcmp(windowButton5.text, "ON") == 0)
-            {
-                renderer.renderText(windowButton5.text, windowButton5.x + 85.f, windowButton5.y + 30.f, 0.25f, white);
-            }
-            else
-            {
-                renderer.renderText(windowButton5.text, windowButton5.x + 80.f, windowButton5.y + 30.f, 0.25f, white);
-            }
-        }
-        else if (isAudioSelected)
-        {
-            // Audio settings labels and buttons
-            float labelX = 215;
-            float buttonX = M_WINDOW_WIDTH_PX / 2.0f + 60.0f;
-            float startY = 350;
-            float spacing = 50;
-            float buttonWidth = 210.0f;
-            float buttonHeight = 40.0f;
-
-            // Labels
-            renderer.renderText("ENABLE SOUND EFFECTS", labelX, startY, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("ENABLE MUSIC", labelX, startY + spacing, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("OVERALL VOLUME", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("MUSIC VOLUME", labelX, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-
-            // Update button positions and texts
-            float buttonY = startY - 22;
-            audioButton1 = {buttonX, buttonY, buttonWidth, buttonHeight,
-                            Settings::audioSettings.enable_sound_effects ? "ON" : "OFF"};
-            audioButton2 = {buttonX, buttonY + spacing, buttonWidth, buttonHeight,
-                            Settings::audioSettings.enable_music ? "ON" : "OFF"};
-            audioButton3 = {buttonX, buttonY + spacing * 2, buttonWidth, buttonHeight,
-                            (std::to_string(int(Settings::audioSettings.overall_volume * 100)) + "%").c_str()};
-            audioButton4 = {buttonX, buttonY + spacing * 3, buttonWidth, buttonHeight,
-                            (std::to_string(int(Settings::audioSettings.music_volume * 100)) + "%").c_str()};
-
-            // Check hover states
-            bool aButton1Hovered = mouseX >= audioButton1.x && mouseX <= audioButton1.x + audioButton1.width &&
-                                   mouseY >= audioButton1.y && mouseY <= audioButton1.y + audioButton1.height;
-            bool aButton2Hovered = mouseX >= audioButton2.x && mouseX <= audioButton2.x + audioButton2.width &&
-                                   mouseY >= audioButton2.y && mouseY <= audioButton2.y + audioButton2.height;
-            bool aButton3Hovered = mouseX >= audioButton3.x && mouseX <= audioButton3.x + audioButton3.width &&
-                                   mouseY >= audioButton3.y && mouseY <= audioButton3.y + audioButton3.height;
-            bool aButton4Hovered = mouseX >= audioButton4.x && mouseX <= audioButton4.x + audioButton4.width &&
-                                   mouseY >= audioButton4.y && mouseY <= audioButton4.y + audioButton4.height;
-
-            static bool isDraggingOverall = false;
-            static bool isDraggingMusic = false;
-
-            // Handle clicks and drags
-            bool isPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-            static bool wasPressed = false;
-
-            if (isPressed)
-            {
-                if (!wasPressed)
-                {
-                    // Initial click
-                    if (aButton1Hovered)
-                    {
-                        Settings::audioSettings.enable_sound_effects = !Settings::audioSettings.enable_sound_effects;
-                        Settings::saveSettings();
-                        WorldSystem::updateVolume(); // Add this line
-                    }
-                    else if (aButton2Hovered)
-                    {
-                        Settings::audioSettings.enable_music = !Settings::audioSettings.enable_music;
-                        Settings::saveSettings();
-                        
-                        // Only update audio state immediately if we came from pause menu
-                        if (previousState == GameState::PAUSED)
-                        {
-                            WorldSystem::updateAudioState();
-                        }
-                    }
-                    else if (aButton3Hovered)
-                    {
-                        isDraggingOverall = true;
-                    }
-                    else if (aButton4Hovered)
-                    {
-                        isDraggingMusic = true;
-                    }
-                }
-
-                // Handle dragging for volume sliders
-                if (isDraggingOverall)
-                {
-                    float relativeX = std::max(0.0f, std::min(1.0f, (float)(mouseX - audioButton3.x) / audioButton3.width));
-                    Settings::audioSettings.overall_volume = relativeX;
-                    Settings::saveSettings();
-                    WorldSystem::updateVolume(); // Add this line
-                }
-                else if (isDraggingMusic)
-                {
-                    float relativeX = std::max(0.0f, std::min(1.0f, (float)(mouseX - audioButton4.x) / audioButton4.width));
-                    Settings::audioSettings.music_volume = relativeX;
-                    Settings::saveSettings();
-                    WorldSystem::updateVolume(); // Add this line
-                }
-            }
-            else
-            {
-                isDraggingOverall = false;
-                isDraggingMusic = false;
-            }
-            wasPressed = isPressed;
-
-            // Render buttons
-            const glm::vec3 placeholderColor(0.6f, 0.6f, 0.6f);
-            // Use the theme color for sliders
-            const glm::vec3 sliderColor(139.0f / 255.0f, 169.0f / 255.0f, 174.0f / 255.0f);
-            const glm::vec3 white(1.0f, 1.0f, 1.0f);
-
-            // Render ON/OFF buttons
-            renderer.renderSimpleButton(audioButton1.x, audioButton1.y, audioButton1.width, audioButton1.height,
-                                        true, aButton1Hovered, false, placeholderColor);
-            renderer.renderSimpleButton(audioButton2.x, audioButton2.y, audioButton2.width, audioButton2.height,
-                                        true, aButton2Hovered, false, placeholderColor);
-
-            // Render volume sliders
-            // Background
-            renderer.renderSimpleButton(audioButton3.x, audioButton3.y, audioButton3.width, audioButton3.height,
-                                        true, aButton3Hovered, false, placeholderColor);
-            renderer.renderSimpleButton(audioButton4.x, audioButton4.y, audioButton4.width, audioButton4.height,
-                                        true, aButton4Hovered, false, placeholderColor);
-
-            // Filled portion for overall volume
-            float fillWidth3 = audioButton3.width * Settings::audioSettings.overall_volume;
-            renderer.renderSimpleButton(audioButton3.x, audioButton3.y, fillWidth3, audioButton3.height,
-                                        false, false, false, sliderColor);
-
-            // Filled portion for music volume
-            float fillWidth4 = audioButton4.width * Settings::audioSettings.music_volume;
-            renderer.renderSimpleButton(audioButton4.x, audioButton4.y, fillWidth4, audioButton4.height,
-                                        false, false, false, sliderColor);
-
-            // Render button text
-            if (strcmp(audioButton1.text, "ON") == 0)
-            {
-                renderer.renderText(audioButton1.text, audioButton1.x + 85.f, audioButton1.y + 30.f, 0.25f, white);
-            }
-            else
-            {
-                renderer.renderText(audioButton1.text, audioButton1.x + 80.f, audioButton1.y + 30.f, 0.25f, white);
-            }
-
-            if (strcmp(audioButton2.text, "ON") == 0)
-            {
-                renderer.renderText(audioButton2.text, audioButton2.x + 85.f, audioButton2.y + 30.f, 0.25f, white);
-            }
-            else
-            {
-                renderer.renderText(audioButton2.text, audioButton2.x + 80.f, audioButton2.y + 30.f, 0.25f, white);
-            }
-
-            // Render volume percentages centered on the sliders
-            std::string overallVolText = std::to_string(int(Settings::audioSettings.overall_volume * 100)) + "%";
-            std::string musicVolText = std::to_string(int(Settings::audioSettings.music_volume * 100)) + "%";
-
-            renderer.renderText(overallVolText.c_str(),
-                                audioButton3.x + (audioButton3.width - overallVolText.length() * 15) / 2,
-                                audioButton3.y + 30.f, 0.25f, white);
-
-            renderer.renderText(musicVolText.c_str(),
-                                audioButton4.x + (audioButton4.width - musicVolText.length() * 15) / 2,
-                                audioButton4.y + 30.f, 0.25f, white);
-        }
-    }
-    else if (isControlsSelected)
-    {
-        renderer.renderSimpleButton(
-            player1Button.x, player1Button.y,
-            player1Button.width, player1Button.height,
-            false, // No selection animation
-            false, // No hover animation for button
-            false, // No pressed animation
-            darkerColor);
-
-        renderer.renderSimpleButton(
-            player2Button.x, player2Button.y,
-            player2Button.width, player2Button.height,
-            false, // No selection animation
-            false, // No hover animation for button
-            false, // No pressed animation
-            darkerColor);
-
-        renderer.renderText("PLAYER 1",
-                            player1Button.x + 30.0f, player1Button.y + 27.5f, 0.3f,
-                            isPlayer1Selected || player1Hovered ? glm::vec3(1.0f, 1.0f, 1.0f) : glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("PLAYER 2",
-                            player2Button.x + 27.5f, player2Button.y + 27.5f, 0.3f,
-                            isPlayer2Selected || player2Hovered ? glm::vec3(1.0f, 1.0f, 1.0f) : glm::vec3(0.0f, 0.0f, 0.0f));
-
-        // Remove all the player button rendering code here and just call renderControlsSettings
-        renderControlsSettings(renderer, isPlayer1Selected, isPlayer2Selected);
-
-        // Restore previous OpenGL state
-        if (depthTestEnabled)
-            glEnable(GL_DEPTH_TEST);
-        glBlendFunc(blendSrc, blendDst);
-
-        bool resetHovered = mouseX >= resetButton.x &&
-                            mouseX <= resetButton.x + resetButton.width &&
-                            mouseY >= resetButton.y &&
-                            mouseY <= resetButton.y + resetButton.height;
-
-        bool resetPressed = resetHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-        // Check if settings are at default values
-        bool isDefaultSettings = Settings::areSettingsDefault();
-
-        // If settings are default, render disabled button
-        if (isDefaultSettings)
-        {
-            // Render disabled reset button (grayed out)
-            renderer.renderButton(
-                resetButton.x, resetButton.y,
-                resetButton.width, resetButton.height,
-                resetButton.text,
-                false,                      // Not hoverable
-                false,                      // Not pressable
-                glm::vec3(0.4f, 0.4f, 0.4f) // Gray color for disabled state
+    // Render the appropriate help screen image based on currentTutorialPage
+    GLuint currentTexture;
+    switch (currentTutorialPage) {
+        case 0:
+            currentTexture = renderer.m_helpTexture1;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
             );
-        }
-        else
-        {
-            // Render normal reset button
-            renderer.renderButton(
-                resetButton.x, resetButton.y,
-                resetButton.width, resetButton.height,
-                resetButton.text,
-                resetHovered,
-                resetPressed,
-                glm::vec3(0.6f, 0.2f, 0.2f) // Normal red color
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+            break;
+        case 1:
+            currentTexture = renderer.m_helpTexture2;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
             );
-        }
+            renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            break;
+        case 2:
+            currentTexture = renderer.m_helpTexture3;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+             renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+            renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+            break;
     }
 
-    // Restore previous OpenGL state
-    if (depthTestEnabled)
-        glEnable(GL_DEPTH_TEST);
-    glBlendFunc(blendSrc, blendDst);
-
-    // Check if settings are at default values
-    bool isDefaultSettings = Settings::areSettingsDefault();
-
-    // Get mouse position for reset button
-    bool resetHovered = mouseX >= resetButton.x &&
-                        mouseX <= resetButton.x + resetButton.width &&
-                        mouseY >= resetButton.y &&
-                        mouseY <= resetButton.y + resetButton.height;
-
-    bool resetPressed = resetHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-    // Handle reset button click
-    static bool wasResetPressed = false;
-    if (resetPressed && !wasResetPressed && !isDefaultSettings)
-    {
-        Settings::resetToDefaults();
-        // Update local state
-        showFPS = Settings::windowSettings.show_fps;
-        if (worldSystem != nullptr)
-        {
-            // worldSystem->botEnabled = botEnabled;
-            worldSystem->initInputHandlers();
-        }
-        renderer.debugMode = Settings::windowSettings.enable_debug;
-        std::cout << "Settings reset to defaults" << std::endl;
-    }
-    wasResetPressed = resetPressed;
-
-    // Render the reset button based on current settings state
-    if (isDefaultSettings)
-    {
-        // Render disabled reset button (grayed out)
-        renderer.renderButton(
-            resetButton.x, resetButton.y,
-            resetButton.width, resetButton.height,
-            resetButton.text,
-            false,                      // Not hoverable
-            false,                      // Not pressable
-            glm::vec3(0.4f, 0.4f, 0.4f) // Gray color for disabled state
-        );
-    }
-    else
-    {
-        // Render normal reset button
-        renderer.renderButton(
-            resetButton.x, resetButton.y,
-            resetButton.width, resetButton.height,
-            resetButton.text,
-            resetHovered,
-            resetPressed,
-            glm::vec3(0.6f, 0.2f, 0.2f) // Normal red color
-        );
-    }
+    // Add page indicator text
+    renderer.renderText(std::to_string(currentTutorialPage + 1) + "/3", 
+        helpBoxX, helpBoxY - 10.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
+
 bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
 {
     double mouseX, mouseY;
@@ -1657,7 +1257,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
 
 void Game::handleArcadeButton()
 {
-    this->setState(GameState::ARCADE_MENU);
+    this->setState(GameState::ARCADE_PREFIGHT);
     std::cout << "Arcade menu screen opened!" << std::endl;
 }
 
@@ -1703,54 +1303,113 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         mouseY >= arcadeLevelFiveButton.y &&
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
-    // reset the arcade level when going back to the menu
-    currentLevel = 0;
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverBack)
         {
-            handleBackButton();
+            if (!backButtonReleased) {
+                handleBackButton();
+            }
+            backButtonReleased = false;
         }
         if (mouseOverLevelOne)
         {
-
             currentLevel = 1;
+            currentFrame = 1;
+            currentFinalFrame = 4;
             return true;
         }
         else if (mouseOverLevelTwo && levelCompleted >= 1)
         {
             currentLevel = 2;
+            currentFrame = 1;
+            currentFinalFrame = 6;
             return true;
         }
         else if (mouseOverLevelThree && levelCompleted >= 2)
         {
             currentLevel = 3;
+            currentFrame = 1;
+            currentFinalFrame = 7;
             return true;
         }
         else if (mouseOverLevelFour && levelCompleted >= 3)
         {
             currentLevel = 4;
+            currentFrame = 1;
+            currentFinalFrame = 8;
             return true;
         }
         else if (mouseOverLevelFive && levelCompleted >= 4)
         {
             currentLevel = 5;
+            currentFrame = 1;
+            currentFinalFrame = 9;
             return true;
         }
     }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+    {
+        backButtonReleased = true;
+    }
+
 
     return false;
 }
 
+bool Game::handleArcadeStoryInput(GLFWwindow* window) 
+{
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS && rightRelease == true)
+    {
+        rightRelease = false;
+        if (currentFrame < currentFinalFrame) {
+            currentFrame++;
+        }
+    }
+    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && leftRelease == true)
+    {
+        leftRelease = false;
+        if (currentFrame > 1) {
+            currentFrame--;
+        }
+    }*/
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
+    {
+        spaceRelease = false;
+        if (currentFrame == currentFinalFrame) {
+            return true;
+        }
+    }
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE) {
+        rightRelease = true;
+    }
+    /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
+        leftRelease = true;
+    }*/
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
+        spaceRelease = true;
+    }
+    return false;;
+}
+
 void Game::handleBackButton()
 {
-    this->setState(GameState::MENU);
-    std::cout << "Going to Menu Screen" << std::endl;
+    if (this->getState() == GameState::ARCADE_MENU)
+    {
+        this->setState(GameState::ARCADE_PREFIGHT);
+        std::cout << "Going to Arcade Menu Screen" << std::endl;
+    }
+    else
+    {
+        this->setState(GameState::MENU);
+        std::cout << "Going to Menu Screen" << std::endl;
+    }
 }
 
 void Game::handleHelpButton()
 {
+    currentTutorialPage = 0; // Reset to first page when opening help
     this->setState(GameState::HELP);
     std::cout << "Help screen opened!" << std::endl;
 }
@@ -1769,6 +1428,7 @@ bool Game::handleHelpInput(GLFWwindow *window)
 
     if (mouseOverClose && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
+        currentTutorialPage = 0; // Reset page counter when closing help
         return true; // Return to menu
     }
 
@@ -1778,10 +1438,10 @@ bool Game::handleHelpInput(GLFWwindow *window)
 void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
     this->worldSystem = &worldSystem;
-    
+
     // Clear all components first
     registry.clear_all_components();
-    
+
     // Reinitialize world system
     worldSystem.init(&renderer);
 
@@ -1833,25 +1493,22 @@ void Game::handleSettingsButton()
     std::cout << "Settings screen opened!" << std::endl;
 }
 
-bool Game::handleSettingsInput(GLFWwindow *window)
+void Game::renderSettingsMenu(GlRender &renderer)
 {
-    // Add this line to handle control settings input
-    handleControlsSettingsInput(window);
+    SettingsMenu::initializeButtons();
+    SettingsMenu::renderSettingsScreen(renderer, *this);
+}
 
-    double mouseX, mouseY;
-    glfwGetCursorPos(window, &mouseX, &mouseY);
+bool Game::handleSettingsInput(GlRender &renderer, GLFWwindow *window)
+{
+    // handle player 1 and 2 control changes
+    SettingsMenu::handleControlsSettingsInput(window);
 
-    // Check if close button is clicked
-    bool mouseOverClose = mouseX >= closeButton.x &&
-                          mouseX <= closeButton.x + closeButton.width &&
-                          mouseY >= closeButton.y &&
-                          mouseY <= closeButton.y + closeButton.height;
-
-    if (mouseOverClose && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    if (SettingsMenu::shouldClose())
     {
-        return true; // Return to menu
+        SettingsMenu::cleanup(); // cleanup
+        return true;             // Close settings
     }
-
     return false; // Stay in settings state
 }
 
@@ -1880,36 +1537,16 @@ void Game::cleanupButtons()
     pauseButton = {};
     resumeButton = {};
     menuButton = {};
-    generalButton = {};
-    controlsButton = {};
-    windowButton = {};
-    audioButton = {};
-    player1Button = {};
-    player2Button = {};
-    resetButton = {}; // Keep this
     pauseSettingsButton = {};
+}
 
-    // Remove applyButton = {};  // Remove this line
-
-    // Clean up window and audio buttons
-    windowButton1 = {};
-    windowButton2 = {};
-    windowButton3 = {};
-    windowButton4 = {};
-    windowButton5 = {};
-
-    audioButton1 = {};
-    audioButton2 = {};
-    audioButton3 = {};
-    audioButton4 = {};
-
-    playerButton1 = {};
-    playerButton2 = {};
-    playerButton3 = {};
-    playerButton4 = {};
-    playerButton5 = {};
-    playerButton6 = {};
-    playerButton7 = {};
+void Game::attemptPause()
+{
+    if (currentState == GameState::PLAYING || currentState == GameState::ROUND_START)
+    {
+        WorldSystem::stopAllSounds();
+        setState(GameState::PAUSED); // Use setState instead of directly modifying currentState
+    }
 }
 
 void Game::renderPauseButton(GlRender &renderer)
@@ -1918,7 +1555,7 @@ void Game::renderPauseButton(GlRender &renderer)
     if ((currentState != GameState::PLAYING &&
          currentState != GameState::PAUSED &&
          currentState != GameState::ROUND_START) ||
-        isLoading)  // Add isLoading check here
+        isLoading) // Add isLoading check here
         return;
 
     GLFWwindow *window = glfwGetCurrentContext();
@@ -1937,21 +1574,18 @@ void Game::renderPauseButton(GlRender &renderer)
     static bool wasPressed = false;
     if (pausePressed && !wasPressed)
     {
-        if (currentState == GameState::PLAYING || currentState == GameState::ROUND_START)
-        {
-            WorldSystem::stopAllSounds();
-            setState(GameState::PAUSED); // Use setState instead of directly modifying currentState
-        }
+        attemptPause();
     }
     wasPressed = pausePressed;
 
     // Render pause button
     renderer.renderButton(
-        pauseButton.x, pauseButton.y,
-        pauseButton.width, pauseButton.height,
-        "=",
+        pauseButton.x - 5.f, pauseButton.y - 5.f,
+        pauseButton.width + 5.f, pauseButton.height + 5.f,
+        "",
         pauseHovered, false,
         glm::vec3(0.4f, 0.4f, 0.4f));
+    renderer.renderText("||", pauseButton.x + 20.f, pauseButton.y + 42.5f, 0.48f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     // If game is paused, render pause menu
     if (currentState == GameState::PAUSED)
@@ -2014,17 +1648,17 @@ void Game::renderPauseButton(GlRender &renderer)
             // Proper cleanup before going to menu
             WorldSystem::stopBackgroundMusic();
             WorldSystem::stopAllSounds();
-            
+
             // Clear all components first
             registry.clear_all_components();
-            
+
             // Reset game state
             resetScores();
             resetInterpVariables();
-            
+
             // Set state to INIT to ensure proper reinitialization
             setState(GameState::INIT);
-            
+
             // Reset timer
             extern int timer;
             timer = timer_length;
@@ -2036,245 +1670,19 @@ void Game::renderPauseButton(GlRender &renderer)
 
         // Render pause menu buttons
         renderer.renderButton(resumeButton.x, resumeButton.y,
-                            resumeButton.width, resumeButton.height,
-                            "RESUME", resumeHovered, resumePressed);
+                              resumeButton.width, resumeButton.height,
+                              "RESUME", resumeHovered, resumePressed);
 
         renderer.renderButton(menuButton.x, menuButton.y,
-                            menuButton.width, menuButton.height,
-                            "MAIN MENU", menuHovered, menuPressed);
+                              menuButton.width, menuButton.height,
+                              "MAIN MENU", menuHovered, menuPressed);
 
         renderer.renderButton(pauseSettingsButton.x, pauseSettingsButton.y,
-                            pauseSettingsButton.width, pauseSettingsButton.height,
-                            "SETTINGS", settingsHovered, settingsPressed);
+                              pauseSettingsButton.width, pauseSettingsButton.height,
+                              "SETTINGS", settingsHovered, settingsPressed);
 
         wasResumePressed = resumePressed;
         wasMenuPressed = menuPressed;
         wasSettingsPressed = settingsPressed;
-    }
-}
-
-void Game::renderControlsSettings(GlRender &renderer, bool isPlayer1Selected, bool isPlayer2Selected)
-{
-    // Get mouse position
-    GLFWwindow *window = glfwGetCurrentContext();
-    double mouseX, mouseY;
-    glfwGetCursorPos(window, &mouseX, &mouseY);
-
-    // Define key button dimensions - make them wider
-    float buttonWidth = 215.0f;
-    float buttonHeight = 35.0f; // Increased from 30.0f
-    float buttonX = 570.0f;     // Adjusted from 665.0f to align with previous buttons
-    float labelX = 300.0f;      // Position for labels
-    float startY = 330.0f;      // Starting Y position
-    float spacing = 40.0f;      // Increased spacing between buttons
-
-    // Render control labels
-    renderer.renderText("JUMP", labelX, startY, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText("DUCK", labelX, startY + spacing, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText("MOVE LEFT", labelX - 25.0f, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText("MOVE RIGHT", labelX - 32.0f, startY + spacing * 3, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText("PUNCH", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText("KICK", labelX, startY + spacing * 5, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-    renderer.renderText("PARRY", labelX, startY + spacing * 6, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-
-    PlayerControls &controls = isPlayer1Selected ? Settings::p1Controls : Settings::p2Controls;
-    float yPositions[] = {
-        startY - 22,
-        startY - 22 + spacing,
-        startY - 22 + spacing * 2,
-        startY - 22 + spacing * 3,
-        startY - 22 + spacing * 4,
-        startY - 22 + spacing * 5,
-        startY - 22 + spacing * 6};
-
-    int *keys[] = {
-        &controls.up, &controls.down, &controls.left, &controls.right,
-        &controls.punch, &controls.kick, &controls.parry};
-
-    // Render each key binding button
-    for (int i = 0; i < 7; i++)
-    {
-        float y = yPositions[i];
-        bool isHovered = mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                         mouseY >= y && mouseY <= y + buttonHeight;
-        bool isSelected = currentlyRebindingKey == keys[i];
-        bool isError = (i == errorButtonIndex && showErrorMessage);
-
-        // Calculate error alpha for fade effect
-        float errorAlpha = 0.0f;
-        if (isError)
-        {
-            if (errorMessageTimer < 1.25f)
-            {
-                // Stay solid for 1.25 seconds
-                errorAlpha = 1.0f;
-            }
-            else
-            {
-                // Fade out over 0.5 seconds (from 1.25s to 1.75s)
-                errorAlpha = 1.0f - ((errorMessageTimer - 1.25f) / 0.5f);
-            }
-        }
-
-        // Render button background with error tint if needed
-        if (isError)
-        {
-            // Render red tinted button with fade
-            glm::vec3 buttonColor = glm::vec3(1.0f, 0.0f, 0.0f);
-            renderer.renderSimpleButton(buttonX, y, buttonWidth, buttonHeight,
-                                        true, isHovered, isSelected,
-                                        glm::vec3(
-                                            buttonColor.r * errorAlpha + 0.6f * (1.0f - errorAlpha),
-                                            buttonColor.g * errorAlpha + 0.6f * (1.0f - errorAlpha),
-                                            buttonColor.b * errorAlpha + 0.6f * (1.0f - errorAlpha)));
-
-            // Render error icon with fade
-            if (errorAlpha > 0.0f)
-            {
-                renderer.renderText("!", buttonX + buttonWidth + 10, y + buttonHeight / 2 + 10,
-                                    0.35f, glm::vec3(1.0f * errorAlpha, 0.0f, 0.0f));
-            }
-        }
-        else
-        {
-            // Normal button render
-            renderer.renderSimpleButton(buttonX, y, buttonWidth, buttonHeight,
-                                        true, isHovered, isSelected);
-        }
-
-        // Render key text
-        std::string keyText = isSelected ? "___" : Settings::getKeyName(*keys[i]);
-        float textWidth = keyText.length() * 8.0f;
-        float textX = buttonX + (buttonWidth - textWidth) / 2.0f;
-        float textY = y + (buttonHeight - 8.0f) / 2.0f;
-
-        renderer.renderText(keyText, textX - 10.f, textY + 10.f,
-                            0.24f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-        // Handle click
-        if (isHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS &&
-            !isRebinding && !currentlyRebindingKey)
-        {
-            currentlyRebindingKey = keys[i];
-            isRebinding = true;
-        }
-    }
-
-    // Update error message timer
-    if (showErrorMessage)
-    {
-        errorMessageTimer += 0.016f; // Assuming 60 FPS
-        if (errorMessageTimer >= 1.75f)
-        { // Total duration: 1.25s solid + 0.5s fade
-            showErrorMessage = false;
-            errorMessageTimer = 0.0f;
-            errorButtonIndex = -1;
-        }
-    }
-}
-
-void Game::handleControlsSettingsInput(GLFWwindow *window)
-{
-    // Get mouse position for reset button
-    double mouseX, mouseY;
-    glfwGetCursorPos(window, &mouseX, &mouseY);
-
-    // Check if reset button is clicked
-    bool resetHovered = mouseX >= resetButton.x &&
-                        mouseX <= resetButton.x + resetButton.width &&
-                        mouseY >= resetButton.y &&
-                        mouseY <= resetButton.y + resetButton.height;
-
-    static bool wasResetPressed = false;
-    bool isResetPressed = resetHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-    // Only trigger reset if settings are not default and button is pressed
-    if (isResetPressed && !wasResetPressed && !Settings::areSettingsDefault())
-    {
-        Settings::resetToDefaults();
-    }
-    wasResetPressed = isResetPressed;
-
-    if (isRebinding)
-    {
-        // Check for any key press
-        for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; key++)
-        {
-            if (glfwGetKey(window, key) == GLFW_PRESS)
-            {
-                if (currentlyRebindingKey != nullptr)
-                {
-                    // Check if this is the same key that's currently bound
-                    if (*currentlyRebindingKey == key)
-                    {
-                        isRebinding = false;
-                        currentlyRebindingKey = nullptr;
-                        return;
-                    }
-
-                    // Check if this key is already bound
-                    bool keyAlreadyBound = false;
-                    PlayerControls &p1 = Settings::p1Controls;
-                    PlayerControls &p2 = Settings::p2Controls;
-
-                    // Check P1 controls
-                    if (key == p1.up || key == p1.down || key == p1.left || key == p1.right ||
-                        key == p1.punch || key == p1.kick || key == p1.parry)
-                    {
-                        keyAlreadyBound = true;
-                    }
-
-                    // Check P2 controls
-                    if (key == p2.up || key == p2.down || key == p2.left || key == p2.right ||
-                        key == p2.punch || key == p2.kick || key == p2.parry)
-                    {
-                        keyAlreadyBound = true;
-                    }
-
-                    if (keyAlreadyBound)
-                    {
-                        // Show error feedback
-                        showErrorMessage = true;
-                        errorMessageTimer = 0.0f;
-
-                        // Find which button index we're on
-                        PlayerControls &controls = isPlayer1Selected ? Settings::p1Controls : Settings::p2Controls;
-                        int *keys[] = {&controls.up, &controls.down, &controls.left, &controls.right,
-                                       &controls.punch, &controls.kick, &controls.parry};
-
-                        for (int i = 0; i < 7; i++)
-                        {
-                            if (currentlyRebindingKey == keys[i])
-                            {
-                                errorButtonIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Update the key binding
-                        *currentlyRebindingKey = key;
-                        Settings::saveSettings();
-                        Settings::loadSettings();
-                        if (worldSystem != nullptr)
-                        {
-                            worldSystem->initInputHandlers();
-                        }
-                    }
-                }
-
-                isRebinding = false;
-                currentlyRebindingKey = nullptr;
-                break;
-            }
-        }
-
-        // Allow canceling with backspace
-        if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS)
-        {
-            isRebinding = false;
-            currentlyRebindingKey = nullptr;
-        }
     }
 }

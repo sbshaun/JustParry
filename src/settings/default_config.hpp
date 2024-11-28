@@ -6,23 +6,21 @@ namespace DefaultConfig
 {
     // Player 1 default controls (WASD + RTG)
     const PlayerControls P1_CONTROLS = {
-        GLFW_KEY_W, // Up
         GLFW_KEY_S, // Down
         GLFW_KEY_A, // Left
         GLFW_KEY_D, // Right
         GLFW_KEY_R, // Punch
-        GLFW_KEY_T, // Kick
-        GLFW_KEY_G  // Parry
+        GLFW_KEY_G, // Kick (deprecated, not bound to actions anymore) 
+        GLFW_KEY_T  // Parry
     };
 
     // Player 2 default controls (Arrow keys + .,M)
     const PlayerControls P2_CONTROLS = {
-        GLFW_KEY_UP,     // Up
         GLFW_KEY_DOWN,   // Down
         GLFW_KEY_LEFT,   // Left
         GLFW_KEY_RIGHT,  // Right
         GLFW_KEY_COMMA,  // Punch
-        GLFW_KEY_PERIOD, // Kick
+        GLFW_KEY_PERIOD, // Kick (deprecated, not bound to actions anymore) 
         GLFW_KEY_M       // Parry
     };
 
@@ -39,6 +37,6 @@ namespace DefaultConfig
         true, // enable_sound_effects
         true, // enable_music
         1.0f, // overall_volume (100%)
-        0.75f // music_volume (75%)
+        0.1f // music_volume (75%)
     };
 }

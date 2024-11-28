@@ -1,6 +1,6 @@
 #pragma once
 #include "../constants.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "../ecs/ecs_registry.hpp"
 #include "../common.hpp"
 #include "stb_image/stb_image.h"
@@ -12,7 +12,7 @@
 #include "../world/world_init.hpp"
 #include <string>
 #include <GLFW/glfw3.h>
-#include "../settings.hpp"
+#include "../settings/settings.hpp"
 
 enum class GameState
 {
@@ -23,6 +23,7 @@ enum class GameState
     HELP,
     CHARACTER_SELECT,
     ARCADE_PREFIGHT,
+    ARCADE_STORY,
     ARCADE_WIN,
     ARCADE_LOSE,
     SETTINGS,
@@ -31,6 +32,12 @@ enum class GameState
     ROUND_OVER,
     PAUSED,
     INIT
+};
+
+struct Button
+{
+    float x, y, width, height;
+    const char *text;
 };
 
 class Game
@@ -50,14 +57,17 @@ public:
     void generateBackground(float val, GlRender &renderer);
     void renderMenu(GlRender &renderer);
     void renderArcadeMenu(GlRender &renderer);
+    void renderArcadeStory(GlRender& renderer);
     bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
     void handleArcadeButton();
     bool handleArcadeMenuInput(GLFWwindow *window);
+    bool handleArcadeStoryInput(GLFWwindow* window);
     void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer);
     bool handleHelpInput(GLFWwindow *window);
+    void attemptPause();
 
     bool handleCharacterInput(GLFWwindow *window);
     void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
@@ -75,12 +85,17 @@ public:
         player1Score = 0;
         player2Score = 0;
     }
-    void renderSettingsScreen(GlRender &renderer);
-    bool handleSettingsInput(GLFWwindow *window);
+
+
+
+    // SETTINGS MENU
+    void renderSettingsMenu(GlRender &renderer);
+    bool handleSettingsInput(GlRender &renderer, GLFWwindow *window);
+
+
+
     WorldSystem *getWorldSystem() { return worldSystem; }
     void renderPauseButton(GlRender &renderer);
-    void renderControlsSettings(GlRender &renderer, bool isPlayer1Selected, bool isPlayer2Selected);
-    void handleControlsSettingsInput(GLFWwindow *window);
 
     bool getShowFPS() const { return showFPS; }
     void setShowFPS(bool show) { showFPS = show; }
@@ -100,76 +115,39 @@ private:
     float loadingProgress;
     bool showHelpDialog;
     bool isPaused;
-    struct Button
-    {
-        float x, y, width, height;
-        const char *text;
-    };
-    Button startButton;
-    Button arcadeButton;
-    Button helpButton;
-    Button closeButton;
-    Button backButton;
-    Button settingsButton;
-    Button pauseButton;
-    Button resumeButton;
-    Button menuButton;
-    Button generalButton;
-    Button controlsButton;
-    Button windowButton;
-    Button audioButton;
-    Button player1Button;
-    Button player2Button;
-    Button resetButton;
-    Button pauseSettingsButton;
 
-    Button arcadeLevelOneButton;
-    Button arcadeLevelTwoButton;
-    Button arcadeLevelThreeButton;
-    Button arcadeLevelFourButton;
-    Button arcadeLevelFiveButton;
+    struct Button startButton;
+    struct Button arcadeButton;
+    struct Button helpButton;
+    struct Button closeButton;
+    struct Button backButton;
+    struct Button settingsButton;
+    struct Button pauseButton;
+    struct Button resumeButton;
+    struct Button menuButton;
+    struct Button pauseSettingsButton;
 
-    Button windowButton1;
-    Button windowButton2;
-    Button windowButton3;
-    Button windowButton4;
-    Button windowButton5;
-
-    Button audioButton1;
-    Button audioButton2;
-    Button audioButton3;
-    Button audioButton4;
-
-    Button playerButton1;
-    Button playerButton2;
-    Button playerButton3;
-    Button playerButton4;
-    Button playerButton5;
-    Button playerButton6;
-    Button playerButton7;
+    struct Button arcadeLevelOneButton;
+    struct Button arcadeLevelTwoButton;
+    struct Button arcadeLevelThreeButton;
+    struct Button arcadeLevelFourButton;
+    struct Button arcadeLevelFiveButton;
 
     int player1Score = 0;
     int player2Score = 0;
     WorldSystem *worldSystem = nullptr;
-    bool isGeneralSelected = true;
-    bool isControlsSelected = false;
-    bool isWindowSelected = true;
-    bool isAudioSelected = false;
-    bool isPlayer1Selected = true;
-    bool isPlayer2Selected = false;
 
     int levelCompleted = 0;
     int currentLevel = 0;
+    int currentFrame = 0;
+    int currentFinalFrame = 0;
 
-    bool isRebinding = false;
-    int *currentlyRebindingKey = nullptr;
-
-    float errorMessageTimer = 0.0f;
-    int errorButtonIndex = -1; // Which button showed error
-    bool showErrorMessage = false;
+    bool rightRelease = true;
+    bool leftRelease = true;
+    bool spaceRelease = true;
+    bool backButtonReleased = true;
 
     bool showFPS;
-    // bool botEnabled;
 
     void cleanupButtons();
 
@@ -186,4 +164,6 @@ private:
 
     bool isBackButtonHovered = false;
     bool isBackButtonPressed = false;
+
+    int currentTutorialPage = 0;
 };

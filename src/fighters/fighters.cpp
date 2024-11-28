@@ -1,6 +1,6 @@
 #include "../constants.hpp"
 #include "../common.hpp"
-#include "../renderer.hpp"
+#include "../graphics/renderer.hpp"
 #include "fighters.hpp"
 
 FighterConfig &setUpBirdmanConfig()
@@ -10,8 +10,8 @@ FighterConfig &setUpBirdmanConfig()
     birdmanConfig.BB_HEIGHT = PLAYER_BB_HEIGHT;
 
     birdmanConfig.MAX_HEALTH = 100.f;
-    birdmanConfig.POSTURE_MAX = 7.f;
-    birdmanConfig.POSTURE_REGEN = 2000.f;
+    birdmanConfig.POSTURE_MAX = 7;
+    birdmanConfig.POSTURE_REGEN = 2000;
 
     birdmanConfig.MOVESPEED = MOVE_SPEED;
     birdmanConfig.JUMP_VELOCITY = 0.06f / FPS_LOGIC_FACTOR;
@@ -24,10 +24,10 @@ FighterConfig &setUpBirdmanConfig()
     birdmanConfig.PARRY_STUN_DURATION = 3000.f;
     birdmanConfig.BLOCK_STUN_DURATION = 600.f;
 
-    birdmanConfig.KICK_HITBOX_DURATION = 1000.f;
+    birdmanConfig.KICK_HITBOX_DURATION = 1500.f;
     birdmanConfig.KICK_X_OFFSET = 0.f;
     birdmanConfig.KICK_DAMAGE = 20.f;
-    birdmanConfig.KICK_STUN_DURATION = 700.f;
+    birdmanConfig.KICK_STUN_DURATION = 900.f;
 
     birdmanConfig.KNOCKBACK_FORCE_X = 0.015f;
     birdmanConfig.KNOCKBACK_FORCE_Y = 0.0f;
@@ -79,6 +79,7 @@ void FighterManager::loadBirdTextures(GlRender &renderer)
     renderer.loadTexture(textures_path("bird_walk_f4.png"), birdConfig.m_bird_walk_f4_texture);
     renderer.loadTexture(textures_path("bird_stun_f1.png"), birdConfig.m_bird_stun_f1_texture);
     renderer.loadTexture(textures_path("bird_parry_f1.png"), birdConfig.m_bird_parry_f1_texture);
+    renderer.loadTexture(textures_path("bird_crouch_f3.png"), birdConfig.m_bird_crouch_f3_texture);
 };
 
 void FighterManager::deleteBirdTextures()
@@ -101,6 +102,7 @@ void FighterManager::deleteBirdTextures()
     glDeleteTextures(1, &birdConfig.m_bird_walk_f4_texture);
     glDeleteTextures(1, &birdConfig.m_bird_stun_f1_texture);
     glDeleteTextures(1, &birdConfig.m_bird_parry_f1_texture);
+    glDeleteTextures(1, &birdConfig.m_bird_crouch_f3_texture);
 }
 
 // reigster fighter configs to FighterManager
