@@ -10,6 +10,8 @@ Mix_Music *WorldSystem::background_music = nullptr;
 Mix_Chunk *WorldSystem::punch_sound = nullptr;
 Mix_Chunk *WorldSystem::walk_sound = nullptr;
 Mix_Chunk *WorldSystem::parry_sound = nullptr;
+
+Mix_Chunk *WorldSystem::crouch_sound = nullptr;
 Mix_Chunk *WorldSystem::parry_blocked_sound = nullptr;
 Mix_Chunk *WorldSystem::perfect_parry_sound = nullptr;
 Mix_Chunk *WorldSystem::hurt_sound = nullptr;
@@ -108,6 +110,11 @@ WorldSystem::~WorldSystem()
         Mix_FreeChunk(parry_sound);
         parry_sound = nullptr;
     }
+    if (crouch_sound != nullptr)
+    {
+        Mix_FreeChunk(crouch_sound);
+        crouch_sound = nullptr;
+    }
     if (parry_blocked_sound != nullptr)
     {
         Mix_FreeChunk(parry_blocked_sound);
@@ -169,6 +176,7 @@ void WorldSystem::init(GlRender *renderer)
     punch_sound = Mix_LoadWAV(audio_path("punch_sound.wav").c_str());
     walk_sound = Mix_LoadWAV(audio_path("walk_sound.wav").c_str());
     parry_sound = Mix_LoadWAV(audio_path("parry_sound.wav").c_str());
+    crouch_sound = Mix_LoadWAV(audio_path("crouch_sound.wav").c_str());
     parry_blocked_sound = Mix_LoadWAV(audio_path("parry_blocked_sound.wav").c_str());
     perfect_parry_sound = Mix_LoadWAV(audio_path("perfect_parry_sound.wav").c_str());
     hurt_sound = Mix_LoadWAV(audio_path("hurt_sound.wav").c_str());
@@ -177,15 +185,17 @@ void WorldSystem::init(GlRender *renderer)
     menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
     game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
-    if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr ||
+
+    if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr || crouch_sound == nullptr ||
         parry_sound == nullptr || parry_blocked_sound == nullptr || perfect_parry_sound == nullptr || 
         hurt_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr || 
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
                 audio_path("background_music.wav").c_str(),
                 audio_path("punch_sound.wav").c_str(),
                 audio_path("walk_sound.wav").c_str(),
+                audio_path("crouch_sound.wav").c_str(),
                 audio_path("parry_sound.wav").c_str(),
                 audio_path("parry_blocked_sound.wav").c_str(),
                 audio_path("perfect_parry_sound.wav").c_str(),
@@ -286,11 +296,11 @@ void WorldSystem::initInputHandlers()
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
 
     // player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
-    //  player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
+     player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
-    player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
+    // player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
     std::unique_ptr<ControllerMapping> player1ControllerMapping = std::make_unique<ControllerMapping>(0); //HAVE TO SOME HOW MAKE THESE CID's NOT HARD CODED 
@@ -312,11 +322,11 @@ void WorldSystem::initInputHandlers()
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
     // player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
-    //  player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
+     player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
-    player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
+    // player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
     // Initialize input handlers with the mappings
@@ -377,7 +387,7 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput()
+void WorldSystem::handleInput(int currentLevel)
 {
     // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
@@ -390,23 +400,7 @@ void WorldSystem::handleInput()
     else
     {
         // Process bot's inputs through the state machine
-        PlayerInput &p2Input = registry.playerInputs.get(renderer->m_player2);
-
-        // Convert bot inputs to state machine transitions
-        if (p2Input.left || p2Input.right)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::WALKING);
-        /*if (p2Input.up)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::JUMPING);*/
-        if (p2Input.punch || p2Input.kick)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
-
-        // Update motion based on inputs
-        if (p2Input.left)
-            player2Motion->velocity.x = -MOVE_SPEED;
-        else if (p2Input.right)
-            player2Motion->velocity.x = MOVE_SPEED;
-        else
-            player2Motion->velocity.x = 0;
+        botInstance.pollBotRng(*renderer, *player2StateMachine, currentLevel);
     }
 }
 
@@ -870,11 +864,21 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (xCollision && yCollision)
     {
-        player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
-        ;
-        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
-        player1Motion->velocity.x = 0;
-        player2Motion->velocity.x = 0;
+        // This is the version where the players can't push each other
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x < 0) {
+            player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+            player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
+        }
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x >= 0) {
+            player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        }
+        if (player1Motion->velocity.x <= 0 && player2Motion->velocity.x < 0) {
+            player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
+        }
+
+        // This is the version where the players can push each other
+        /*player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;*/
     }
 }
 

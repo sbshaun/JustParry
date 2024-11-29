@@ -43,7 +43,7 @@ int generateUI(GlRender &renderer)
     return 0;
 }
 
-void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
+void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled, StateMachine &botStateMachine)
 {
     Health &h1 = registry.healths.get(renderer.m_player1);
     Health &h2 = registry.healths.get(renderer.m_player2);
@@ -74,7 +74,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         roundEnded = false;
         if (botEnabled)
         {
-            botInstance.pollBotRng(renderer);
+            botInstance.pollBotRng(renderer, botStateMachine, game.getCurrentLevel());
         }
         renderer.renderUI(timer);
     }
@@ -107,6 +107,15 @@ int main()
 
     PhysicsSystem physicsSystem;
     Bot botInstance;
+
+    StateMachine botStateMachine;
+    botStateMachine.addState(PlayerState::IDLE, std::make_unique<IdleState>());
+    botStateMachine.addState(PlayerState::WALKING, std::make_unique<WalkingState>());
+    botStateMachine.addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    botStateMachine.addState(PlayerState::KICKING, std::make_unique<KickingState>());
+    botStateMachine.addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    botStateMachine.addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    botStateMachine.addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 
     // Initialize game state
     Game game;
@@ -197,21 +206,6 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_MENU:
-            game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window))
-            {
-                std::cout << "Entered Character Select Stage" << std::endl;
-                game.setState(GameState::ARCADE_PREFIGHT);
-            }
-            if (Settings::windowSettings.show_fps)
-            {
-                fpsCounter.update(renderer, false);
-                renderer.renderFPS(fpsCounter.getFPS(), true);
-            }
-
-            glWindow.windowSwapBuffers();
-            break;
         case GameState::ARCADE_PREFIGHT:
             // Enable bot for arcade
             botEnabled = true;
@@ -227,26 +221,106 @@ int main()
             }
             glWindow.windowSwapBuffers();
             break;
-        case GameState::ARCADE_WIN:
-            // Win/Loss screen for winning/losing in arcade mode
-
-            break;
-        case GameState::ARCADE_LOSE:
-            // Win/Loss screen for winning/losing in arcade mode
-
-            break;
-        case GameState::HELP:
-            game.renderHelpScreen(renderer);
-            if (game.handleHelpInput(glWindow.window))
+        case GameState::ARCADE_MENU:
+            game.renderArcadeMenu(renderer);
+            if (game.handleArcadeMenuInput(glWindow.window))
             {
-                game.setState(GameState::MENU);
+                std::cout << "Entered Character Select Stage" << std::endl;
+                game.setState(GameState::ARCADE_STORY);
             }
             if (Settings::windowSettings.show_fps)
             {
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
             glWindow.windowSwapBuffers();
+            break;
+        case GameState::ARCADE_STORY:
+            game.renderArcadeStory(renderer);
+            if (game.handleArcadeStoryInput(glWindow.window))
+            {
+                WorldSystem::playGameCountDownSound();
+                game.setState(GameState::ROUND_START);
+            }
+            if (Settings::windowSettings.show_fps)
+            {
+                fpsCounter.update(renderer, false);
+                renderer.renderFPS(fpsCounter.getFPS(), true);
+            }
+
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::HELP: {
+            
+            if (game.handleHelpInput(glWindow.window))
+            {
+                 game.resetGame(renderer, worldSystem);
+                 game.setState(GameState::MENU);
+            }
+            if (loopsSinceLastFrame == FramesPerLogicLoop)
+            {
+                loopsSinceLastFrame = 0;
+
+                // Resume sounds and check music when returning to playing state
+                if (game.getPreviousState() == GameState::PAUSED ||
+                    game.getPreviousState() == GameState::SETTINGS)
+                {
+                    WorldSystem::resumeSounds();
+                    WorldSystem::updateAudioState(); // Make sure music is playing if enabled
+                }
+                
+                
+                handleUtilityInputs(renderer, showFPS,
+                                    fKeyPressed, bKeyPressed, hKeyPressed,
+                                    glWindow, fpsCounter, shouldExit,
+                                    worldSystem);
+
+                // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
+                // Do all rendering here, only once
+                renderer.render();
+                game.renderHelpScreen(renderer); 
+                worldSystem.renderParticles();
+                renderer.handleNotifications(elapsed_ms);
+
+                interp_moveEntitesToScreen(renderer, game);
+                if (Settings::windowSettings.show_fps)
+                {
+                    renderer.renderFPS(fpsCounter.getFPS(), true);
+                }
+                glWindow.windowSwapBuffers();
+            }
+
+            loopsSinceLastFrame++;
+
+            // Update center for playable area
+            worldSystem.movementProcessing(); // PROCESS MOVEMENTS BASED ON THE DECISIONS MADE BY FRAME BUFFER
+            worldSystem.playerCollisions(&renderer);
+            worldSystem.hitBoxCollisions();
+            worldSystem.updatePlayableArea();
+            physicsSystem.step();
+
+            // NEEDS TO BE ELAPSED_MS / 1000.0f FOR PARTICLES TO RENDER!!
+            // OTHERWISE THEY DIE OUT TOO FAST
+            worldSystem.step(elapsed_ms / 1000.0f);
+
+            worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
+            // time the next logic check
+            auto end = std::chrono::steady_clock::now();
+            std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
+
+            // Calculate the remaining time to sleep
+            int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
+            // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
+            if (sleepDuration > 0)
+            {
+                auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
+                while (std::chrono::steady_clock::now() < sleepEnd)
+                {
+                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
+                } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
+            }
+            }
             break;
 
         case GameState::SETTINGS:
@@ -316,7 +390,7 @@ int main()
                 renderer.renderUI(timer);
                 game.renderPauseButton(renderer);
 
-                interp_moveEntitesToScreen(renderer);
+                interp_moveEntitesToScreen(renderer, game);
 
                 if (!isLoading)
                 {
@@ -352,7 +426,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput();
+                    // worldSystem.handleInput(game.getCurrentLevel());
                 }
             }
         }
@@ -427,12 +501,12 @@ int main()
 
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled, botStateMachine);
 
             // time the next logic check
             auto end = std::chrono::steady_clock::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
-
+            game.getCurrentLevel();
             // Calculate the remaining time to sleep
             int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
             // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
@@ -441,7 +515,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }
