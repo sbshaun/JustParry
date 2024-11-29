@@ -26,7 +26,42 @@ class ControllerHandler : public InputHandler {
                 // get the corresponded action from the key
                 Action action = pair.second;
 
-                if (!actionBuffer.empty() && actionBuffer.back().action == action)
+                bool actionInBuffer = false;
+                for (int i = 0; i < actionBuffer.size(); i++)
+                {
+                    if (actionBuffer[i].action == action)
+                    {
+                        actionInBuffer = true;
+                    }
+
+                    if (actionBuffer[i].action == Action::MOVE_RIGHT)
+                    {
+                        if (action == Action::MOVE_RIGHT)
+                        {
+                            actionBuffer[i].ttl = 300.f;
+                            break;
+                        }
+                        else
+                        {
+                            actionBuffer.erase(actionBuffer.begin() + i);
+                            break;
+                        }
+                    }
+                    if (actionBuffer[i].action == Action::MOVE_LEFT)
+                    {
+                        if (action == Action::MOVE_LEFT)
+                        {
+                            actionBuffer[i].ttl = 300.f;
+                            break;
+                        }
+                        else
+                        {
+                            actionBuffer.erase(actionBuffer.begin() + i);
+                            break;
+                        }
+                    }
+                }
+                if (!actionBuffer.empty() && actionInBuffer)
                     continue;
                 if (actionBuffer.size() >= MAX_BUFFER_SIZE)
                     continue;
