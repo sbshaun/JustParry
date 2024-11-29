@@ -114,6 +114,10 @@ public:
     GLuint bird_Story_1_2;
     GLuint bird_Story_1_3;
     GLuint bird_Story_1_4;
+    GLuint bird_Story_1_5;
+    GLuint bird_Story_1_6;
+    GLuint bird_Story_1_7;
+
 
     // font elements
     std::map<char, Character> m_ftCharacters;

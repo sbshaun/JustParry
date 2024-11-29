@@ -955,6 +955,27 @@ void Game::renderArcadeStory(GlRender& renderer)
                 storyBoxWidth, storyBoxHeight,
                 1.0f);
             break;
+        case 5:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_5,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 6:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_6,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 7: 
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_1_7,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
         }
     }
     // LEVEL TWO
@@ -1319,7 +1340,7 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         {
             currentLevel = 1;
             currentFrame = 1;
-            currentFinalFrame = 4;
+            currentFinalFrame = 7;
             return true;
         }
         else if (mouseOverLevelTwo && levelCompleted >= 1)
