@@ -37,7 +37,7 @@ float calculateUtility(
         {
 			float parryMultiplier = (currentLevel <= 2) ? 0.5f : (currentLevel >= 4) ? 1.5f : 1.0f;
             utility = (17.0f + (postureBar * 0.5f) + 
-                        ((currentState == PlayerState::ATTACKING) ? 10.0f : -1.0f)
+                        ((currentState == PlayerState::ATTACKING) ? 5.0f : -1.0f)
                       ) * parryMultiplier;
         }
         break;
@@ -138,7 +138,7 @@ void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine, int current
             break;
         case BotState::CHASE:
         case BotState::RETREAT:
-            actionCounter = 70;
+            actionCounter = 10;
             break;
         case BotState::IDLE:
             actionCounter = 45;

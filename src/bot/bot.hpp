@@ -30,6 +30,6 @@ static int parryCounter = 0;
 const float IDEAL_ATTACK_DISTANCE = 0.18f; // Best distance for attacking
 const float TOO_CLOSE_DISTANCE = 0.15f;    // Distance to start backing off
 const float TOO_FAR_DISTANCE = 0.35f;      // Distance to start chasing
-const int BOT_PARRY_COOLDOWN = 1000;  // Cooldown for parry
+const int BOT_PARRY_COOLDOWN = 2000;  // Cooldown for parry
 
 #endif
