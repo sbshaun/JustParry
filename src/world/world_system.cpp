@@ -827,11 +827,21 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (xCollision && yCollision)
     {
-        player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
-        ;
-        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
-        player1Motion->velocity.x = 0;
-        player2Motion->velocity.x = 0;
+        // This is the version where the players can't push each other
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x < 0) {
+            player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+            player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
+        }
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x >= 0) {
+            player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        }
+        if (player1Motion->velocity.x <= 0 && player2Motion->velocity.x < 0) {
+            player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
+        }
+
+        // This is the version where the players can push each other
+        /*player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;*/
     }
 }
 
