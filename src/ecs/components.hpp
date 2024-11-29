@@ -164,6 +164,7 @@ struct PlayerInput
     bool right = false;
     bool punch = false;
     bool kick = false;
+    bool parry = false;
 };
 
 struct KnockBack

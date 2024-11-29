@@ -350,7 +350,7 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput()
+void WorldSystem::handleInput(int currentLevel)
 {
     // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
@@ -363,23 +363,7 @@ void WorldSystem::handleInput()
     else
     {
         // Process bot's inputs through the state machine
-        PlayerInput &p2Input = registry.playerInputs.get(renderer->m_player2);
-
-        // Convert bot inputs to state machine transitions
-        if (p2Input.left || p2Input.right)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::WALKING);
-        /*if (p2Input.up)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::JUMPING);*/
-        if (p2Input.punch || p2Input.kick)
-            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
-
-        // Update motion based on inputs
-        if (p2Input.left)
-            player2Motion->velocity.x = -MOVE_SPEED;
-        else if (p2Input.right)
-            player2Motion->velocity.x = MOVE_SPEED;
-        else
-            player2Motion->velocity.x = 0;
+        botInstance.pollBotRng(*renderer, *player2StateMachine, currentLevel);
     }
 }
 
