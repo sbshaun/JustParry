@@ -14,7 +14,7 @@ float calculateUtility(
     switch (state)
     {
     case BotState::CHASE:
-        utility = (distance > IDEAL_ATTACK_DISTANCE) ? 10.0f + currentLevel : -5.0f;
+        utility = (distance > IDEAL_ATTACK_DISTANCE) ? 10.0f : -5.0f;
         if (currentState == PlayerState::ATTACKING) {
             utility -= 10.0f;
         }
@@ -25,18 +25,18 @@ float calculateUtility(
         }
         break;
     case BotState::RETREAT:
-        utility = (distance < TOO_CLOSE_DISTANCE || 
-            (distance > IDEAL_ATTACK_DISTANCE && currentState == PlayerState::ATTACKING)) 
+        utility = (distance < TOO_CLOSE_DISTANCE) 
             ? 21.0f : -5.0f;
         break;
     case BotState::IDLE:
-        utility = 5.0f;
+        utility = (distance > IDEAL_ATTACK_DISTANCE && currentState == PlayerState::ATTACKING) 
+            ? 30.0f : 5.0f;
         break;
     case BotState::PARRY:
         if (distance <= IDEAL_ATTACK_DISTANCE && postureBar > 0 && parryCounter <= 0)
         {
 			float parryMultiplier = (currentLevel <= 2) ? 0.5f : (currentLevel >= 4) ? 1.5f : 1.0f;
-            utility = (17.0f + (postureBar * 0.5f) + 
+            utility = (17.0f + (postureBar * 0.5f) +
                         ((currentState == PlayerState::ATTACKING) ? 5.0f : -1.0f)
                       ) * parryMultiplier;
         }
