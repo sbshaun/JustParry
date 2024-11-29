@@ -510,7 +510,7 @@ namespace SettingsMenu
         float startY = 330.0f;      // Starting Y position
         float spacing = 40.0f;      // Increased spacing between buttons
 
-        // Render control labels - remove JUMP and adjust other positions
+        // Render control labels - adjust kick label to show combination
         renderer.renderText("DUCK", labelX, startY, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
         renderer.renderText("MOVE LEFT", labelX - 25.0f, startY + spacing, 0.24f,
@@ -519,7 +519,7 @@ namespace SettingsMenu
                             glm::vec3(0.0f, 0.0f, 0.0f));
         renderer.renderText("PUNCH", labelX, startY + spacing * 3, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("KICK", labelX, startY + spacing * 4, 0.24f,
+        renderer.renderText("KICK (DUCK + PUNCH)", labelX - 65.0f, startY + spacing * 4, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
         renderer.renderText("PARRY", labelX, startY + spacing * 5, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
@@ -537,13 +537,34 @@ namespace SettingsMenu
                        &controls.punch, &controls.kick, &controls.parry};
 
         // Render each key binding button
-        for (int i = 0; i < 6; i++) // Changed from 7 to 6 to remove jump
+        for (int i = 0; i < 6; i++)
         {
             float y = yPositions[i];
             bool isHovered = mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
                              mouseY >= y && mouseY <= y + buttonHeight;
             bool isSelected = currentlyRebindingKey == keys[i];
             bool isError = (i == errorButtonIndex && showErrorMessage);
+            bool isKickButton = (i == 4); // Index 4 is the kick button
+
+            // Skip interaction checks for kick button
+            if (isKickButton) {
+                // Render disabled button for kick
+                renderer.renderSimpleButton(buttonX, y, buttonWidth, buttonHeight,
+                                            true, false, false,
+                                            glm::vec3(0.4f, 0.4f, 0.4f)); // Gray color for disabled state
+
+                // Show the key combination instead of a single key
+                std::string comboText = std::string(Settings::getKeyName(controls.down)) + 
+                                      " + " + 
+                                      std::string(Settings::getKeyName(controls.punch));
+                float textWidth = comboText.length() * 8.0f;
+                float textX = buttonX + (buttonWidth - textWidth) / 2.0f;
+                float textY = y + (buttonHeight - 8.0f) / 2.0f;
+
+                renderer.renderText(comboText, textX - 10.f, textY + 10.f,
+                                    0.24f, glm::vec3(0.7f, 0.7f, 0.7f)); // Gray text for disabled state
+                continue;
+            }
 
             // Calculate error alpha for fade effect
             float errorAlpha = 0.0f;
