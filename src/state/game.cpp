@@ -220,7 +220,6 @@ void Game::loadArcadeState()
     if (file != nullptr)
     {
         fscanf(file, "%d", &this->levelCompleted);
-        fscanf(file, "%d", &this->levelCompleted);
         fclose(file);
         printf("Integer read from file: %d\n", this->levelCompleted);
     }
@@ -236,7 +235,6 @@ void Game::saveCurrentState()
     if (file != nullptr)
     {
         fprintf(file, "%d", this->levelCompleted);
-        fscanf(file, "%d", &this->levelCompleted);
         fclose(file);
         printf("Saved arcade level state.\n");
     }
@@ -980,19 +978,125 @@ void Game::renderArcadeStory(GlRender& renderer)
     }
     // LEVEL TWO
     if (currentLevel == 2) {
-        renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture1,
-            storyBoxX, storyBoxY,
-            storyBoxWidth, storyBoxHeight,
-            1.0f);
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_2_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_2_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_2_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_2_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 5:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_2_5,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 6:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_2_6,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        }
     }
     // LEVEL THREE
     if (currentLevel == 3) {
-        renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture1,
-            storyBoxX, storyBoxY,
-            storyBoxWidth, storyBoxHeight,
-            1.0f);
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 5:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_5,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 6:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_6,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 7:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_7,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 8:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_8,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 9:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_9,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 10:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_3_10,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        }
     }
     // LEVEL FOUR
     if (currentLevel == 4) {
@@ -1354,7 +1458,7 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         {
             currentLevel = 3;
             currentFrame = 1;
-            currentFinalFrame = 7;
+            currentFinalFrame = 10;
             return true;
         }
         else if (mouseOverLevelFour && levelCompleted >= 3)

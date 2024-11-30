@@ -117,7 +117,22 @@ public:
     GLuint bird_Story_1_5;
     GLuint bird_Story_1_6;
     GLuint bird_Story_1_7;
-
+    GLuint bird_Story_2_1;
+    GLuint bird_Story_2_2;
+    GLuint bird_Story_2_3;
+    GLuint bird_Story_2_4;
+    GLuint bird_Story_2_5;
+    GLuint bird_Story_2_6;
+    GLuint bird_Story_3_1;
+    GLuint bird_Story_3_2;
+    GLuint bird_Story_3_3;
+    GLuint bird_Story_3_4;
+    GLuint bird_Story_3_5;
+    GLuint bird_Story_3_6;
+    GLuint bird_Story_3_7;
+    GLuint bird_Story_3_8;
+    GLuint bird_Story_3_9;
+    GLuint bird_Story_3_10;
 
     // font elements
     std::map<char, Character> m_ftCharacters;
