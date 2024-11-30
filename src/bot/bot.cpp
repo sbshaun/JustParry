@@ -203,10 +203,12 @@ void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine, int current
         stateMachine.transition(player2, PlayerState::PARRYING);
 
     // Update motion based on inputs
+    float movespeed = FighterManager::getFighterConfig(registry.players.get(player2).current_char).MOVESPEED;
+    
     if (player2Input.left)
-        player2Motion.velocity.x = -MOVE_SPEED;
+        player2Motion.velocity.x = -movespeed;
     else if (player2Input.right)
-        player2Motion.velocity.x = MOVE_SPEED;
+        player2Motion.velocity.x = movespeed;
     else
         player2Motion.velocity.x = 0;
 }

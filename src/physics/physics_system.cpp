@@ -42,18 +42,19 @@ void PhysicsSystem::step() {
 			}
 			
 		}
-
+		float movespeed = FighterManager::getFighterConfig(registry.players.get(playerEntity).current_char).MOVESPEED;
 		for (uint j = 0; j < boundaryContainer.components.size(); j++) { //iterate through the boundaries: check and resolve collisions with current player
 			Boundary& boundary = boundaryContainer.components[j];
 			// Case: Right Wall 
 			if (boundary.dir == RIGHT) {
 				float playerPos = playerMotion.position.x + config.NDC_WIDTH / 2.0f; 
+				
 				if (playerPos > boundary.val) 
 				{
 					//if (!registry.boundaryCollisions.has(playerEntity)) {
-					playerMotion.position.x = playerMotion.position.x - MOVE_SPEED;
+					playerMotion.position.x = playerMotion.position.x - movespeed;
 					if (playerMotion.wasAbove) {
-						playerMotion.position.x -= MOVE_SPEED;
+						playerMotion.position.x -= movespeed;
 						playerMotion.velocity.y += GRAVITY;
 					}
 				}
@@ -62,9 +63,9 @@ void PhysicsSystem::step() {
 			else if (boundary.dir == LEFT) {
 				float playerPos = playerMotion.position.x - config.NDC_WIDTH / 2.0f;
 				if (playerPos < boundary.val) {
-					playerMotion.position.x = playerMotion.position.x + MOVE_SPEED;
+					playerMotion.position.x = playerMotion.position.x + movespeed;
 					if (playerMotion.wasAbove) {
-						playerMotion.position.x += MOVE_SPEED;
+						playerMotion.position.x += movespeed;
 						playerMotion.velocity.y += GRAVITY;
 					}
 					

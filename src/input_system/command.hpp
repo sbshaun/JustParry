@@ -27,9 +27,10 @@ public:
     void execute(Entity entity, StateMachine &state_machine) override
     {
         state_machine.transition(entity, PlayerState::WALKING);
+        float movespeed = FighterManager::getFighterConfig(registry.players.get(entity).current_char).MOVESPEED;
 
         Motion &motion = registry.motions.get(entity);
-        motion.velocity.x = -MOVE_SPEED;
+        motion.velocity.x = -movespeed;
     }
 };
 
@@ -39,9 +40,10 @@ public:
     void execute(Entity entity, StateMachine &state_machine) override
     {
         state_machine.transition(entity, PlayerState::WALKING);
+        float movespeed = FighterManager::getFighterConfig(registry.players.get(entity).current_char).MOVESPEED;
 
         Motion &motion = registry.motions.get(entity);
-        motion.velocity.x = MOVE_SPEED;
+        motion.velocity.x = movespeed;
     }
 };
 
