@@ -438,14 +438,14 @@ namespace SettingsMenu
 
                         // Check P1 controls
                         if (key == p1.down || key == p1.left || key == p1.right ||
-                            key == p1.punch || key == p1.kick || key == p1.parry)
+                            key == p1.punch || key == p1.up || key == p1.parry)
                         {
                             keyAlreadyBound = true;
                         }
 
                         // Check P2 controls
                         if (key == p2.down || key == p2.left || key == p2.right ||
-                            key == p2.punch || key == p2.kick || key == p2.parry)
+                            key == p2.punch || key == p2.up || key == p2.parry)
                         {
                             keyAlreadyBound = true;
                         }
@@ -458,8 +458,8 @@ namespace SettingsMenu
 
                             // Find which button index we're on
                             PlayerControls &controls = isPlayer1Selected ? Settings::p1Controls : Settings::p2Controls;
-                            int *keys[] = {&controls.down, &controls.left, &controls.right,
-                                           &controls.punch, &controls.kick, &controls.parry};
+                            int *keys[] = {&controls.up, &controls.down, &controls.left, &controls.right,
+                                           &controls.punch, &controls.parry};
 
                             for (int i = 0; i < 7; i++)
                             {
@@ -533,8 +533,8 @@ namespace SettingsMenu
                               startY - 22 + spacing * 4,
                               startY - 22 + spacing * 5};
 
-        int *keys[] = {&controls.down, &controls.left, &controls.right,
-                       &controls.punch, &controls.kick, &controls.parry};
+        int *keys[] = {&controls.up, &controls.down, &controls.left, &controls.right,
+                       &controls.punch, &controls.parry};
 
         // Render each key binding button
         for (int i = 0; i < 6; i++)
