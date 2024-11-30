@@ -4,6 +4,7 @@
 #include "../physics/physics_system.hpp"
 #include "../constants.hpp"
 #include "../input_system/input_utils.hpp"
+#include "../input_system/controller_handler.hpp"
 
 Mix_Music *WorldSystem::background_music = nullptr;
 Mix_Chunk *WorldSystem::punch_sound = nullptr;
@@ -20,6 +21,8 @@ Mix_Chunk *WorldSystem::menu_confirm_sound = nullptr;
 Mix_Chunk *WorldSystem::game_count_down_sound = nullptr;
 bool WorldSystem::isPlayerWalking = false;
 float WorldSystem::walkStopTimer = 0.f;
+static Entity player1;
+static Entity player2;
 
 /* notes:
 1. a helper function to check if player is movable.
@@ -214,8 +217,8 @@ void WorldSystem::init(GlRender *renderer)
 
     // Create entities
     FighterConfig birdmanConfig = FighterManager::getFighterConfig(Fighters::BIRDMAN);
-    Entity player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
-    Entity player2 = createPlayer2(renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
+    player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
+    player2 = createPlayer2(renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, Fighters::BIRDMAN);
 
     renderer->m_player1 = player1;
     renderer->m_player2 = player2;
@@ -300,6 +303,22 @@ void WorldSystem::initInputHandlers()
     // player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
+    std::unique_ptr<ControllerMapping> player1ControllerMapping = std::make_unique<ControllerMapping>(0); //HAVE TO SOME HOW MAKE THESE CID's NOT HARD CODED 
+
+    player1ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
+    player1ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
+    player1ControllerMapping->bindKeyToAction(2, Action::PUNCH);
+    player1ControllerMapping->bindKeyToAction(3, Action::KICK);
+    player1ControllerMapping->bindKeyToAction(4, Action::PARRY);
+
+    std::unique_ptr<ControllerMapping> player2ControllerMapping = std::make_unique<ControllerMapping>(1);
+
+    player2ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
+    player2ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
+    player2ControllerMapping->bindKeyToAction(2, Action::PUNCH);
+    player2ControllerMapping->bindKeyToAction(3, Action::KICK);
+    player2ControllerMapping->bindKeyToAction(4, Action::PARRY);
+
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
     // player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
@@ -311,8 +330,26 @@ void WorldSystem::initInputHandlers()
     player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
     // Initialize input handlers with the mappings
-    player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping));
-    player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping));
+    // player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), std::move(player1ControllerMapping));
+    // player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));        
+    int p1_cid = registry.players.get(player1).controller_id;
+    int p2_cid = registry.players.get(player2).controller_id;
+    if (p1_cid != -1)
+    {
+        player1InputHandler = std::make_unique<ControllerHandler>(std::move(player1ControllerMapping));
+    } else {
+        player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), nullptr);
+    }
+
+    if (p2_cid != -1)
+    {
+        player2InputHandler = std::make_unique<ControllerHandler>(std::move(player2ControllerMapping));
+    } else {
+        player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), nullptr);
+    }
+
+    //the Input Handler definition is to be done based on controller assignment
+
     player1InputHandler->initDefaultActionToCommandMapping();
     player2InputHandler->initDefaultActionToCommandMapping();
 
@@ -350,7 +387,7 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput()
+void WorldSystem::handleInput(int currentLevel)
 {
     // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
@@ -363,6 +400,7 @@ void WorldSystem::handleInput()
     else
     {
         // Process bot's inputs through the state machine
+
         PlayerInput &p2Input = registry.playerInputs.get(renderer->m_player2);
 
         // Convert bot inputs to state machine transitions
@@ -382,6 +420,8 @@ void WorldSystem::handleInput()
             player2Motion->velocity.x = P2_movespeed;
         else
             player2Motion->velocity.x = 0;
+        botInstance.pollBotRng(*renderer, *player2StateMachine, currentLevel);
+
     }
 }
 
@@ -826,11 +866,21 @@ void WorldSystem::playerCollisions(GlRender *renderer)
 
     if (xCollision && yCollision)
     {
-        player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
-        ;
-        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
-        player1Motion->velocity.x = 0;
-        player2Motion->velocity.x = 0;
+        // This is the version where the players can't push each other
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x < 0) {
+            player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+            player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
+        }
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x >= 0) {
+            player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        }
+        if (player1Motion->velocity.x <= 0 && player2Motion->velocity.x < 0) {
+            player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
+        }
+
+        // This is the version where the players can push each other
+        /*player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
+        player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;*/
     }
 }
 

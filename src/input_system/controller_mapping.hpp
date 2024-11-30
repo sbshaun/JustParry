@@ -9,7 +9,7 @@
 2. player can change the key binding. 
  //Keys are respresented as the index of the button when glfwGetJoystickButtons is called (needs to dynamically defined)
 */
-class ControllerMapping {
+class ControllerMapping : InputMapping {
     private:
         std::unordered_map<int, Action> keyToActionMap; // key to action mapping 
         std::unordered_map<Action, int> actionToKeyMap; // action to key mapping, used for easy reverse lookup 
