@@ -1822,6 +1822,7 @@ void Game::renderMatchOver(GlRender &renderer) {
     else if (menuPressed && !wasMenuPressed) {
         // Reset scores and return to menu
         resetScores();
+        resetGame(renderer, *worldSystem);
         setState(GameState::MENU);
         WorldSystem::stopAllSounds();
         WorldSystem::stopBackgroundMusic();
