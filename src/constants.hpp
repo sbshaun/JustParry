@@ -4,12 +4,12 @@
 const int M_WINDOW_WIDTH_PX = 1024;
 const int M_WINDOW_HEIGHT_PX = 768;
 
-const float PLAYER_BB_WIDTH = 2.5f * 80.f;
-const float PLAYER_BB_HEIGHT = 2.5f * 100.f;
+// const float PLAYER_BB_WIDTH = 2.5f * 80.f;
+// const float PLAYER_BB_HEIGHT = 2.5f * 100.f;
 
 const bool BOT_ENABLED = false;
 
-const float PERFECT_PARRY_TIME = 300.0f;
+// const float PERFECT_PARRY_TIME = 300.0f;
 
 // LOOP LOGIC
 // 1000hz = 1ms
@@ -27,9 +27,9 @@ const int timer_length = 99;
 // movement
 // const float JUMP_HEIGHT = 0.5f;
 // const float JUMP_DURATION = 1.0f;
-const float MOVE_SPEED = 0.02f / FPS_LOGIC_FACTOR;
+// const float MOVE_SPEED = 0.02f / FPS_LOGIC_FACTOR;
 
-const float JUMP_VELOCITY = 0.065f / FPS_LOGIC_FACTOR;
+// const float JUMP_VELOCITY = 0.065f / FPS_LOGIC_FACTOR;
 const float GRAVITY = 0.001f / FPS_LOGIC_FACTOR;
 
 const float TIME_STEP = 1.0f / 60.0f;

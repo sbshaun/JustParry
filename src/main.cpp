@@ -43,7 +43,7 @@ int generateUI(GlRender &renderer)
     return 0;
 }
 
-void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
+void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled, StateMachine &botStateMachine)
 {
     Health &h1 = registry.healths.get(renderer.m_player1);
     Health &h2 = registry.healths.get(renderer.m_player2);
@@ -74,7 +74,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         roundEnded = false;
         if (botEnabled)
         {
-            botInstance.pollBotRng(renderer);
+            botInstance.pollBotRng(renderer, botStateMachine, game.getCurrentLevel());
         }
         renderer.renderUI(timer);
     }
@@ -107,6 +107,15 @@ int main()
 
     PhysicsSystem physicsSystem;
     Bot botInstance;
+
+    StateMachine botStateMachine;
+    botStateMachine.addState(PlayerState::IDLE, std::make_unique<IdleState>());
+    botStateMachine.addState(PlayerState::WALKING, std::make_unique<WalkingState>());
+    botStateMachine.addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    botStateMachine.addState(PlayerState::KICKING, std::make_unique<KickingState>());
+    botStateMachine.addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    botStateMachine.addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    botStateMachine.addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 
     // Initialize game state
     Game game;
@@ -308,7 +317,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
@@ -417,7 +426,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput();
+                    // worldSystem.handleInput(game.getCurrentLevel());
                 }
             }
         }
@@ -492,12 +501,12 @@ int main()
 
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled, botStateMachine);
 
             // time the next logic check
             auto end = std::chrono::steady_clock::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
-
+            game.getCurrentLevel();
             // Calculate the remaining time to sleep
             int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
             // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
@@ -506,7 +515,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }

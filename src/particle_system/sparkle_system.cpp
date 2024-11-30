@@ -30,10 +30,10 @@ void SparkleParticleSystem::update(float deltaTime) {
 }
 
 void SparkleParticleSystem::emit(float x, float y, float z, bool direction) {
-    const int NUM_PARTICLES = 50;
-    const float MIN_VELOCITY = 2.0f;
-    const float MAX_VELOCITY = 4.0f;
-    const float SPAWN_RADIUS = 0.05f;
+    const int NUM_PARTICLES = 100;
+    const float MIN_VELOCITY = 0.1f;
+    const float MAX_VELOCITY = 0.3f;
+    const float SPAWN_RADIUS = 0.1f;
 
     for (int i = 0; i < NUM_PARTICLES; i++) {
         Particle particle;
@@ -54,11 +54,11 @@ void SparkleParticleSystem::emit(float x, float y, float z, bool direction) {
         particle.r = 0.0f;
         particle.g = 0.0f;
         particle.b = 1.0f;
-        particle.a = 1.0f;
+        particle.a = 0.7f;
 
-        particle.size = 0.05f + ((float)rand() / RAND_MAX) * 0.1f;
+        particle.size = 0.1f + ((float)rand() / RAND_MAX) * 0.2f;
 
-        particle.life = 0.05f + ((float)rand() / RAND_MAX) * 0.04f;
+        particle.life = 1.0f + ((float)rand() / RAND_MAX) * 0.5f;
 
         particles.push_back(particle);
     }

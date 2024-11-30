@@ -2,3 +2,4 @@
 
 
 <h2>Definitions</h2>
+createPlayerHelper assigns controller dynamically

@@ -16,6 +16,7 @@ Entity createFloor(float val, int type);
 
 Entity createFloor(GlRender *renderer);
 Entity createNotification(float counter_ms, bool player1Side, GLuint texture_id);
+void assignController(Entity &entity);
 
 // Add cleanup function declaration
 void cleanupShaders(Entity entity);

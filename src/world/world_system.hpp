@@ -8,6 +8,7 @@
 #include "../particle_system/particle_system.hpp"
 #include "../particle_system/blood_system.hpp"
 #include "../particle_system/smoke_system.hpp"
+#include "../bot/bot.hpp"
 #include "../particle_system/sparkle_system.hpp"
 
 #define SDL_MAIN_HANDLED
@@ -29,7 +30,7 @@ public:
 	~WorldSystem();
 
 	// TODO: Handle the movement and collision
-	void handleInput();
+	void handleInput(int currentLevel);
 	void inputProcessing();
 	void movementProcessing();
 	void handlePlayerInput(Entity player, InputHandler &inputHandler, StateMachine &stateMachine);
@@ -261,4 +262,6 @@ private:
 	static Mix_Chunk *menu_confirm_sound;
 	static Mix_Chunk *game_count_down_sound;
 	static Mix_Chunk *crouch_sound;
+
+	Bot botInstance;
 };
