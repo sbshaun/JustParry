@@ -2,8 +2,8 @@
 down=S
 left=A
 right=D
-punch=E
-kick=R
+punch=R
+kick=G
 parry=T
 
 [Player2Controls]
@@ -24,4 +24,4 @@ enable_debug=false
 enable_sound_effects=true
 enable_music=true
 overall_volume=1
-music_volume=0.75
+music_volume=0.1

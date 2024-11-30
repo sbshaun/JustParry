@@ -76,6 +76,8 @@ void GlRender::renderRoundOver(int count)
     auto currentTime = std::chrono::steady_clock::now();
     float deltaTime = std::chrono::duration<float>(currentTime - m_lastUpdateTime).count();
     m_lastUpdateTime = currentTime;
+    Health &h1 = registry.healths.get(m_player1);
+    Health &h2 = registry.healths.get(m_player2);
 
     // Check if enter is pressed to start exit animation
     if (isKeyPressed(GLFW_KEY_ENTER) && !m_exitAnimationStarted)
@@ -95,11 +97,28 @@ void GlRender::renderRoundOver(int count)
         m_roundOverY = m_targetY + (m_exitY - m_targetY) * easeIn;
 
         // Render at current position
-        renderTexturedQuadScaled(
-            m_roundOverTexture,
-            0, m_roundOverY,
-            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-            1.0f);
+        if (h1.currentHealth < h2.currentHealth)
+        {
+            renderTexturedQuadScaled(
+                m_roundOverP2Texture,
+                0, m_roundOverY,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f);
+        }
+        else if (h1.currentHealth > h2.currentHealth)
+        {
+            renderTexturedQuadScaled(
+                m_roundOverP1Texture,
+                0, m_roundOverY,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f);
+        } else {
+            renderTexturedQuadScaled(
+                m_roundOverDrawTexture,
+                0, m_roundOverY,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f);
+        }
 
         // Only mark animation as complete when it has fully finished
         if (m_animationProgress >= 1.0f && m_roundOverY <= m_exitY)
@@ -137,12 +156,28 @@ void GlRender::renderRoundOver(int count)
         m_roundOverY = -600.0f + (m_targetY + 600.0f) * easeOut;
     }
 
-    // Render the round over background image at current position
-    renderTexturedQuadScaled(
-        m_roundOverTexture,
-        0, m_roundOverY,
-        M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-        1.0f);
+    if (h1.currentHealth < h2.currentHealth)
+    {
+        renderTexturedQuadScaled(
+                m_roundOverP2Texture,
+                0, m_roundOverY,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f);
+    }
+    else if (h1.currentHealth > h2.currentHealth)
+    {
+        renderTexturedQuadScaled(
+            m_roundOverP1Texture,
+            0, m_roundOverY,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    } else {
+        renderTexturedQuadScaled(
+            m_roundOverDrawTexture,
+            0, m_roundOverY,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
 
     // Only show text once the image is mostly in position
     float textRevealThreshold = m_targetY - 50.0f;
@@ -159,23 +194,20 @@ void GlRender::renderRoundOver(int count)
         }
         else
         {
-            overText = "GAME OVER!";
+            overText = "ROUND " + std::to_string(game->getCurrentRound() - 1);
         }
 
         // Create and render winner text
         std::string wonText = "";
-        if (h1.currentHealth == h2.currentHealth)
+        if (h1.currentHealth > h2.currentHealth)
         {
-            wonText = "Both players tied!";
+             wonText = "Player 1 Wins!";
         }
         else if (h1.currentHealth < h2.currentHealth)
         {
             wonText = "Player 2 Wins!";
         }
-        else
-        {
-            wonText = "Player 1 Wins!";
-        }
+
 
         // Get window size and calculate scaling factors
         int windowWidth, windowHeight;
@@ -193,21 +225,25 @@ void GlRender::renderRoundOver(int count)
         // Render game over and winner text
         if (count == 1)
         {
-            if (strcmp(overText.c_str(), "DRAW!") == 0)
+            if (h1.currentHealth < h2.currentHealth)
             {
-                renderText(overText, (baseX + 80.f) * xscale, (baseY + 90.f) * yscale, (1.f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
-                renderText(wonText, (baseX + 30.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(overText, (baseX + 210.f) * xscale, (baseY - 325.f) * yscale, (0.7f * xscale), glm::vec3(0.3f, 0.0f, 0.0f));
+                renderText("PRESS ENTER TO CONTINUE!", (baseX - 460.f) * xscale, (baseY + 275.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));           
+                renderText(wonText, (baseX - 450.f) * xscale, (baseY - 50.f) * yscale, (0.6f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
             }
-            else
+            else if (h1.currentHealth > h2.currentHealth)
             {
-                renderText(overText, (baseX + 20.f) * xscale, (baseY + 90.f) * yscale, (0.8f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
-                renderText(wonText, (baseX + 80.0f) * xscale, (baseY + 150.0f) * yscale, (0.5f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(overText, (baseX - 470.f) * xscale, (baseY - 350.f) * yscale, (0.75f * xscale), glm::vec3(0.3f, 0.0f, 0.0f));
+                renderText("PRESS ENTER TO CONTINUE!", (baseX - 25.f) * xscale, (baseY + 275.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+                renderText(wonText, (baseX + 50.f) * xscale, (baseY - 75.f) * yscale, (0.6f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
+            } 
+            else 
+            {
+                renderText(overText, (baseX - 90.f) * xscale, (baseY - 330.f) * yscale, (0.95f * xscale), glm::vec3(0.3f, 0.0f, 0.0f));
+                renderText("PRESS ENTER TO CONTINUE!", (baseX - 275.f) * xscale, (baseY - 275.0f) * yscale, 0.5f * xscale, glm::vec3(0.4f, 0.4f, 0.4f));
             }
-        }
 
-        // Create and render restart prompt
-        renderText("PRESS ENTER TO RESTART!", (baseX - 10.f) * xscale, (baseY + 210.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
-        // renderText("PRESS BACKSPACE TO GO TO MENU!", (baseX - 10) * xscale, (baseY + 250.0f) * yscale, 0.3f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
+        }
     }
 }
 
@@ -553,7 +589,9 @@ void GlRender::loadTextures()
     loadTexture(textures_path("notification_parried.png"), m_notif_parried);
     loadTexture(textures_path("notification_hit.png"), m_notif_hit);
     loadTexture(textures_path("notification_stunned.png"), m_notif_stunned);
-    loadTexture(textures_path("round_over.png"), m_roundOverTexture);
+    loadTexture(textures_path("round_over_p1.png"), m_roundOverP1Texture);
+    loadTexture(textures_path("round_over_p2.png"), m_roundOverP2Texture);
+    loadTexture(textures_path("round_over_draw.png"), m_roundOverDrawTexture);
     loadTexture(textures_path("timer.png"), m_timerBackgroundTexture);
     loadTexture(textures_path("bar_square_gloss_large.png"), m_barTexture);
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
@@ -569,6 +607,10 @@ void GlRender::loadTextures()
     loadTexture(textures_path("Bird_Story_1_2.png"), bird_Story_1_2);
     loadTexture(textures_path("Bird_Story_1_3.png"), bird_Story_1_3);
     loadTexture(textures_path("Bird_Story_1_4.png"), bird_Story_1_4);
+    loadTexture(textures_path("level_win.png"), m_levelWonTexture);
+    loadTexture(textures_path("level_lost.png"), m_levelLostTexture);
+    loadTexture(textures_path("match_over_p1.png"), m_matchOverP1Texture);
+    loadTexture(textures_path("match_over_p2.png"), m_matchOverP2Texture);
     FighterManager::loadBirdTextures(*this);
 }
 
@@ -747,6 +789,13 @@ void GlRender::renderUI(int timer)
     float timerX = centerX - (textWidth / 2.0f);
 
     renderText(std::to_string(timer), (timerX - 0.f) + 30 * (xscale - 1), (valueY + 17.5f) - 35 * (xscale - 1), 0.5f, glm::vec3(0.102f, 0.102f, 0.102f));
+
+    if (game->isVersusMode()) {
+        renderText("ROUND " + std::to_string(game->getCurrentRound()), 425.f, 75.0f, 0.5f, glm::vec3(0.3f, 0.0f, 0.0f));
+    } else {
+        renderText("LEVEL " + std::to_string(game->getCurrentLevel()), 420.f, 50.0f, 0.5f, glm::vec3(0.1f, 0.1f, 0.1f));
+        renderText("ROUND " + std::to_string(game->getCurrentRound()), 450.f, 80.0f, 0.3f, glm::vec3(0.3f, 0.3f, 0.3f));
+    }
 
     // Restore depth testing
     glEnable(GL_DEPTH_TEST);
@@ -1172,9 +1221,11 @@ void GlRender::shutdown()
     GLuint textures[] = {
         m_menuTexture, m_arcadeMenuTexture, m_helpTexture1, m_helpTexture2, m_helpTexture3, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
-        m_roundOverTexture, m_timerBackgroundTexture, m_barTexture,
+        m_roundOverP1Texture, m_roundOverP2Texture, m_roundOverDrawTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade,m_character1,
-        m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey};
+        m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey, 
+        m_levelWonTexture, m_levelLostTexture, m_matchOverP1Texture, m_matchOverP2Texture,
+        bird_Story_1_1, bird_Story_1_2, bird_Story_1_3, bird_Story_1_4};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
@@ -1183,10 +1234,12 @@ void GlRender::shutdown()
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
     m_notif_parried = m_notif_hit = m_notif_stunned = 0;
-    m_roundOverTexture = m_timerBackgroundTexture = m_barTexture = 0;
+    m_roundOverP1Texture = m_roundOverP2Texture = m_roundOverDrawTexture = m_timerBackgroundTexture = m_barTexture = 0;
     m_avatarTexture = m_characterSelectTexture = m_characterSelectTextureArcade = m_character1 = 0;
     m_character1_ready = m_character1_flip_ready = 0;
     m_character1_flip = m_p1SelectKey = m_p2SelectKey = 0;
+    m_levelWonTexture = m_levelLostTexture = m_matchOverP1Texture = m_matchOverP2Texture = 0;
+    bird_Story_1_1 = bird_Story_1_2 = bird_Story_1_3 = bird_Story_1_4 = 0;
 
     // Free font resources
     if (m_font_VAO)
@@ -2020,13 +2073,25 @@ void GlRender::renderSelectorTriangleP1(float x, float y, float width, float hei
     GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
 
     glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
-    if (p1)
-    {
-        glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
-    }
-    else
-    {
-        glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+    if (game->getState() == GameState::ARCADE_MENU) {
+        if (p1)
+        {
+            glUniform3f(fillColorLoc, 0x9e / 255.0f, 0x9b / 255.0f, 0x9e / 255.0f); // gray fill
+        }
+        else
+        {
+            glUniform3f(fillColorLoc, 1.0f, 1.0f, 1.0f); // white fill
+        }
+
+    } else {
+        if (p1)
+        {
+            glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+        }
+        else
+        {
+            glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+        }
     }
 
     // Set border thickness as a fraction of the width

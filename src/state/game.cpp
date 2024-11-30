@@ -309,19 +309,6 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness for main menu
     );
 
-    // renderer.renderTexturedQuadScaled(
-    //     renderer.m_p1SelectKey,
-    //     360.f, 245.0f + offset1,
-    //     30, 30,
-    //     1.0f // Full brightness for main menu
-    // );
-
-    // renderer.renderTexturedQuadScaled(
-    //     renderer.m_p2SelectKey,
-    //     645.f, 245.0f + offset2,
-    //     30, 30,
-    //     1.0f // Full brightness for main menu
-    // );
 
     renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
     renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f + offset2, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -831,7 +818,7 @@ void Game::renderArcadeMenu(GlRender &renderer)
         backPressed                          // Add this member variable to Game class
     );
 
-    renderer.renderText("PROGRESS : " + std::to_string(levelCompleted) + "/5 COMPLETED", 180.f, 190.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // renderer.renderText("PROGRESS : " + std::to_string(levelCompleted) + "/5 COMPLETED", 180.f, 190.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     bool isLevelOneCompleted = (levelCompleted >= 1);
     bool isLevelTwoCompleted = (levelCompleted >= 2);
@@ -1079,11 +1066,11 @@ void Game::renderHelpScreen(GlRender &renderer)
 
     // Render navigation buttons with disabled states
     glm::vec3 backButtonColor = (currentTutorialPage == 0) ? 
-        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
+        glm::vec3(0.2f, 0.2f, 0.2f) : // Much darker when disabled
         glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
 
     glm::vec3 nextButtonColor = (currentTutorialPage == 2) ? 
-        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
+        glm::vec3(0.2f, 0.2f, 0.2f) : // Much darker when disabled
         glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
 
     // Only allow button clicks if they're not at the limits
@@ -1685,4 +1672,393 @@ void Game::renderPauseButton(GlRender &renderer)
         wasMenuPressed = menuPressed;
         wasSettingsPressed = settingsPressed;
     }
+}
+
+void Game::renderMatchOver(GlRender &renderer) {
+    static auto lastFrameTime = std::chrono::high_resolution_clock::now();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
+    lastFrameTime = currentTime;
+
+    // First show the flashing K.O. text
+    if (koFlashCount < TOTAL_KO_FLASHES) {
+        // Update the timer using deltaTime
+        koTextTimer += deltaTime;
+
+        // Toggle text visibility every KO_FLASH_DURATION seconds
+        if (koTextTimer >= KO_FLASH_DURATION) {
+            koTextTimer = 0.0f;
+            showKoText = !showKoText;
+            if (!showKoText) {
+                koFlashCount++;
+            }
+        }
+
+        // Render the previous frame in the background
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render K.O. text if it should be visible
+        if (showKoText) {
+            // Center the text on screen
+            float centerX = M_WINDOW_WIDTH_PX / 2.0f - 100.0f;
+            float centerY = M_WINDOW_HEIGHT_PX / 2.0f - 50.0f;
+            renderer.renderText("K.O!", centerX - 40.f, centerY, 2.0f, glm::vec3(0.3f, 0.0f, 0.0f));
+        }
+        return;
+    }
+
+    // Start fade transitions after K.O. animation
+    if (!startedFading) {
+        startedFading = true;
+        fadeOutTimer = 0.0f;
+        fadeInTimer = 0.0f;
+    }
+
+    // Handle fade out of the game screen
+    if (fadeOutTimer < FADE_DURATION) {
+        fadeOutTimer += deltaTime;
+        float alpha = std::min(fadeOutTimer / FADE_DURATION, 1.0f);
+        
+        // Render the game screen
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render black overlay with increasing opacity
+        renderer.renderTexturedQuadScaled(
+            renderer.m_menuTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            0.0f, // Black
+            alpha // Increasing opacity
+        );
+        return;
+    }
+
+    // Handle fade in of the match over screen
+    if (fadeInTimer < FADE_DURATION) {
+        fadeInTimer += deltaTime;
+        float alpha = std::min(fadeInTimer / FADE_DURATION, 1.0f);
+
+        // Render the appropriate match over screen with increasing opacity
+        if (player1Score == 2) { 
+            renderer.renderTexturedQuadScaled(
+                renderer.m_matchOverP1Texture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        } else if (player2Score == 2) {
+            renderer.renderTexturedQuadScaled(
+                renderer.m_matchOverP2Texture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        }
+        return;
+    }
+
+    // After all animations, show the full match over screen with buttons
+    if (player1Score == 2) { 
+        renderer.renderTexturedQuadScaled(
+            renderer.m_matchOverP1Texture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    } else if (player2Score == 2) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_matchOverP2Texture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
+
+    // Position buttons in the center bottom of the screen
+    Button restartButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 280.0f, // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                            // width
+        80.0f,                             // height
+        "REMATCH"                    // button text
+    };
+
+    Button menuButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 20.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                             // width
+        80.0f,                              // height
+        "MAIN MENU"                         // button text
+    };
+
+    // Get mouse position for hover effects
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Check button states
+    bool restartHovered = mouseX >= restartButton.x && mouseX <= restartButton.x + restartButton.width &&
+                         mouseY >= restartButton.y && mouseY <= restartButton.y + restartButton.height;
+
+    bool menuHovered = mouseX >= menuButton.x && mouseX <= menuButton.x + menuButton.width &&
+                      mouseY >= menuButton.y && mouseY <= menuButton.y + menuButton.height;
+
+    bool restartPressed = restartHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool menuPressed = menuHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    static bool wasRestartPressed = false;
+    static bool wasMenuPressed = false;
+
+    // Handle button clicks with debouncing
+    if (restartPressed && !wasRestartPressed) {
+        // Reset scores and start new match
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::ROUND_START);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+        WorldSystem::playGameCountDownSound();
+    }
+    else if (menuPressed && !wasMenuPressed) {
+        // Reset scores and return to menu
+        resetScores();
+        setState(GameState::MENU);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+    }
+
+    wasRestartPressed = restartPressed;
+    wasMenuPressed = menuPressed;
+
+    // Render the buttons
+    renderer.renderButton(
+        restartButton.x, restartButton.y,
+        restartButton.width, restartButton.height,
+        restartButton.text,
+        restartHovered, restartPressed
+    );
+
+    renderer.renderButton(
+        menuButton.x, menuButton.y,
+        menuButton.width, menuButton.height,
+        menuButton.text,
+        menuHovered, menuPressed
+    );
+}
+
+void Game::renderLevelOver(GlRender &renderer)
+{
+    static auto lastFrameTime = std::chrono::high_resolution_clock::now();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
+    lastFrameTime = currentTime;
+
+    // First show the flashing K.O. text
+    if (koFlashCount < TOTAL_KO_FLASHES) {
+        // Update the timer using deltaTime
+        koTextTimer += deltaTime;
+
+        // Toggle text visibility every KO_FLASH_DURATION seconds
+        if (koTextTimer >= KO_FLASH_DURATION) {
+            koTextTimer = 0.0f;
+            showKoText = !showKoText;
+            if (!showKoText) {
+                koFlashCount++;
+            }
+        }
+
+        // Render the previous frame in the background
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render K.O. text if it should be visible
+        if (showKoText) {
+            // Center the text on screen
+            float centerX = M_WINDOW_WIDTH_PX / 2.0f - 100.0f;
+            float centerY = M_WINDOW_HEIGHT_PX / 2.0f - 50.0f;
+            renderer.renderText("K.O!", centerX - 40.f, centerY, 2.0f, glm::vec3(0.3f, 0.0f, 0.0f));
+        }
+        return;
+    }
+
+    // Start fade transitions after K.O. animation
+    if (!startedFading) {
+        startedFading = true;
+        fadeOutTimer = 0.0f;
+        fadeInTimer = 0.0f;
+    }
+
+    // Handle fade out of the game screen
+    if (fadeOutTimer < FADE_DURATION) {
+        fadeOutTimer += deltaTime;
+        float alpha = std::min(fadeOutTimer / FADE_DURATION, 1.0f);
+        
+        // Render the game screen
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render black overlay with increasing opacity
+        renderer.renderTexturedQuadScaled(
+            renderer.m_menuTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            0.0f, // Black
+            alpha // Increasing opacity
+        );
+        return;
+    }
+
+    // Handle fade in of the match over screen
+    if (fadeInTimer < FADE_DURATION) {
+        fadeInTimer += deltaTime;
+        float alpha = std::min(fadeInTimer / FADE_DURATION, 1.0f);
+
+        // Render the appropriate match over screen with increasing opacity
+        if (player1Score == 2) { 
+            renderer.renderTexturedQuadScaled(
+                renderer.m_levelWonTexture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        } else if (player2Score == 2) {
+            renderer.renderTexturedQuadScaled(
+                renderer.m_levelLostTexture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        }
+        return;
+    }
+
+    // After all animations, show the full match over screen with buttons
+    if (player1Score == 2) { 
+        renderer.renderTexturedQuadScaled(
+            renderer.m_levelWonTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    } else if (player2Score == 2) {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_levelLostTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
+
+    // Position buttons in the center bottom of the screen
+    Button restartButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 400.0f, // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                            // width
+        80.0f,                             // height
+        "REMATCH"                    // button text
+    };
+
+    Button selectLevelButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 125.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        275.0f,                             // width
+        80.0f,                              // height
+        "LEVEL MENU"                      // button text
+    };
+
+    Button menuButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 160.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                             // width
+        80.0f,                              // height
+        "MAIN MENU"                         // button text
+    };
+
+    // Get mouse position for hover effects
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Check button states
+    bool restartHovered = mouseX >= restartButton.x && mouseX <= restartButton.x + restartButton.width &&
+                         mouseY >= restartButton.y && mouseY <= restartButton.y + restartButton.height;
+
+    bool selectLevelHovered = mouseX >= selectLevelButton.x && mouseX <= selectLevelButton.x + selectLevelButton.width &&
+                            mouseY >= selectLevelButton.y && mouseY <= selectLevelButton.y + selectLevelButton.height;
+
+    bool menuHovered = mouseX >= menuButton.x && mouseX <= menuButton.x + menuButton.width &&
+                      mouseY >= menuButton.y && mouseY <= menuButton.y + menuButton.height;
+
+    bool restartPressed = restartHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool selectLevelPressed = selectLevelHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool menuPressed = menuHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    static bool wasRestartPressed = false;
+    static bool wasSelectLevelPressed = false;
+    static bool wasMenuPressed = false;
+
+    // Handle button clicks with debouncing
+    if (restartPressed && !wasRestartPressed) {
+        // Reset scores and start new match
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::ROUND_START);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+        WorldSystem::playGameCountDownSound();
+    }
+    else if (selectLevelPressed && !wasSelectLevelPressed) {
+        // Return to arcade menu
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::ARCADE_MENU);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+    }
+    else if (menuPressed && !wasMenuPressed) {
+        // Reset scores and return to main menu
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::MENU);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+    }
+
+    wasRestartPressed = restartPressed;
+    wasSelectLevelPressed = selectLevelPressed;
+    wasMenuPressed = menuPressed;
+
+    // Render the buttons
+    renderer.renderButton(
+        restartButton.x, restartButton.y,
+        restartButton.width, restartButton.height,
+        restartButton.text,
+        restartHovered, restartPressed
+    );
+
+    renderer.renderButton(
+        selectLevelButton.x, selectLevelButton.y,
+        selectLevelButton.width, selectLevelButton.height,
+        selectLevelButton.text,
+        selectLevelHovered, selectLevelPressed
+    );
+
+    renderer.renderButton(
+        menuButton.x, menuButton.y,
+        menuButton.width, menuButton.height,
+        menuButton.text,
+        menuHovered, menuPressed
+    );
+}
+
+
+void Game::resetScores()
+{
+    player1Score = 0;
+    player2Score = 0;
+    koTextTimer = 0.0f;
+    koFlashCount = 0;
+    currentRound = 1;
+    showKoText = true;
+    fadeOutTimer = 0.0f;
+    fadeInTimer = 0.0f;
+    startedFading = false;
 }
