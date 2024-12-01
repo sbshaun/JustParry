@@ -400,7 +400,28 @@ void WorldSystem::handleInput(int currentLevel)
     else
     {
         // Process bot's inputs through the state machine
+
+        PlayerInput &p2Input = registry.playerInputs.get(renderer->m_player2);
+
+        // Convert bot inputs to state machine transitions
+        if (p2Input.left || p2Input.right)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::WALKING);
+        /*if (p2Input.up)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::JUMPING);*/
+        if (p2Input.punch || p2Input.kick)
+            player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
+
+        // Update motion based on inputs  
+        float P2_movespeed = FighterManager::getFighterConfig(registry.players.get(renderer->m_player2).current_char).MOVESPEED; //why does this only exist for p2
+        
+        if (p2Input.left)
+            player2Motion->velocity.x = -P2_movespeed;
+        else if (p2Input.right)
+            player2Motion->velocity.x = P2_movespeed;
+        else
+            player2Motion->velocity.x = 0;
         botInstance.pollBotRng(*renderer, *player2StateMachine, currentLevel);
+
     }
 }
 
@@ -655,6 +676,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // Hitbox collided with the hurtbox of the other player
         // Check if the hitbox has collided with the mesh of the other player
         ObjectMesh *otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
+        std::cout << "HELLO" << std::endl;
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
                                      otherPlayerMeshPtr, hurtPlayerMotion))
         {
@@ -747,26 +769,6 @@ void WorldSystem::checkAABBCollision(bool &xCollision, bool &yCollision,
 
     xCollision = x_collision;
     yCollision = y_collision;
-
-    // keep track of whether the collision happened from above or the side
-    motion1.wasAbove = motion1.above;
-    motion2.wasAbove = motion2.above;
-
-    if (x_collision && box1Bottom > box2Top)
-    {
-        motion1.above = true;
-        motion2.above = false;
-    }
-    else if (x_collision && box2Bottom > box1Top)
-    {
-        motion2.above = true;
-        motion1.above = false;
-    }
-    else if (box1Bottom < box2Top && box2Bottom < box1Top)
-    {
-        motion1.above = false;
-        motion2.above = false;
-    }
 }
 
 /*
