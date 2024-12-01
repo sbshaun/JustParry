@@ -69,7 +69,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         575.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
-        "TUTORIAL"                                         // button text
+        "TUTORIAL"                                     // button text
     };
 
     // Add settings button below help button
@@ -309,20 +309,6 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         1.0f // Full brightness for main menu
     );
 
-    // renderer.renderTexturedQuadScaled(
-    //     renderer.m_p1SelectKey,
-    //     360.f, 245.0f + offset1,
-    //     30, 30,
-    //     1.0f // Full brightness for main menu
-    // );
-
-    // renderer.renderTexturedQuadScaled(
-    //     renderer.m_p2SelectKey,
-    //     645.f, 245.0f + offset2,
-    //     30, 30,
-    //     1.0f // Full brightness for main menu
-    // );
-
     renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
     renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f + offset2, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -389,7 +375,8 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
     }
     else
     {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        {
             backButtonReleased = true;
         }
     }
@@ -400,7 +387,7 @@ void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
         backButton.width, backButton.height, // width, height
         "<-",                                // text
         backHovered,                         // Add this member variable to Game class
-        !backButtonReleased                   // Add this member variable to Game class
+        !backButtonReleased                  // Add this member variable to Game class
     );
 
     renderer.renderSelectorTriangleP1(560, 255 + offset1, 30, 30, p1);
@@ -655,7 +642,8 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
 
 void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game)
 {
-    if (!isArcadeMode()) {
+    if (!isArcadeMode())
+    {
         if (p1Ready)
         {
             renderer.renderText("READY", 210, 350, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
@@ -684,7 +672,9 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
                 game.setState(GameState::ROUND_START);
             }
         }
-    } else {
+    }
+    else
+    {
         if (p1Ready)
         {
             renderer.renderText("READY", 315, 390, 0.25f, glm::vec3(.0f, 1.0f, 0.0f));
@@ -831,7 +821,7 @@ void Game::renderArcadeMenu(GlRender &renderer)
         backPressed                          // Add this member variable to Game class
     );
 
-    renderer.renderText("PROGRESS : " + std::to_string(levelCompleted) + "/5 COMPLETED", 180.f, 190.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+    renderer.renderText("SELECT LEVEL", 200.f, 135.0f, 1.f, glm::vec3(0x9e / 255.0f, 0x9b / 255.0f, 0x9e / 255.0f));
 
     bool isLevelOneCompleted = (levelCompleted >= 1);
     bool isLevelTwoCompleted = (levelCompleted >= 2);
@@ -905,7 +895,7 @@ void Game::renderArcadeMenu(GlRender &renderer)
     glDepthFunc(GL_LESS);
 }
 
-void Game::renderArcadeStory(GlRender& renderer)
+void Game::renderArcadeStory(GlRender &renderer)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -923,10 +913,12 @@ void Game::renderArcadeStory(GlRender& renderer)
     float storyBoxX = (M_WINDOW_WIDTH_PX - storyBoxWidth) / 2.0f;
     float storyBoxY = (M_WINDOW_HEIGHT_PX - storyBoxHeight) / 2.0f;
 
-    // LEVEL ONE 
+    // LEVEL ONE
     // TODO: MAKE INTO A TUTORIAL LEVEL
-    if (currentLevel == 1) {
-        switch (currentFrame) {
+    if (currentLevel == 1)
+    {
+        switch (currentFrame)
+        {
         case 1:
             renderer.renderTexturedQuadScaled(
                 renderer.bird_Story_1_1,
@@ -958,7 +950,8 @@ void Game::renderArcadeStory(GlRender& renderer)
         }
     }
     // LEVEL TWO
-    if (currentLevel == 2) {
+    if (currentLevel == 2)
+    {
         renderer.renderTexturedQuadScaled(
             renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
@@ -966,7 +959,8 @@ void Game::renderArcadeStory(GlRender& renderer)
             1.0f);
     }
     // LEVEL THREE
-    if (currentLevel == 3) {
+    if (currentLevel == 3)
+    {
         renderer.renderTexturedQuadScaled(
             renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
@@ -974,7 +968,8 @@ void Game::renderArcadeStory(GlRender& renderer)
             1.0f);
     }
     // LEVEL FOUR
-    if (currentLevel == 4) {
+    if (currentLevel == 4)
+    {
         renderer.renderTexturedQuadScaled(
             renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
@@ -982,7 +977,8 @@ void Game::renderArcadeStory(GlRender& renderer)
             1.0f);
     }
     // LEVEL FIVE
-    if (currentLevel == 5) {
+    if (currentLevel == 5)
+    {
         renderer.renderTexturedQuadScaled(
             renderer.m_helpTexture1,
             storyBoxX, storyBoxY,
@@ -1006,8 +1002,7 @@ void Game::renderHelpScreen(GlRender &renderer)
         22.f,   // 10px padding from top
         120.0f, // Square width
         55.0f,  // Square height
-        ""
-    };
+        ""};
 
     // Get mouse position and check hover/press state
     GLFWwindow *window = glfwGetCurrentContext();
@@ -1015,51 +1010,53 @@ void Game::renderHelpScreen(GlRender &renderer)
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
     bool closeHovered = mouseX >= closeButton.x &&
-                       mouseX <= closeButton.x + closeButton.width &&
-                       mouseY >= closeButton.y &&
-                       mouseY <= closeButton.y + closeButton.height;
+                        mouseX <= closeButton.x + closeButton.width &&
+                        mouseY >= closeButton.y &&
+                        mouseY <= closeButton.y + closeButton.height;
     bool closePressed = closeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     Button previousButton = {
-        helpBoxX,        // x position
+        helpBoxX,         // x position
         helpBoxY + 315.f, // y position
-        145.0f,          // width
-        50.0f,           // height
-        "BACK"
-    };
+        145.0f,           // width
+        50.0f,            // height
+        "BACK"};
 
     Button nextButton = {
         helpBoxX + 150.f, // x position
         helpBoxY + 315.f, // y position
-        145.0f,          // width
-        50.0f,           // height
-        "NEXT"
-    };
+        145.0f,           // width
+        50.0f,            // height
+        "NEXT"};
 
     bool previousHovered = mouseX >= previousButton.x &&
-                         mouseX <= previousButton.x + previousButton.width &&
-                         mouseY >= previousButton.y &&
-                         mouseY <= previousButton.y + previousButton.height;
+                           mouseX <= previousButton.x + previousButton.width &&
+                           mouseY >= previousButton.y &&
+                           mouseY <= previousButton.y + previousButton.height;
     bool previousPressed = previousHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     bool nextHovered = mouseX >= nextButton.x &&
-                      mouseX <= nextButton.x + nextButton.width &&
-                      mouseY >= nextButton.y &&
-                      mouseY <= nextButton.y + nextButton.height;
+                       mouseX <= nextButton.x + nextButton.width &&
+                       mouseY >= nextButton.y &&
+                       mouseY <= nextButton.y + nextButton.height;
     bool nextPressed = nextHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     static bool prevButtonWasPressed = false;
     static bool nextButtonWasPressed = false;
 
     // Handle button clicks with debouncing
-    if (previousPressed && !prevButtonWasPressed) {
-        if (currentTutorialPage > 0) {
+    if (previousPressed && !prevButtonWasPressed)
+    {
+        if (currentTutorialPage > 0)
+        {
             currentTutorialPage--;
             WorldSystem::playMenuSelectSound();
         }
     }
-    if (nextPressed && !nextButtonWasPressed) {
-        if (currentTutorialPage < 2) {  // 0,1,2 = 3 pages total
+    if (nextPressed && !nextButtonWasPressed)
+    {
+        if (currentTutorialPage < 2)
+        { // 0,1,2 = 3 pages total
             currentTutorialPage++;
             WorldSystem::playMenuSelectSound();
         }
@@ -1073,28 +1070,29 @@ void Game::renderHelpScreen(GlRender &renderer)
         closeButton.width, closeButton.height,
         closeButton.text,
         closeHovered, closePressed,
-        glm::vec3(0.7f, 0.1f, 0.1f)
-    );
+        glm::vec3(0.7f, 0.1f, 0.1f));
     renderer.renderText("EXIT", 55.f, 60.f, 0.35f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Render navigation buttons with disabled states
-    glm::vec3 backButtonColor = (currentTutorialPage == 0) ? 
-        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
-        glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
+    glm::vec3 backButtonColor = (currentTutorialPage == 0) ? glm::vec3(0.2f, 0.2f, 0.2f) : // Much darker when disabled
+                                    glm::vec3(0.9f, 0.9f, 0.9f);                           // Normal color
 
-    glm::vec3 nextButtonColor = (currentTutorialPage == 2) ? 
-        glm::vec3(0.1f, 0.1f, 0.1f) : // Much darker when disabled
-        glm::vec3(0.9f, 0.9f, 0.9f);  // Normal color
+    glm::vec3 nextButtonColor = (currentTutorialPage == 2) ? glm::vec3(0.2f, 0.2f, 0.2f) : // Much darker when disabled
+                                    glm::vec3(0.9f, 0.9f, 0.9f);                           // Normal color
 
     // Only allow button clicks if they're not at the limits
-    if (previousPressed && !prevButtonWasPressed) {
-        if (currentTutorialPage > 0) {
+    if (previousPressed && !prevButtonWasPressed)
+    {
+        if (currentTutorialPage > 0)
+        {
             currentTutorialPage--;
             WorldSystem::playMenuSelectSound();
         }
     }
-    if (nextPressed && !nextButtonWasPressed) {
-        if (currentTutorialPage < 2) {
+    if (nextPressed && !nextButtonWasPressed)
+    {
+        if (currentTutorialPage < 2)
+        {
             currentTutorialPage++;
             WorldSystem::playMenuSelectSound();
         }
@@ -1109,8 +1107,7 @@ void Game::renderHelpScreen(GlRender &renderer)
         previousButton.text,
         currentTutorialPage > 0 && previousHovered,
         currentTutorialPage > 0 && previousPressed,
-        backButtonColor
-    );
+        backButtonColor);
 
     renderer.renderButton(
         nextButton.x, nextButton.y,
@@ -1118,60 +1115,57 @@ void Game::renderHelpScreen(GlRender &renderer)
         nextButton.text,
         currentTutorialPage < 2 && nextHovered,
         currentTutorialPage < 2 && nextPressed,
-        nextButtonColor
-    );
+        nextButtonColor);
 
     // Render the appropriate help screen image based on currentTutorialPage
     GLuint currentTexture;
-    switch (currentTutorialPage) {
-        case 0:
-            currentTexture = renderer.m_helpTexture1;
-            renderer.renderTexturedQuadScaled(
-                currentTexture,
-                helpBoxX, helpBoxY,
-                helpBoxWidth, helpBoxHeight,
-                1.0f
-            );
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
-            break;
-        case 1:
-            currentTexture = renderer.m_helpTexture2;
-            renderer.renderTexturedQuadScaled(
-                currentTexture,
-                helpBoxX, helpBoxY,
-                helpBoxWidth, helpBoxHeight,
-                1.0f
-            );
-            renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            break;
-        case 2:
-            currentTexture = renderer.m_helpTexture3;
-            renderer.renderTexturedQuadScaled(
-                currentTexture,
-                helpBoxX, helpBoxY,
-                helpBoxWidth, helpBoxHeight,
-                1.0f
-            );
-            renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
-             renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+    switch (currentTutorialPage)
+    {
+    case 0:
+        currentTexture = renderer.m_helpTexture1;
+        renderer.renderTexturedQuadScaled(
+            currentTexture,
+            helpBoxX, helpBoxY,
+            helpBoxWidth, helpBoxHeight,
+            1.0f);
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+        break;
+    case 1:
+        currentTexture = renderer.m_helpTexture2;
+        renderer.renderTexturedQuadScaled(
+            currentTexture,
+            helpBoxX, helpBoxY,
+            helpBoxWidth, helpBoxHeight,
+            1.0f);
+        renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        break;
+    case 2:
+        currentTexture = renderer.m_helpTexture3;
+        renderer.renderTexturedQuadScaled(
+            currentTexture,
+            helpBoxX, helpBoxY,
+            helpBoxWidth, helpBoxHeight,
+            1.0f);
+        renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-            renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
-            break;
+        renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+        break;
     }
 
     // Add page indicator text
-    renderer.renderText(std::to_string(currentTutorialPage + 1) + "/3", 
-        helpBoxX, helpBoxY - 10.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+    renderer.renderText(std::to_string(currentTutorialPage + 1) + "/3",
+                        helpBoxX, helpBoxY - 10.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
@@ -1303,12 +1297,12 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         mouseY >= arcadeLevelFiveButton.y &&
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
-
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverBack)
         {
-            if (!backButtonReleased) {
+            if (!backButtonReleased)
+            {
                 handleBackButton();
             }
             backButtonReleased = false;
@@ -1354,16 +1348,16 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         backButtonReleased = true;
     }
 
-
     return false;
 }
 
-bool Game::handleArcadeStoryInput(GLFWwindow* window) 
+bool Game::handleArcadeStoryInput(GLFWwindow *window)
 {
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS && rightRelease == true)
     {
         rightRelease = false;
-        if (currentFrame < currentFinalFrame) {
+        if (currentFrame < currentFinalFrame)
+        {
             currentFrame++;
         }
     }
@@ -1377,20 +1371,24 @@ bool Game::handleArcadeStoryInput(GLFWwindow* window)
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
     {
         spaceRelease = false;
-        if (currentFrame == currentFinalFrame) {
+        if (currentFrame == currentFinalFrame)
+        {
             return true;
         }
     }
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE) {
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_RELEASE)
+    {
         rightRelease = true;
     }
     /*if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_RELEASE) {
         leftRelease = true;
     }*/
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE)
+    {
         spaceRelease = true;
     }
-    return false;;
+    return false;
+    ;
 }
 
 void Game::handleBackButton()
@@ -1429,7 +1427,7 @@ bool Game::handleHelpInput(GLFWwindow *window)
     if (mouseOverClose && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         currentTutorialPage = 0; // Reset page counter when closing help
-        return true; // Return to menu
+        return true;             // Return to menu
     }
 
     return false; // Stay in help state
@@ -1685,4 +1683,452 @@ void Game::renderPauseButton(GlRender &renderer)
         wasMenuPressed = menuPressed;
         wasSettingsPressed = settingsPressed;
     }
+}
+
+void Game::renderMatchOver(GlRender &renderer)
+{
+    static auto lastFrameTime = std::chrono::high_resolution_clock::now();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
+    lastFrameTime = currentTime;
+
+    // First show the flashing K.O. text
+    if (koFlashCount < TOTAL_KO_FLASHES)
+    {
+        // Update the timer using deltaTime
+        koTextTimer += deltaTime;
+
+        // Toggle text visibility every KO_FLASH_DURATION seconds
+        if (koTextTimer >= KO_FLASH_DURATION)
+        {
+            koTextTimer = 0.0f;
+            showKoText = !showKoText;
+            if (!showKoText)
+            {
+                koFlashCount++;
+            }
+        }
+
+        // Render the previous frame in the background
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render K.O. text if it should be visible
+        if (showKoText)
+        {
+            // Center the text on screen
+            float centerX = M_WINDOW_WIDTH_PX / 2.0f - 100.0f;
+            float centerY = M_WINDOW_HEIGHT_PX / 2.0f - 50.0f;
+            renderer.renderText("K.O!", centerX - 40.f, centerY, 2.0f, glm::vec3(0.3f, 0.0f, 0.0f));
+        }
+        return;
+    }
+
+    // Start fade transitions after K.O. animation
+    if (!startedFading)
+    {
+        startedFading = true;
+        fadeOutTimer = 0.0f;
+        fadeInTimer = 0.0f;
+    }
+
+    // Handle fade out of the game screen
+    if (fadeOutTimer < FADE_DURATION)
+    {
+        fadeOutTimer += deltaTime;
+        float alpha = std::min(fadeOutTimer / FADE_DURATION, 1.0f);
+
+        // Render the game screen
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render black overlay with increasing opacity
+        renderer.renderTexturedQuadScaled(
+            renderer.m_menuTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            0.0f, // Black
+            alpha // Increasing opacity
+        );
+        return;
+    }
+
+    // Handle fade in of the match over screen
+    if (fadeInTimer < FADE_DURATION)
+    {
+        fadeInTimer += deltaTime;
+        float alpha = std::min(fadeInTimer / FADE_DURATION, 1.0f);
+
+        // Render the appropriate match over screen with increasing opacity
+        if (player1Score == 2)
+        {
+            renderer.renderTexturedQuadScaled(
+                renderer.m_matchOverP1Texture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        }
+        else if (player2Score == 2)
+        {
+            renderer.renderTexturedQuadScaled(
+                renderer.m_matchOverP2Texture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        }
+        return;
+    }
+
+    // After all animations, show the full match over screen with buttons
+    if (player1Score == 2)
+    {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_matchOverP1Texture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
+    else if (player2Score == 2)
+    {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_matchOverP2Texture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
+
+    // Position buttons in the center bottom of the screen
+    Button restartButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 280.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                             // width
+        80.0f,                              // height
+        "REMATCH"                           // button text
+    };
+
+    Button menuButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 20.0f,   // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                             // width
+        80.0f,                              // height
+        "MAIN MENU"                         // button text
+    };
+
+    // Get mouse position for hover effects
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Check button states
+    bool restartHovered = mouseX >= restartButton.x && mouseX <= restartButton.x + restartButton.width &&
+                          mouseY >= restartButton.y && mouseY <= restartButton.y + restartButton.height;
+
+    bool menuHovered = mouseX >= menuButton.x && mouseX <= menuButton.x + menuButton.width &&
+                       mouseY >= menuButton.y && mouseY <= menuButton.y + menuButton.height;
+
+    bool restartPressed = restartHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool menuPressed = menuHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    static bool wasRestartPressed = false;
+    static bool wasMenuPressed = false;
+
+    // Handle button clicks with debouncing
+    if (restartPressed && !wasRestartPressed)
+    {
+        // Reset scores and start new match
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::ROUND_START);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+        WorldSystem::playGameCountDownSound();
+    }
+    else if (menuPressed && !wasMenuPressed)
+    {
+        // Reset scores and return to menu
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::MENU);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+    }
+
+    wasRestartPressed = restartPressed;
+    wasMenuPressed = menuPressed;
+
+    // Render the buttons
+    renderer.renderButton(
+        restartButton.x, restartButton.y,
+        restartButton.width, restartButton.height,
+        restartButton.text,
+        restartHovered, restartPressed);
+
+    renderer.renderButton(
+        menuButton.x, menuButton.y,
+        menuButton.width, menuButton.height,
+        menuButton.text,
+        menuHovered, menuPressed);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    if (player1Score == 2)
+    {
+        renderer.renderText("P1 WINS!", 240, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+    }
+    else
+    {
+        renderer.renderText("P2 WINS!", 225, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+    }
+    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+    renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+}
+
+void Game::renderLevelOver(GlRender &renderer)
+{
+    static auto lastFrameTime = std::chrono::high_resolution_clock::now();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
+    lastFrameTime = currentTime;
+
+    // First show the flashing K.O. text
+    if (koFlashCount < TOTAL_KO_FLASHES)
+    {
+        // Update the timer using deltaTime
+        koTextTimer += deltaTime;
+
+        // Toggle text visibility every KO_FLASH_DURATION seconds
+        if (koTextTimer >= KO_FLASH_DURATION)
+        {
+            koTextTimer = 0.0f;
+            showKoText = !showKoText;
+            if (!showKoText)
+            {
+                koFlashCount++;
+            }
+        }
+
+        // Render the previous frame in the background
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render K.O. text if it should be visible
+        if (showKoText)
+        {
+            // Center the text on screen
+            float centerX = M_WINDOW_WIDTH_PX / 2.0f - 100.0f;
+            float centerY = M_WINDOW_HEIGHT_PX / 2.0f - 50.0f;
+            renderer.renderText("K.O!", centerX - 40.f, centerY, 2.0f, glm::vec3(0.3f, 0.0f, 0.0f));
+        }
+        return;
+    }
+
+    // Start fade transitions after K.O. animation
+    if (!startedFading)
+    {
+        startedFading = true;
+        fadeOutTimer = 0.0f;
+        fadeInTimer = 0.0f;
+    }
+
+    // Handle fade out of the game screen
+    if (fadeOutTimer < FADE_DURATION)
+    {
+        fadeOutTimer += deltaTime;
+        float alpha = std::min(fadeOutTimer / FADE_DURATION, 1.0f);
+
+        // Render the game screen
+        renderer.render();
+        renderer.renderUI(timer);
+
+        // Render black overlay with increasing opacity
+        renderer.renderTexturedQuadScaled(
+            renderer.m_menuTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            0.0f, // Black
+            alpha // Increasing opacity
+        );
+        return;
+    }
+
+    // Handle fade in of the match over screen
+    if (fadeInTimer < FADE_DURATION)
+    {
+        fadeInTimer += deltaTime;
+        float alpha = std::min(fadeInTimer / FADE_DURATION, 1.0f);
+
+        // Render the appropriate match over screen with increasing opacity
+        if (player1Score == 2)
+        {
+            renderer.renderTexturedQuadScaled(
+                renderer.m_levelWonTexture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        }
+        else if (player2Score == 2)
+        {
+            renderer.renderTexturedQuadScaled(
+                renderer.m_levelLostTexture,
+                0, 0,
+                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+                1.0f,
+                alpha);
+        }
+        return;
+    }
+
+    // After all animations, show the full match over screen with buttons
+    if (player1Score == 2)
+    {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_levelWonTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
+    else if (player2Score == 2)
+    {
+        renderer.renderTexturedQuadScaled(
+            renderer.m_levelLostTexture,
+            0, 0,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
+    }
+
+    // Position buttons in the center bottom of the screen
+    Button restartButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 400.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                             // width
+        80.0f,                              // height
+        "REMATCH"                           // button text
+    };
+
+    Button selectLevelButton = {
+        M_WINDOW_WIDTH_PX / 2.0f - 125.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        275.0f,                             // width
+        80.0f,                              // height
+        "LEVEL MENU"                        // button text
+    };
+
+    Button menuButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 160.0f,  // x position
+        M_WINDOW_HEIGHT_PX / 2.0f + 275.0f, // y position
+        260.0f,                             // width
+        80.0f,                              // height
+        "MAIN MENU"                         // button text
+    };
+
+    // Get mouse position for hover effects
+    GLFWwindow *window = glfwGetCurrentContext();
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Check button states
+    bool restartHovered = mouseX >= restartButton.x && mouseX <= restartButton.x + restartButton.width &&
+                          mouseY >= restartButton.y && mouseY <= restartButton.y + restartButton.height;
+
+    bool selectLevelHovered = mouseX >= selectLevelButton.x && mouseX <= selectLevelButton.x + selectLevelButton.width &&
+                              mouseY >= selectLevelButton.y && mouseY <= selectLevelButton.y + selectLevelButton.height;
+
+    bool menuHovered = mouseX >= menuButton.x && mouseX <= menuButton.x + menuButton.width &&
+                       mouseY >= menuButton.y && mouseY <= menuButton.y + menuButton.height;
+
+    bool restartPressed = restartHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool selectLevelPressed = selectLevelHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool menuPressed = menuHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    static bool wasRestartPressed = false;
+    static bool wasSelectLevelPressed = false;
+    static bool wasMenuPressed = false;
+
+    // Handle button clicks with debouncing
+    if (restartPressed && !wasRestartPressed)
+    {
+        // Reset scores and start new match
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::ROUND_START);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+        WorldSystem::playGameCountDownSound();
+    }
+    else if (selectLevelPressed && !wasSelectLevelPressed)
+    {
+        // Return to arcade menu
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::ARCADE_MENU);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+    }
+    else if (menuPressed && !wasMenuPressed)
+    {
+        // Reset scores and return to main menu
+        resetScores();
+        resetGame(renderer, *worldSystem);
+        setState(GameState::MENU);
+        WorldSystem::stopAllSounds();
+        WorldSystem::stopBackgroundMusic();
+    }
+
+    wasRestartPressed = restartPressed;
+    wasSelectLevelPressed = selectLevelPressed;
+    wasMenuPressed = menuPressed;
+
+    // Render the buttons
+    renderer.renderButton(
+        restartButton.x, restartButton.y,
+        restartButton.width, restartButton.height,
+        restartButton.text,
+        restartHovered, restartPressed);
+
+    renderer.renderButton(
+        selectLevelButton.x, selectLevelButton.y,
+        selectLevelButton.width, selectLevelButton.height,
+        selectLevelButton.text,
+        selectLevelHovered, selectLevelPressed);
+
+    renderer.renderButton(
+        menuButton.x, menuButton.y,
+        menuButton.width, menuButton.height,
+        menuButton.text,
+        menuHovered, menuPressed);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    if (player1Score == 2)
+    {
+        renderer.renderText("CHALLENGE COMPLETE!", 40, 150, 0.89f, glm::vec3(0.05f, 0.05f, 0.05f));
+    }
+    else
+    {
+        renderer.renderText("CHALLENGE FAILED!", 115, 150, 0.9f, glm::vec3(0.05f, 0.05f, 0.05f));
+    }
+    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+    renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+}
+
+void Game::resetScores()
+{
+    player1Score = 0;
+    player2Score = 0;
+    koTextTimer = 0.0f;
+    koFlashCount = 0;
+    currentRound = 1;
+    showKoText = true;
+    fadeOutTimer = 0.0f;
+    fadeInTimer = 0.0f;
+    startedFading = false;
 }
