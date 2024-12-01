@@ -9,6 +9,7 @@
 #include "../particle_system/blood_system.hpp"
 #include "../particle_system/smoke_system.hpp"
 #include "../bot/bot.hpp"
+#include "../particle_system/sparkle_system.hpp"
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -174,10 +175,12 @@ public:
 	void step(float elapsed_ms);
 	void emitBloodParticles(float x, float y, float z, bool direction);
 	void emitSmokeParticles(float x, float y, float z);
+	void emitSparkleParticles(float x, float y, float z);
 	void renderParticles();
 
 	BloodParticleSystem bloodSystem;
 	SmokeParticleSystem smokeSystem;
+	SparkleParticleSystem sparkleSystem;
 
 	static void updateVolume()
 	{
