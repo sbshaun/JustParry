@@ -1459,6 +1459,9 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     renderer.setAnimationComplete(false);
     renderer.setExitAnimationStarted(false);
 
+    registry.players.get(renderer.m_player1).parries = 0;
+    registry.players.get(renderer.m_player1).perfectParries = 0;
+
     isLoading = true;
 }
 

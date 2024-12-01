@@ -639,6 +639,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, true, renderer->m_notif_stunned);
                 playPerfectParrySound();
+                Player& p1 = registry.players.get(playerWithHitBox);
+                p1.perfectParries++;
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
@@ -646,6 +648,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, false, renderer->m_notif_parried);
                 playParryBlockedSound();
+                Player& p1 = registry.players.get(playerWithHitBox);
+                p1.parries++;
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -656,6 +660,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, false, renderer->m_notif_stunned);
                 playPerfectParrySound();
+                Player& p2 = registry.players.get(playerWithHitBox);
+                p2.perfectParries++;
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
@@ -663,6 +669,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, true, renderer->m_notif_parried);
                 playParryBlockedSound();
+                Player& p2 = registry.players.get(playerWithHitBox);
+                p2.parries++;
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
