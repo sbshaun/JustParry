@@ -121,6 +121,18 @@ void Bot::pollBotRng(GlRender &renderer, StateMachine &stateMachine, int current
     actionCounter--;
 	parryCounter--;
 
+	// This is the tutorial level. Bot will move to the right and attack when close to the player
+    if (currentLevel == 0) {
+		if (distance > IDEAL_ATTACK_DISTANCE) {
+            player2Input.left = moveLeft;
+            player2Input.right = !moveLeft;
+		}
+		else {
+			player2Input.punch = true;
+		}
+		return;
+    }
+
     // Pick new action if counter expires
     if (actionCounter <= 0)
     {

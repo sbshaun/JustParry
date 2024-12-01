@@ -53,14 +53,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     // Check if round is over due to health or timer
     if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || generateUI(renderer) == 1)
     {
-        // Update scores and set round over state only once
-        if (!roundEnded)
-        {
-            game.updateScores(h1, h2);
-            roundEnded = true;
-            game.setState(GameState::ROUND_OVER);
-        }
-
         // Disable player inputs during round over
         p1 = PlayerInput();
         p2 = PlayerInput();
@@ -68,6 +60,34 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         // Always render round over animation with winner text
         renderer.renderRoundOver(1);
         WorldSystem::stopAllSounds();
+
+                // Update scores and set round over state only once
+        if (!roundEnded)
+        {
+            game.updateScores(h1, h2);
+            roundEnded = true;
+            if (game.getPlayer1Score() == 2 || game.getPlayer2Score() == 2)
+            {
+                if (game.isVersusMode())
+                {
+                    game.setState(GameState::MATCH_OVER);
+                }
+                else
+                {
+                    game.setState(GameState::LEVEL_OVER);
+                }
+            }
+            else
+            {
+                game.setState(GameState::ROUND_OVER);
+                if (h1.currentHealth == h2.currentHealth) {
+                    // do not increment round if health is equal
+                } else {
+                    game.incrementRound();
+                }
+            }
+        }
+
     }
     else
     {
@@ -210,7 +230,7 @@ int main()
             // Enable bot for arcade
             botEnabled = true;
             worldSystem.botEnabled = true;
-
+            game.setVersusMode(false);
             game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
             game.renderArcadePrefight(renderer, offsetY1, p1Ready);
             game.renderReadyText(renderer, p1Ready, true, game);
@@ -252,7 +272,9 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::HELP: {
-            
+            if (botEnabled) {
+			    worldSystem.botEnabled = true;
+            }
             if (game.handleHelpInput(glWindow.window))
             {
                  game.resetGame(renderer, worldSystem);
@@ -279,7 +301,8 @@ int main()
                 // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
                 // Do all rendering here, only once
                 renderer.render();
-                game.renderHelpScreen(renderer); 
+                
+                game.renderHelpScreen(renderer, botEnabled); 
                 worldSystem.renderParticles();
                 renderer.handleNotifications(elapsed_ms);
 
@@ -317,7 +340,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
+                    worldSystem.handleInput(0); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
@@ -369,6 +392,7 @@ int main()
         case GameState::CHARACTER_SELECT:
             botEnabled = false;
             worldSystem.botEnabled = false;
+            game.setVersusMode(true);
             game.handleCharacterInputs(glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
             game.renderCharacterSelect(renderer, offsetY1, offsetY2, p1Ready, p2Ready);
             game.renderReadyText(renderer, p1Ready, p2Ready, game);
@@ -452,7 +476,7 @@ int main()
             break;
 
         case GameState::PLAYING:
-        {
+        {   
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
                 loopsSinceLastFrame = 0;
@@ -552,16 +576,6 @@ int main()
             {
                 renderer.startExitAnimation();
             }
-
-            // if (!renderer.isExitAnimationStarted() &&
-            //     isKeyPressed(GLFW_KEY_BACKSPACE))
-            // {
-            //     roundEnded = false;
-            //     WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
-            //     game.resetGame(renderer, worldSystem);
-            //     game.setState(GameState::MENU);
-            // }
-
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
             {
@@ -583,6 +597,15 @@ int main()
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
             glfwSwapInterval(1);
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::MATCH_OVER:
+            game.renderMatchOver(renderer);
+            glWindow.windowSwapBuffers();
+            break;
+
+        case GameState::LEVEL_OVER:
+            game.renderLevelOver(renderer);
             glWindow.windowSwapBuffers();
             break;
         default:

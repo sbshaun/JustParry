@@ -30,6 +30,8 @@ enum class GameState
     SETTINGS_EXIT,
     ROUND_START,
     ROUND_OVER,
+    MATCH_OVER,
+    LEVEL_OVER,
     PAUSED,
     INIT
 };
@@ -65,7 +67,7 @@ public:
     void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
-    void renderHelpScreen(GlRender &renderer);
+    void renderHelpScreen(GlRender &renderer, bool &botEnabled);
     bool handleHelpInput(GLFWwindow *window);
     void attemptPause();
 
@@ -80,14 +82,11 @@ public:
     void updateScores(const Health &h1, const Health &h2);
     int getPlayer1Score() const { return player1Score; }
     int getPlayer2Score() const { return player2Score; }
-    void resetScores()
-    {
-        player1Score = 0;
-        player2Score = 0;
-    }
+    void resetScores();
 
     int getCurrentLevel() { return currentLevel; }
-
+    int getCurrentRound() { return currentRound; }
+    void incrementRound() { currentRound++; }
     // SETTINGS MENU
     void renderSettingsMenu(GlRender &renderer);
     bool handleSettingsInput(GlRender &renderer, GLFWwindow *window);
@@ -106,6 +105,20 @@ public:
                currentState == GameState::ARCADE_MENU ||
                (currentState == GameState::PLAYING && previousState == GameState::ARCADE_PREFIGHT);
     }
+
+    bool isVersus = false;
+    bool isVersusMode() const
+    {
+        return isVersus;
+    }
+
+    void setVersusMode(bool mode)
+    {
+        isVersus = mode;
+    }
+
+    void renderMatchOver(GlRender &renderer);
+    void renderLevelOver(GlRender &renderer);
 
 private:
     GameState currentState;
@@ -141,6 +154,8 @@ private:
     int currentFrame = 0;
     int currentFinalFrame = 0;
 
+    int currentRound = 1;
+
     bool rightRelease = true;
     bool leftRelease = true;
     bool spaceRelease = true;
@@ -165,4 +180,15 @@ private:
     bool isBackButtonPressed = false;
 
     int currentTutorialPage = 0;
+
+    float koTextTimer = 0.0f;
+    int koFlashCount = 0;
+    bool showKoText = true;
+    const float KO_FLASH_DURATION = 0.5f;
+    const int TOTAL_KO_FLASHES = 3;
+
+    float fadeOutTimer = 0.0f;
+    float fadeInTimer = 0.0f;
+    const float FADE_DURATION = 0.75f;
+    bool startedFading = false;
 };
