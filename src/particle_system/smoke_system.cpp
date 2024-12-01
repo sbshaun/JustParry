@@ -41,10 +41,8 @@ void SmokeParticleSystem::update(float deltaTime)
         particles.end());
 }
 
-void SmokeParticleSystem::emit(float x, float y, float z, bool direction)
-{
-    if (particles.size() >= MAX_PARTICLES)
-    {
+void SmokeParticleSystem::emit(float x, float y, float z, bool direction = 0) {
+    if (particles.size() >= MAX_PARTICLES) {
         return;
     }
 

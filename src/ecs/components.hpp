@@ -60,7 +60,7 @@ constexpr const char *PlayerStateToString(PlayerState state)
 struct Player
 {
     int id;            // used to separate players, 1 and 2.
-    int controller_id; // holds the player controller
+    int controller_id; // holds the player controller. set to -1 when no controller is assigned
     Fighters current_char;
 };
 
@@ -164,6 +164,7 @@ struct PlayerInput
     bool right = false;
     bool punch = false;
     bool kick = false;
+    bool parry = false;
 };
 
 struct KnockBack

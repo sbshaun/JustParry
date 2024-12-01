@@ -43,7 +43,7 @@ int generateUI(GlRender &renderer)
     return 0;
 }
 
-void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled)
+void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSystem, Game &game, bool &botEnabled, StateMachine &botStateMachine)
 {
     Health &h1 = registry.healths.get(renderer.m_player1);
     Health &h2 = registry.healths.get(renderer.m_player2);
@@ -53,14 +53,6 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
     // Check if round is over due to health or timer
     if (h1.currentHealth <= 0 || h2.currentHealth <= 0 || generateUI(renderer) == 1)
     {
-        // Update scores and set round over state only once
-        if (!roundEnded)
-        {
-            game.updateScores(h1, h2);
-            roundEnded = true;
-            game.setState(GameState::ROUND_OVER);
-        }
-
         // Disable player inputs during round over
         p1 = PlayerInput();
         p2 = PlayerInput();
@@ -68,13 +60,41 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         // Always render round over animation with winner text
         renderer.renderRoundOver(1);
         WorldSystem::stopAllSounds();
+
+                // Update scores and set round over state only once
+        if (!roundEnded)
+        {
+            game.updateScores(h1, h2);
+            roundEnded = true;
+            if (game.getPlayer1Score() == 2 || game.getPlayer2Score() == 2)
+            {
+                if (game.isVersusMode())
+                {
+                    game.setState(GameState::MATCH_OVER);
+                }
+                else
+                {
+                    game.setState(GameState::LEVEL_OVER);
+                }
+            }
+            else
+            {
+                game.setState(GameState::ROUND_OVER);
+                if (h1.currentHealth == h2.currentHealth) {
+                    // do not increment round if health is equal
+                } else {
+                    game.incrementRound();
+                }
+            }
+        }
+
     }
     else
     {
         roundEnded = false;
         if (botEnabled)
         {
-            botInstance.pollBotRng(renderer);
+            botInstance.pollBotRng(renderer, botStateMachine, game.getCurrentLevel());
         }
         renderer.renderUI(timer);
     }
@@ -107,6 +127,15 @@ int main()
 
     PhysicsSystem physicsSystem;
     Bot botInstance;
+
+    StateMachine botStateMachine;
+    botStateMachine.addState(PlayerState::IDLE, std::make_unique<IdleState>());
+    botStateMachine.addState(PlayerState::WALKING, std::make_unique<WalkingState>());
+    botStateMachine.addState(PlayerState::ATTACKING, std::make_unique<AttackingState>());
+    botStateMachine.addState(PlayerState::KICKING, std::make_unique<KickingState>());
+    botStateMachine.addState(PlayerState::PARRYING, std::make_unique<ParryingState>());
+    botStateMachine.addState(PlayerState::STUNNED, std::make_unique<StunnedState>());
+    botStateMachine.addState(PlayerState::BLOCKSTUNNED, std::make_unique<BlockStunnedState>());
 
     // Initialize game state
     Game game;
@@ -245,7 +274,9 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::HELP: {
-            
+            if (botEnabled) {
+			    worldSystem.botEnabled = true;
+            }
             if (game.handleHelpInput(glWindow.window))
             {
                  game.resetGame(renderer, worldSystem);
@@ -272,7 +303,8 @@ int main()
                 // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
                 // Do all rendering here, only once
                 renderer.render();
-                game.renderHelpScreen(renderer); 
+                
+                game.renderHelpScreen(renderer, botEnabled); 
                 worldSystem.renderParticles();
                 renderer.handleNotifications(elapsed_ms);
 
@@ -310,7 +342,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(); // this sets player inputs #3
+                    worldSystem.handleInput(0); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
@@ -362,6 +394,7 @@ int main()
         case GameState::CHARACTER_SELECT:
             botEnabled = false;
             worldSystem.botEnabled = false;
+            game.setVersusMode(true);
             game.handleCharacterInputs(glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
             game.renderCharacterSelect(renderer, offsetY1, offsetY2, p1Ready, p2Ready);
             game.renderReadyText(renderer, p1Ready, p2Ready, game);
@@ -419,7 +452,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    //worldSystem.handleInput();
+                    // worldSystem.handleInput(game.getCurrentLevel());
                 }
             }
         }
@@ -445,7 +478,7 @@ int main()
             break;
 
         case GameState::PLAYING:
-        {
+        {   
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
                 loopsSinceLastFrame = 0;
@@ -494,12 +527,12 @@ int main()
 
             worldSystem.updateStateTimers(PLAYER_STATE_TIMER_STEP);
 
-            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled);
+            checkIsRoundOver(renderer, botInstance, worldSystem, game, botEnabled, botStateMachine);
 
             // time the next logic check
             auto end = std::chrono::steady_clock::now();
             std::chrono::duration<double, std::milli> FastLoopIterTime = end - start;
-
+            game.getCurrentLevel();
             // Calculate the remaining time to sleep
             int sleepDuration = static_cast<int>(targetLogicDuration) - static_cast<int>(FastLoopIterTime.count());
             // std::cout << "i wanna sleep for " << sleepDuration << std::endl;
@@ -508,7 +541,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }
@@ -545,16 +578,6 @@ int main()
             {
                 renderer.startExitAnimation();
             }
-
-            // if (!renderer.isExitAnimationStarted() &&
-            //     isKeyPressed(GLFW_KEY_BACKSPACE))
-            // {
-            //     roundEnded = false;
-            //     WorldSystem::stopBackgroundMusic(); // Make sure to stop music when going back to menu
-            //     game.resetGame(renderer, worldSystem);
-            //     game.setState(GameState::MENU);
-            // }
-
             // Only reset the game once the exit animation is complete
             if (renderer.isExitAnimationComplete())
             {
@@ -576,6 +599,15 @@ int main()
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
             glfwSwapInterval(1);
+            glWindow.windowSwapBuffers();
+            break;
+        case GameState::MATCH_OVER:
+            game.renderMatchOver(renderer);
+            glWindow.windowSwapBuffers();
+            break;
+
+        case GameState::LEVEL_OVER:
+            game.renderLevelOver(renderer);
             glWindow.windowSwapBuffers();
             break;
         default:

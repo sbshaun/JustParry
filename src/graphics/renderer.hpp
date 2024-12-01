@@ -96,7 +96,8 @@ public:
     GLuint m_notif_hit;
     GLuint m_notif_stunned;
 
-    GLuint m_roundOverTexture;
+    GLuint m_roundOverP1Texture;
+    GLuint m_roundOverP2Texture;
     GLuint m_timerBackgroundTexture;
     GLuint m_barTexture;
     GLuint m_avatarTexture;
@@ -153,6 +154,12 @@ public:
     GLuint bird_Story_E_9;
 
 
+
+    GLuint m_levelWonTexture;
+    GLuint m_levelLostTexture;
+    GLuint m_matchOverP1Texture;
+    GLuint m_matchOverP2Texture;
+    GLuint m_roundOverDrawTexture;
 
     // font elements
     std::map<char, Character> m_ftCharacters;
