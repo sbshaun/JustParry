@@ -87,6 +87,7 @@ public:
     int getCurrentLevel() { return currentLevel; }
     int getCurrentRound() { return currentRound; }
     void incrementRound() { currentRound++; }
+    int getCurrentTutorialPage() { return currentTutorialPage; }
     // SETTINGS MENU
     void renderSettingsMenu(GlRender &renderer);
     bool handleSettingsInput(GlRender &renderer, GLFWwindow *window);
