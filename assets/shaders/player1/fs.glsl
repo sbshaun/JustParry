@@ -7,9 +7,23 @@ uniform bool takenDamage;
 uniform bool isParrying; 
 uniform bool isBlockStunned;
 uniform bool stunned;
+uniform int color;
 
 void main() {
     vec4 tint = vec4(1.0, 0.8, 0.8, 1.0);  // Slight red tint (1.0 in red, 0.8 in green/blue)
+
+    if (color == 0) {
+        fragColor = texture(m_bird_texture, TexCoord);  // bird Sprite
+    } else if (color == 1) {
+        vec4 textureColor = texture(m_bird_texture, TexCoord);
+        fragColor = textureColor * vec4(1.0, 0.5, 0.5, 1.0);
+    } else if (color == 2) {
+        vec4 textureColor = texture(m_bird_texture, TexCoord);
+        fragColor = textureColor * vec4(0.5, 1.0, 0.5, 1.0);
+    } else if (color == 3) {
+        vec4 textureColor = texture(m_bird_texture, TexCoord);
+        fragColor = textureColor * vec4(0.5, 0.5, 1.0, 1.0);
+    }
 
     if (takenDamage) {
         vec4 textureColor = texture(m_bird_texture, TexCoord);  // Sample the texture color
@@ -34,6 +48,4 @@ void main() {
         fragColor = texture(m_bird_texture, TexCoord) * tint;  // Apply the green tint to the texture
         return;
     }
-
-    fragColor = texture(m_bird_texture, TexCoord);  // bird Sprite
 }

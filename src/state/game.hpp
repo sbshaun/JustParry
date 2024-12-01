@@ -75,8 +75,8 @@ public:
     void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
     void renderArcadePrefight(GlRender &renderer, float offset1, bool p1);
     void handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &goDown1, bool &goUp1, float &offsetY1);
-    void handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
-                               bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2, float &offsetY1, float &offsetY2);
+    void handleCharacterInputs(GlRender& renderer, GLWindow& glWindow, bool& p1KeyPressed, bool& p1Ready, bool& p2KeyPressed, bool& p2Ready, 
+                                bool& goDown1, bool& goDown2, bool& goUp1, bool& goUp2, float& offsetY1, float& offsetY2);
     void renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game &game);
     void resetGame(GlRender &renderer, WorldSystem &worldSystem);
     void updateScores(const Health &h1, const Health &h2);
@@ -176,6 +176,11 @@ private:
     bool isReturnPressed = false;
     bool buttonAlreadyHovered = false; // prevent sound spam
     bool isMenuSelectedSoundPlaying = false;
+
+    bool p1LeftPressed = false;
+    bool p1RightPressed = false;
+    bool p2LeftPressed = false;
+    bool p2RightPressed = false;
 
     bool isBackButtonHovered = false;
     bool isBackButtonPressed = false;
