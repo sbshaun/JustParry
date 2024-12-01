@@ -333,6 +333,13 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     glDepthFunc(GL_LESS);
 }
 
+void Game::startArcade(GlRender& renderer)
+{
+    Player& p1 = registry.players.get(renderer.m_player1);
+
+    p1.current_char = BIRDMAN;
+}
+
 void Game::renderArcadePrefight(GlRender &renderer, float offset1, bool p1)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

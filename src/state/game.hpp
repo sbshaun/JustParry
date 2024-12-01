@@ -71,6 +71,7 @@ public:
 
     bool handleCharacterInput(GLFWwindow *window);
     void renderCharacterSelect(GlRender &renderer, float offset1, float offset2, bool p1, bool p2);
+    void startArcade(GlRender& renderer);
     void renderArcadePrefight(GlRender &renderer, float offset1, bool p1);
     void handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &goDown1, bool &goUp1, float &offsetY1);
     void handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
