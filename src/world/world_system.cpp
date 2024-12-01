@@ -397,13 +397,16 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput(int currentLevel)
+void WorldSystem::handleInput(int currentLevel, bool dummy)
 {
     // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
 
     // For Player 2, either handle manual input or bot input
-    if (!botEnabled)
+    if (dummy) {
+        return;
+    }
+    else if (!botEnabled)
     {
         player2InputHandler->handleInput(renderer->m_player2, *player2StateMachine);
     }

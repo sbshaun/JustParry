@@ -93,3 +93,25 @@ void interp_moveEntitesToScreen(GlRender &renderer, Game &game)
 		}
 	}
 }
+
+void placePlayersOnScreen(GlRender& renderer) {
+	Fighters current_char1 = registry.players.get(renderer.m_player1).current_char;
+	Fighters current_char2 = registry.players.get(renderer.m_player2).current_char;
+	const FighterConfig& config1 = FighterManager::getFighterConfig(current_char1);
+	const FighterConfig& config2 = FighterManager::getFighterConfig(current_char2);
+
+	// stop entity movement when loading
+	Motion& m1 = registry.motions.get(renderer.m_player1);
+	Motion& m2 = registry.motions.get(renderer.m_player2);
+
+	m1.position = { 0.2f, (FLOOR_Y + config1.NDC_HEIGHT / 2) };
+	m2.position = { 0.7f, (FLOOR_Y + config2.NDC_HEIGHT / 2) };
+
+	// Render countdown text
+	count_down_timer = count_down_timer - 0.01f;
+	count = 1;
+
+	// Calculate the center of the screen
+	float centerX = M_WINDOW_WIDTH_PX / 2.0f;
+	float centerY = M_WINDOW_HEIGHT_PX / 2.0f;
+}

@@ -1243,6 +1243,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
         }
         else if (mouseOverHelp)
         {
+            placePlayersOnScreen(renderer);
             this->handleHelpButton();
         }
         else if (mouseOverSettings)
@@ -1892,7 +1893,9 @@ void Game::renderMatchOver(GlRender &renderer)
     {
         renderer.renderText("P2 WINS!", 225, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
     }
-    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+
+
+    renderer.renderText("PARRIES :" , 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
     renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
 }
 
