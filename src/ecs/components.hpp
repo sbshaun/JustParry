@@ -62,8 +62,9 @@ struct Player
     int id;            // used to separate players, 1 and 2.
     int controller_id; // holds the player controller. set to -1 when no controller is assigned
     Fighters current_char;
-
     int color;         // color of the character 0 = white 1 = red 2 = green 3 = yellow
+    int parries = 0;        // used to keep track of number of parries and perfect parries
+    int perfectParries = 0;
 };
 
 /*

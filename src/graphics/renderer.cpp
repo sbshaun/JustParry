@@ -571,6 +571,16 @@ void GlRender::render()
     handleTexturedRenders();
 
     glDepthMask(GL_TRUE);
+
+    std::cout << "PLAYER 1" << std::endl;
+    
+    std::cout << registry.players.get(m_player1).perfectParries << std::endl;
+    std::cout << registry.players.get(m_player1).parries << std::endl;
+
+    std::cout << "PLAYER 2" << std::endl;
+
+    std::cout << registry.players.get(m_player2).perfectParries << std::endl;
+    std::cout << registry.players.get(m_player2).parries << std::endl;
 }
 void GlRender::loadTextures()
 {
@@ -850,7 +860,6 @@ void GlRender::handleP1Health(float p1Health)
         renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
         renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
         renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
     }
     else if (p1Health == 80)
     {

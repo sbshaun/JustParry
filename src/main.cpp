@@ -305,7 +305,6 @@ int main()
                 worldSystem.renderParticles();
                 renderer.handleNotifications(elapsed_ms);
 
-                interp_moveEntitesToScreen(renderer, game);
                 if (Settings::windowSettings.show_fps)
                 {
                     renderer.renderFPS(fpsCounter.getFPS(), true);
@@ -339,7 +338,12 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(0); // this sets player inputs #3
+                    if (game.getCurrentTutorialPage() < 2) {
+                        worldSystem.handleInput(0, true); // this sets player inputs #3
+                    }
+                    else {
+                        worldSystem.handleInput(0, false); // this sets player inputs #3
+                    }
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
@@ -539,7 +543,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel(), false); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }

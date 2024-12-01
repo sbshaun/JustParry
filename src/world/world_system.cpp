@@ -397,13 +397,16 @@ void WorldSystem::initStateMachines()
 
 // IN THE FUTURE WE SHOULD MAKE THE ENTITY LOOPING A SINGLE FUNCTION AND ALL THE PROCESSING PER LOOP HELPERS SO WE ONLY ITERATE THROUGH THE ENTITIES ONCE PER GAME CYCLE
 
-void WorldSystem::handleInput(int currentLevel)
+void WorldSystem::handleInput(int currentLevel, bool dummy)
 {
     // Player 1's input is always handled
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
 
     // For Player 2, either handle manual input or bot input
-    if (!botEnabled)
+    if (dummy) {
+        return;
+    }
+    else if (!botEnabled)
     {
         player2InputHandler->handleInput(renderer->m_player2, *player2StateMachine);
     }
@@ -653,6 +656,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
                 emitSparkleParticles(hurt_x, hurt_y, 0.f);
                 createNotification(500.f, true, renderer->m_notif_stunned);
                 playPerfectParrySound();
+                Player& p1 = registry.players.get(playerWithHitBox);
+                p1.perfectParries++;
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
@@ -660,6 +665,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, false, renderer->m_notif_parried);
                 playParryBlockedSound();
+                Player& p1 = registry.players.get(playerWithHitBox);
+                p1.parries++;
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }
@@ -674,6 +681,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
                 emitSparkleParticles(hurt_x, hurt_y, 0.f);
                 createNotification(500.f, false, renderer->m_notif_stunned);
                 playPerfectParrySound();
+                Player& p2 = registry.players.get(playerWithHitBox);
+                p2.perfectParries++;
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
             }
@@ -681,6 +690,8 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, true, renderer->m_notif_parried);
                 playParryBlockedSound();
+                Player& p2 = registry.players.get(playerWithHitBox);
+                p2.parries++;
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
             }

@@ -1380,6 +1380,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
         }
         else if (mouseOverHelp)
         {
+            placePlayersOnScreen(renderer);
             this->handleHelpButton();
         }
         else if (mouseOverSettings)
@@ -1604,6 +1605,9 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     // Reset animation flags using the setter methods
     renderer.setAnimationComplete(false);
     renderer.setExitAnimationStarted(false);
+
+    registry.players.get(renderer.m_player1).parries = 0;
+    registry.players.get(renderer.m_player1).perfectParries = 0;
 
     isLoading = true;
 }
@@ -2032,7 +2036,9 @@ void Game::renderMatchOver(GlRender &renderer)
     {
         renderer.renderText("P2 WINS!", 225, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
     }
-    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+
+
+    renderer.renderText("PARRIES :" , 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
     renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
 }
 
