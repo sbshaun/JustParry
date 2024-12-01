@@ -61,7 +61,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         595.0f - upShift + 50.f,                              // y position
         400.0f,                                               // width
         70.0f,                                                // height
-        "Level Five"                                          // button text
+        "- ENDING -"                                          // button text
     };
     // Position help button below start button
     helpButton = {
@@ -1100,11 +1100,72 @@ void Game::renderArcadeStory(GlRender& renderer)
     }
     // LEVEL FOUR
     if (currentLevel == 4) {
-        renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture1,
-            storyBoxX, storyBoxY,
-            storyBoxWidth, storyBoxHeight,
-            1.0f);
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 5:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_5,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 6:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_6,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 7:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_7,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 8:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_8,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 9:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_4_9,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+
+        }
     }
     // LEVEL FIVE
     if (currentLevel == 5) {
@@ -1465,7 +1526,7 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         {
             currentLevel = 4;
             currentFrame = 1;
-            currentFinalFrame = 8;
+            currentFinalFrame = 9;
             return true;
         }
         else if (mouseOverLevelFive && levelCompleted >= 4)
@@ -1491,7 +1552,13 @@ bool Game::handleArcadeStoryInput(GLFWwindow* window)
     {
         spaceRelease = false;
         if (currentFrame == currentFinalFrame) {
-            return true;
+            if (currentLevel == 5) {
+                this->setState(GameState::ARCADE_MENU);
+                this->levelCompleted = 5;
+            }
+            else {
+                return true;
+            }
         }
         if (currentFrame < currentFinalFrame) {
             currentFrame++;
