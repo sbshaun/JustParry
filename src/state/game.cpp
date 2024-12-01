@@ -767,10 +767,11 @@ void Game::renderMenu(GlRender &renderer)
                           settingsHovered, settingsPressed);
 
     // If help dialog is shown, render it
-    if (currentState == GameState::HELP)
+	// SIDDH: Not sure why this is here. Commenting out for now.
+    /*if (currentState == GameState::HELP)
     {
         renderHelpScreen(renderer);
-    }
+    }*/
 
     glDepthFunc(GL_LESS);
 }
@@ -991,7 +992,7 @@ void Game::renderArcadeStory(GlRender& renderer)
     }
 }
 
-void Game::renderHelpScreen(GlRender &renderer)
+void Game::renderHelpScreen(GlRender &renderer, bool &botEnabled)
 {
     // Calculate dimensions for the help screen image
     glEnable(GL_BLEND);
@@ -1153,6 +1154,7 @@ void Game::renderHelpScreen(GlRender &renderer)
             renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
             break;
         case 2:
+            botEnabled = true;
             currentTexture = renderer.m_helpTexture3;
             renderer.renderTexturedQuadScaled(
                 currentTexture,
