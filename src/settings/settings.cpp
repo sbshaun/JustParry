@@ -57,20 +57,20 @@ namespace Settings
         {
             // Save P1 controls
             file << "[Player1Controls]\n";
+            file << "up=" << getKeyName(p1Controls.up) << "\n";
             file << "down=" << getKeyName(p1Controls.down) << "\n";
             file << "left=" << getKeyName(p1Controls.left) << "\n";
             file << "right=" << getKeyName(p1Controls.right) << "\n";
             file << "punch=" << getKeyName(p1Controls.punch) << "\n";
-            file << "kick=" << getKeyName(p1Controls.kick) << "\n";
             file << "parry=" << getKeyName(p1Controls.parry) << "\n\n";
 
             // Save P2 controls
             file << "[Player2Controls]\n";
+            file << "up=" << getKeyName(p1Controls.up) << "\n";
             file << "down=" << getKeyName(p2Controls.down) << "\n";
             file << "left=" << getKeyName(p2Controls.left) << "\n";
             file << "right=" << getKeyName(p2Controls.right) << "\n";
             file << "punch=" << getKeyName(p2Controls.punch) << "\n";
-            file << "kick=" << getKeyName(p2Controls.kick) << "\n";
             file << "parry=" << getKeyName(p2Controls.parry) << "\n";
 
             // Add window settings section
@@ -360,7 +360,9 @@ namespace Settings
 
                         if (currentControls != nullptr)
                         {
-                            if (key == "down")
+                            if (key == "up")
+                                currentControls->up = getKeyFromName(value);
+                            else if (key == "down")
                                 currentControls->down = getKeyFromName(value);
                             else if (key == "left")
                                 currentControls->left = getKeyFromName(value);
@@ -368,8 +370,6 @@ namespace Settings
                                 currentControls->right = getKeyFromName(value);
                             else if (key == "punch")
                                 currentControls->punch = getKeyFromName(value);
-                            else if (key == "kick")
-                                currentControls->kick = getKeyFromName(value);
                             else if (key == "parry")
                                 currentControls->parry = getKeyFromName(value);
                         }

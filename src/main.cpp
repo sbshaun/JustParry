@@ -272,7 +272,9 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::HELP: {
-            
+            if (botEnabled) {
+			    worldSystem.botEnabled = true;
+            }
             if (game.handleHelpInput(glWindow.window))
             {
                  game.resetGame(renderer, worldSystem);
@@ -299,7 +301,8 @@ int main()
                 // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
                 // Do all rendering here, only once
                 renderer.render();
-                game.renderHelpScreen(renderer); 
+                
+                game.renderHelpScreen(renderer, botEnabled); 
                 worldSystem.renderParticles();
                 renderer.handleNotifications(elapsed_ms);
 
@@ -337,7 +340,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
+                    worldSystem.handleInput(0); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }

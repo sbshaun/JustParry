@@ -757,10 +757,11 @@ void Game::renderMenu(GlRender &renderer)
                           settingsHovered, settingsPressed);
 
     // If help dialog is shown, render it
-    if (currentState == GameState::HELP)
+	// SIDDH: Not sure why this is here. Commenting out for now.
+    /*if (currentState == GameState::HELP)
     {
         renderHelpScreen(renderer);
-    }
+    }*/
 
     glDepthFunc(GL_LESS);
 }
@@ -987,7 +988,7 @@ void Game::renderArcadeStory(GlRender &renderer)
     }
 }
 
-void Game::renderHelpScreen(GlRender &renderer)
+void Game::renderHelpScreen(GlRender &renderer, bool &botEnabled)
 {
     // Calculate dimensions for the help screen image
     glEnable(GL_BLEND);
@@ -1119,48 +1120,52 @@ void Game::renderHelpScreen(GlRender &renderer)
 
     // Render the appropriate help screen image based on currentTutorialPage
     GLuint currentTexture;
-    switch (currentTutorialPage)
-    {
-    case 0:
-        currentTexture = renderer.m_helpTexture1;
-        renderer.renderTexturedQuadScaled(
-            currentTexture,
-            helpBoxX, helpBoxY,
-            helpBoxWidth, helpBoxHeight,
-            1.0f);
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
-        break;
-    case 1:
-        currentTexture = renderer.m_helpTexture2;
-        renderer.renderTexturedQuadScaled(
-            currentTexture,
-            helpBoxX, helpBoxY,
-            helpBoxWidth, helpBoxHeight,
-            1.0f);
-        renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-        renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-        renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-        break;
-    case 2:
-        currentTexture = renderer.m_helpTexture3;
-        renderer.renderTexturedQuadScaled(
-            currentTexture,
-            helpBoxX, helpBoxY,
-            helpBoxWidth, helpBoxHeight,
-            1.0f);
-        renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+  
+    switch (currentTutorialPage) {
+        case 0:
+            currentTexture = renderer.m_helpTexture1;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+            break;
+        case 1:
+            currentTexture = renderer.m_helpTexture2;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+            break;
+        case 2:
+            botEnabled = true;
+            currentTexture = renderer.m_helpTexture3;
+            renderer.renderTexturedQuadScaled(
+                currentTexture,
+                helpBoxX, helpBoxY,
+                helpBoxWidth, helpBoxHeight,
+                1.0f
+            );
+            renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+             renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-        renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
-        break;
+            renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+            break;
     }
 
     // Add page indicator text

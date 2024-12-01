@@ -247,11 +247,14 @@ void WorldSystem::init(GlRender *renderer)
 
     bloodSystem = BloodParticleSystem();
     smokeSystem = SmokeParticleSystem();
+	sparkleSystem = SparkleParticleSystem();
 }
 void WorldSystem::step(float elapsed_ms)
 {
+    // PARTICLES: ADD ALL RENDERS HERE
     bloodSystem.update(elapsed_ms);
     smokeSystem.update(elapsed_ms);
+    sparkleSystem.update(elapsed_ms);
 }
 
 void WorldSystem::emitBloodParticles(float x, float y, float z, bool direction)
@@ -264,10 +267,17 @@ void WorldSystem::emitSmokeParticles(float x, float y, float z)
     smokeSystem.emit(x, y, z, false);
 }
 
+void WorldSystem::emitSparkleParticles(float x, float y, float z)
+{
+	sparkleSystem.emit(x, y, z, false);
+}
+
 void WorldSystem::renderParticles()
 {
+    // PARTICLES: ADD ALL RENDERS HERE
     bloodSystem.render(renderer->m_worldModel);
     smokeSystem.render(renderer->m_worldModel);
+	sparkleSystem.render(renderer->m_worldModel);
 }
 
 void WorldSystem::initInputHandlers()
@@ -276,57 +286,57 @@ void WorldSystem::initInputHandlers()
 
     // Print Player 1 controls
     std::cout << "\nPlayer 1 Controls:" << std::endl;
+    std::cout << "Up: " << Settings::getKeyName(Settings::p1Controls.up) << std::endl;
     std::cout << "Crouch: " << Settings::getKeyName(Settings::p1Controls.down) << std::endl;
     std::cout << "Move Left: " << Settings::getKeyName(Settings::p1Controls.left) << std::endl;
     std::cout << "Move Right: " << Settings::getKeyName(Settings::p1Controls.right) << std::endl;
     std::cout << "Punch: " << Settings::getKeyName(Settings::p1Controls.punch) << std::endl;
-    std::cout << "Kick: " << Settings::getKeyName(Settings::p1Controls.kick) << std::endl;
     std::cout << "Parry: " << Settings::getKeyName(Settings::p1Controls.parry) << std::endl;
 
     // Print Player 2 controls
     std::cout << "\nPlayer 2 Controls:" << std::endl;
+    std::cout << "Up: " << Settings::getKeyName(Settings::p2Controls.up) << std::endl;
     std::cout << "Crouch: " << Settings::getKeyName(Settings::p2Controls.down) << std::endl;
     std::cout << "Move Left: " << Settings::getKeyName(Settings::p2Controls.left) << std::endl;
     std::cout << "Move Right: " << Settings::getKeyName(Settings::p2Controls.right) << std::endl;
     std::cout << "Punch: " << Settings::getKeyName(Settings::p2Controls.punch) << std::endl;
-    std::cout << "Kick: " << Settings::getKeyName(Settings::p2Controls.kick) << std::endl;
     std::cout << "Parry: " << Settings::getKeyName(Settings::p2Controls.parry) << std::endl;
 
     // Player 1 controls using Settings
     std::unique_ptr<InputMapping> player1InputMapping = std::make_unique<InputMapping>();
 
-    // player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
-     player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.up, Action::JUMP);
+    player1InputMapping->bindKeyToAction(Settings::p1Controls.down, Action::CROUCH);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.left, Action::MOVE_LEFT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.right, Action::MOVE_RIGHT);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
-    // player1InputMapping->bindKeyToAction(Settings::p1Controls.kick, Action::KICK);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
     std::unique_ptr<ControllerMapping> player1ControllerMapping = std::make_unique<ControllerMapping>(0); //HAVE TO SOME HOW MAKE THESE CID's NOT HARD CODED 
 
     player1ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
     player1ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
-    player1ControllerMapping->bindKeyToAction(2, Action::PUNCH);
-    player1ControllerMapping->bindKeyToAction(3, Action::KICK);
-    player1ControllerMapping->bindKeyToAction(4, Action::PARRY);
+    player1ControllerMapping->bindKeyToAction(2, Action::JUMP);
+    player1ControllerMapping->bindKeyToAction(3, Action::CROUCH);
+    player1ControllerMapping->bindKeyToAction(4, Action::PUNCH);
+    player1ControllerMapping->bindKeyToAction(5, Action::PARRY);
 
     std::unique_ptr<ControllerMapping> player2ControllerMapping = std::make_unique<ControllerMapping>(1);
 
     player2ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
     player2ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
-    player2ControllerMapping->bindKeyToAction(2, Action::PUNCH);
-    player2ControllerMapping->bindKeyToAction(3, Action::KICK);
-    player2ControllerMapping->bindKeyToAction(4, Action::PARRY);
+    player2ControllerMapping->bindKeyToAction(2, Action::JUMP);
+    player2ControllerMapping->bindKeyToAction(3, Action::CROUCH);
+    player2ControllerMapping->bindKeyToAction(4, Action::PUNCH);
+    player2ControllerMapping->bindKeyToAction(5, Action::PARRY);
 
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
-    // player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
      player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
-    // player2InputMapping->bindKeyToAction(Settings::p2Controls.kick, Action::KICK);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.parry, Action::PARRY);
 
     // Initialize input handlers with the mappings
@@ -637,6 +647,10 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
+                float hurt_x = hurtPlayerMotion.position.x;
+                float hurt_y = hurtPlayerMotion.position.y;
+                // bool hurt_dir = parryPlayerMotion.direction;
+                emitSparkleParticles(hurt_x, hurt_y, 0.f);
                 createNotification(500.f, true, renderer->m_notif_stunned);
                 playPerfectParrySound();
                 Player& p1 = registry.players.get(playerWithHitBox);
@@ -658,6 +672,10 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         {
             if (registry.parryBoxes.get(playerWithHurtBox).perfectParry)
             {
+                float hurt_x = hurtPlayerMotion.position.x;
+                float hurt_y = hurtPlayerMotion.position.y;
+                // bool hurt_dir = parryPlayerMotion.direction;
+                emitSparkleParticles(hurt_x, hurt_y, 0.f);
                 createNotification(500.f, false, renderer->m_notif_stunned);
                 playPerfectParrySound();
                 Player& p2 = registry.players.get(playerWithHitBox);
@@ -740,6 +758,10 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
                                      otherPlayerMeshPtr, parryPlayerMotion))
         {
+            //float hurt_x = parryPlayerMotion.position.x;
+            //float hurt_y = parryPlayerMotion.position.y;
+            //// bool hurt_dir = parryPlayerMotion.direction;
+            //emitSparkleParticles(hurt_x, hurt_y, 0.f);
             // if parried successfully, reset state timer to 0
             StateTimer &playerStateTimer = registry.stateTimers.get(playerWithParryBox);
             playerStateTimer.reset(0);
