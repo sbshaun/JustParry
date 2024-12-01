@@ -1579,11 +1579,17 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
     this->worldSystem = &worldSystem;
 
+    int p1Color = registry.players.get(renderer.m_player1).color;
+    int p2Color = registry.players.get(renderer.m_player2).color;
+
     // Clear all components first
     registry.clear_all_components();
 
     // Reinitialize world system
     worldSystem.init(&renderer);
+
+    registry.players.get(renderer.m_player1).color = p1Color;
+    registry.players.get(renderer.m_player2).color = p2Color;
 
     // Reset timer
     extern int timer;
