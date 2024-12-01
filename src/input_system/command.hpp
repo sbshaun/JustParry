@@ -78,6 +78,19 @@ public:
     }
 };
 
+class JumpCommand : public Command
+{
+public:
+    void execute(Entity entity, StateMachine &state_machine) override
+    {
+        // if (!state_machine.transition(entity, PlayerState::CROUCHING))
+        //     return;
+        return;
+        // TODO: implement
+    }
+};
+
+
 inline bool canPunch(PlayerState state)
 {
     return state == PlayerState::IDLE || state == PlayerState::WALKING;

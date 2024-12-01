@@ -438,14 +438,14 @@ namespace SettingsMenu
 
                         // Check P1 controls
                         if (key == p1.down || key == p1.left || key == p1.right ||
-                            key == p1.punch || key == p1.kick || key == p1.parry)
+                            key == p1.punch || key == p1.up || key == p1.parry)
                         {
                             keyAlreadyBound = true;
                         }
 
                         // Check P2 controls
                         if (key == p2.down || key == p2.left || key == p2.right ||
-                            key == p2.punch || key == p2.kick || key == p2.parry)
+                            key == p2.punch || key == p2.up || key == p2.parry)
                         {
                             keyAlreadyBound = true;
                         }
@@ -458,8 +458,8 @@ namespace SettingsMenu
 
                             // Find which button index we're on
                             PlayerControls &controls = isPlayer1Selected ? Settings::p1Controls : Settings::p2Controls;
-                            int *keys[] = {&controls.down, &controls.left, &controls.right,
-                                           &controls.punch, &controls.kick, &controls.parry};
+                            int *keys[] = {&controls.up, &controls.down, &controls.left, &controls.right,
+                                           &controls.punch, &controls.parry};
 
                             for (int i = 0; i < 7; i++)
                             {
@@ -511,15 +511,15 @@ namespace SettingsMenu
         float spacing = 40.0f;      // Increased spacing between buttons
 
         // Render control labels - adjust kick label to show combination
-        renderer.renderText("DUCK", labelX, startY, 0.24f,
+        renderer.renderText("UP", labelX, startY, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("MOVE LEFT", labelX - 25.0f, startY + spacing, 0.24f,
+        renderer.renderText("DUCK", labelX, startY + spacing, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("MOVE RIGHT", labelX - 32.0f, startY + spacing * 2, 0.24f,
+        renderer.renderText("MOVE LEFT", labelX - 25.0f, startY + spacing * 2, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("PUNCH", labelX, startY + spacing * 3, 0.24f,
+        renderer.renderText("MOVE RIGHT", labelX - 32.0f, startY + spacing * 3, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("KICK (DUCK + PUNCH)", labelX - 65.0f, startY + spacing * 4, 0.24f,
+        renderer.renderText("PUNCH", labelX, startY + spacing * 4, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
         renderer.renderText("PARRY", labelX, startY + spacing * 5, 0.24f,
                             glm::vec3(0.0f, 0.0f, 0.0f));
@@ -533,8 +533,8 @@ namespace SettingsMenu
                               startY - 22 + spacing * 4,
                               startY - 22 + spacing * 5};
 
-        int *keys[] = {&controls.down, &controls.left, &controls.right,
-                       &controls.punch, &controls.kick, &controls.parry};
+        int *keys[] = {&controls.up, &controls.down, &controls.left, &controls.right,
+                       &controls.punch, &controls.parry};
 
         // Render each key binding button
         for (int i = 0; i < 6; i++)
@@ -544,27 +544,27 @@ namespace SettingsMenu
                              mouseY >= y && mouseY <= y + buttonHeight;
             bool isSelected = currentlyRebindingKey == keys[i];
             bool isError = (i == errorButtonIndex && showErrorMessage);
-            bool isKickButton = (i == 4); // Index 4 is the kick button
+            // bool isKickButton = (i == 4); // Index 4 is the kick button
 
-            // Skip interaction checks for kick button
-            if (isKickButton) {
-                // Render disabled button for kick
-                renderer.renderSimpleButton(buttonX, y, buttonWidth, buttonHeight,
-                                            true, false, false,
-                                            glm::vec3(0.4f, 0.4f, 0.4f)); // Gray color for disabled state
+            // // Skip interaction checks for kick button
+            // if (isKickButton) {
+            //     // Render disabled button for kick
+            //     renderer.renderSimpleButton(buttonX, y, buttonWidth, buttonHeight,
+            //                                 true, false, false,
+            //                                 glm::vec3(0.4f, 0.4f, 0.4f)); // Gray color for disabled state
 
-                // Show the key combination instead of a single key
-                std::string comboText = std::string(Settings::getKeyName(controls.down)) + 
-                                      " + " + 
-                                      std::string(Settings::getKeyName(controls.punch));
-                float textWidth = comboText.length() * 8.0f;
-                float textX = buttonX + (buttonWidth - textWidth) / 2.0f;
-                float textY = y + (buttonHeight - 8.0f) / 2.0f;
+            //     // Show the key combination instead of a single key
+            //     std::string comboText = std::string(Settings::getKeyName(controls.down)) + 
+            //                           " + " + 
+            //                           std::string(Settings::getKeyName(controls.punch));
+            //     float textWidth = comboText.length() * 8.0f;
+            //     float textX = buttonX + (buttonWidth - textWidth) / 2.0f;
+            //     float textY = y + (buttonHeight - 8.0f) / 2.0f;
 
-                renderer.renderText(comboText, textX - 10.f, textY + 10.f,
-                                    0.24f, glm::vec3(0.7f, 0.7f, 0.7f)); // Gray text for disabled state
-                continue;
-            }
+            //     renderer.renderText(comboText, textX - 10.f, textY + 10.f,
+            //                         0.24f, glm::vec3(0.7f, 0.7f, 0.7f)); // Gray text for disabled state
+            //     continue;
+            // }
 
             // Calculate error alpha for fade effect
             float errorAlpha = 0.0f;
