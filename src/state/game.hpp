@@ -67,7 +67,7 @@ public:
     void handleBackButton();
     void handleSettingsButton();
     void handleHelpButton();
-    void renderHelpScreen(GlRender &renderer);
+    void renderHelpScreen(GlRender &renderer, bool &botEnabled);
     bool handleHelpInput(GLFWwindow *window);
     void attemptPause();
 
