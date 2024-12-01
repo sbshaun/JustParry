@@ -142,6 +142,15 @@ public:
     GLuint bird_Story_4_7;
     GLuint bird_Story_4_8;
     GLuint bird_Story_4_9;
+    GLuint bird_Story_E_1;
+    GLuint bird_Story_E_2;
+    GLuint bird_Story_E_3;
+    GLuint bird_Story_E_4;
+    GLuint bird_Story_E_5;
+    GLuint bird_Story_E_6;
+    GLuint bird_Story_E_7;
+    GLuint bird_Story_E_8;
+    GLuint bird_Story_E_9;
 
 
 

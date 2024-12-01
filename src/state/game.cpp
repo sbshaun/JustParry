@@ -1169,11 +1169,72 @@ void Game::renderArcadeStory(GlRender& renderer)
     }
     // LEVEL FIVE
     if (currentLevel == 5) {
-        renderer.renderTexturedQuadScaled(
-            renderer.m_helpTexture1,
-            storyBoxX, storyBoxY,
-            storyBoxWidth, storyBoxHeight,
-            1.0f);
+        switch (currentFrame) {
+        case 1:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_1,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 2:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_2,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 3:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_3,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 4:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_4,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 5:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_5,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 6:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_6,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 7:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_7,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 8:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_8,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+        case 9:
+            renderer.renderTexturedQuadScaled(
+                renderer.bird_Story_E_9,
+                storyBoxX, storyBoxY,
+                storyBoxWidth, storyBoxHeight,
+                1.0f);
+            break;
+
+        }
     }
 
     renderer.renderText("SPACE ->", 850.f, 750.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));

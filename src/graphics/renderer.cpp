@@ -597,6 +597,15 @@ void GlRender::loadTextures()
     loadTexture(textures_path("Bird_Story_4_7.png"), bird_Story_4_7);
     loadTexture(textures_path("Bird_Story_4_8.png"), bird_Story_4_8);
     loadTexture(textures_path("Bird_Story_4_9.png"), bird_Story_4_9);
+    loadTexture(textures_path("Bird_Story_E_1.png"), bird_Story_E_1);
+    loadTexture(textures_path("Bird_Story_E_2.png"), bird_Story_E_2);
+    loadTexture(textures_path("Bird_Story_E_3.png"), bird_Story_E_3);
+    loadTexture(textures_path("Bird_Story_E_4.png"), bird_Story_E_4);
+    loadTexture(textures_path("Bird_Story_E_5.png"), bird_Story_E_5);
+    loadTexture(textures_path("Bird_Story_E_6.png"), bird_Story_E_6);
+    loadTexture(textures_path("Bird_Story_E_7.png"), bird_Story_E_7);
+    loadTexture(textures_path("Bird_Story_E_8.png"), bird_Story_E_8);
+    loadTexture(textures_path("Bird_Story_E_9.png"), bird_Story_E_9);
     FighterManager::loadBirdTextures(*this);
 }
 
