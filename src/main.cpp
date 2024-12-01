@@ -230,8 +230,8 @@ int main()
             // Enable bot for arcade
             botEnabled = true;
             worldSystem.botEnabled = true;
-            game.setVersusMode(false);
-            game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
+
+            /*game.handleArcadePrefightInputs(glWindow, p1KeyPressed, p1Ready, goDown1, goUp1, offsetY1);
             game.renderArcadePrefight(renderer, offsetY1, p1Ready);
             game.renderReadyText(renderer, p1Ready, true, game);
             if (Settings::windowSettings.show_fps)
@@ -239,7 +239,9 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
-            glWindow.windowSwapBuffers();
+            glWindow.windowSwapBuffers();*/
+            game.startArcade(renderer);
+            game.setState(GameState::ARCADE_MENU);
             break;
         case GameState::ARCADE_MENU:
             game.renderArcadeMenu(renderer);
