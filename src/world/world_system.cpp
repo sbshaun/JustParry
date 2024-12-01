@@ -316,8 +316,8 @@ void WorldSystem::initInputHandlers()
 
     player1ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
     player1ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
-    player1ControllerMapping->bindKeyToAction(2, Action::JUMP);
-    player1ControllerMapping->bindKeyToAction(3, Action::CROUCH);
+    player1ControllerMapping->bindKeyToAction(3, Action::JUMP);
+    player1ControllerMapping->bindKeyToAction(2, Action::CROUCH);
     player1ControllerMapping->bindKeyToAction(4, Action::PUNCH);
     player1ControllerMapping->bindKeyToAction(5, Action::PARRY);
 
@@ -325,8 +325,8 @@ void WorldSystem::initInputHandlers()
 
     player2ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
     player2ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
-    player2ControllerMapping->bindKeyToAction(2, Action::JUMP);
-    player2ControllerMapping->bindKeyToAction(3, Action::CROUCH);
+    player2ControllerMapping->bindKeyToAction(3, Action::JUMP);
+    player2ControllerMapping->bindKeyToAction(2, Action::CROUCH);
     player2ControllerMapping->bindKeyToAction(4, Action::PUNCH);
     player2ControllerMapping->bindKeyToAction(5, Action::PARRY);
 
