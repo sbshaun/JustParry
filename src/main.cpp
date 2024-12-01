@@ -247,7 +247,6 @@ int main()
             game.renderArcadeMenu(renderer);
             if (game.handleArcadeMenuInput(glWindow.window))
             {
-                std::cout << "Entered Character Select Stage" << std::endl;
                 game.setState(GameState::ARCADE_STORY);
             }
             if (Settings::windowSettings.show_fps)
@@ -308,7 +307,6 @@ int main()
                 worldSystem.renderParticles();
                 renderer.handleNotifications(elapsed_ms);
 
-                interp_moveEntitesToScreen(renderer, game);
                 if (Settings::windowSettings.show_fps)
                 {
                     renderer.renderFPS(fpsCounter.getFPS(), true);
@@ -342,7 +340,12 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(0); // this sets player inputs #3
+                    if (game.getCurrentTutorialPage() < 2) {
+                        worldSystem.handleInput(0, true); // this sets player inputs #3
+                    }
+                    else {
+                        worldSystem.handleInput(0, false); // this sets player inputs #3
+                    }
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
             }
@@ -395,7 +398,7 @@ int main()
             botEnabled = false;
             worldSystem.botEnabled = false;
             game.setVersusMode(true);
-            game.handleCharacterInputs(glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
+            game.handleCharacterInputs(renderer, glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
             game.renderCharacterSelect(renderer, offsetY1, offsetY2, p1Ready, p2Ready);
             game.renderReadyText(renderer, p1Ready, p2Ready, game);
             if (Settings::windowSettings.show_fps)
@@ -403,6 +406,7 @@ int main()
                 fpsCounter.update(renderer, false);
                 renderer.renderFPS(fpsCounter.getFPS(), true);
             }
+
             glWindow.windowSwapBuffers();
             break;
         case GameState::ROUND_START:
@@ -541,7 +545,7 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    worldSystem.handleInput(game.getCurrentLevel()); // this sets player inputs #3
+                    worldSystem.handleInput(game.getCurrentLevel(), false); // this sets player inputs #3
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
         }

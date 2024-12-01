@@ -293,19 +293,77 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         isBackButtonPressed                  // Add this member variable to Game class
     );
 
-    // Rest of the character select rendering...
-    renderer.renderTexturedQuadScaled(
-        p1 ? renderer.m_character1_ready : renderer.m_character1,
-        200.f, 360.f,
-        225, 275,
-        1.0f);
+    std::cout << registry.players.get(renderer.m_player1).color << std::endl;
 
-    renderer.renderTexturedQuadScaled(
-        p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
-        600.f, 360.f,
-        225, 275,
-        1.0f // Full brightness for main menu
-    );
+    int p1Color = registry.players.get(renderer.m_player1).color;
+    int p2Color = registry.players.get(renderer.m_player2).color;
+
+    // Rest of the character select rendering...
+    if (p1Color == 0) {
+        renderer.renderTexturedQuadScaled(
+            p1 ? renderer.m_character1_ready : renderer.m_character1,
+            200.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+    else if (p1Color == 1) {
+        renderer.renderTexturedQuadScaled(
+            p1 ? renderer.m_character1_ready_red : renderer.m_character1_red,
+            200.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+    else if (p1Color == 2) {
+        renderer.renderTexturedQuadScaled(
+            p1 ? renderer.m_character1_ready_green : renderer.m_character1_green,
+            200.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+    else if (p1Color == 3) {
+        renderer.renderTexturedQuadScaled(
+            p1 ? renderer.m_character1_ready_blue : renderer.m_character1_blue,
+            200.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+
+    if (p2Color == 0) {
+        renderer.renderTexturedQuadScaled(
+            p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
+            600.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+    else if (p2Color == 1) {
+        renderer.renderTexturedQuadScaled(
+            p2 ? renderer.m_character1_flip_ready_red : renderer.m_character1_flip_red,
+            600.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+    else if (p2Color == 2) {
+        renderer.renderTexturedQuadScaled(
+            p2 ? renderer.m_character1_flip_ready_green : renderer.m_character1_flip_green,
+            600.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
+    else if (p2Color == 3) {
+        renderer.renderTexturedQuadScaled(
+            p2 ? renderer.m_character1_flip_ready_blue : renderer.m_character1_flip_blue,
+            600.f, 360.f,
+            225, 275,
+            1.0f
+        );
+    }
 
     renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
     renderer.renderText(Settings::getKeyName(Settings::p2Controls.punch), 645.f, 270.0f + offset2, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -478,7 +536,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
     }
 }
 
-void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
+void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
                                  bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2,
                                  float &offsetY1, float &offsetY2)
 {
@@ -552,6 +610,85 @@ void Game::handleCharacterInputs(GLWindow &glWindow, bool &p1KeyPressed, bool &p
     else
     {
         p2KeyPressed = false; // Reset when the key is released
+    }
+
+    if (glfwGetKey(glWindow.window, Settings::p1Controls.left) == GLFW_PRESS)
+    {
+        if (!p1LeftPressed) // Check if the key was not pressed before
+        {
+            p1LeftPressed = true;
+            Player& p1 = registry.players.get(renderer.m_player1);
+
+            if (p1.color == 0) {
+                p1.color = 3;
+            }
+            else {
+                p1.color -= 1;
+            }
+        }
+    }
+    else
+    {
+        p1LeftPressed = false; // Reset when the key is released
+    }
+    if (glfwGetKey(glWindow.window, Settings::p1Controls.right) == GLFW_PRESS)
+    {
+        if (!p1RightPressed) // Check if the key was not pressed before
+        {
+            p1RightPressed = true;
+            Player& p1 = registry.players.get(renderer.m_player1);
+
+            if (p1.color == 3) {
+                p1.color = 0;
+            }
+            else {
+                p1.color += 1;
+            }
+        }
+    }
+    else
+    {
+        p1RightPressed = false; // Reset when the key is released
+    }
+
+    if (glfwGetKey(glWindow.window, Settings::p2Controls.left) == GLFW_PRESS)
+    {
+        if (!p2LeftPressed) // Check if the key was not pressed before
+        {
+            p2LeftPressed = true;
+            Player& p2 = registry.players.get(renderer.m_player2);
+
+            if (p2.color == 0) {
+                p2.color = 3;
+            }
+            else {
+                p2.color -= 1;
+            }
+        }
+    }
+    else
+    {
+        p2LeftPressed = false; // Reset when the key is released
+    }
+
+    if (glfwGetKey(glWindow.window, Settings::p2Controls.right) == GLFW_PRESS)
+    {
+        if (!p2RightPressed) // Check if the key was not pressed before
+        {
+            p2RightPressed = true;
+            Player& p2 = registry.players.get(renderer.m_player2);
+
+            if (p2.color == 3) {
+                p2.color = 0;
+            }
+            else {
+                p2.color += 1;
+            }
+        }
+    }
+    else
+    {
+        p2RightPressed = false; // Reset when the key is released
     }
 
     if (!p1Ready)
@@ -1495,6 +1632,7 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
         }
         else if (mouseOverHelp)
         {
+            placePlayersOnScreen(renderer);
             this->handleHelpButton();
         }
         else if (mouseOverSettings)
@@ -1680,11 +1818,17 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
     this->worldSystem = &worldSystem;
 
+    int p1Color = registry.players.get(renderer.m_player1).color;
+    int p2Color = registry.players.get(renderer.m_player2).color;
+
     // Clear all components first
     registry.clear_all_components();
 
     // Reinitialize world system
     worldSystem.init(&renderer);
+
+    registry.players.get(renderer.m_player1).color = p1Color;
+    registry.players.get(renderer.m_player2).color = p2Color;
 
     // Reset timer
     extern int timer;
@@ -2130,7 +2274,9 @@ void Game::renderMatchOver(GlRender &renderer)
     {
         renderer.renderText("P2 WINS!", 225, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
     }
-    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+
+
+    renderer.renderText("PARRIES :" , 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
     renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
 }
 

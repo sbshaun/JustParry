@@ -338,6 +338,8 @@ void GlRender::handleTexturedRenders()
             {
                 shader->setBool("takenDamage", false);
             }
+
+            shader->setInt("color", player.color);
         }
         else if (player.id == 2)
         {
@@ -399,6 +401,8 @@ void GlRender::handleTexturedRenders()
             {
                 shader->setBool("takenDamage", false);
             }
+
+            shader->setInt("color", player.color);
         }
 
         shader->setMat4("model", modelMatrix);
@@ -607,10 +611,27 @@ void GlRender::loadTextures()
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
     loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
     loadTexture(textures_path("character_select_arcade.png"), m_characterSelectTextureArcade);
+    //white characters
     loadTexture(textures_path("bird_idle_f1.png"), m_character1);
     loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
     loadTexture(textures_path("bird_parry_f1.png"), m_character1_ready);
     loadTexture(textures_path("bird_parry_f1_flipped.png"), m_character1_flip_ready);
+    //red characters
+    loadTexture(textures_path("bird_idle_f1_red.png"), m_character1_red);
+    loadTexture(textures_path("bird_idle_f1_flipped_red.png"), m_character1_flip_red);
+    loadTexture(textures_path("bird_parry_f1_red.png"), m_character1_ready_red);
+    loadTexture(textures_path("bird_parry_f1_flipped_red.png"), m_character1_flip_ready_red);
+    //green characters
+    loadTexture(textures_path("bird_idle_f1_green.png"), m_character1_green);
+    loadTexture(textures_path("bird_idle_f1_flipped_green.png"), m_character1_flip_green);
+    loadTexture(textures_path("bird_parry_f1_green.png"), m_character1_ready_green);
+    loadTexture(textures_path("bird_parry_f1_flipped_green.png"), m_character1_flip_ready_green);
+    //blue characters
+    loadTexture(textures_path("bird_idle_f1_blue.png"), m_character1_blue);
+    loadTexture(textures_path("bird_idle_f1_flipped_blue.png"), m_character1_flip_blue);
+    loadTexture(textures_path("bird_parry_f1_blue.png"), m_character1_ready_blue);
+    loadTexture(textures_path("bird_parry_f1_flipped_blue.png"), m_character1_flip_ready_blue);
+
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     loadTexture(textures_path("Bird_Story_1_1.png"), bird_Story_1_1);
@@ -876,7 +897,6 @@ void GlRender::handleP1Health(float p1Health)
         renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
         renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
         renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
     }
     else if (p1Health == 80)
     {

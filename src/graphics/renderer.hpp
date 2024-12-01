@@ -58,7 +58,7 @@ public:
                       bool hovered = false, bool pressed = false,
                       glm::vec3 color = glm::vec3(0.4078f, 0.4549f, 0.5020f));
 
-    void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
+    void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, 
                                   float brightness = 1.0f, float alpha = 1.0f);
 
     void renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color);
@@ -105,10 +105,27 @@ public:
 
     GLuint m_characterSelectTexture;
     GLuint m_characterSelectTextureArcade;
+
     GLuint m_character1;
     GLuint m_character1_flip;
     GLuint m_character1_ready;
     GLuint m_character1_flip_ready;
+
+    GLuint m_character1_red;
+    GLuint m_character1_flip_red;
+    GLuint m_character1_ready_red;
+    GLuint m_character1_flip_ready_red;
+
+    GLuint m_character1_green;
+    GLuint m_character1_flip_green;
+    GLuint m_character1_ready_green;
+    GLuint m_character1_flip_ready_green;
+
+    GLuint m_character1_blue;
+    GLuint m_character1_flip_blue;
+    GLuint m_character1_ready_blue;
+    GLuint m_character1_flip_ready_blue;
+
     GLuint m_p1SelectKey;
     GLuint m_p2SelectKey;
     GLuint bird_Story_1_1;
