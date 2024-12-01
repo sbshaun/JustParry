@@ -132,6 +132,45 @@ public:
     GLuint bird_Story_1_2;
     GLuint bird_Story_1_3;
     GLuint bird_Story_1_4;
+    GLuint bird_Story_1_5;
+    GLuint bird_Story_1_6;
+    GLuint bird_Story_1_7;
+    GLuint bird_Story_2_1;
+    GLuint bird_Story_2_2;
+    GLuint bird_Story_2_3;
+    GLuint bird_Story_2_4;
+    GLuint bird_Story_2_5;
+    GLuint bird_Story_2_6;
+    GLuint bird_Story_3_1;
+    GLuint bird_Story_3_2;
+    GLuint bird_Story_3_3;
+    GLuint bird_Story_3_4;
+    GLuint bird_Story_3_5;
+    GLuint bird_Story_3_6;
+    GLuint bird_Story_3_7;
+    GLuint bird_Story_3_8;
+    GLuint bird_Story_3_9;
+    GLuint bird_Story_3_10;
+    GLuint bird_Story_4_1;
+    GLuint bird_Story_4_2;
+    GLuint bird_Story_4_3;
+    GLuint bird_Story_4_4;
+    GLuint bird_Story_4_5;
+    GLuint bird_Story_4_6;
+    GLuint bird_Story_4_7;
+    GLuint bird_Story_4_8;
+    GLuint bird_Story_4_9;
+    GLuint bird_Story_E_1;
+    GLuint bird_Story_E_2;
+    GLuint bird_Story_E_3;
+    GLuint bird_Story_E_4;
+    GLuint bird_Story_E_5;
+    GLuint bird_Story_E_6;
+    GLuint bird_Story_E_7;
+    GLuint bird_Story_E_8;
+    GLuint bird_Story_E_9;
+
+
 
     GLuint m_levelWonTexture;
     GLuint m_levelLostTexture;

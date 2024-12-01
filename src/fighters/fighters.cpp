@@ -22,7 +22,7 @@ FighterConfig &setUpBirdmanConfig()
 
     birdmanConfig.MAX_HEALTH = 100.f;
     birdmanConfig.POSTURE_MAX = 7;
-    birdmanConfig.POSTURE_REGEN = 2000;
+    birdmanConfig.POSTURE_REGEN = 5000.f;
     birdmanConfig.PERFECT_PARRY_TIME = 300.f;
 
     birdmanConfig.MOVESPEED = 0.02f / FPS_LOGIC_FACTOR;
