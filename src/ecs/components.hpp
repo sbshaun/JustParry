@@ -62,6 +62,9 @@ struct Player
     int id;            // used to separate players, 1 and 2.
     int controller_id; // holds the player controller. set to -1 when no controller is assigned
     Fighters current_char;
+
+    int parries = 0;        // used to keep track of number of parries and perfect parries
+    int perfectParries = 0;
 };
 
 /*
