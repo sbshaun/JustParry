@@ -125,17 +125,18 @@ static void createPlayerHelper(Entity &entity, vec2 pos, Shader *shader, GlRende
 bool assigned_cids[GLFW_JOYSTICK_LAST] = {}; //an array to represent if the the controller with the cid at index is assgined
 
 void assignController(Entity &entity){
-    for (int cid = GLFW_JOYSTICK_1; cid <= GLFW_JOYSTICK_LAST; ++cid) //THIS IMPLEMENTATION OF CONTROLLER ASSIGNMENT ONLY ALLOWS FOR 2 UNIQUE CONTROLLERS TO BE PLUGGED IN OTHERWISE THE CHOSEN CONTROLLER FOR EACH PLAYER IS UNDETERMINED
-    {
-        std::cout << "ID" << cid << "IS CONTROLLER PRESENT" << glfwJoystickPresent(cid) << std::endl;
-        if (glfwJoystickPresent(cid) && !assigned_cids[cid] )
-        {
-            std::cout << "ASSIGNED " << entity << "CONTROLLER ID: " << cid << std::endl;
-            registry.players.get(entity).controller_id = cid;
-            assigned_cids[cid] = true;
-            break;
-        }
-    }
+    // for (int cid = GLFW_JOYSTICK_1; cid <= GLFW_JOYSTICK_LAST; ++cid) //THIS IMPLEMENTATION OF CONTROLLER ASSIGNMENT ONLY ALLOWS FOR 2 UNIQUE CONTROLLERS TO BE PLUGGED IN OTHERWISE THE CHOSEN CONTROLLER FOR EACH PLAYER IS UNDETERMINED
+    // {
+    //     std::cout << "ID" << cid << "IS CONTROLLER PRESENT" << glfwJoystickPresent(cid) << std::endl;
+    //     if (glfwJoystickPresent(cid) && !assigned_cids[cid] )
+    //     {
+    //         std::cout << "ASSIGNED " << entity << "CONTROLLER ID: " << cid << std::endl;
+    //         registry.players.get(entity).controller_id = cid;
+    //         assigned_cids[cid] = true;
+    //         break;
+    //     }
+    // }
+    return;
 }
 
 /*
