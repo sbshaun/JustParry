@@ -168,24 +168,24 @@ void FighterManager::deleteBirdTextures()
 
 void FighterManager::loadBearTextures(GlRender &renderer) {
     auto &bearman = FighterManager::getFighterConfig(Fighters::BEARMAN);
-    renderer.loadTexture(textures_path("bird_idle_f1.png"), bearman.m_bird_idle_f1_texture);
-    renderer.loadTexture(textures_path("bird_idle_f2.png"), bearman.m_bird_idle_f2_texture);
-    renderer.loadTexture(textures_path("bird_idle_f3.png"), bearman.m_bird_idle_f3_texture);
-    renderer.loadTexture(textures_path("bird_idle_f4.png"), bearman.m_bird_idle_f4_texture);
-    renderer.loadTexture(textures_path("bird_punch_f1.png"), bearman.m_bird_punch_f1_texture);
-    renderer.loadTexture(textures_path("bird_punch_f2.png"), bearman.m_bird_punch_f2_texture);
-    renderer.loadTexture(textures_path("bird_punch_f3.png"), bearman.m_bird_punch_f3_texture);
-    renderer.loadTexture(textures_path("bird_kick_f1.png"), bearman.m_bird_kick_f1_texture);
-    renderer.loadTexture(textures_path("bird_kick_f2.png"), bearman.m_bird_kick_f2_texture);
-    renderer.loadTexture(textures_path("bird_kick_f3.png"), bearman.m_bird_kick_f3_texture);
-    renderer.loadTexture(textures_path("bird_kick_f4.png"), bearman.m_bird_kick_f4_texture);
-    renderer.loadTexture(textures_path("bird_walk_f1.png"), bearman.m_bird_walk_f1_texture);
-    renderer.loadTexture(textures_path("bird_walk_f2.png"), bearman.m_bird_walk_f2_texture);
-    renderer.loadTexture(textures_path("bird_walk_f3.png"), bearman.m_bird_walk_f3_texture);
-    renderer.loadTexture(textures_path("bird_walk_f4.png"), bearman.m_bird_walk_f4_texture);
-    renderer.loadTexture(textures_path("bird_stun_f1.png"), bearman.m_bird_stun_f1_texture);
-    renderer.loadTexture(textures_path("bird_parry_f1.png"), bearman.m_bird_parry_f1_texture);
-    renderer.loadTexture(textures_path("bird_crouch_f3.png"), bearman.m_bird_crouch_f3_texture);
+    renderer.loadTexture(textures_path("bear_idle_f1.png"), bearman.m_bird_idle_f1_texture);
+    renderer.loadTexture(textures_path("bear_idle_f2.png"), bearman.m_bird_idle_f2_texture);
+    renderer.loadTexture(textures_path("bear_idle_f3.png"), bearman.m_bird_idle_f3_texture);
+    renderer.loadTexture(textures_path("bear_idle_f4.png"), bearman.m_bird_idle_f4_texture);
+    renderer.loadTexture(textures_path("bear_punch_f1.png"), bearman.m_bird_punch_f1_texture);
+    renderer.loadTexture(textures_path("bear_punch_f2.png"), bearman.m_bird_punch_f2_texture);
+    renderer.loadTexture(textures_path("bear_punch_f3.png"), bearman.m_bird_punch_f3_texture);
+    renderer.loadTexture(textures_path("bear_kick_f1.png"), bearman.m_bird_kick_f1_texture);
+    renderer.loadTexture(textures_path("bear_kick_f2.png"), bearman.m_bird_kick_f2_texture);
+    renderer.loadTexture(textures_path("bear_kick_f3.png"), bearman.m_bird_kick_f3_texture);
+    renderer.loadTexture(textures_path("bear_kick_f4.png"), bearman.m_bird_kick_f4_texture);
+    renderer.loadTexture(textures_path("bear_walk_f1.png"), bearman.m_bird_walk_f1_texture);
+    renderer.loadTexture(textures_path("bear_walk_f2.png"), bearman.m_bird_walk_f2_texture);
+    renderer.loadTexture(textures_path("bear_walk_f3.png"), bearman.m_bird_walk_f3_texture);
+    renderer.loadTexture(textures_path("bear_walk_f4.png"), bearman.m_bird_walk_f4_texture);
+    renderer.loadTexture(textures_path("bear_stun_f1.png"), bearman.m_bird_stun_f1_texture);
+    renderer.loadTexture(textures_path("bear_parry_f1.png"), bearman.m_bird_parry_f1_texture);
+    renderer.loadTexture(textures_path("bear_crouch_f3.png"), bearman.m_bird_crouch_f3_texture);
 }
 
 void FighterManager::deleteBearTextures() {
