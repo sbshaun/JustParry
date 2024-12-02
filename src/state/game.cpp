@@ -2576,7 +2576,7 @@ void Game::renderLevelOver(GlRender &renderer)
         renderer.renderText("CHALLENGE FAILED!", 115, 150, 0.9f, glm::vec3(0.05f, 0.05f, 0.05f));
         for (auto &player : registry.players.components)
         {
-            if (player.id == 2)
+            if (player.id == 1)
             { // Player 2
                 renderer.renderText("PARRIES: " + std::to_string(player.parries), 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
                 renderer.renderText("JUST PARRIES: " + std::to_string(player.perfectParries), 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
