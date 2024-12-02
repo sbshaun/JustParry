@@ -112,7 +112,9 @@ void GlRender::renderRoundOver(int count)
                 0, m_roundOverY,
                 M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
                 1.0f);
-        } else {
+        }
+        else
+        {
             renderTexturedQuadScaled(
                 m_roundOverDrawTexture,
                 0, m_roundOverY,
@@ -159,10 +161,10 @@ void GlRender::renderRoundOver(int count)
     if (h1.currentHealth < h2.currentHealth)
     {
         renderTexturedQuadScaled(
-                m_roundOverP2Texture,
-                0, m_roundOverY,
-                M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
-                1.0f);
+            m_roundOverP2Texture,
+            0, m_roundOverY,
+            M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
+            1.0f);
     }
     else if (h1.currentHealth > h2.currentHealth)
     {
@@ -171,7 +173,9 @@ void GlRender::renderRoundOver(int count)
             0, m_roundOverY,
             M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
             1.0f);
-    } else {
+    }
+    else
+    {
         renderTexturedQuadScaled(
             m_roundOverDrawTexture,
             0, m_roundOverY,
@@ -201,13 +205,12 @@ void GlRender::renderRoundOver(int count)
         std::string wonText = "";
         if (h1.currentHealth > h2.currentHealth)
         {
-             wonText = "Player 1 Wins!";
+            wonText = "Player 1 Wins!";
         }
         else if (h1.currentHealth < h2.currentHealth)
         {
             wonText = "Player 2 Wins!";
         }
-
 
         // Get window size and calculate scaling factors
         int windowWidth, windowHeight;
@@ -228,7 +231,7 @@ void GlRender::renderRoundOver(int count)
             if (h1.currentHealth < h2.currentHealth)
             {
                 renderText(overText, (baseX + 210.f) * xscale, (baseY - 325.f) * yscale, (0.7f * xscale), glm::vec3(0.3f, 0.0f, 0.0f));
-                renderText("PRESS ENTER TO CONTINUE!", (baseX - 460.f) * xscale, (baseY + 275.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));           
+                renderText("PRESS ENTER TO CONTINUE!", (baseX - 460.f) * xscale, (baseY + 275.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
                 renderText(wonText, (baseX - 450.f) * xscale, (baseY - 50.f) * yscale, (0.6f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
             }
             else if (h1.currentHealth > h2.currentHealth)
@@ -236,13 +239,12 @@ void GlRender::renderRoundOver(int count)
                 renderText(overText, (baseX - 470.f) * xscale, (baseY - 350.f) * yscale, (0.75f * xscale), glm::vec3(0.3f, 0.0f, 0.0f));
                 renderText("PRESS ENTER TO CONTINUE!", (baseX - 25.f) * xscale, (baseY + 275.0f) * yscale, 0.4f * xscale, glm::vec3(0.0f, 0.0f, 0.0f));
                 renderText(wonText, (baseX + 50.f) * xscale, (baseY - 75.f) * yscale, (0.6f * xscale), glm::vec3(0.0f, 0.0f, 0.0f));
-            } 
-            else 
+            }
+            else
             {
                 renderText(overText, (baseX - 90.f) * xscale, (baseY - 330.f) * yscale, (0.95f * xscale), glm::vec3(0.3f, 0.0f, 0.0f));
                 renderText("PRESS ENTER TO CONTINUE!", (baseX - 275.f) * xscale, (baseY - 275.0f) * yscale, 0.5f * xscale, glm::vec3(0.4f, 0.4f, 0.4f));
             }
-
         }
     }
 }
@@ -573,7 +575,7 @@ void GlRender::render()
     glDepthMask(GL_TRUE);
 
     // std::cout << "PLAYER 1" << std::endl;
-    
+    //
     // std::cout << registry.players.get(m_player1).perfectParries << std::endl;
     // std::cout << registry.players.get(m_player1).parries << std::endl;
 
@@ -611,22 +613,22 @@ void GlRender::loadTextures()
     loadTexture(textures_path("avatar.png"), m_avatarTexture);
     loadTexture(textures_path("character_select.png"), m_characterSelectTexture);
     loadTexture(textures_path("character_select_arcade.png"), m_characterSelectTextureArcade);
-    //white characters
+    // white characters
     loadTexture(textures_path("bird_idle_f1.png"), m_character1);
     loadTexture(textures_path("bird_idle_f1_flipped.png"), m_character1_flip);
     loadTexture(textures_path("bird_parry_f1.png"), m_character1_ready);
     loadTexture(textures_path("bird_parry_f1_flipped.png"), m_character1_flip_ready);
-    //red characters
+    // red characters
     loadTexture(textures_path("bird_idle_f1_red.png"), m_character1_red);
     loadTexture(textures_path("bird_idle_f1_flipped_red.png"), m_character1_flip_red);
     loadTexture(textures_path("bird_parry_f1_red.png"), m_character1_ready_red);
     loadTexture(textures_path("bird_parry_f1_flipped_red.png"), m_character1_flip_ready_red);
-    //green characters
+    // green characters
     loadTexture(textures_path("bird_idle_f1_green.png"), m_character1_green);
     loadTexture(textures_path("bird_idle_f1_flipped_green.png"), m_character1_flip_green);
     loadTexture(textures_path("bird_parry_f1_green.png"), m_character1_ready_green);
     loadTexture(textures_path("bird_parry_f1_flipped_green.png"), m_character1_flip_ready_green);
-    //blue characters
+    // blue characters
     loadTexture(textures_path("bird_idle_f1_blue.png"), m_character1_blue);
     loadTexture(textures_path("bird_idle_f1_flipped_blue.png"), m_character1_flip_blue);
     loadTexture(textures_path("bird_parry_f1_blue.png"), m_character1_ready_blue);
@@ -679,6 +681,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("level_lost.png"), m_levelLostTexture);
     loadTexture(textures_path("match_over_p1.png"), m_matchOverP1Texture);
     loadTexture(textures_path("match_over_p2.png"), m_matchOverP2Texture);
+    loadTexture(textures_path("arcade_story_bg.png"), m_arcadeStoryTexture);
     FighterManager::loadBirdTextures(*this);
     FighterManager::loadBearTextures(*this);
 }
@@ -859,9 +862,12 @@ void GlRender::renderUI(int timer)
 
     renderText(std::to_string(timer), (timerX - 0.f) + 30 * (xscale - 1), (valueY + 17.5f) - 35 * (xscale - 1), 0.5f, glm::vec3(0.102f, 0.102f, 0.102f));
 
-    if (game->isVersusMode()) {
+    if (game->isVersusMode())
+    {
         renderText("ROUND " + std::to_string(game->getCurrentRound()), 425.f, 75.0f, 0.5f, glm::vec3(0.3f, 0.0f, 0.0f));
-    } else {
+    }
+    else
+    {
         renderText("LEVEL " + std::to_string(game->getCurrentLevel()), 420.f, 50.0f, 0.5f, glm::vec3(0.1f, 0.1f, 0.1f));
         renderText("ROUND " + std::to_string(game->getCurrentRound()), 450.f, 80.0f, 0.3f, glm::vec3(0.3f, 0.3f, 0.3f));
     }
@@ -872,190 +878,54 @@ void GlRender::renderUI(int timer)
 
 void GlRender::handleP1Health(float p1Health)
 { // render health values
-    float wx = 23.75f;
-    float off = 2.35f;
-    if (p1Health == 100)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    if (p1Health <= 0) return; // early exit 
+
+    const int granularity = 20;  // number of bars 
+    const float baseY = 97.5f;  // y coord 
+    const float barHeight = 30.f; // bar height 
+    const float gapWidth = 23.5f / granularity; // spacing between bars 
+    const float firstBarX = 192.5f; // first x coord 
+    const float subsequentBarStartX = 195.f; // subsequent x coord 
+    const float barWidth = 237.5f / granularity; // bar width 
+
+    // number of bars to render 
+    int barsToRender = std::ceil((p1Health / 100.0f) * granularity);
+
+    // render first bar
+    if (barsToRender > 0) {
+        renderRedHealthRectangle(firstBarX, baseY, barWidth, barHeight);
     }
-    else if (p1Health == 90)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 80)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 70)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 60)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 50)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 40)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 30)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 20)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 10)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 0)
-    {
-        return;
+
+    // render remainings 
+    for (int i = 1; i < barsToRender; i++) {
+        float x = subsequentBarStartX + ((i - 1) * gapWidth) + (i * barWidth);
+        renderRedHealthRectangle(x, baseY, barWidth, barHeight);
     }
 }
 void GlRender::handleP2Health(float p2Health)
 { // render health values
-    float wx = 23.75f;
-    float off = 2.35f;
-    if (p2Health == 100)
-    {
-        renderRedHealthRectangle(572.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    if (p2Health <= 0) return; // early exit
+    
+    const int granularity = 20;  // number of bars 
+    const float baseY = 97.5f;  // y coord 
+    const float barHeight = 30.f; // bar height 
+    const float gapWidth = 23.5f / granularity; // spacing between bars 
+    const float firstBarX = 572.5f; // first x coord 
+    const float subsequentBarStartX = 575.f; // subsequent x coord 
+    const float barWidth = 237.5f / granularity; // bar width 
+
+    // number of bars to render 
+    int barsToRender = std::ceil((p2Health / 100.0f) * granularity);
+
+    // render first bar
+    if (barsToRender > 0) {
+        renderRedHealthRectangle(firstBarX, baseY, barWidth, barHeight);
     }
-    else if (p2Health == 90)
-    {
-        renderRedHealthRectangle(575.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 80)
-    {
-        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 70)
-    {
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 60)
-    {
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 50)
-    {
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 40)
-    {
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 30)
-    {
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 20)
-    {
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 10)
-    {
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 0)
-    {
-        return;
+
+    // render remainings 
+    for (int i = 1; i < barsToRender; i++) {
+        float x = subsequentBarStartX + ((i - 1) * gapWidth) + (i * barWidth);
+        renderRedHealthRectangle(x, baseY, barWidth, barHeight);
     }
 }
 
@@ -1290,15 +1160,16 @@ void GlRender::shutdown()
         m_menuTexture, m_arcadeMenuTexture, m_helpTexture1, m_helpTexture2, m_helpTexture3, m_settingsTexture, m_pauseMenuTexture,
         m_bg1Texture, m_bg2Texture, m_bg3Texture, m_bg4Texture,
         m_roundOverP1Texture, m_roundOverP2Texture, m_roundOverDrawTexture, m_timerBackgroundTexture, m_barTexture,
-        m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade,m_character1,
-        m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey, 
-        m_levelWonTexture, m_levelLostTexture, m_matchOverP1Texture, m_matchOverP2Texture,
+        m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade, m_character1,
+        m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey,
+        m_levelWonTexture, m_levelLostTexture, m_matchOverP1Texture, m_matchOverP2Texture, m_arcadeStoryTexture,
         bird_Story_1_1, bird_Story_1_2, bird_Story_1_3, bird_Story_1_4};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
     // Clear texture IDs after deletion to prevent dangling references
     m_menuTexture = m_helpTexture1 = m_helpTexture2 = m_helpTexture3 = m_settingsTexture = m_pauseMenuTexture = 0;
+    m_arcadeStoryTexture = 0;
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
     m_notif_parried = m_notif_hit = m_notif_stunned = 0;
@@ -2141,17 +2012,13 @@ void GlRender::renderSelectorTriangleP1(float x, float y, float width, float hei
     GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
 
     glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
-    if (game->getState() == GameState::ARCADE_MENU) {
-        if (p1)
-        {
-            glUniform3f(fillColorLoc, 0x9e / 255.0f, 0x9b / 255.0f, 0x9e / 255.0f); // gray fill
-        }
-        else
-        {
-            glUniform3f(fillColorLoc, 1.0f, 1.0f, 1.0f); // white fill
-        }
+    if (game->getState() == GameState::ARCADE_MENU || game->getState() == GameState::CHARACTER_SELECT)
+    {
 
-    } else {
+        glUniform3f(fillColorLoc, 0x9e / 255.0f, 0x9b / 255.0f, 0x9e / 255.0f); // gray fill
+    }
+    else
+    {
         if (p1)
         {
             glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
@@ -2219,13 +2086,21 @@ void GlRender::renderSelectorTriangleP2(float x, float y, float width, float hei
     GLint borderThicknessLoc = glGetUniformLocation(m_redRectangleShader->m_shaderProgram, "borderThickness");
 
     glUniform3f(borderColorLoc, 0.0f, 0.0f, 0.0f); // Black border
-    if (p2)
+    if (game->getState() == GameState::ARCADE_MENU || game->getState() == GameState::CHARACTER_SELECT)
     {
-        glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+
+        glUniform3f(fillColorLoc, 0x9e / 255.0f, 0x9b / 255.0f, 0x9e / 255.0f); // gray fill
     }
     else
     {
-        glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+        if (p2)
+        {
+            glUniform3f(fillColorLoc, 0.0f, 0.6f, 0.0f); // Green fill
+        }
+        else
+        {
+            glUniform3f(fillColorLoc, 0.5f, 0.0f, 0.0f); // Red fill
+        }
     }
 
     float borderThickness = 0.05f; // 5% of the rectangle's width
