@@ -61,7 +61,7 @@ public:
     void renderArcadeMenu(GlRender &renderer);
     void renderArcadeStory(GlRender& renderer);
     void handleArcadeButton();
-    bool handleArcadeMenuInput(GLFWwindow *window);
+    bool handleArcadeMenuInput(GLFWwindow* window, GlRender& renderer);
     bool handleArcadeStoryInput(GLFWwindow* window);
     void handleBackButton();
     void handleSettingsButton();
