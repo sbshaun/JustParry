@@ -185,10 +185,9 @@ void WorldSystem::init(GlRender *renderer)
     menu_confirm_sound = Mix_LoadWAV(audio_path("menu_confirm_sound.wav").c_str());
     game_count_down_sound = Mix_LoadWAV(audio_path("game_count_down_sound.wav").c_str());
 
-
     if (background_music == nullptr || punch_sound == nullptr || walk_sound == nullptr || crouch_sound == nullptr ||
-        parry_sound == nullptr || parry_blocked_sound == nullptr || perfect_parry_sound == nullptr || 
-        hurt_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr || 
+        parry_sound == nullptr || parry_blocked_sound == nullptr || perfect_parry_sound == nullptr ||
+        hurt_sound == nullptr || kick_sound == nullptr || menu_select_sound == nullptr ||
         menu_confirm_sound == nullptr || game_count_down_sound == nullptr)
     {
         fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n make sure the data directory is present \n",
@@ -252,7 +251,7 @@ void WorldSystem::init(GlRender *renderer)
 
     bloodSystem = BloodParticleSystem();
     smokeSystem = SmokeParticleSystem();
-	sparkleSystem = SparkleParticleSystem();
+    sparkleSystem = SparkleParticleSystem();
 }
 void WorldSystem::step(float elapsed_ms)
 {
@@ -274,7 +273,7 @@ void WorldSystem::emitSmokeParticles(float x, float y, float z)
 
 void WorldSystem::emitSparkleParticles(float x, float y, float z)
 {
-	sparkleSystem.emit(x, y, z, false);
+    sparkleSystem.emit(x, y, z, false);
 }
 
 void WorldSystem::renderParticles()
@@ -282,7 +281,7 @@ void WorldSystem::renderParticles()
     // PARTICLES: ADD ALL RENDERS HERE
     bloodSystem.render(renderer->m_worldModel);
     smokeSystem.render(renderer->m_worldModel);
-	sparkleSystem.render(renderer->m_worldModel);
+    sparkleSystem.render(renderer->m_worldModel);
 }
 
 void WorldSystem::initInputHandlers()
@@ -317,7 +316,7 @@ void WorldSystem::initInputHandlers()
     player1InputMapping->bindKeyToAction(Settings::p1Controls.punch, Action::PUNCH);
     player1InputMapping->bindKeyToAction(Settings::p1Controls.parry, Action::PARRY);
 
-    std::unique_ptr<ControllerMapping> player1ControllerMapping = std::make_unique<ControllerMapping>(0); //HAVE TO SOME HOW MAKE THESE CID's NOT HARD CODED 
+    std::unique_ptr<ControllerMapping> player1ControllerMapping = std::make_unique<ControllerMapping>(0); // HAVE TO SOME HOW MAKE THESE CID's NOT HARD CODED
 
     player1ControllerMapping->bindKeyToAction(0, Action::MOVE_LEFT);
     player1ControllerMapping->bindKeyToAction(1, Action::MOVE_RIGHT);
@@ -338,7 +337,7 @@ void WorldSystem::initInputHandlers()
     // Player 2 controls using Settings
     std::unique_ptr<InputMapping> player2InputMapping = std::make_unique<InputMapping>();
     player2InputMapping->bindKeyToAction(Settings::p2Controls.up, Action::JUMP);
-     player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
+    player2InputMapping->bindKeyToAction(Settings::p2Controls.down, Action::CROUCH);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.left, Action::MOVE_LEFT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.right, Action::MOVE_RIGHT);
     player2InputMapping->bindKeyToAction(Settings::p2Controls.punch, Action::PUNCH);
@@ -346,24 +345,28 @@ void WorldSystem::initInputHandlers()
 
     // Initialize input handlers with the mappings
     // player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), std::move(player1ControllerMapping));
-    // player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));        
+    // player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), std::move(player1ControllerMapping));
     int p1_cid = registry.players.get(player1).controller_id;
     int p2_cid = registry.players.get(player2).controller_id;
     if (p1_cid != -1)
     {
         player1InputHandler = std::make_unique<ControllerHandler>(std::move(player1ControllerMapping));
-    } else {
+    }
+    else
+    {
         player1InputHandler = std::make_unique<InputHandler>(std::move(player1InputMapping), nullptr);
     }
 
     if (p2_cid != -1)
     {
         player2InputHandler = std::make_unique<ControllerHandler>(std::move(player2ControllerMapping));
-    } else {
+    }
+    else
+    {
         player2InputHandler = std::make_unique<InputHandler>(std::move(player2InputMapping), nullptr);
     }
 
-    //the Input Handler definition is to be done based on controller assignment
+    // the Input Handler definition is to be done based on controller assignment
 
     player1InputHandler->initDefaultActionToCommandMapping();
     player2InputHandler->initDefaultActionToCommandMapping();
@@ -408,7 +411,8 @@ void WorldSystem::handleInput(int currentLevel, bool dummy)
     player1InputHandler->handleInput(renderer->m_player1, *player1StateMachine);
 
     // For Player 2, either handle manual input or bot input
-    if (dummy) {
+    if (dummy)
+    {
         return;
     }
     else if (!botEnabled)
@@ -429,9 +433,9 @@ void WorldSystem::handleInput(int currentLevel, bool dummy)
         if (p2Input.punch || p2Input.kick)
             player2StateMachine->transition(renderer->m_player2, PlayerState::ATTACKING);
 
-        // Update motion based on inputs  
-        float P2_movespeed = FighterManager::getFighterConfig(registry.players.get(renderer->m_player2).current_char).MOVESPEED; //why does this only exist for p2
-        
+        // Update motion based on inputs
+        float P2_movespeed = FighterManager::getFighterConfig(registry.players.get(renderer->m_player2).current_char).MOVESPEED; // why does this only exist for p2
+
         if (p2Input.left)
             player2Motion->velocity.x = -P2_movespeed;
         else if (p2Input.right)
@@ -439,7 +443,6 @@ void WorldSystem::handleInput(int currentLevel, bool dummy)
         else
             player2Motion->velocity.x = 0;
         botInstance.pollBotRng(*renderer, *player2StateMachine, currentLevel);
-
     }
 }
 
@@ -661,7 +664,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
                 emitSparkleParticles(hurt_x, hurt_y, 0.f);
                 createNotification(500.f, true, renderer->m_notif_stunned);
                 playPerfectParrySound();
-                Player& p1 = registry.players.get(playerWithHitBox);
+                Player &p1 = registry.players.get(playerWithHurtBox);
                 p1.perfectParries++;
                 player1StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
@@ -670,7 +673,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, false, renderer->m_notif_parried);
                 playParryBlockedSound();
-                Player& p1 = registry.players.get(playerWithHitBox);
+                Player &p1 = registry.players.get(playerWithHurtBox);
                 p1.parries++;
                 player2StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
@@ -686,7 +689,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
                 emitSparkleParticles(hurt_x, hurt_y, 0.f);
                 createNotification(500.f, false, renderer->m_notif_stunned);
                 playPerfectParrySound();
-                Player& p2 = registry.players.get(playerWithHitBox);
+                Player &p2 = registry.players.get(playerWithHurtBox);
                 p2.perfectParries++;
                 player2StateMachine->transition(playerWithHitBox, PlayerState::STUNNED);
                 registry.postureBars.get(playerWithHurtBox).currentBar++;
@@ -695,7 +698,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
             {
                 createNotification(500.f, true, renderer->m_notif_parried);
                 playParryBlockedSound();
-                Player& p2 = registry.players.get(playerWithHitBox);
+                Player &p2 = registry.players.get(playerWithHurtBox);
                 p2.parries++;
                 player1StateMachine->transition(playerWithHurtBox, PlayerState::BLOCKSTUNNED);
                 hitBox.active = false;
@@ -710,7 +713,7 @@ bool WorldSystem::checkHitBoxCollisions(Entity playerWithHitBox, Entity playerWi
         // Hitbox collided with the hurtbox of the other player
         // Check if the hitbox has collided with the mesh of the other player
         ObjectMesh *otherPlayerMeshPtr = registry.objectMeshPtrs.get(playerWithHurtBox);
-        std::cout << "HELLO" << std::endl;
+        // std::cout << "HELLO" << std::endl;
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
                                      otherPlayerMeshPtr, hurtPlayerMotion))
         {
@@ -766,11 +769,11 @@ bool WorldSystem::checkParryBoxCollisions(Entity playerWithHitBox, Entity player
         if (checkHitBoxMeshCollision(hitBoxLeft, hitBoxRight, hitBoxTop, hitBoxBottom,
                                      otherPlayerMeshPtr, parryPlayerMotion))
         {
-            //float hurt_x = parryPlayerMotion.position.x;
-            //float hurt_y = parryPlayerMotion.position.y;
+            // float hurt_x = parryPlayerMotion.position.x;
+            // float hurt_y = parryPlayerMotion.position.y;
             //// bool hurt_dir = parryPlayerMotion.direction;
-            //emitSparkleParticles(hurt_x, hurt_y, 0.f);
-            // if parried successfully, reset state timer to 0
+            // emitSparkleParticles(hurt_x, hurt_y, 0.f);
+            //  if parried successfully, reset state timer to 0
             StateTimer &playerStateTimer = registry.stateTimers.get(playerWithParryBox);
             playerStateTimer.reset(0);
             return true;
@@ -843,11 +846,11 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
-        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
-        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
-        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
-        // e.g. when a player starts a punch and being it before punch takes effect 
-        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer
+        // e.g. when a player starts a punch and being it before punch takes effect
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED
         StateTimer &playerStateTimer = registry.stateTimers.get(player2);
         playerStateTimer.reset(0);
         PlayerCurrentState &player2State = registry.playerCurrentStates.get(player2);
@@ -878,12 +881,12 @@ void WorldSystem::hitBoxCollisions()
             direction * config.KNOCKBACK_FORCE_X,
             config.KNOCKBACK_FORCE_Y};
 
-        // same as above: 
-        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED 
-        // that was ATTACKING -> STUNNED, and the stun time is lightly longer 
-        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer 
-        // e.g. when a player starts a punch and being it before punch takes effect 
-        // adding these lines to reset state back to IDLE before transitioning to STUNNED 
+        // same as above:
+        // previously if a player is attacking and it hits the parry box, it will transition to STUNNED
+        // that was ATTACKING -> STUNNED, and the stun time is lightly longer
+        // this caused that whenever player transitions from ATTACKING to STUNNED, the stun time is longer
+        // e.g. when a player starts a punch and being it before punch takes effect
+        // adding these lines to reset state back to IDLE before transitioning to STUNNED
         StateTimer &playerStateTimer = registry.stateTimers.get(player1);
         playerStateTimer.reset(0);
         PlayerCurrentState &player1State = registry.playerCurrentStates.get(player1);
@@ -905,14 +908,17 @@ void WorldSystem::playerCollisions(GlRender *renderer)
     if (xCollision && yCollision)
     {
         // This is the version where the players can't push each other
-        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x < 0) {
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x < 0)
+        {
             player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
             player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
         }
-        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x >= 0) {
+        if (player1Motion->velocity.x > 0 && player2Motion->velocity.x >= 0)
+        {
             player1Motion->position.x = player1Motion->position.x - 0.02f / FPS_LOGIC_FACTOR;
         }
-        if (player1Motion->velocity.x <= 0 && player2Motion->velocity.x < 0) {
+        if (player1Motion->velocity.x <= 0 && player2Motion->velocity.x < 0)
+        {
             player2Motion->position.x = player2Motion->position.x + 0.02f / FPS_LOGIC_FACTOR;
         }
 
