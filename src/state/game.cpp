@@ -1712,7 +1712,7 @@ void Game::handleArcadeButton()
     std::cout << "Arcade menu screen opened!" << std::endl;
 }
 
-bool Game::handleArcadeMenuInput(GLFWwindow *window)
+bool Game::handleArcadeMenuInput(GLFWwindow *window, GlRender& renderer)
 {
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -1754,6 +1754,9 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         mouseY >= arcadeLevelFiveButton.y &&
         mouseY <= arcadeLevelFiveButton.y + arcadeLevelFiveButton.height;
 
+    Player& p1 = registry.players.get(renderer.m_player1);
+    Player& p2 = registry.players.get(renderer.m_player2);
+
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverBack)
@@ -1766,6 +1769,8 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         }
         if (mouseOverLevelOne)
         {
+            p1.color = 0;
+            p2.color = 0;
             currentLevel = 1;
             currentFrame = 1;
             currentFinalFrame = 7;
@@ -1773,6 +1778,8 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         }
         else if (mouseOverLevelTwo && levelCompleted >= 1)
         {
+            p1.color = 0;
+            p2.color = 1;
             currentLevel = 2;
             currentFrame = 1;
             currentFinalFrame = 6;
@@ -1780,6 +1787,8 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         }
         else if (mouseOverLevelThree && levelCompleted >= 2)
         {
+            p1.color = 0;
+            p2.color = 0;
             currentLevel = 3;
             currentFrame = 1;
             currentFinalFrame = 10;
@@ -1787,6 +1796,8 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
         }
         else if (mouseOverLevelFour && levelCompleted >= 3)
         {
+            p1.color = 0;
+            p2.color = 1;
             currentLevel = 4;
             currentFrame = 1;
             currentFinalFrame = 9;

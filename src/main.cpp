@@ -247,7 +247,7 @@ int main()
             break;
         case GameState::ARCADE_MENU:
             game.renderArcadeMenu(renderer);
-            if (game.handleArcadeMenuInput(glWindow.window))
+            if (game.handleArcadeMenuInput(glWindow.window, renderer))
             {
                 game.setState(GameState::ARCADE_STORY);
             }
