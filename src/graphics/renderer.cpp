@@ -766,12 +766,12 @@ void GlRender::renderUI(int timer)
     // Draw scores P1
     renderText("P1", (p1X - 20.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore1 = "WINS: " + std::to_string(game->getPlayer1Score());
-    // renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore1.c_str(), (p1X - 105.f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Draw scores P2
     renderText("P2", (p2X - 15.f), (scoreY - 65.f) - 10 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::string strScore2 = "WINS: " + std::to_string(game->getPlayer2Score());
-    // renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
+    renderText(strScore2.c_str(), (p2X + 30.0f), (scoreY + 25.f) - 70 * (yscale - 1), 0.25f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Avatar dimensions and positions
     float avatarSize = barHeight * 1.8f; // Make avatar 1.8x the height of the health bar
