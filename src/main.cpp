@@ -260,7 +260,6 @@ int main()
             glWindow.windowSwapBuffers();
             break;
         case GameState::ARCADE_STORY:
-            renderer.renderTexturedQuadScaled(renderer.m_arcadeStoryTexture, 0.f, 0.f, M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX, 1.f, 1.f);
             game.renderArcadeStory(renderer);
             if (game.handleArcadeStoryInput(glWindow.window))
             {
