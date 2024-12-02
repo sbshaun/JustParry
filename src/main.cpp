@@ -183,6 +183,8 @@ int main()
     float offsetY1 = 0.0f;
     float offsetY2 = 0.0f;
 
+    bool firstRoundReset = true; 
+
     auto t = std::chrono::high_resolution_clock::now();
     while (!glWindow.shouldClose())
     {
@@ -411,6 +413,12 @@ int main()
             break;
         case GameState::ROUND_START:
         {
+            if (firstRoundReset) {
+                // reset game to use player selected characters 
+                game.resetGame(renderer, worldSystem);
+                firstRoundReset = false; 
+            }
+            
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
                 loopsSinceLastFrame = 0;

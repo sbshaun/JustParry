@@ -841,12 +841,12 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
 
         if (p1Ready && p2Ready)
         {
-            setP1SelectedCharacter();
-            setP2SelectedCharacter();
             renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
             renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
             {
+                setP1SelectedCharacter();
+                setP2SelectedCharacter();
                 WorldSystem::playGameCountDownSound();
                 game.setState(GameState::ROUND_START);
             }
