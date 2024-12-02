@@ -35,7 +35,6 @@ public:
     GlRender();
     ~GlRender();
     void setGameInstance(Game *gameInstance) { game = gameInstance; }
-    
 
     void initialize();
     void render();
@@ -46,7 +45,7 @@ public:
     void shutdown();
 
     // helpers
-    Game* getGameInstance() { return game; }
+    Game *getGameInstance() { return game; }
     void handleTexturedRenders();
     void handleNotifications(float elapsed_ms);
     void handleStaticRenders();
@@ -58,7 +57,7 @@ public:
                       bool hovered = false, bool pressed = false,
                       glm::vec3 color = glm::vec3(0.4078f, 0.4549f, 0.5020f));
 
-    void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height, 
+    void renderTexturedQuadScaled(GLuint texture, float x, float y, float width, float height,
                                   float brightness = 1.0f, float alpha = 1.0f);
 
     void renderDebugBoxes(Entity entity, const Box &box, const glm::vec3 &color);
@@ -170,13 +169,12 @@ public:
     GLuint bird_Story_E_8;
     GLuint bird_Story_E_9;
 
-
-
     GLuint m_levelWonTexture;
     GLuint m_levelLostTexture;
     GLuint m_matchOverP1Texture;
     GLuint m_matchOverP2Texture;
     GLuint m_roundOverDrawTexture;
+    GLuint m_arcadeStoryTexture;
 
     // font elements
     std::map<char, Character> m_ftCharacters;
