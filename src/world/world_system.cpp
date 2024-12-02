@@ -218,10 +218,12 @@ void WorldSystem::init(GlRender *renderer)
     // Create entities
     Fighters fighter1 =  Game::getP1SelectedCharacter();
     Fighters fighter2 =  Game::getP2SelectedCharacter();
+    FighterConfig fighter1Config = FighterManager::getFighterConfig(fighter1);
+    FighterConfig fighter2Config = FighterManager::getFighterConfig(fighter2);
     std::cout << "Player 1: " << (int)fighter1 << std::endl;
     std::cout << "Player 2: " << (int)fighter2 << std::endl;
-    player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + birdman.NDC_HEIGHT}, fighter1);
-    player2 = createPlayer2(renderer, {1.25, FLOOR_Y + birdmanConfig.NDC_HEIGHT}, fighter2);
+    player1 = createPlayer1(renderer, {-1.25, FLOOR_Y + fighter1Config.NDC_HEIGHT}, fighter1);
+    player2 = createPlayer2(renderer, {1.25, FLOOR_Y + fighter2Config.NDC_HEIGHT}, fighter2);
 
     renderer->m_player1 = player1;
     renderer->m_player2 = player2;
