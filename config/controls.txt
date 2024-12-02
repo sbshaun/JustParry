@@ -1,17 +1,17 @@
 [Player1Controls]
+up=W
 down=S
 left=A
 right=D
 punch=R
-kick=G
 parry=T
 
 [Player2Controls]
+up=W
 down=DOWN
 left=LEFT
 right=RIGHT
 punch=,
-kick=.
 parry=M
 
 [WindowSettings]

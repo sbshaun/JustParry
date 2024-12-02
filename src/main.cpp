@@ -391,6 +391,10 @@ int main()
             }
             else if (game.getPreviousState() == GameState::MENU)
             {
+                registry.players.get(renderer.m_player1).parries = 0;
+                registry.players.get(renderer.m_player1).perfectParries = 0;
+                registry.players.get(renderer.m_player2).parries = 0;
+                registry.players.get(renderer.m_player2).perfectParries = 0;
                 game.setState(GameState::MENU);
             }
             break;
