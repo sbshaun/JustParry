@@ -3,6 +3,15 @@
 #include "../interp/linearinterp.hpp"
 #include "settings_menu.hpp"
 
+#ifdef _WIN32
+#include <direct.h>
+#define MKDIR(dir) _mkdir(dir)
+#else
+#include <sys/stat.h>
+#include <errno.h>
+#define MKDIR(dir) mkdir(dir, 0777)
+#endif
+
 Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0f),
                // Initialize these from settings
                showFPS(Settings::windowSettings.show_fps)
@@ -215,34 +224,48 @@ void Game::updateArcadeLevel()
 
 void Game::loadArcadeState()
 {
-    FILE *file = nullptr;
-    file = fopen(saves_path("arcadeLevelState.txt").c_str(), "r");
-    if (file != nullptr)
+    // Ensure the saves directory exists
+    std::string savesDir = std::string(PROJECT_SOURCE_DIR) + "assets/saves";
+    MKDIR(savesDir.c_str());
+
+    // Open the file
+    std::ifstream file(saves_path("arcadeLevelState.txt"));
+    if (file.is_open())
     {
-        fscanf(file, "%d", &this->levelCompleted);
-        fclose(file);
+        file >> this->levelCompleted;
+        file.close();
         printf("Integer read from file: %d\n", this->levelCompleted);
     }
     else
     {
-        printf("Unable to open file for reading.\n");
+        printf("Unable to open file for reading. Initializing levelCompleted to 0.\n");
+        this->levelCompleted = 0;
+
+        // Create the file with default value if it doesn't exist
+        saveCurrentState();
     }
 }
+
 void Game::saveCurrentState()
 {
-    FILE *file = nullptr;
-    file = fopen(saves_path("arcadeLevelState.txt").c_str(), "w");
-    if (file != nullptr)
+    // Ensure the saves directory exists
+    std::string savesDir = std::string(PROJECT_SOURCE_DIR) + "/saves";
+    MKDIR(savesDir.c_str());
+
+    // Open the file for writing
+    std::ofstream file(saves_path("arcadeLevelState.txt"));
+    if (file.is_open())
     {
-        fprintf(file, "%d", this->levelCompleted);
-        fclose(file);
-        printf("Saved arcade level state.\n");
+        file << this->levelCompleted;
+        file.close();
+        printf("Saved arcade level state: %d\n", this->levelCompleted);
     }
     else
     {
         printf("Unable to open file for writing.\n");
     }
 }
+
 void Game::render(GlRender &renderer)
 {
     // Existing game render logic
@@ -1840,8 +1863,8 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
     this->worldSystem = &worldSystem;
 
-    Player& p1 = registry.players.get(renderer.m_player1);
-    Player& p2 = registry.players.get(renderer.m_player2);
+    Player &p1 = registry.players.get(renderer.m_player1);
+    Player &p2 = registry.players.get(renderer.m_player2);
 
     int p1Color = p1.color;
     int p2Color = p2.color;
@@ -2253,9 +2276,9 @@ void Game::renderMatchOver(GlRender &renderer)
 
     static bool wasRestartPressed = false;
     static bool wasMenuPressed = false;
-    
-    Player& p1 = registry.players.get(renderer.m_player1);
-    Player& p2 = registry.players.get(renderer.m_player2);
+
+    Player &p1 = registry.players.get(renderer.m_player1);
+    Player &p2 = registry.players.get(renderer.m_player2);
 
     // Handle button clicks with debouncing
     if (restartPressed && !wasRestartPressed)
