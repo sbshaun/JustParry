@@ -2559,15 +2559,6 @@ void Game::renderLevelOver(GlRender &renderer)
 
     if (player1Score == 2)
     {
-    }
-    else
-    {
-    }
-    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
-    renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
-
-    if (player1Score == 2)
-    {
         renderer.renderText("CHALLENGE COMPLETE!", 40, 150, 0.89f, glm::vec3(0.05f, 0.05f, 0.05f));
         // Find Player 1 stats
         for (auto &player : registry.players.components)
