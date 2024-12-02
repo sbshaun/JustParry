@@ -95,7 +95,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
         675.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
-        "CLOSE GAME"                                     // button text
+        "EXIT"                                     // button text
     };
 
     // Position close button for help dialog
