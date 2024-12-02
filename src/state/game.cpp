@@ -3,6 +3,9 @@
 #include "../interp/linearinterp.hpp"
 #include "settings_menu.hpp"
 
+Fighters Game::p1SelectedCharacter = Fighters::BIRDMAN;
+Fighters Game::p2SelectedCharacter = Fighters::BIRDMAN;
+
 Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0f),
                // Initialize these from settings
                showFPS(Settings::windowSettings.show_fps)
@@ -698,6 +701,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
             if (!goDown1)
             {
                 WorldSystem::playMenuSelectSound();
+                
+                if (p1SelectedCharacterIndex == 1) {
+                    p1SelectedCharacterIndex = 0;
+                }
+                else {
+                    p1SelectedCharacterIndex = 1;
+                }
+
                 goDown1 = true;
                 if (offsetY1 < 300.f)
                 {
@@ -719,6 +730,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
             if (!goUp1)
             {
                 WorldSystem::playMenuSelectSound();
+
+                if (p1SelectedCharacterIndex == 1) {
+                    p1SelectedCharacterIndex = 0;
+                }
+                else {
+                    p1SelectedCharacterIndex = 1;
+                }
+
                 goUp1 = true;
                 if (offsetY1 > 0.0f)
                 {
@@ -743,6 +762,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
             if (!goDown2)
             {
                 WorldSystem::playMenuSelectSound();
+
+                if (p2SelectedCharacterIndex == 1) {
+                    p2SelectedCharacterIndex = 0;
+                }
+                else {
+                    p2SelectedCharacterIndex = 1;
+                }
+
                 goDown2 = true;
                 if (offsetY2 < 300.f)
                 {
@@ -764,6 +791,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
             if (!goUp2)
             {
                 WorldSystem::playMenuSelectSound();
+
+                if (p2SelectedCharacterIndex == 1) {
+                    p2SelectedCharacterIndex = 0;
+                }
+                else {
+                    p2SelectedCharacterIndex = 1;
+                }
+
                 goUp2 = true;
                 if (offsetY2 > 0.0f)
                 {
@@ -806,6 +841,8 @@ void Game::renderReadyText(GlRender &renderer, bool p1Ready, bool p2Ready, Game 
 
         if (p1Ready && p2Ready)
         {
+            setP1SelectedCharacter();
+            setP2SelectedCharacter();
             renderer.renderText("PRESS SPACE", 410, 650, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
             renderer.renderText("TO START!", 435, 700, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
             if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -2528,4 +2565,24 @@ void Game::resetScores()
     fadeOutTimer = 0.0f;
     fadeInTimer = 0.0f;
     startedFading = false;
+}
+
+void Game::setP1SelectedCharacter() { 
+    if (p1SelectedCharacterIndex == 0) {
+        p1SelectedCharacter = Fighters::BIRDMAN;
+        std::cout << "P1 Selected Birdman" << std::endl;
+    } else {
+        p1SelectedCharacter = Fighters::BEARMAN;
+        std::cout << "P1 Selected Bearman" << std::endl;
+    }
+}
+
+void Game::setP2SelectedCharacter() { 
+    if (p2SelectedCharacterIndex == 0) {
+        p2SelectedCharacter = Fighters::BIRDMAN;
+        std::cout << "P2 Selected Birdman" << std::endl;
+    } else {
+        p2SelectedCharacter = Fighters::BEARMAN;
+        std::cout << "P2 Selected Bearman" << std::endl;
+    }
 }

@@ -122,6 +122,12 @@ public:
     void renderMatchOver(GlRender &renderer);
     void renderLevelOver(GlRender &renderer);
 
+    void setP1SelectedCharacter();
+    void setP2SelectedCharacter();
+
+    static Fighters getP1SelectedCharacter() { return p1SelectedCharacter; }
+    static Fighters getP2SelectedCharacter() { return p2SelectedCharacter; }
+
 private:
     GameState currentState;
     GameState previousState = GameState::MENU;
@@ -198,4 +204,9 @@ private:
     float fadeInTimer = 0.0f;
     const float FADE_DURATION = 0.75f;
     bool startedFading = false;
+
+    int p1SelectedCharacterIndex = 0;
+    int p2SelectedCharacterIndex = 0;
+    static Fighters p1SelectedCharacter;
+    static Fighters p2SelectedCharacter;
 };
