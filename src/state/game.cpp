@@ -1840,8 +1840,15 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
 {
     this->worldSystem = &worldSystem;
 
-    int p1Color = registry.players.get(renderer.m_player1).color;
-    int p2Color = registry.players.get(renderer.m_player2).color;
+    Player& p1 = registry.players.get(renderer.m_player1);
+    Player& p2 = registry.players.get(renderer.m_player2);
+
+    int p1Color = p1.color;
+    int p2Color = p2.color;
+    int p1Parries = p1.parries;
+    int p2Parries = p2.parries;
+    int p1PerfectParries = p1.perfectParries;
+    int p2PerfectParries = p2.perfectParries;
 
     // Clear all components first
     registry.clear_all_components();
@@ -1849,8 +1856,12 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     // Reinitialize world system
     worldSystem.init(&renderer);
 
-    registry.players.get(renderer.m_player1).color = p1Color;
-    registry.players.get(renderer.m_player2).color = p2Color;
+    p1.color = p1Color;
+    p2.color = p2Color;
+    p1.parries = p1Parries;
+    p2.parries = p2Parries;
+    p1.perfectParries = p1PerfectParries;
+    p2.perfectParries = p2PerfectParries;
 
     // Reset timer
     extern int timer;
@@ -1865,9 +1876,6 @@ void Game::resetGame(GlRender &renderer, WorldSystem &worldSystem)
     // Reset animation flags using the setter methods
     renderer.setAnimationComplete(false);
     renderer.setExitAnimationStarted(false);
-
-    registry.players.get(renderer.m_player1).parries = 0;
-    registry.players.get(renderer.m_player1).perfectParries = 0;
 
     isLoading = true;
 }
@@ -2245,6 +2253,9 @@ void Game::renderMatchOver(GlRender &renderer)
 
     static bool wasRestartPressed = false;
     static bool wasMenuPressed = false;
+    
+    Player& p1 = registry.players.get(renderer.m_player1);
+    Player& p2 = registry.players.get(renderer.m_player2);
 
     // Handle button clicks with debouncing
     if (restartPressed && !wasRestartPressed)
@@ -2252,6 +2263,10 @@ void Game::renderMatchOver(GlRender &renderer)
         // Reset scores and start new match
         resetScores();
         resetGame(renderer, *worldSystem);
+        p1.parries = 0;
+        p1.perfectParries = 0;
+        p2.parries = 0;
+        p2.perfectParries = 0;
         setState(GameState::ROUND_START);
         WorldSystem::stopAllSounds();
         WorldSystem::stopBackgroundMusic();
@@ -2262,6 +2277,10 @@ void Game::renderMatchOver(GlRender &renderer)
         // Reset scores and return to menu
         resetScores();
         resetGame(renderer, *worldSystem);
+        p1.parries = 0;
+        p1.perfectParries = 0;
+        p2.parries = 0;
+        p2.perfectParries = 0;
         setState(GameState::MENU);
         WorldSystem::stopAllSounds();
         WorldSystem::stopBackgroundMusic();

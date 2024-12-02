@@ -572,15 +572,15 @@ void GlRender::render()
 
     glDepthMask(GL_TRUE);
 
-    // std::cout << "PLAYER 1" << std::endl;
-    
-    // std::cout << registry.players.get(m_player1).perfectParries << std::endl;
-    // std::cout << registry.players.get(m_player1).parries << std::endl;
+    //std::cout << "PLAYER 1" << std::endl;
+    //
+    //std::cout << registry.players.get(m_player1).perfectParries << std::endl;
+    //std::cout << registry.players.get(m_player1).parries << std::endl;
 
-    // std::cout << "PLAYER 2" << std::endl;
+    //std::cout << "PLAYER 2" << std::endl;
 
-    // std::cout << registry.players.get(m_player2).perfectParries << std::endl;
-    // std::cout << registry.players.get(m_player2).parries << std::endl;
+    //std::cout << registry.players.get(m_player2).perfectParries << std::endl;
+    //std::cout << registry.players.get(m_player2).parries << std::endl;
 }
 void GlRender::loadTextures()
 {
