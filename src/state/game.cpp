@@ -293,76 +293,76 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         isBackButtonPressed                  // Add this member variable to Game class
     );
 
-    std::cout << registry.players.get(renderer.m_player1).color << std::endl;
+    // std::cout << registry.players.get(renderer.m_player1).color << std::endl;
 
     int p1Color = registry.players.get(renderer.m_player1).color;
     int p2Color = registry.players.get(renderer.m_player2).color;
 
     // Rest of the character select rendering...
-    if (p1Color == 0) {
+    if (p1Color == 0)
+    {
         renderer.renderTexturedQuadScaled(
             p1 ? renderer.m_character1_ready : renderer.m_character1,
             200.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
-    else if (p1Color == 1) {
+    else if (p1Color == 1)
+    {
         renderer.renderTexturedQuadScaled(
             p1 ? renderer.m_character1_ready_red : renderer.m_character1_red,
             200.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
-    else if (p1Color == 2) {
+    else if (p1Color == 2)
+    {
         renderer.renderTexturedQuadScaled(
             p1 ? renderer.m_character1_ready_green : renderer.m_character1_green,
             200.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
-    else if (p1Color == 3) {
+    else if (p1Color == 3)
+    {
         renderer.renderTexturedQuadScaled(
             p1 ? renderer.m_character1_ready_blue : renderer.m_character1_blue,
             200.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
 
-    if (p2Color == 0) {
+    if (p2Color == 0)
+    {
         renderer.renderTexturedQuadScaled(
             p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
             600.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
-    else if (p2Color == 1) {
+    else if (p2Color == 1)
+    {
         renderer.renderTexturedQuadScaled(
             p2 ? renderer.m_character1_flip_ready_red : renderer.m_character1_flip_red,
             600.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
-    else if (p2Color == 2) {
+    else if (p2Color == 2)
+    {
         renderer.renderTexturedQuadScaled(
             p2 ? renderer.m_character1_flip_ready_green : renderer.m_character1_flip_green,
             600.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
-    else if (p2Color == 3) {
+    else if (p2Color == 3)
+    {
         renderer.renderTexturedQuadScaled(
             p2 ? renderer.m_character1_flip_ready_blue : renderer.m_character1_flip_blue,
             600.f, 360.f,
             225, 275,
-            1.0f
-        );
+            1.0f);
     }
 
     renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 360.f, 270.0f + offset1, 0.39f, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -377,9 +377,9 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     glDepthFunc(GL_LESS);
 }
 
-void Game::startArcade(GlRender& renderer)
+void Game::startArcade(GlRender &renderer)
 {
-    Player& p1 = registry.players.get(renderer.m_player1);
+    Player &p1 = registry.players.get(renderer.m_player1);
 
     p1.current_char = BIRDMAN;
 }
@@ -536,7 +536,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
     }
 }
 
-void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
+void Game::handleCharacterInputs(GlRender &renderer, GLWindow &glWindow, bool &p1KeyPressed, bool &p1Ready, bool &p2KeyPressed,
                                  bool &p2Ready, bool &goDown1, bool &goDown2, bool &goUp1, bool &goUp2,
                                  float &offsetY1, float &offsetY2)
 {
@@ -617,12 +617,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
         if (!p1LeftPressed) // Check if the key was not pressed before
         {
             p1LeftPressed = true;
-            Player& p1 = registry.players.get(renderer.m_player1);
+            Player &p1 = registry.players.get(renderer.m_player1);
 
-            if (p1.color == 0) {
+            if (p1.color == 0)
+            {
                 p1.color = 3;
             }
-            else {
+            else
+            {
                 p1.color -= 1;
             }
         }
@@ -636,12 +638,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
         if (!p1RightPressed) // Check if the key was not pressed before
         {
             p1RightPressed = true;
-            Player& p1 = registry.players.get(renderer.m_player1);
+            Player &p1 = registry.players.get(renderer.m_player1);
 
-            if (p1.color == 3) {
+            if (p1.color == 3)
+            {
                 p1.color = 0;
             }
-            else {
+            else
+            {
                 p1.color += 1;
             }
         }
@@ -656,12 +660,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
         if (!p2LeftPressed) // Check if the key was not pressed before
         {
             p2LeftPressed = true;
-            Player& p2 = registry.players.get(renderer.m_player2);
+            Player &p2 = registry.players.get(renderer.m_player2);
 
-            if (p2.color == 0) {
+            if (p2.color == 0)
+            {
                 p2.color = 3;
             }
-            else {
+            else
+            {
                 p2.color -= 1;
             }
         }
@@ -676,12 +682,14 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
         if (!p2RightPressed) // Check if the key was not pressed before
         {
             p2RightPressed = true;
-            Player& p2 = registry.players.get(renderer.m_player2);
+            Player &p2 = registry.players.get(renderer.m_player2);
 
-            if (p2.color == 3) {
+            if (p2.color == 3)
+            {
                 p2.color = 0;
             }
-            else {
+            else
+            {
                 p2.color += 1;
             }
         }
@@ -899,7 +907,7 @@ void Game::renderMenu(GlRender &renderer)
                           settingsHovered, settingsPressed);
 
     // If help dialog is shown, render it
-	// SIDDH: Not sure why this is here. Commenting out for now.
+    // SIDDH: Not sure why this is here. Commenting out for now.
     /*if (currentState == GameState::HELP)
     {
         renderHelpScreen(renderer);
@@ -1104,7 +1112,7 @@ void Game::renderArcadeStory(GlRender &renderer)
                 storyBoxWidth, storyBoxHeight,
                 1.0f);
             break;
-        case 7: 
+        case 7:
             renderer.renderTexturedQuadScaled(
                 renderer.bird_Story_1_7,
                 storyBoxX, storyBoxY,
@@ -1114,8 +1122,10 @@ void Game::renderArcadeStory(GlRender &renderer)
         }
     }
     // LEVEL TWO
-    if (currentLevel == 2) {
-        switch (currentFrame) {
+    if (currentLevel == 2)
+    {
+        switch (currentFrame)
+        {
         case 1:
             renderer.renderTexturedQuadScaled(
                 renderer.bird_Story_2_1,
@@ -1161,8 +1171,10 @@ void Game::renderArcadeStory(GlRender &renderer)
         }
     }
     // LEVEL THREE
-    if (currentLevel == 3) {
-        switch (currentFrame) {
+    if (currentLevel == 3)
+    {
+        switch (currentFrame)
+        {
         case 1:
             renderer.renderTexturedQuadScaled(
                 renderer.bird_Story_3_1,
@@ -1236,8 +1248,10 @@ void Game::renderArcadeStory(GlRender &renderer)
         }
     }
     // LEVEL FOUR
-    if (currentLevel == 4) {
-        switch (currentFrame) {
+    if (currentLevel == 4)
+    {
+        switch (currentFrame)
+        {
         case 1:
             renderer.renderTexturedQuadScaled(
                 renderer.bird_Story_4_1,
@@ -1301,12 +1315,13 @@ void Game::renderArcadeStory(GlRender &renderer)
                 storyBoxWidth, storyBoxHeight,
                 1.0f);
             break;
-
         }
     }
     // LEVEL FIVE
-    if (currentLevel == 5) {
-        switch (currentFrame) {
+    if (currentLevel == 5)
+    {
+        switch (currentFrame)
+        {
         case 1:
             renderer.renderTexturedQuadScaled(
                 renderer.bird_Story_E_1,
@@ -1370,7 +1385,6 @@ void Game::renderArcadeStory(GlRender &renderer)
                 storyBoxWidth, storyBoxHeight,
                 1.0f);
             break;
-
         }
     }
 
@@ -1509,52 +1523,50 @@ void Game::renderHelpScreen(GlRender &renderer, bool &botEnabled)
 
     // Render the appropriate help screen image based on currentTutorialPage
     GLuint currentTexture;
-  
-    switch (currentTutorialPage) {
-        case 0:
-            currentTexture = renderer.m_helpTexture1;
-            renderer.renderTexturedQuadScaled(
-                currentTexture,
-                helpBoxX, helpBoxY,
-                helpBoxWidth, helpBoxHeight,
-                1.0f
-            );
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
-            break;
-        case 1:
-            currentTexture = renderer.m_helpTexture2;
-            renderer.renderTexturedQuadScaled(
-                currentTexture,
-                helpBoxX, helpBoxY,
-                helpBoxWidth, helpBoxHeight,
-                1.0f
-            );
-            renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
-            break;
-        case 2:
-            botEnabled = true;
-            currentTexture = renderer.m_helpTexture3;
-            renderer.renderTexturedQuadScaled(
-                currentTexture,
-                helpBoxX, helpBoxY,
-                helpBoxWidth, helpBoxHeight,
-                1.0f
-            );
-            renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
-             renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-            renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
-            renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
-            break;
+    switch (currentTutorialPage)
+    {
+    case 0:
+        currentTexture = renderer.m_helpTexture1;
+        renderer.renderTexturedQuadScaled(
+            currentTexture,
+            helpBoxX, helpBoxY,
+            helpBoxWidth, helpBoxHeight,
+            1.0f);
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.left), 865.f, 280.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.right), 865.f, 318.f, 0.35f, glm::vec3(1.f, 1.f, 1.f));
+        break;
+    case 1:
+        currentTexture = renderer.m_helpTexture2;
+        renderer.renderTexturedQuadScaled(
+            currentTexture,
+            helpBoxX, helpBoxY,
+            helpBoxWidth, helpBoxHeight,
+            1.0f);
+        renderer.renderText("ATTACK USING", 735.f, 90.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("PUNCH AND KICK", 720.f, 115.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("PUNCH", 750.f, 295.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 865.f, 295.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText("KICK", 782.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.down), 865.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText(" + ", 880.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.punch), 905.f, 330.f, 0.3f, glm::vec3(1.f, 1.f, 1.f));
+        break;
+    case 2:
+        botEnabled = true;
+        currentTexture = renderer.m_helpTexture3;
+        renderer.renderTexturedQuadScaled(
+            currentTexture,
+            helpBoxX, helpBoxY,
+            helpBoxWidth, helpBoxHeight,
+            1.0f);
+        renderer.renderText("PARRY TO STUN", 760.f, 85.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("YOUR OPPONENT AND", 720.f, 108.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("COUNTER ATTACK", 750.f, 130.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+        renderer.renderText("PARRY", 770.f, 330.f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText(Settings::getKeyName(Settings::p1Controls.parry), 880.f, 327.f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+        break;
     }
 
     // Add page indicator text
@@ -1760,16 +1772,20 @@ bool Game::handleArcadeStoryInput(GLFWwindow *window)
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
     {
         spaceRelease = false;
-        if (currentFrame == currentFinalFrame) {
-            if (currentLevel == 5) {
+        if (currentFrame == currentFinalFrame)
+        {
+            if (currentLevel == 5)
+            {
                 this->setState(GameState::ARCADE_MENU);
                 this->levelCompleted = 5;
             }
-            else {
+            else
+            {
                 return true;
             }
         }
-        if (currentFrame < currentFinalFrame) {
+        if (currentFrame < currentFinalFrame)
+        {
             currentFrame++;
         }
     }
@@ -1779,7 +1795,8 @@ bool Game::handleArcadeStoryInput(GLFWwindow *window)
         rightRelease = true;
     }
 
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE)
+    {
         spaceRelease = true;
     }
     return false;
@@ -2274,15 +2291,31 @@ void Game::renderMatchOver(GlRender &renderer)
     if (player1Score == 2)
     {
         renderer.renderText("P1 WINS!", 240, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+        // Find Player 1 stats
+        for (auto &player : registry.players.components)
+        {
+            if (player.id == 1)
+            { // Player 1
+                renderer.renderText("PARRIES: " + std::to_string(player.parries), 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                renderer.renderText("JUST PARRIES: " + std::to_string(player.perfectParries), 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                break; // Exit loop once player is found
+            }
+        }
     }
     else
     {
         renderer.renderText("P2 WINS!", 225, 130, 1.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+        // Find Player 1 stats
+        for (auto &player : registry.players.components)
+        {
+            if (player.id == 2)
+            { // Player 2
+                renderer.renderText("PARRIES: " + std::to_string(player.parries), 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                renderer.renderText("JUST PARRIES: " + std::to_string(player.perfectParries), 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                break; // Exit loop once player is found
+            }
+        }
     }
-
-
-    renderer.renderText("PARRIES :" , 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
-    renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
 }
 
 void Game::renderLevelOver(GlRender &renderer)
@@ -2507,14 +2540,40 @@ void Game::renderLevelOver(GlRender &renderer)
 
     if (player1Score == 2)
     {
+    }
+    else
+    {
+    }
+    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+    renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+
+    if (player1Score == 2)
+    {
         renderer.renderText("CHALLENGE COMPLETE!", 40, 150, 0.89f, glm::vec3(0.05f, 0.05f, 0.05f));
+        // Find Player 1 stats
+        for (auto &player : registry.players.components)
+        {
+            if (player.id == 1)
+            { // Player 1
+                renderer.renderText("PARRIES: " + std::to_string(player.parries), 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                renderer.renderText("JUST PARRIES: " + std::to_string(player.perfectParries), 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                break; // Exit loop once player is found
+            }
+        }
     }
     else
     {
         renderer.renderText("CHALLENGE FAILED!", 115, 150, 0.9f, glm::vec3(0.05f, 0.05f, 0.05f));
+        for (auto &player : registry.players.components)
+        {
+            if (player.id == 2)
+            { // Player 2
+                renderer.renderText("PARRIES: " + std::to_string(player.parries), 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                renderer.renderText("JUST PARRIES: " + std::to_string(player.perfectParries), 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
+                break; // Exit loop once player is found
+            }
+        }
     }
-    renderer.renderText("PARRIES :", 325, 250, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
-    renderer.renderText("JUST PARRIES : ", 200, 320, 0.5f, glm::vec3(0.05f, 0.05f, 0.05f));
 }
 
 void Game::resetScores()
