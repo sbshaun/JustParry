@@ -1075,7 +1075,7 @@ void Game::renderArcadeStory(GlRender &renderer)
 
     // Render background with full brightness
     renderer.renderTexturedQuadScaled(
-        renderer.m_arcadeMenuTexture,
+        renderer.m_arcadeStoryTexture,
         0, 0,
         M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX,
         1.0f // Full brightness for main menu

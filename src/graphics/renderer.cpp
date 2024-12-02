@@ -681,6 +681,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("level_lost.png"), m_levelLostTexture);
     loadTexture(textures_path("match_over_p1.png"), m_matchOverP1Texture);
     loadTexture(textures_path("match_over_p2.png"), m_matchOverP2Texture);
+    loadTexture(textures_path("arcade_story_bg.png"), m_arcadeStoryTexture);
     FighterManager::loadBirdTextures(*this);
 }
 
@@ -1296,13 +1297,14 @@ void GlRender::shutdown()
         m_roundOverP1Texture, m_roundOverP2Texture, m_roundOverDrawTexture, m_timerBackgroundTexture, m_barTexture,
         m_avatarTexture, m_characterSelectTexture, m_characterSelectTextureArcade, m_character1,
         m_character1_flip, m_character1_ready, m_character1_flip_ready, m_p1SelectKey, m_p2SelectKey,
-        m_levelWonTexture, m_levelLostTexture, m_matchOverP1Texture, m_matchOverP2Texture,
+        m_levelWonTexture, m_levelLostTexture, m_matchOverP1Texture, m_matchOverP2Texture, m_arcadeStoryTexture,
         bird_Story_1_1, bird_Story_1_2, bird_Story_1_3, bird_Story_1_4};
 
     glDeleteTextures(sizeof(textures) / sizeof(GLuint), textures);
 
     // Clear texture IDs after deletion to prevent dangling references
     m_menuTexture = m_helpTexture1 = m_helpTexture2 = m_helpTexture3 = m_settingsTexture = m_pauseMenuTexture = 0;
+    m_arcadeStoryTexture = 0;
     m_bg1Texture = m_bg2Texture = m_bg3Texture = m_bg4Texture = 0;
     m_countdown_1 = m_countdown_2 = m_countdown_3 = m_countdown_fight = 0;
     m_notif_parried = m_notif_hit = m_notif_stunned = 0;
