@@ -22,7 +22,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
     // Position start button (moved left and up)
     startButton = {
         M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
-        375.0f - upShift,                              // y position
+        275.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "VERSUS"                                       // button text
@@ -30,7 +30,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
 
     arcadeButton = {
         M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
-        475.0f - upShift,                              // y position
+        375.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "ARCADE"                                       // button text
@@ -75,7 +75,7 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
     // Position help button below start button
     helpButton = {
         M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
-        575.0f - upShift,                              // y position
+        475.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "TUTORIAL"                                     // button text
@@ -84,10 +84,18 @@ Game::Game() : currentState(GameState::INIT), running(true), loadingProgress(0.0
     // Add settings button below help button
     settingsButton = {
         M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
-        675.0f - upShift,                              // y position
+        575.0f - upShift,                              // y position
         260.0f,                                        // width
         80.0f,                                         // height
         "SETTINGS"                                     // renamed from "NEW BUTTON"
+    };
+
+    closeGameButton = {
+        M_WINDOW_WIDTH_PX / 2.0f + 300.0f - leftShift, // x position
+        675.0f - upShift,                              // y position
+        260.0f,                                        // width
+        80.0f,                                         // height
+        "CLOSE GAME"                                     // button text
     };
 
     // Position close button for help dialog
@@ -903,10 +911,14 @@ void Game::renderMenu(GlRender &renderer)
     bool settingsHovered = mouseX >= settingsButton.x && mouseX <= settingsButton.x + settingsButton.width &&
                            mouseY >= settingsButton.y && mouseY <= settingsButton.y + settingsButton.height;
 
+    bool closeGameHovered = mouseX >= closeGameButton.x && mouseX <= closeGameButton.x + closeGameButton.width &&
+                            mouseY >= closeGameButton.y && mouseY <= closeGameButton.y + closeGameButton.height;
+
     bool startPressed = startHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool helpPressed = helpHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool arcadePressed = arcadeHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool settingsPressed = settingsHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool closeGamePressed = closeGameHovered && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     // Render all buttons
     renderer.renderButton(startButton.x, startButton.y,
@@ -928,6 +940,11 @@ void Game::renderMenu(GlRender &renderer)
                           settingsButton.width, settingsButton.height,
                           settingsButton.text,
                           settingsHovered, settingsPressed);
+
+    renderer.renderButton(closeGameButton.x, closeGameButton.y,
+                          closeGameButton.width, closeGameButton.height,
+                          closeGameButton.text,
+                          closeGameHovered, closeGamePressed);
 
     // If help dialog is shown, render it
     // SIDDH: Not sure why this is here. Commenting out for now.
@@ -1597,7 +1614,7 @@ void Game::renderHelpScreen(GlRender &renderer, bool &botEnabled)
                         helpBoxX, helpBoxY - 10.f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
-bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
+bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer, bool& shouldClose)
 {
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -1646,6 +1663,12 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
         mouseY >= settingsButton.y &&
         mouseY <= settingsButton.y + settingsButton.height;
 
+    bool mouseOverCloseGame =
+        mouseX >= closeGameButton.x &&
+        mouseX <= closeGameButton.x + closeGameButton.width &&
+        mouseY >= closeGameButton.y &&
+        mouseY <= closeGameButton.y + closeGameButton.height;
+
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
         if (mouseOverStart)
@@ -1673,6 +1696,10 @@ bool Game::handleMenuInput(GLFWwindow *window, GlRender &renderer)
         else if (mouseOverSettings)
         {
             this->handleSettingsButton();
+        }
+        else if (mouseOverCloseGame) 
+        {
+            shouldClose = true;
         }
     }
 

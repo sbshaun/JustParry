@@ -60,7 +60,6 @@ public:
     void renderMenu(GlRender &renderer);
     void renderArcadeMenu(GlRender &renderer);
     void renderArcadeStory(GlRender& renderer);
-    bool handleMenuInput(GLFWwindow *window, GlRender &renderer);
     void handleArcadeButton();
     bool handleArcadeMenuInput(GLFWwindow *window);
     bool handleArcadeStoryInput(GLFWwindow* window);
@@ -68,6 +67,7 @@ public:
     void handleSettingsButton();
     void handleHelpButton();
     void renderHelpScreen(GlRender &renderer, bool &botEnabled);
+    bool handleMenuInput(GLFWwindow* window, GlRender& renderer, bool& shouldClose);
     bool handleHelpInput(GLFWwindow *window);
     void attemptPause();
 
@@ -134,6 +134,7 @@ private:
     struct Button arcadeButton;
     struct Button helpButton;
     struct Button closeButton;
+    struct Button closeGameButton;
     struct Button backButton;
     struct Button settingsButton;
     struct Button pauseButton;
