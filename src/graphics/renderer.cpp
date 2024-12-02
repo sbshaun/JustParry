@@ -634,6 +634,12 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bird_parry_f1_blue.png"), m_character1_ready_blue);
     loadTexture(textures_path("bird_parry_f1_flipped_blue.png"), m_character1_flip_ready_blue);
 
+    // bear characters 
+    loadTexture(textures_path("bear_idle_f1.png"), m_character1_bear);
+    loadTexture(textures_path("bear_idle_f1_flipped.png"), m_character1_bear_flip);
+    loadTexture(textures_path("bear_parry_f1.png"), m_character1_bear_ready);
+    loadTexture(textures_path("bear_parry_f1_flipped.png"), m_character1_bear_flip_ready);
+
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     loadTexture(textures_path("Bird_Story_1_1.png"), bird_Story_1_1);

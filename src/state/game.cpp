@@ -333,67 +333,85 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
     int p2Color = registry.players.get(renderer.m_player2).color;
 
     // Rest of the character select rendering...
-    if (p1Color == 0)
-    {
+    if (p1SelectedCharacterIndex == 0) {
+        if (p1Color == 0)
+        {
+            renderer.renderTexturedQuadScaled(
+                p1 ? renderer.m_character1_ready : renderer.m_character1,
+                200.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+        else if (p1Color == 1)
+        {
+            renderer.renderTexturedQuadScaled(
+                p1 ? renderer.m_character1_ready_red : renderer.m_character1_red,
+                200.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+        else if (p1Color == 2)
+        {
+            renderer.renderTexturedQuadScaled(
+                p1 ? renderer.m_character1_ready_green : renderer.m_character1_green,
+                200.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+        else if (p1Color == 3)
+        {
+            renderer.renderTexturedQuadScaled(
+                p1 ? renderer.m_character1_ready_blue : renderer.m_character1_blue,
+                200.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+    } else {
+        // p1SelectedCharacterIndex == 1 (BEARMAN) 
         renderer.renderTexturedQuadScaled(
-            p1 ? renderer.m_character1_ready : renderer.m_character1,
-            200.f, 360.f,
-            225, 275,
-            1.0f);
-    }
-    else if (p1Color == 1)
-    {
-        renderer.renderTexturedQuadScaled(
-            p1 ? renderer.m_character1_ready_red : renderer.m_character1_red,
-            200.f, 360.f,
-            225, 275,
-            1.0f);
-    }
-    else if (p1Color == 2)
-    {
-        renderer.renderTexturedQuadScaled(
-            p1 ? renderer.m_character1_ready_green : renderer.m_character1_green,
-            200.f, 360.f,
-            225, 275,
-            1.0f);
-    }
-    else if (p1Color == 3)
-    {
-        renderer.renderTexturedQuadScaled(
-            p1 ? renderer.m_character1_ready_blue : renderer.m_character1_blue,
+            p1 ? renderer.m_character1_bear_ready : renderer.m_character1_bear,
             200.f, 360.f,
             225, 275,
             1.0f);
     }
 
-    if (p2Color == 0)
-    {
+    if (p2SelectedCharacterIndex == 0) {
+        if (p2Color == 0)
+        {
+            renderer.renderTexturedQuadScaled(
+                p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
+                600.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+        else if (p2Color == 1)
+        {
+            renderer.renderTexturedQuadScaled(
+                p2 ? renderer.m_character1_flip_ready_red : renderer.m_character1_flip_red,
+                600.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+        else if (p2Color == 2)
+        {
+            renderer.renderTexturedQuadScaled(
+                p2 ? renderer.m_character1_flip_ready_green : renderer.m_character1_flip_green,
+                600.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+        else if (p2Color == 3)
+        {
+            renderer.renderTexturedQuadScaled(
+                p2 ? renderer.m_character1_flip_ready_blue : renderer.m_character1_flip_blue,
+                600.f, 360.f,
+                225, 275,
+                1.0f);
+        }
+    } else {
+        // p2SelectedCharacterIndex == 1 (BEARMAN) 
         renderer.renderTexturedQuadScaled(
-            p2 ? renderer.m_character1_flip_ready : renderer.m_character1_flip,
-            600.f, 360.f,
-            225, 275,
-            1.0f);
-    }
-    else if (p2Color == 1)
-    {
-        renderer.renderTexturedQuadScaled(
-            p2 ? renderer.m_character1_flip_ready_red : renderer.m_character1_flip_red,
-            600.f, 360.f,
-            225, 275,
-            1.0f);
-    }
-    else if (p2Color == 2)
-    {
-        renderer.renderTexturedQuadScaled(
-            p2 ? renderer.m_character1_flip_ready_green : renderer.m_character1_flip_green,
-            600.f, 360.f,
-            225, 275,
-            1.0f);
-    }
-    else if (p2Color == 3)
-    {
-        renderer.renderTexturedQuadScaled(
-            p2 ? renderer.m_character1_flip_ready_blue : renderer.m_character1_flip_blue,
+            p2 ? renderer.m_character1_bear_flip_ready : renderer.m_character1_bear_flip,
             600.f, 360.f,
             225, 275,
             1.0f);
