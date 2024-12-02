@@ -550,7 +550,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
             {
                 WorldSystem::playMenuSelectSound();
                 goDown1 = true;
-                if (offsetY1 < 300.f)
+                if (offsetY1 < 150.f)
                 {
                     offsetY1 += 150.f;
                 }
@@ -767,7 +767,7 @@ void Game::handleCharacterInputs(GlRender &renderer, GLWindow &glWindow, bool &p
                 }
 
                 goDown1 = true;
-                if (offsetY1 < 300.f)
+                if (offsetY1 < 150.f)
                 {
                     offsetY1 += 150.f;
                 }
@@ -828,7 +828,7 @@ void Game::handleCharacterInputs(GlRender &renderer, GLWindow &glWindow, bool &p
                 }
 
                 goDown2 = true;
-                if (offsetY2 < 300.f)
+                if (offsetY2 < 150.f)
                 {
                     offsetY2 += 150.f;
                 }
