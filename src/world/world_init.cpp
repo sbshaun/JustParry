@@ -20,11 +20,12 @@ void setupFighterConfig(Entity entity, const FighterConfig &config, bool isPlaye
     float PUNCH_X_OFFSET;
     float PUNCH_Y_OFFSET;
 
-    // TODO: Shouldnt assume fighter, read player
-    PUNCH_WIDTH = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_WIDTH;
-    PUNCH_HEIGHT = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_HEIGHT;
-    PUNCH_X_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_X_OFFSET;
-    PUNCH_Y_OFFSET = FighterManager::getFighterConfig(Fighters::BIRDMAN).PUNCH_Y_OFFSET;
+    Fighters fighter = registry.players.get(entity).current_char;
+    const FighterConfig& fighterConfig = FighterManager::getFighterConfig(fighter);
+    PUNCH_WIDTH = fighterConfig.PUNCH_WIDTH;
+    PUNCH_HEIGHT = fighterConfig.PUNCH_HEIGHT;
+    PUNCH_X_OFFSET = fighterConfig.PUNCH_X_OFFSET;
+    PUNCH_Y_OFFSET = fighterConfig.PUNCH_Y_OFFSET;
 
     HitBox &hitBox = registry.hitBoxes.emplace(entity);
     hitBox.width = config.PUNCH_WIDTH;
@@ -149,8 +150,7 @@ Entity createPlayer1(GlRender *renderer, vec2 pos, Fighters fighter)
     registry.players.insert(entity, Player{1, fighter});
     Shader *rectShader = new Shader(std::string("player1"));
     createPlayerHelper(entity, pos, rectShader, renderer, true, fighter);
-    // set current_char to BIRDMAN by default
-    // registry.players.get(entity).current_char = fighter;
+    registry.players.get(entity).current_char = fighter;
     std::cout << "player 1 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;
 };
@@ -164,7 +164,7 @@ Entity createPlayer2(GlRender *renderer, vec2 pos, Fighters fighter)
     registry.players.insert(entity, Player{2, fighter});
     Shader *rectShader = new Shader(std::string("player2"));
     createPlayerHelper(entity, pos, rectShader, renderer, false, fighter);
-    // registry.players.get(entity).current_char = fighter;
+    registry.players.get(entity).current_char = fighter;
 
     std::cout << "player 2 current_char: " << (int)registry.players.get(entity).current_char << std::endl;
     return entity;

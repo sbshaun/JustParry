@@ -634,6 +634,12 @@ void GlRender::loadTextures()
     loadTexture(textures_path("bird_parry_f1_blue.png"), m_character1_ready_blue);
     loadTexture(textures_path("bird_parry_f1_flipped_blue.png"), m_character1_flip_ready_blue);
 
+    // bear characters 
+    loadTexture(textures_path("bear_idle_f1.png"), m_character1_bear);
+    loadTexture(textures_path("bear_idle_f1_flipped.png"), m_character1_bear_flip);
+    loadTexture(textures_path("bear_parry_f1.png"), m_character1_bear_ready);
+    loadTexture(textures_path("bear_parry_f1_flipped.png"), m_character1_bear_flip_ready);
+
     loadTexture(textures_path("key_R.png"), m_p1SelectKey);
     loadTexture(textures_path("key_X.png"), m_p2SelectKey);
     loadTexture(textures_path("Bird_Story_1_1.png"), bird_Story_1_1);
@@ -683,6 +689,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("match_over_p2.png"), m_matchOverP2Texture);
     loadTexture(textures_path("arcade_story_bg.png"), m_arcadeStoryTexture);
     FighterManager::loadBirdTextures(*this);
+    FighterManager::loadBearTextures(*this);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
@@ -877,190 +884,54 @@ void GlRender::renderUI(int timer)
 
 void GlRender::handleP1Health(float p1Health)
 { // render health values
-    float wx = 23.75f;
-    float off = 2.35f;
-    if (p1Health == 100)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    if (p1Health <= 0) return; // early exit 
+
+    const int granularity = 20;  // number of bars 
+    const float baseY = 97.5f;  // y coord 
+    const float barHeight = 30.f; // bar height 
+    const float gapWidth = 23.5f / granularity; // spacing between bars 
+    const float firstBarX = 192.5f; // first x coord 
+    const float subsequentBarStartX = 195.f; // subsequent x coord 
+    const float barWidth = 237.5f / granularity; // bar width 
+
+    // number of bars to render 
+    int barsToRender = std::ceil((p1Health / 100.0f) * granularity);
+
+    // render first bar
+    if (barsToRender > 0) {
+        renderRedHealthRectangle(firstBarX, baseY, barWidth, barHeight);
     }
-    else if (p1Health == 90)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 80)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 70)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 60)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 50)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 40)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 30)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 20)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(195.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 10)
-    {
-        renderRedHealthRectangle(192.5f, 97.5f, wx, 30.f);
-    }
-    else if (p1Health == 0)
-    {
-        return;
+
+    // render remainings 
+    for (int i = 1; i < barsToRender; i++) {
+        float x = subsequentBarStartX + ((i - 1) * gapWidth) + (i * barWidth);
+        renderRedHealthRectangle(x, baseY, barWidth, barHeight);
     }
 }
 void GlRender::handleP2Health(float p2Health)
 { // render health values
-    float wx = 23.75f;
-    float off = 2.35f;
-    if (p2Health == 100)
-    {
-        renderRedHealthRectangle(572.5f, 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
+    if (p2Health <= 0) return; // early exit
+    
+    const int granularity = 20;  // number of bars 
+    const float baseY = 97.5f;  // y coord 
+    const float barHeight = 30.f; // bar height 
+    const float gapWidth = 23.5f / granularity; // spacing between bars 
+    const float firstBarX = 572.5f; // first x coord 
+    const float subsequentBarStartX = 575.f; // subsequent x coord 
+    const float barWidth = 237.5f / granularity; // bar width 
+
+    // number of bars to render 
+    int barsToRender = std::ceil((p2Health / 100.0f) * granularity);
+
+    // render first bar
+    if (barsToRender > 0) {
+        renderRedHealthRectangle(firstBarX, baseY, barWidth, barHeight);
     }
-    else if (p2Health == 90)
-    {
-        renderRedHealthRectangle(575.f + (0 * off) + (1 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 80)
-    {
-        renderRedHealthRectangle(575.f + (1 * off) + (2 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 70)
-    {
-        renderRedHealthRectangle(575.f + (2 * off) + (3 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 60)
-    {
-        renderRedHealthRectangle(575.f + (3 * off) + (4 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 50)
-    {
-        renderRedHealthRectangle(575.f + (4 * off) + (5 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 40)
-    {
-        renderRedHealthRectangle(575.f + (5 * off) + (6 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 30)
-    {
-        renderRedHealthRectangle(575.f + (6 * off) + (7 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 20)
-    {
-        renderRedHealthRectangle(575.f + (7 * off) + (8 * wx), 97.5f, wx, 30.f);
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 10)
-    {
-        renderRedHealthRectangle(575.f + (8 * off) + (9 * wx), 97.5f, wx, 30.f);
-    }
-    else if (p2Health == 0)
-    {
-        return;
+
+    // render remainings 
+    for (int i = 1; i < barsToRender; i++) {
+        float x = subsequentBarStartX + ((i - 1) * gapWidth) + (i * barWidth);
+        renderRedHealthRectangle(x, baseY, barWidth, barHeight);
     }
 }
 

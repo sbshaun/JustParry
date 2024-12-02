@@ -110,6 +110,11 @@ public:
     GLuint m_character1_ready;
     GLuint m_character1_flip_ready;
 
+    GLuint m_character1_bear;
+    GLuint m_character1_bear_flip;
+    GLuint m_character1_bear_ready;
+    GLuint m_character1_bear_flip_ready;
+
     GLuint m_character1_red;
     GLuint m_character1_flip_red;
     GLuint m_character1_ready_red;
