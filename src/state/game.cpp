@@ -1787,16 +1787,8 @@ bool Game::handleArcadeStoryInput(GLFWwindow *window)
 
 void Game::handleBackButton()
 {
-    if (this->getState() == GameState::ARCADE_MENU)
-    {
-        this->setState(GameState::ARCADE_PREFIGHT);
-        std::cout << "Going to Arcade Menu Screen" << std::endl;
-    }
-    else
-    {
-        this->setState(GameState::MENU);
-        std::cout << "Going to Menu Screen" << std::endl;
-    }
+    this->setState(GameState::MENU);
+    std::cout << "Going to Menu Screen" << std::endl;
 }
 
 void Game::handleHelpButton()
