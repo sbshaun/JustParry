@@ -209,8 +209,8 @@ int main()
 
             WorldSystem::stopAllSounds(); // Stop sounds in menu
             WorldSystem::stopBackgroundMusic();
-            game.renderMenu(renderer);
-            if (game.handleMenuInput(glWindow.window, renderer))
+            game.renderMenu(renderer );
+            if (game.handleMenuInput(glWindow.window, renderer, shouldExit))
             {
                 std::cout << "Entered Character Select Stage" << std::endl;
                 game.setState(GameState::CHARACTER_SELECT);
