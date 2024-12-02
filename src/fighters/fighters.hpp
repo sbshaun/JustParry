@@ -7,6 +7,7 @@
 enum Fighters
 {
     BIRDMAN,
+    BEARMAN,
     PLACEHOLDER
 };
 
@@ -16,8 +17,8 @@ class GlRender;
 struct FighterConfig
 {
     // collision and size
-    float BB_WIDTH;
-    float BB_HEIGHT;
+    float BB_WIDTH = 2.5f * 80.f;
+    float BB_HEIGHT = 2.5f * 100.f;
     float NDC_WIDTH;
     float NDC_HEIGHT;
 
@@ -105,4 +106,6 @@ public:
     static FighterConfig &getFighterConfig(Fighters fighter);
     static void loadBirdTextures(GlRender &renderer);
     static void deleteBirdTextures();
+    static void loadBearTextures(GlRender &renderer);
+    static void deleteBearTextures();
 };

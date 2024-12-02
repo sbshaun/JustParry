@@ -293,7 +293,7 @@ void Game::renderCharacterSelect(GlRender &renderer, float offset1, float offset
         isBackButtonPressed                  // Add this member variable to Game class
     );
 
-    std::cout << registry.players.get(renderer.m_player1).color << std::endl;
+    // std::cout << registry.players.get(renderer.m_player1).color << std::endl;
 
     int p1Color = registry.players.get(renderer.m_player1).color;
     int p2Color = registry.players.get(renderer.m_player2).color;

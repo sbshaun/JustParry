@@ -680,6 +680,7 @@ void GlRender::loadTextures()
     loadTexture(textures_path("match_over_p1.png"), m_matchOverP1Texture);
     loadTexture(textures_path("match_over_p2.png"), m_matchOverP2Texture);
     FighterManager::loadBirdTextures(*this);
+    FighterManager::loadBearTextures(*this);
 }
 
 void GlRender::loadTexture(const std::string &path, GLuint &textureID)
