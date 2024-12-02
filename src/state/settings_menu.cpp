@@ -153,7 +153,7 @@ namespace SettingsMenu
         renderer.renderText("WINDOW MODE", labelX, startY, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f));          // Grayed out
         renderer.renderText("RESOLUTION", labelX, startY + spacing, 0.24f, glm::vec3(0.5f, 0.5f, 0.5f)); // Grayed out
         renderer.renderText("SHOW FPS COUNTER [F]", labelX, startY + spacing * 2, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderText("ENABLE DEBUG MODE [D]", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
+        renderer.renderText("ENABLE DEBUG MODE", labelX, startY + spacing * 4, 0.24f, glm::vec3(0.0f, 0.0f, 0.0f));
 
         // button positions
         float buttonY = startY - 22;
@@ -554,8 +554,8 @@ namespace SettingsMenu
             //                                 glm::vec3(0.4f, 0.4f, 0.4f)); // Gray color for disabled state
 
             //     // Show the key combination instead of a single key
-            //     std::string comboText = std::string(Settings::getKeyName(controls.down)) + 
-            //                           " + " + 
+            //     std::string comboText = std::string(Settings::getKeyName(controls.down)) +
+            //                           " + " +
             //                           std::string(Settings::getKeyName(controls.punch));
             //     float textWidth = comboText.length() * 8.0f;
             //     float textX = buttonX + (buttonWidth - textWidth) / 2.0f;

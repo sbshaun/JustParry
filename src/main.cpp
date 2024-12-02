@@ -61,7 +61,7 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
         renderer.renderRoundOver(1);
         WorldSystem::stopAllSounds();
 
-                // Update scores and set round over state only once
+        // Update scores and set round over state only once
         if (!roundEnded)
         {
             game.updateScores(h1, h2);
@@ -80,14 +80,16 @@ void checkIsRoundOver(GlRender &renderer, Bot &botInstance, WorldSystem &worldSy
             else
             {
                 game.setState(GameState::ROUND_OVER);
-                if (h1.currentHealth == h2.currentHealth) {
+                if (h1.currentHealth == h2.currentHealth)
+                {
                     // do not increment round if health is equal
-                } else {
+                }
+                else
+                {
                     game.incrementRound();
                 }
             }
         }
-
     }
     else
     {
@@ -272,14 +274,16 @@ int main()
 
             glWindow.windowSwapBuffers();
             break;
-        case GameState::HELP: {
-            if (botEnabled) {
-			    worldSystem.botEnabled = true;
+        case GameState::HELP:
+        {
+            if (botEnabled)
+            {
+                worldSystem.botEnabled = true;
             }
             if (game.handleHelpInput(glWindow.window))
             {
-                 game.resetGame(renderer, worldSystem);
-                 game.setState(GameState::MENU);
+                game.resetGame(renderer, worldSystem);
+                game.setState(GameState::MENU);
             }
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
@@ -292,8 +296,7 @@ int main()
                     WorldSystem::resumeSounds();
                     WorldSystem::updateAudioState(); // Make sure music is playing if enabled
                 }
-                
-                
+
                 handleUtilityInputs(renderer, showFPS,
                                     fKeyPressed, bKeyPressed, hKeyPressed,
                                     glWindow, fpsCounter, shouldExit,
@@ -302,8 +305,8 @@ int main()
                 // worldSystem.emitSmokeParticles(0.1f, 0.1f, 0.0f);
                 // Do all rendering here, only once
                 renderer.render();
-                
-                game.renderHelpScreen(renderer, botEnabled); 
+
+                game.renderHelpScreen(renderer, botEnabled);
                 worldSystem.renderParticles();
                 renderer.handleNotifications(elapsed_ms);
 
@@ -340,16 +343,18 @@ int main()
                 auto sleepEnd = std::chrono::steady_clock::now() + std::chrono::milliseconds(sleepDuration);
                 while (std::chrono::steady_clock::now() < sleepEnd)
                 {
-                    if (game.getCurrentTutorialPage() < 2) {
+                    if (game.getCurrentTutorialPage() < 2)
+                    {
                         worldSystem.handleInput(0, true); // this sets player inputs #3
                     }
-                    else {
+                    else
+                    {
                         worldSystem.handleInput(0, false); // this sets player inputs #3
                     }
                 } // Do input polling during wait time maybe and input conflict resoltion each logic step rather than each frame
             }
-            }
-            break;
+        }
+        break;
 
         case GameState::SETTINGS:
             WorldSystem::stopAllSounds();      // Stop sounds when entering settings
@@ -404,6 +409,11 @@ int main()
             game.setVersusMode(true);
             game.handleCharacterInputs(renderer, glWindow, p1KeyPressed, p1Ready, p2KeyPressed, p2Ready, goDown1, goDown2, goUp1, goUp2, offsetY1, offsetY2);
             game.renderCharacterSelect(renderer, offsetY1, offsetY2, p1Ready, p2Ready);
+            renderer.renderSelectorTriangleP1(380, 670, 40, 40, true);
+            renderer.renderSelectorTriangleP2(83, 670, 40, 40, true);
+
+            renderer.renderSelectorTriangleP1(900, 670, 40, 40, true);
+            renderer.renderSelectorTriangleP2(605, 670, 40, 40, true);
             game.renderReadyText(renderer, p1Ready, p2Ready, game);
             if (Settings::windowSettings.show_fps)
             {
@@ -486,7 +496,7 @@ int main()
             break;
 
         case GameState::PLAYING:
-        {   
+        {
             if (loopsSinceLastFrame == FramesPerLogicLoop)
             {
                 loopsSinceLastFrame = 0;
