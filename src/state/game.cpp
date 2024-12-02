@@ -492,7 +492,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
 
     if (!p1Ready)
     {
-        if (glfwGetKey(glWindow.window, GLFW_KEY_S) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.down) == GLFW_PRESS)
         {
             if (!goDown1)
             {
@@ -513,7 +513,7 @@ void Game::handleArcadePrefightInputs(GLWindow &glWindow, bool &p1KeyPressed, bo
             goDown1 = false;
         }
 
-        if (glfwGetKey(glWindow.window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.up) == GLFW_PRESS)
         {
             if (!goUp1)
             {
@@ -693,7 +693,7 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
 
     if (!p1Ready)
     {
-        if (glfwGetKey(glWindow.window, GLFW_KEY_S) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.down) == GLFW_PRESS)
         {
             if (!goDown1)
             {
@@ -714,7 +714,7 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
             goDown1 = false;
         }
 
-        if (glfwGetKey(glWindow.window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p1Controls.up) == GLFW_PRESS)
         {
             if (!goUp1)
             {
@@ -738,7 +738,7 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
 
     if (!p2Ready)
     {
-        if (glfwGetKey(glWindow.window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p2Controls.down) == GLFW_PRESS)
         {
             if (!goDown2)
             {
@@ -759,7 +759,7 @@ void Game::handleCharacterInputs(GlRender& renderer, GLWindow &glWindow, bool &p
             goDown2 = false;
         }
 
-        if (glfwGetKey(glWindow.window, GLFW_KEY_UP) == GLFW_PRESS)
+        if (glfwGetKey(glWindow.window, Settings::p2Controls.up) == GLFW_PRESS)
         {
             if (!goUp2)
             {
@@ -1748,6 +1748,15 @@ bool Game::handleArcadeMenuInput(GLFWwindow *window)
 
 bool Game::handleArcadeStoryInput(GLFWwindow *window)
 {
+    if (glfwGetKey(glfwGetCurrentContext(), Settings::p2Controls.right) == GLFW_PRESS && rightRelease == true)
+    {
+        rightRelease = false;
+        if (currentFrame < currentFinalFrame)
+        {
+            currentFrame++;
+        }
+    }
+
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_PRESS && spaceRelease == true)
     {
         spaceRelease = false;
@@ -1764,26 +1773,22 @@ bool Game::handleArcadeStoryInput(GLFWwindow *window)
             currentFrame++;
         }
     }
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
 
+    if (glfwGetKey(glfwGetCurrentContext(), Settings::p2Controls.right) == GLFW_RELEASE)
+    {
+        rightRelease = true;
+    }
+
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
         spaceRelease = true;
     }
     return false;
-    ;
 }
 
 void Game::handleBackButton()
 {
-    if (this->getState() == GameState::ARCADE_MENU)
-    {
-        this->setState(GameState::ARCADE_PREFIGHT);
-        std::cout << "Going to Arcade Menu Screen" << std::endl;
-    }
-    else
-    {
-        this->setState(GameState::MENU);
-        std::cout << "Going to Menu Screen" << std::endl;
-    }
+    this->setState(GameState::MENU);
+    std::cout << "Going to Menu Screen" << std::endl;
 }
 
 void Game::handleHelpButton()
