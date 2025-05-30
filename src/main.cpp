@@ -106,6 +106,7 @@ int main()
 {
     //// START INITS ////
     GLWindow glWindow(M_WINDOW_WIDTH_PX, M_WINDOW_HEIGHT_PX);
+    gl3w_init();
     assert(gl3w_init() == 0);
     // assert(is_fine == 0);
 
