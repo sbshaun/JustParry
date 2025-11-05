@@ -1,5 +1,6 @@
 # Team25
 
+> [https://www.youtube.com/watch?v=8tixVvmrgY8](https://www.youtube.com/watch?v=8tixVvmrgY8)
 
 <h3> vscode </h3>
 open the command palate and cmake: quick start
